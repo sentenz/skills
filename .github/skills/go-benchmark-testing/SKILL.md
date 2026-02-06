@@ -1,5 +1,5 @@
 ---
-name: benchmark-testing
+name: go-benchmark-testing
 description: Automates benchmark test creation for Go projects using the standard testing package with consistent software testing patterns. Use when creating performance benchmarks, profiling tests, or when the user mentions benchmarking, performance testing, or optimization.
 metadata:
   version: "1.0.0"

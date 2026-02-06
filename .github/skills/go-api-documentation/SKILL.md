@@ -1,5 +1,5 @@
 ---
-name: api-documentation
+name: go-api-documentation
 description: Automates API documentation creation for Go projects using godoc conventions and best practices. Use when creating, modifying, or reviewing documentation comments, or when the user mentions godoc, documentation, or API docs.
 metadata:
   version: "1.1.1"
