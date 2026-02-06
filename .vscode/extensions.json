@@ -1,0 +1,19 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.debugpy",
+    "ms-python.pylint",
+    "ms-python.vscode-pylance",
+    "ms-python.black-formatter",
+    "docker.docker",
+    "editorconfig.editorconfig",
+    "vivaxy.vscode-conventional-commits",
+    "esbenp.prettier-vscode",
+    "timonwong.shellcheck",
+    "foxundermoon.shell-format",
+    "zainchen.json",
+    "yzhang.markdown-all-in-one",
+    "davidanson.vscode-markdownlint",
+    "alefragnani.project-manager"
+  ]
+}

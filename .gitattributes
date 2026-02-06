@@ -1,0 +1,15 @@
+# Global policy: all text is UTF-8, normalized to LF
+* text=auto eol=lf working-tree-encoding=UTF-8
+
+# Force CRLF for Windows batch and command files
+*.{cmd,[cC][mM][dD]} text eol=crlf working-tree-encoding=UTF-8
+*.{bat,[bB][aA][tT]} text eol=crlf working-tree-encoding=UTF-8
+*.{ics,[iI][cC][sS]} text eol=crlf working-tree-encoding=UTF-8
+
+# Binary files: exclude of normalization and encoding rules
+*.jpg  -text
+*.jpeg -text
+*.png  -text
+*.pdf  -text
+*.zip  -text
+*.exe  -text

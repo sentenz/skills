@@ -1,0 +1,58 @@
+# https://editorconfig.org
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+max_line_length = 100
+trim_trailing_whitespace = true
+
+[*.sh]
+indent_style = space
+indent_size = 2
+never_split = false        # like -ns
+function_next_line = false # like -fn
+keep_padding = false       # like -kp
+space_redirects = false    # like -sr
+switch_case_indent = true  # like -ci
+binary_next_line = false   # like -bn
+
+[*.md]
+indent_style = space
+indent_size = 2
+max_line_length = off
+trim_trailing_whitespace = false
+
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+[*.json]
+indent_style = space
+indent_size = 2
+insert_final_newline = false
+
+[*.go]
+indent_style = tab
+indent_size = 2
+max_line_length = 0
+
+[*.py]
+indent_style = space
+indent_size = 4
+max_line_length = 88
+
+[*.rego]
+indent_style = tab
+indent_size = 4
+end_of_line = lf
+insert_final_newline = true
+
+[*.{cmake,CMakeLists.txt}]
+indent_style = space
+indent_size = 4
+
+[Makefile]
+indent_style = tab

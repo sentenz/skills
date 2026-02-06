@@ -1,0 +1,64 @@
+# SPDX-License-Identifier: Apache-2.0
+
+name: Semantic-Release
+
+on:
+  push:
+    branches:
+      - main
+      - next
+      - beta
+      - alpha
+
+jobs:
+  semantic-release:
+    name: Semantic-Release Action
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Run Semantic Release
+        id: release
+        uses: sentenz/actions/semantic-release@1.1.4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          semantic-version: "latest"
+          tag-format: "v${version}"
+
+      - name: Run SBOM Generation (CycloneDX)
+        if: steps.release.outputs.new-release-published == 'true'
+        uses: sentenz/actions/trivy@1.1.4
+        with:
+          scan-type: sbom-generate
+          scan-target: "."
+          format: cyclonedx
+          output: sbom.cdx.json
+
+      - name: Run SBOM Generation (SPDX)
+        if: steps.release.outputs.new-release-published == 'true'
+        uses: sentenz/actions/trivy@1.1.4
+        with:
+          scan-type: sbom-generate
+          scan-target: "."
+          format: spdx-json
+          output: sbom.spdx.json
+
+      - name: Publish SBOM artifacts
+        if: steps.release.outputs.new-release-published == 'true'
+        uses: softprops/action-gh-release@v2.5.0
+        with:
+          tag_name: v${{ steps.release.outputs.new-release-version }}
+          files: |
+            sbom.cdx.json
+            sbom.spdx.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

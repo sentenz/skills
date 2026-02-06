@@ -1,0 +1,68 @@
+# Agent Skills Configuration
+# https://agentskills.io/specification
+
+version: "1.0.0"
+
+# Repository metadata
+repository:
+  name: skills
+  description: Repository for Agent Skills (SKILL.md) and AGENTS.md template configurations
+  owner: sentenz
+  url: https://github.com/sentenz/skills
+
+# Skills directory
+skills_directory: skills
+
+# Available skills catalog
+skills:
+  # C++ Skills
+  - name: cpp-unit-testing
+    path: skills/cpp-unit-testing
+    languages: [cpp, c, c++]
+    description: Unit test creation using GoogleTest (GTest) framework
+
+  - name: cpp-mock-testing
+    path: skills/cpp-mock-testing
+    languages: [cpp, c, c++]
+    description: Mock test creation using Google Mock (GMock)
+
+  - name: cpp-fuzz-testing
+    path: skills/cpp-fuzz-testing
+    languages: [cpp, c, c++]
+    description: Fuzz test creation for discovering edge cases
+
+  - name: cpp-benchmark-testing
+    path: skills/cpp-benchmark-testing
+    languages: [cpp, c, c++]
+    description: Benchmark test creation for performance measurement
+
+  - name: cpp-api-documentation
+    path: skills/cpp-api-documentation
+    languages: [cpp, c, c++]
+    description: API documentation creation using Doxygen
+
+  # Go Skills
+  - name: go-unit-testing
+    path: skills/go-unit-testing
+    languages: [go, golang]
+    description: Unit test creation for Go projects
+
+  - name: go-fuzz-testing
+    path: skills/go-fuzz-testing
+    languages: [go, golang]
+    description: Fuzz test creation using Go's native fuzzing engine
+
+  - name: go-benchmark-testing
+    path: skills/go-benchmark-testing
+    languages: [go, golang]
+    description: Benchmark test creation for Go projects
+
+  - name: go-api-documentation
+    path: skills/go-api-documentation
+    languages: [go, golang]
+    description: API documentation creation using godoc conventions
+
+# Integration settings
+integration:
+  cli_version: ">=1.0.0"
+  specification_version: "1.0.0"

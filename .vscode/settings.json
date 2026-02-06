@@ -1,0 +1,57 @@
+{
+  "window.title": "${rootName}",
+  "files.encoding": "utf8",
+  "files.eol": "\n",
+  "editor.defaultFormatter": null,
+  "editor.formatOnSave": true,
+  "editor.suggest.showFolders": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.stickyScroll.enabled": true,
+  "editor.tabSize": 2,
+  "editor.renderWhitespace": "all",
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+  "terminal.integrated.stickyScroll.enabled": true,
+  "[markdown]": {
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": true,
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "vscode.markdown-language-features"
+  },
+  "[shell]": {
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": true,
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": null
+  },
+  "[powershell]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": false,
+    "editor.formatOnSave": true,
+    "editor.detectIndentation": true,
+    "editor.defaultFormatter": "ms-vscode.powershell"
+  },
+  "powershell.codeFormatting.preset": "OTBS",
+  "[yaml]": {
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[dockerfile]": {
+    "editor.defaultFormatter": "ms-azuretools.vscode-containers"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[cpp]": {
+    "editor.defaultFormatter": "ms-vscode.cpptools"
+  }
+}
