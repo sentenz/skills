@@ -14,19 +14,19 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 
 #### C++ Skills
 
-- [Unit Testing](unit-testing/SKILL.md)
+- [C++ Unit Testing](cpp-unit-testing/SKILL.md)
   > Unit test creation using GoogleTest (GTest) framework with In-Got-Want, Table-Driven Testing, and AAA patterns.
 
-- [Mock Testing](mock-testing/SKILL.md)
+- [C++ Mock Testing](cpp-mock-testing/SKILL.md)
   > Mock test creation using Google Mock (GMock) for test isolation and behavior verification.
 
-- [Fuzz Testing](fuzz-testing/SKILL.md)
+- [C++ Fuzz Testing](cpp-fuzz-testing/SKILL.md)
   > Fuzz test creation for discovering edge cases and vulnerabilities.
 
-- [Benchmark Testing](benchmark-testing/SKILL.md)
+- [C++ Benchmark Testing](cpp-benchmark-testing/SKILL.md)
   > Benchmark test creation for performance measurement and optimization.
 
-- [API Documentation](api-documentation/SKILL.md)
+- [C++ API Documentation](cpp-api-documentation/SKILL.md)
   > API documentation creation using Doxygen-compatible comments for C++ header files.
 
 #### Go Skills

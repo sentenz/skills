@@ -20,15 +20,19 @@ This repository provides reusable agent skills and configuration templates for A
 ```plaintext
 .
 ├── .github/
-│   └── skills/            # Agent skill definitions
-│       ├── README.md      # Skills overview and catalog
-│       ├── unit-testing/  # Unit testing skill
-│       ├── mock-testing/  # Mock testing skill
-│       ├── fuzz-testing/  # Fuzz testing skill
-│       ├── benchmark-testing/  # Benchmark testing skill
-│       └── api-documentation/  # API documentation skill
-├── AGENTS.md              # Template for AI agent instructions
-└── README.md              # This file
+│   └── skills/                  # Agent skill definitions
+│       ├── README.md            # Skills overview and catalog
+│       ├── cpp-unit-testing/    # C++ unit testing skill
+│       ├── cpp-mock-testing/    # C++ mock testing skill
+│       ├── cpp-fuzz-testing/    # C++ fuzz testing skill
+│       ├── cpp-benchmark-testing/  # C++ benchmark testing skill
+│       ├── cpp-api-documentation/  # C++ API documentation skill
+│       ├── go-unit-testing/     # Go unit testing skill
+│       ├── go-fuzz-testing/     # Go fuzz testing skill
+│       ├── go-benchmark-testing/  # Go benchmark testing skill
+│       └── go-api-documentation/  # Go API documentation skill
+├── AGENTS.md                    # Template for AI agent instructions
+└── README.md                    # This file
 ```
 
 ## 3. Agent Skills
@@ -45,19 +49,19 @@ Agent skills are modular capabilities documented in individual `SKILL.md` files.
 
 #### C++ Skills
 
-- **[Unit Testing](.github/skills/unit-testing/SKILL.md)**
+- **[C++ Unit Testing](.github/skills/cpp-unit-testing/SKILL.md)**
   > Automates unit test creation using GoogleTest (GTest) framework with patterns like In-Got-Want, Table-Driven Testing, and AAA.
 
-- **[Mock Testing](.github/skills/mock-testing/SKILL.md)**
+- **[C++ Mock Testing](.github/skills/cpp-mock-testing/SKILL.md)**
   > Creates mock objects using Google Mock (GMock) for test isolation and behavior verification.
 
-- **[Fuzz Testing](.github/skills/fuzz-testing/SKILL.md)**
+- **[C++ Fuzz Testing](.github/skills/cpp-fuzz-testing/SKILL.md)**
   > Implements fuzz testing for discovering edge cases and vulnerabilities in C++ code.
 
-- **[Benchmark Testing](.github/skills/benchmark-testing/SKILL.md)**
+- **[C++ Benchmark Testing](.github/skills/cpp-benchmark-testing/SKILL.md)**
   > Measures and validates performance characteristics using benchmarking frameworks for C++ code.
 
-- **[API Documentation](.github/skills/api-documentation/SKILL.md)**
+- **[C++ API Documentation](.github/skills/cpp-api-documentation/SKILL.md)**
   > Generates Doxygen-compatible documentation comments for C++ header files.
 
 #### Go Skills

@@ -144,19 +144,19 @@ Skills are documented in individual `SKILL.md` files located in the [.github/ski
 
 Available skills:
 
-- [Unit Testing](.github/skills/unit-testing/SKILL.md)
+- [C++ Unit Testing](.github/skills/cpp-unit-testing/SKILL.md)
   > Automates unit test creation using established testing patterns.
 
-- [Mock Testing](.github/skills/mock-testing/SKILL.md)
+- [C++ Mock Testing](.github/skills/cpp-mock-testing/SKILL.md)
   > Creates mock objects and stubs for testing.
 
-- [Fuzz Testing](.github/skills/fuzz-testing/SKILL.md)
+- [C++ Fuzz Testing](.github/skills/cpp-fuzz-testing/SKILL.md)
   > Implements fuzz testing for discovering edge cases.
 
-- [Benchmark Testing](.github/skills/benchmark-testing/SKILL.md)
+- [C++ Benchmark Testing](.github/skills/cpp-benchmark-testing/SKILL.md)
   > Measures and validates performance characteristics.
 
-- [API Documentation](.github/skills/api-documentation/SKILL.md)
+- [C++ API Documentation](.github/skills/cpp-api-documentation/SKILL.md)
   > Generates and maintains API documentation.
 
 ## 6. References

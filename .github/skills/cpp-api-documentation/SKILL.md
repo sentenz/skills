@@ -1,5 +1,5 @@
 ---
-name: api-documentation
+name: cpp-api-documentation
 description: Adds Doxygen-compatible documentation comments to C++ header files. Use this skill exclusively for adding or improving API documentation in existing header files (*.hpp, *.h). Do NOT create new resource files such as Doxyfile, scripts, or README files.
 metadata:
   version: "1.3.0"

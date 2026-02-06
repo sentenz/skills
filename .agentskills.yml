@@ -16,28 +16,28 @@ skills_directory: .github/skills
 # Available skills catalog
 skills:
   # C++ Skills
-  - name: unit-testing
-    path: .github/skills/unit-testing
+  - name: cpp-unit-testing
+    path: .github/skills/cpp-unit-testing
     languages: [cpp, c, c++]
     description: Unit test creation using GoogleTest (GTest) framework
 
-  - name: mock-testing
-    path: .github/skills/mock-testing
+  - name: cpp-mock-testing
+    path: .github/skills/cpp-mock-testing
     languages: [cpp, c, c++]
     description: Mock test creation using Google Mock (GMock)
 
-  - name: fuzz-testing
-    path: .github/skills/fuzz-testing
+  - name: cpp-fuzz-testing
+    path: .github/skills/cpp-fuzz-testing
     languages: [cpp, c, c++]
     description: Fuzz test creation for discovering edge cases
 
-  - name: benchmark-testing
-    path: .github/skills/benchmark-testing
+  - name: cpp-benchmark-testing
+    path: .github/skills/cpp-benchmark-testing
     languages: [cpp, c, c++]
     description: Benchmark test creation for performance measurement
 
-  - name: api-documentation
-    path: .github/skills/api-documentation
+  - name: cpp-api-documentation
+    path: .github/skills/cpp-api-documentation
     languages: [cpp, c, c++]
     description: API documentation creation using Doxygen
 

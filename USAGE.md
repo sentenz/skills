@@ -33,8 +33,8 @@ cp -r path/to/skills/.github/skills .github/
 
 # Or copy specific skills only
 mkdir -p .github/skills
-cp -r path/to/skills/.github/skills/unit-testing .github/skills/
-cp -r path/to/skills/.github/skills/api-documentation .github/skills/
+cp -r path/to/skills/.github/skills/cpp-unit-testing .github/skills/
+cp -r path/to/skills/.github/skills/cpp-api-documentation .github/skills/
 ```
 
 ### 2.2. Using Skills CLI
@@ -50,8 +50,8 @@ cd your-project
 skills init
 
 # Add specific skills
-skills add unit-testing
-skills add api-documentation
+skills add cpp-unit-testing
+skills add cpp-api-documentation
 
 # List available skills in your project
 skills list
@@ -73,7 +73,7 @@ git submodule add https://github.com/sentenz/skills .github/skills-catalog
 
 # Link specific skills
 mkdir -p .github/skills
-ln -s ../skills-catalog/.github/skills/unit-testing .github/skills/unit-testing
+ln -s ../skills-catalog/.github/skills/cpp-unit-testing .github/skills/cpp-unit-testing
 
 # Update skills from the catalog
 git submodule update --remote
@@ -92,7 +92,7 @@ Skills can be customized for your specific project needs:
 
 ```yaml
 ---
-name: unit-testing
+name: cpp-unit-testing
 # ... other metadata ...
 metadata:
   activation:
@@ -169,20 +169,20 @@ Available skills for this project:
 my-cpp-project/
 ├── .github/
 │   └── skills/
-│       ├── unit-testing/      # From this repo
-│       ├── mock-testing/      # From this repo
-│       └── api-documentation/ # From this repo
+│       ├── cpp-unit-testing/      # From this repo
+│       ├── cpp-mock-testing/      # From this repo
+│       └── cpp-api-documentation/ # From this repo
 ├── src/
 │   ├── module/
 │   │   ├── header.hpp
-│   │   └── header_test.cpp    # Tests use unit-testing skill patterns
+│   │   └── header_test.cpp    # Tests use cpp-unit-testing skill patterns
 ├── AGENTS.md                   # Customized from template
 └── README.md
 ```
 
 **Agent Behavior:**
-- When editing `*_test.cpp` files, the agent automatically uses the unit-testing skill
-- When editing `*.hpp` files, the agent uses api-documentation skill
+- When editing `*_test.cpp` files, the agent automatically uses the cpp-unit-testing skill
+- When editing `*.hpp` files, the agent uses cpp-api-documentation skill
 - Trigger phrases like "add unit test" or "document this API" activate skills
 
 ### Go Project
@@ -213,14 +213,14 @@ my-go-project/
 my-mixed-project/
 ├── .github/
 │   └── skills/
-│       ├── unit-testing/          # C++ testing
-│       ├── go-unit-testing/       # Go testing
-│       ├── api-documentation/     # C++ docs
-│       └── go-api-documentation/  # Go docs
-├── backend/                        # Go code
+│       ├── cpp-unit-testing/       # C++ testing
+│       ├── go-unit-testing/        # Go testing
+│       ├── cpp-api-documentation/  # C++ docs
+│       └── go-api-documentation/   # Go docs
+├── backend/                         # Go code
 │   └── pkg/
 │       └── service/
-├── engine/                         # C++ code
+├── engine/                          # C++ code
 │   └── src/
 │       └── core/
 ├── AGENTS.md

@@ -1,5 +1,5 @@
 ---
-name: benchmark-testing
+name: cpp-benchmark-testing
 description: Automates benchmark test creation for C++ projects using Google Benchmark with consistent software testing patterns. Use when creating performance benchmarks, profiling tests, or when the user mentions benchmarking, Google Benchmark, or performance testing.
 metadata:
   version: "1.1"

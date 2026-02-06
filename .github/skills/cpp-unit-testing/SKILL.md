@@ -1,5 +1,5 @@
 ---
-name: unit-testing
+name: cpp-unit-testing
 description: Automates unit test creation for C++ projects using GoogleTest (GTest) framework with consistent software testing patterns including In-Got-Want, Table-Driven Testing, and AAA patterns. Use when creating, modifying, or reviewing unit tests, or when the user mentions unit tests, test coverage, or GTest.
 metadata:
   version: "1.1"

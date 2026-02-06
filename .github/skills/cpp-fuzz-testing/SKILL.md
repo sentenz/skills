@@ -1,5 +1,5 @@
 ---
-name: fuzz-testing
+name: cpp-fuzz-testing
 description: Automates fuzz test creation for C++ projects using Google FuzzTest with consistent software testing patterns. Use when creating fuzz tests, mutation testing, or when the user mentions fuzzing, AFL, or coverage-guided testing.
 metadata:
   version: "1.1"

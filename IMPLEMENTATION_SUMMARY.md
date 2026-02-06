@@ -10,34 +10,34 @@ Successfully integrated Agent Skills from the sentenz/template-cpp and sentenz/p
 ```
 .
 ├── .github/
-│   └── skills/                    # Agent skills directory
-│       ├── README.md              # Skills catalog
-│       ├── unit-testing/          # C++ unit testing skill
-│       ├── mock-testing/          # C++ mock testing skill
-│       ├── fuzz-testing/          # C++ fuzz testing skill
-│       ├── benchmark-testing/     # C++ benchmark testing skill
-│       ├── api-documentation/     # C++ API documentation skill
-│       ├── go-unit-testing/       # Go unit testing skill
-│       ├── go-fuzz-testing/       # Go fuzz testing skill
-│       ├── go-benchmark-testing/  # Go benchmark testing skill
-│       └── go-api-documentation/  # Go API documentation skill
-├── AGENTS.md                      # Template for AI agent instructions
-├── README.md                      # Main repository documentation
-├── USAGE.md                       # Usage examples and integration guide
-├── CONTRIBUTING.md                # Contribution guidelines
-├── LICENSE                        # Apache 2.0 license
-├── .gitignore                     # Git ignore rules
-└── .agentskills.yml              # Skills CLI configuration
+│   └── skills/                       # Agent skills directory
+│       ├── README.md                 # Skills catalog
+│       ├── cpp-unit-testing/         # C++ unit testing skill
+│       ├── cpp-mock-testing/         # C++ mock testing skill
+│       ├── cpp-fuzz-testing/         # C++ fuzz testing skill
+│       ├── cpp-benchmark-testing/    # C++ benchmark testing skill
+│       ├── cpp-api-documentation/    # C++ API documentation skill
+│       ├── go-unit-testing/          # Go unit testing skill
+│       ├── go-fuzz-testing/          # Go fuzz testing skill
+│       ├── go-benchmark-testing/     # Go benchmark testing skill
+│       └── go-api-documentation/     # Go API documentation skill
+├── AGENTS.md                         # Template for AI agent instructions
+├── README.md                         # Main repository documentation
+├── USAGE.md                          # Usage examples and integration guide
+├── CONTRIBUTING.md                   # Contribution guidelines
+├── LICENSE                           # Apache 2.0 license
+├── .gitignore                        # Git ignore rules
+└── .agentskills.yml                  # Skills CLI configuration
 ```
 
 ### 2. Agent Skills (9 total)
 
 #### C++ Skills (5)
-- **unit-testing**: GoogleTest (GTest) framework with In-Got-Want, Table-Driven Testing, and AAA patterns
-- **mock-testing**: Google Mock (GMock) for test isolation and behavior verification
-- **fuzz-testing**: Fuzz testing for discovering edge cases and vulnerabilities
-- **benchmark-testing**: Performance measurement and optimization
-- **api-documentation**: Doxygen-compatible documentation for C++ header files
+- **cpp-unit-testing**: GoogleTest (GTest) framework with In-Got-Want, Table-Driven Testing, and AAA patterns
+- **cpp-mock-testing**: Google Mock (GMock) for test isolation and behavior verification
+- **cpp-fuzz-testing**: Fuzz testing for discovering edge cases and vulnerabilities
+- **cpp-benchmark-testing**: Performance measurement and optimization
+- **cpp-api-documentation**: Doxygen-compatible documentation for C++ header files
 
 #### Go Skills (4)
 - **go-unit-testing**: Standard Go testing package with consistent patterns
