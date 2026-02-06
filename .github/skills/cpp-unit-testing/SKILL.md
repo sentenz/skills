@@ -216,7 +216,7 @@ Test doubles (e.g., mocks, stubs, fakes) are simplified versions of complex obje
   > Include necessary standard library headers (`<vector>`, `<string>`, `<climits>`, etc.) and module-specific headers in a logical order: system headers first, then project headers.
 
   Include necessary headers in this order:
-  1. GMock/GTest headers (`<gmock/gmock.h>`, `<gtest/gtest.h>`)
+  1. GTest headers (`<gtest/gtest.h>`)
   2. Standard library headers (`<memory>`, `<string>`, etc.)
   3. Project interface headers
   4. Project implementation headers
@@ -237,7 +237,7 @@ Test doubles (e.g., mocks, stubs, fakes) are simplified versions of complex obje
   > Focus each `TEST(...)` function on a single function or cohesive behavior. For complex setups, use `TEST_F` fixtures or helper functions to reduce duplication.
 
 - Mocking
-  > Use Google Mock (GMock) for creating test doubles (mocks, stubs, fakes) to isolate the unit under test. See the [mock-testing](../mock-testing/SKILL.md) skill.
+  > Use Google Mock (GMock) for creating test doubles (mocks, stubs, fakes) to isolate the unit under test. See the [cpp-mock-testing](../cpp-mock-testing/SKILL.md) skill.
 
 - Traceability
   > Employ [`SCOPED_TRACE(tc.label)`](https://google.github.io/googletest/reference/testing.html#SCOPED_TRACE) for traceable failures in table-driven tests.
