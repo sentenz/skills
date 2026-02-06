@@ -1,0 +1,68 @@
+# Agent Skills Configuration
+# This file follows the Agent Skills specification: https://agentskills.io/specification
+
+version: "1.0"
+
+# Repository metadata
+repository:
+  name: skills
+  description: Repository for Agent Skills (SKILL.md) and AGENTS.md template configurations
+  owner: sentenz
+  url: https://github.com/sentenz/skills
+
+# Skills directory
+skills_directory: .github/skills
+
+# Available skills catalog
+skills:
+  # C++ Skills
+  - name: unit-testing
+    path: .github/skills/unit-testing
+    languages: [cpp, c, c++]
+    description: Unit test creation using GoogleTest (GTest) framework
+
+  - name: mock-testing
+    path: .github/skills/mock-testing
+    languages: [cpp, c, c++]
+    description: Mock test creation using Google Mock (GMock)
+
+  - name: fuzz-testing
+    path: .github/skills/fuzz-testing
+    languages: [cpp, c, c++]
+    description: Fuzz test creation for discovering edge cases
+
+  - name: benchmark-testing
+    path: .github/skills/benchmark-testing
+    languages: [cpp, c, c++]
+    description: Benchmark test creation for performance measurement
+
+  - name: api-documentation
+    path: .github/skills/api-documentation
+    languages: [cpp, c, c++]
+    description: API documentation creation using Doxygen
+
+  # Go Skills
+  - name: go-unit-testing
+    path: .github/skills/go-unit-testing
+    languages: [go, golang]
+    description: Unit test creation for Go projects
+
+  - name: go-fuzz-testing
+    path: .github/skills/go-fuzz-testing
+    languages: [go, golang]
+    description: Fuzz test creation using Go's native fuzzing engine
+
+  - name: go-benchmark-testing
+    path: .github/skills/go-benchmark-testing
+    languages: [go, golang]
+    description: Benchmark test creation for Go projects
+
+  - name: go-api-documentation
+    path: .github/skills/go-api-documentation
+    languages: [go, golang]
+    description: API documentation creation using godoc conventions
+
+# Integration settings
+integration:
+  cli_version: ">=1.0.0"
+  specification_version: "1.0"
