@@ -210,7 +210,7 @@ Mathematical formulas and equations for algorithms and technical documentation.
 
 1. Identify
 
-    Identify exported unctions, types, constants, and variables in `pkg/` or `internal/` that need documentation.
+    Identify exported functions, types, constants, and variables in `pkg/` or `internal/` that need documentation.
 
 2. Review Existing
 
