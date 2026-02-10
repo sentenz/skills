@@ -446,22 +446,20 @@ Description of the pattern and when to use it.
 
 #### Template Section Template
 
-```markdown
-## 6. Template
+    ## 6. Template
 
-### 6.1. Template Name
+    ### 6.1. Template Name
 
-\`\`\`language
-// Code template with placeholders
-// Replace <placeholder> with actual values
-\`\`\`
+    ```language
+    // Code template with placeholders
+    // Replace <placeholder> with actual values
+    ```
 
-### 6.2. Another Template
+    ### 6.2. Another Template
 
-\`\`\`language
-// Another code template
-\`\`\`
-```
+    ```language
+    // Another code template
+    ```
 
 #### References Section Template
 
