@@ -15,8 +15,10 @@ Template for AI coding agent instructions and project configuration.
   - [3.2. Key Directories](#32-key-directories)
 - [4. Task Runners](#4-task-runners)
   - [4.1. Available Commands](#41-available-commands)
-- [5. Agent Skills](#5-agent-skills)
-- [6. References](#6-references)
+- [4. Commmit Strategy](#4-commmit-strategy)
+- [5. Versioning Strategy](#5-versioning-strategy)
+- [7. Agent Skills](#7-agent-skills)
+- [8. References](#8-references)
 
 ## 1. Overview
 
@@ -136,7 +138,17 @@ Common commands:
 - Deployment
   > Commands for deploying the project.
 
-## 5. Agent Skills
+## 4. Commmit Strategy
+
+- [Conventional Commits](https://www.conventionalcommits.org/)
+  > Specification for standardized commit message format to maintain a clear and consistent commit history.
+
+## 5. Versioning Strategy
+
+- [Semantic Versioning](https://semver.org/)
+  > Versioning scheme using MAJOR.MINOR.PATCH format for release management to indicate the nature of changes.
+
+## 7. Agent Skills
 
 Agent skills are modular capabilities that AI agents can utilize to perform specific tasks within a project. Skills enhance the functionality of AI agents by providing them with specialized context knowledge and tools.
 
@@ -159,7 +171,7 @@ Available skills:
 - [C++ API Documentation](skills/cpp-api-documentation/SKILL.md)
   > Generates and maintains API documentation.
 
-## 6. References
+## 8. References
 
 - [AGENTS.md](https://agents.md/) specification page.
 - Agent Skills [Specification](https://agentskills.io/specification) page.
