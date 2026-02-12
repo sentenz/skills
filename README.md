@@ -6,8 +6,9 @@ Repository for [Agent Skills](https://agentskills.io/specification) (SKILL.md) a
 - [2. Directory Structure](#2-directory-structure)
 - [3. Agent Skills](#3-agent-skills)
   - [3.1. Available Skills](#31-available-skills)
-    - [3.1.1. C++ Skills](#311-c-skills)
-    - [3.1.2. Go Skills](#312-go-skills)
+    - [3.1.1. General Skills](#311-general-skills)
+    - [3.1.2. C++ Skills](#312-c-skills)
+    - [3.1.3. Go Skills](#313-go-skills)
 - [4. AGENTS.md Template](#4-agentsmd-template)
 - [5. Integration](#5-integration)
   - [5.1. Skills CLI](#51-skills-cli)
@@ -27,6 +28,7 @@ This repository provides reusable agent skills and configuration templates for A
 ├── .github/
 │   └── skills/                  # Agent skill definitions
 │       ├── README.md            # Skills overview and catalog
+│       ├── skill-creation/      # Skill creation skill
 │       ├── cpp-unit-testing/    # C++ unit testing skill
 │       ├── cpp-mock-testing/    # C++ mock testing skill
 │       ├── cpp-fuzz-testing/    # C++ fuzz testing skill
@@ -52,7 +54,12 @@ Agent skills are modular capabilities documented in individual `SKILL.md` files.
 
 ### 3.1. Available Skills
 
-#### 3.1.1. C++ Skills
+#### 3.1.1. General Skills
+
+- **[Skill Creation](skills/skill-creation/SKILL.md)**
+  > Automates creation of Agent Skills (SKILL.md) by codifying CONTRIBUTING.md guidelines into a discoverable, reusable skill.
+
+#### 3.1.2. C++ Skills
 
 - **[C++ Unit Testing](skills/cpp-unit-testing/SKILL.md)**
   > Automates unit test creation using GoogleTest (GTest) framework with patterns like In-Got-Want, Table-Driven Testing, and AAA.
@@ -69,7 +76,7 @@ Agent skills are modular capabilities documented in individual `SKILL.md` files.
 - **[C++ API Documentation](skills/cpp-api-documentation/SKILL.md)**
   > Generates Doxygen-compatible documentation comments for C++ header files.
 
-#### 3.1.2. Go Skills
+#### 3.1.3. Go Skills
 
 - **[Go Unit Testing](skills/go-unit-testing/SKILL.md)**
   > Automates unit test creation for Go projects using the standard testing package with consistent software testing patterns.
