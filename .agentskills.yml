@@ -15,6 +15,12 @@ skills_directory: skills
 
 # Available skills catalog
 skills:
+  # General Skills
+  - name: skill-creation
+    path: skills/skill-creation
+    languages: [markdown]
+    description: Agent Skill (SKILL.md) creation following the Agent Skills specification
+
   # C++ Skills
   - name: cpp-unit-testing
     path: skills/cpp-unit-testing
