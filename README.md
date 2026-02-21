@@ -52,7 +52,12 @@ Agent skills are modular capabilities documented in individual `SKILL.md` files.
 
 ### 3.1. Available Skills
 
-#### 3.1.1. C++ Skills
+#### 3.1.1. General Skills
+
+- **[Skill Creation](skills/skill-creation/SKILL.md)**
+  > Automates Agent Skill (SKILL.md) creation following the Agent Skills specification and repository conventions.
+
+#### 3.1.2. C++ Skills
 
 - **[C++ Unit Testing](skills/cpp-unit-testing/SKILL.md)**
   > Automates unit test creation using GoogleTest (GTest) framework with patterns like In-Got-Want, Table-Driven Testing, and AAA.
@@ -69,7 +74,7 @@ Agent skills are modular capabilities documented in individual `SKILL.md` files.
 - **[C++ API Documentation](skills/cpp-api-documentation/SKILL.md)**
   > Generates Doxygen-compatible documentation comments for C++ header files.
 
-#### 3.1.2. Go Skills
+#### 3.1.3. Go Skills
 
 - **[Go Unit Testing](skills/go-unit-testing/SKILL.md)**
   > Automates unit test creation for Go projects using the standard testing package with consistent software testing patterns.
