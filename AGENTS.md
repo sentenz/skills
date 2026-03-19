@@ -171,6 +171,9 @@ Available skills:
 - [C++ API Documentation](skills/cpp-api-documentation/SKILL.md)
   > Generates and maintains API documentation.
 
+- [Threat Modeling](skills/threat-modeling/SKILL.md)
+  > Automates threat modeling using STRIDE, MITRE ATT&CK, CWE, and CVSS v4.0.
+
 ## 8. References
 
 - [AGENTS.md](https://agents.md/) specification page.

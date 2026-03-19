@@ -8,6 +8,7 @@ Repository for [Agent Skills](https://agentskills.io/specification) (SKILL.md) a
   - [3.1. Available Skills](#31-available-skills)
     - [3.1.1. C++ Skills](#311-c-skills)
     - [3.1.2. Go Skills](#312-go-skills)
+    - [3.1.3. Security Skills](#313-security-skills)
 - [4. AGENTS.md Template](#4-agentsmd-template)
 - [5. Integration](#5-integration)
   - [5.1. Skills CLI](#51-skills-cli)
@@ -35,7 +36,8 @@ This repository provides reusable agent skills and configuration templates for A
 │       ├── go-unit-testing/     # Go unit testing skill
 │       ├── go-fuzz-testing/     # Go fuzz testing skill
 │       ├── go-benchmark-testing/  # Go benchmark testing skill
-│       └── go-api-documentation/  # Go API documentation skill
+│       ├── go-api-documentation/  # Go API documentation skill
+│       └── threat-modeling/     # Threat modeling skill
 ├── AGENTS.md                    # Template for AI agent instructions
 └── README.md                    # This file
 ```
@@ -82,6 +84,11 @@ Agent skills are modular capabilities documented in individual `SKILL.md` files.
 
 - **[Go API Documentation](skills/go-api-documentation/SKILL.md)**
   > Generates API documentation using godoc conventions and best practices for Go projects.
+
+#### 3.1.3. Security Skills
+
+- **[Threat Modeling](skills/threat-modeling/SKILL.md)**
+  > Automates threat modeling tasks using STRIDE, MITRE ATT&CK, CWE, and CVSS v4.0 for OT/ICS and general software systems.
 
 ## 4. AGENTS.md Template
 
