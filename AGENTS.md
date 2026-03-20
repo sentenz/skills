@@ -171,6 +171,9 @@ Available skills:
 - [C++ API Documentation](skills/cpp-api-documentation/SKILL.md)
   > Generates and maintains API documentation.
 
+- [Threat Modeling ICS](skills/threat-modeling-ics/SKILL.md)
+  > Performs end-to-end threat modeling for OT/ICS systems using Microsoft TMT, STRIDE, MITRE ATT&CK, CWE, and CVSS v4.0.
+
 ## 8. References
 
 - [AGENTS.md](https://agents.md/) specification page.
