@@ -153,117 +153,155 @@ Use [FIRST CVSS v4.0](https://www.first.org/cvss/) to score each reviewed threat
 
 ## 4. Workflow
 
+> [!IMPORTANT]
+> When this skill is activated — whether by trigger keyword, path match, or explicit user request — execute every step below in order. Do not skip, reorder, or merge steps. Stop at any blocking gate and wait for user input before continuing. Resume from the blocked step once input is received; do not restart from step 1.
+
 1. Threat Model Diagram
 
-    Create a Mermaid threat model diagram of the OT/ICS control system. Define architecture elements, trust boundaries, data flows, and interfaces. Prefer filenames such as `<device-name>-threat-model.md`. If the model is not present, ask the user to provide external documentation, links, or a textual description of the system architecture and trust relationships. Proceed with the next step if the threat model is available.
+    **Action:** Locate or create the threat model diagram for the target OT/ICS system.
+
+    - Search the current context for a Mermaid diagram file. Prefer filenames such as `<device-name>-threat-model.md`.
+    - If a diagram file is found, extract architecture elements, trust boundaries, data flows, and interfaces from it.
+    - **Blocking gate:** If no diagram is available, ask the user to provide one of the following before continuing:
+      - A Mermaid diagram file path.
+      - External documentation or links describing the system architecture.
+      - A textual description of the system components and trust relationships sufficient to draft a Mermaid diagram.
+    - Draft the Mermaid diagram from the provided input if one does not already exist, and save it as `<device-name>-threat-model.md`.
+    - Do not proceed to step 2 until the diagram is available or the user explicitly waives this step.
 
 2. Confirm the artifact type
 
-   Determine whether the input is a raw Microsoft TMT export, a partially reviewed file, or a completed review file. Prefer filenames such as `<device-name>-model.csv` and `<device-name>-threat-model-review.csv` when present, but rely on the header row rather than the filename alone. If the CSV file is not present, ask the user to provide the exported TMT CSV for review.
+    **Action:** Identify the input CSV and classify it before any review work begins.
+
+    - Locate the input CSV. Prefer filenames such as `<device-name>-model.csv` and `<device-name>-threat-model-review.csv`, but rely on the header row rather than the filename alone to determine artifact type.
+    - Classify the artifact as one of: raw TMT export, partially reviewed file, or completed review file.
+    - **Blocking gate:** If no CSV is available, ask the user to provide the exported TMT CSV before continuing.
+    - Do not proceed to step 3 until the artifact type is confirmed.
 
 3. Detect the native TMT columns
 
-   Expect native fields such as:
+    **Action:** Identify and record the native TMT column set present in the input file.
 
-   - `Id`
-   - `Title`
-   - `Category`
-   - `Diagram`
-   - `Interaction`
-   - `Priority`
-   - `State`
-   - `Changed By`
-   - `Description`
-   - `Justification`
-   - `Last Modified`
+    - Confirm that the header row contains native TMT fields. Expect fields such as:
 
-   Preserve the exact source header spelling and order found in the file.
+      - `Id`
+      - `Title`
+      - `Category`
+      - `Diagram`
+      - `Interaction`
+      - `Priority`
+      - `State`
+      - `Changed By`
+      - `Description`
+      - `Justification`
+      - `Last Modified`
+
+    - Record the exact source header spelling and column order as found in the file. Use this record for all subsequent output.
 
 4. Detect review columns already present
 
-   A reviewed file (`<device-name>-threat-model-review.csv`) may append fields such as:
+    **Action:** Determine which review columns, if any, are already appended to the native TMT columns.
 
-   - `ATT&CK ID`
-   - `CWE ID`
-   - `CVSS v4.0 Score`
-   - `CVSS v4.0 Severity`
-   - `CVSS v4.0 Vector`
+    - Check whether any of the following review fields are present:
 
-   If those columns already exist, update them in place rather than creating duplicates.
+      - `ATT&CK ID`
+      - `CWE ID`
+      - `CVSS v4.0 Score`
+      - `CVSS v4.0 Severity`
+      - `CVSS v4.0 Vector`
+
+    - If those columns already exist, update them in place for each row rather than adding duplicate columns.
+    - If they are absent, append them to the right of the last native TMT column in the output file.
 
 5. Preserve the raw export non-destructively
 
-   Do not delete native TMT columns or overwrite `Title`, `Category`, `Description`, `Priority`, or `Interaction` with rewritten text. Analyst review belongs in `Justification` in the security review csv (`<device-name>-threat-model-review.csv`).
+    **Action:** Lock native TMT columns against modification before beginning row review.
+
+    - Do not delete any native TMT column.
+    - Do not overwrite the values in `Title`, `Category`, `Description`, `Priority`, or `Interaction` with rewritten text.
+    - Analyst interpretation must be written into the `Justification` column of the security review file (`<device-name>-threat-model-review.csv`) only.
 
 6. Review each row
 
-   Read the row using the native TMT fields together:
+    **Action:** For every row in the dataset, read all native TMT fields together as a single unit before forming any judgment.
 
-   - `Title`
-     > The `Title` is the initial threat statement generated by TMT. It should be read as a single unit together with the `Description` to understand the modeled attack scenario.
+    - `Title` — Read as the initial threat statement generated by TMT. Interpret together with `Description`.
+    - `Category` — The STRIDE classification assigned by TMT. Use it to anchor the threat type.
+    - `Interaction` — The data flow or trust relationship associated with the threat. Use it to determine the attack vector and applicable controls.
+    - `Description` — Additional detail about the threat consequences and high-level mitigations. Read together with `Category` and `Title`.
+    - `Priority` — The initial risk ranking assigned by TMT. Treat as a reference point only; the analyst review in steps 7–12 may revise it.
+    - `State` — The current review status of the threat. Update it in step 7.
 
-   - `Category`
-     > The `Category` is the STRIDE classification assigned by TMT.
+    Repeat steps 7–13 for every row before writing the output in step 14.
 
-   - `Interaction`
-     > The `Interaction` field describes the data flow or trust relationship associated with the threat. It provides critical context for understanding the attack vector and potential mitigations.
+7. Update each `State`
 
-   - `Description`
-     > The `Description` provides additional details about the threat, including potential consequences and high-level mitigation suggestions. It should be read as a single unit together with the `Category` and `Title` to understand the modeled attack scenario.
+    **Action:** Set the `State` field for each row to reflect the outcome of the analyst review.
 
-   - `Priority`
-     > The `Priority` field indicates the initial risk ranking assigned by TMT. It may be used as a reference point but should not be treated as definitive without analyst review.
+    - Use the state vocabulary already present in the file. Introduce a new value only when none of the existing values accurately describes the outcome.
+    - Common values include:
 
-   - `State`
-     > The `State` field captures the review status of the threat.
+      - `Not Started`
+      - `Needs Investigation`
+      - `Mitigated`
+      - `Not Applicable`
+      - `Transferred`
 
-7. Review and update each `State`
+8. Update each `Priority`
 
-   Use the existing dataset state vocabulary when present. Common values include:
+    **Action:** Revise the `Priority` field for each row if the analyst review justifies a change from the TMT-assigned value.
 
-   - `Not Started`
-   - `Needs Investigation`
-   - `Mitigated`
-   - `Not Applicable`
-   - `Transferred`
+    - Use the priority vocabulary already present in the file.
+    - Common values include:
 
-8. Review and update each `Priority`
-
-   Use the existing dataset priority vocabulary when present. Common values include:
-
-   - `Low`
-   - `Medium`
-   - `High`
+      - `Low`
+      - `Medium`
+      - `High`
 
 9. Write a security-review `Justification`
 
-   Fill `Justification` with a concise analyst statement that explains why the threat is accepted, mitigated, transferred, not applicable, or still under investigation. The justification should reference the modeled protocol, interface, trust relationship, validation behavior, or compensating control when known.
+    **Action:** Write a concise, technically grounded analyst statement in the `Justification` field for each row.
+
+    - State why the threat is accepted, mitigated, transferred, not applicable, or still under investigation.
+    - Reference the modeled protocol, interface, trust relationship, validation behavior, or compensating control that informs the decision.
+    - Keep the text brief enough to remain readable in a CSV cell.
 
 10. Add MITRE ATT&CK mapping
 
-    Populate `ATT&CK ID` only when a concrete ATT&CK technique is supported by the reviewed row. Leave the field blank when no precise mapping is defensible.
+    **Action:** Populate the `ATT&CK ID` field for each row when a concrete ATT&CK for ICS technique can be supported by the row contents and justification.
+
+    - Record the most relevant ATT&CK for ICS tactic and technique ID (e.g., `T0856`).
+    - Leave the field blank when the threat statement is too generic, ambiguous, or design-level to support a reliable mapping. A blank is correct; a forced mapping is not.
 
 11. Add CWE classification
 
-    Populate `CWE ID` with one or more weakness identifiers when the root weakness is clear from the threat statement and review rationale. Use comma-separated values when multiple CWEs are materially relevant.
+    **Action:** Populate the `CWE ID` field for each row when the root weakness is identifiable from the threat statement and justification.
+
+    - Prefer the most specific CWE that fits the described weakness.
+    - Use comma-separated values when the finding depends on more than one concrete weakness (e.g., `CWE-290, CWE-345`).
+    - Leave the field blank when the evidence is insufficient.
 
 12. Score with CVSS v4.0
 
-    Populate all three of the following together:
+    **Action:** Populate `CVSS v4.0 Score`, `CVSS v4.0 Severity`, and `CVSS v4.0 Vector` together for each row when the exploitability and impact can be assessed.
 
-    - `CVSS v4.0 Score`
-    - `CVSS v4.0 Severity`
-    - `CVSS v4.0 Vector`
-
-    Do not record a severity without a vector. Do not record a vector without a score.
+    - All three fields must be populated together or left blank together. Do not record a severity without a vector. Do not record a vector without a score.
+    - Derive the score from the [CVSS v4.0 calculator](https://www.first.org/cvss/calculator/4.0) using the modeled attack scenario and justification as input.
+    - Record the base score (`0.0`–`10.0`), the severity label (`None`, `Low`, `Medium`, `High`, `Critical`), and the full vector string (e.g., `CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:H/VA:H/SC:N/SI:H/SA:H`).
 
 13. Preserve blanks intentionally
 
-    Blank fields are acceptable when the evidence is insufficient. It is better to leave `ATT&CK ID` or `CWE ID` empty than to force an unreliable mapping.
+    **Action:** Leave review fields empty when sufficient evidence is not available.
+
+    - A blank `ATT&CK ID`, `CWE ID`, or CVSS field is correct when the evidence is insufficient. Do not force a mapping or score to fill the cell.
 
 14. Produce the reviewed CSV
 
-    Save the enriched result as a reviewed artifact such as `<device-name>-threat-model-review.csv`. Preserve delimiter, quoting, encoding, and header style as consistently as possible with the source file.
+    **Action:** Write the complete enriched dataset to the output file.
+
+    - Save the result as `<device-name>-threat-model-review.csv`.
+    - Preserve the delimiter, quoting style, encoding, and header order from the source file.
+    - Verify that all native TMT columns are present and unmodified in the output before saving.
 
 ## 5. Deliverables
 
