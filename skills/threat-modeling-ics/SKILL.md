@@ -1,8 +1,8 @@
 ---
 name: threat-modeling-ics
-description: Performs end-to-end threat modeling for OT/ICS systems from Microsoft Threat Modeling Tool (TMT) threat-list exports (`*.csv`). Uses TMT and STRIDE for initial threat enumeration, then enriches each threat with OT/ICS context, MITRE ATT&CK for ICS mappings, CWE weakness classification, CVSS v4.0 scoring, and mitigation planning. Use when triaging, validating, or completing Microsoft TMT threat outputs without converting them into a separate domain-specific schema.
+description: Performs end-to-end threat modeling for OT/ICS systems from Microsoft Threat Modeling Tool (TMT) threat-list exports (`*.csv`) and model files (`*.tm7`). Uses TMT and STRIDE for initial threat enumeration, then enriches each threat with OT/ICS context, MITRE ATT&CK for ICS mappings, CWE weakness classification, CVSS v4.0 scoring, and mitigation planning. Use when triaging, validating, or completing Microsoft TMT threat outputs without converting them into a separate domain-specific schema.
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   activation:
     implicit: true
     priority: 1
@@ -33,6 +33,9 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
 > [!NOTE]
 > Treat the Microsoft TMT CSV as the primary artifact. Preserve native TMT identifiers, titles, categories, descriptions, priorities, states, and analyst-entered notes. Perform review by appending new columns to the exported dataset rather than rewriting the model into a different structure.
 
+> [!NOTE]
+> When a Mermaid diagram is absent, a Microsoft TMT model file (`*.tm7`) is an acceptable architecture source. Extract system elements, trust boundaries, interfaces, and data flows from the model before reviewing the CSV.
+
 - [1. Benefits](#1-benefits)
 - [2. Principles](#2-principles)
 - [3. Frameworks](#3-frameworks)
@@ -43,6 +46,9 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
   - [3.5. CVSS](#35-cvss)
   - [3.6. BSI Likelihood of Exploit](#36-bsi-likelihood-of-exploit)
 - [4. Workflow](#4-workflow)
+  - [4.1. Preparation](#41-preparation)
+  - [4.2. Row-by-Row Review](#42-row-by-row-review)
+  - [4.3. Output](#43-output)
 - [5. Deliverables](#5-deliverables)
 - [6. Style Guide](#6-style-guide)
 - [7. Example](#7-example)
@@ -78,7 +84,7 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
 
   > [!NOTE]
   > Most diagrams should include at least Layers 0 and 1, use Layers 2 and 3 when system criticality and security-review requirements justify deeper decomposition.
-  
+
   - Layer 0 (`System`)
     > System layer for high-level architecture and trust boundaries between major zones or subsystems interactions.
 
@@ -105,6 +111,9 @@ Use Microsoft Threat Modeling Tool (TMT) as the source of truth for the initial 
 
 - Review Rule
   > Review is additive. Append analyst review fields after the native export columns.
+
+- Model Evidence Rule
+  > When both `*.tm7` and CSV are available, use the TM7 model to validate whether a generated threat matches the actual architecture before assigning `Not Applicable`, CWE, CVSS, or mitigation status.
 
 ### 3.2. STRIDE
 
@@ -138,11 +147,23 @@ MITRE ATT&CK for ICS to map a TMT threat to realistic adversary behavior affecti
   > [!NOTE]
   > Add a MITRE technique ID only when the threat statement and justification support a concrete technique or sub-technique. Leave the MITRE field blank when the row is too generic, ambiguous, or purely design-level without a reliable ATT&CK mapping.
 
+- Common OT/ICS Technique Mappings
+  > Use these technique mappings as a reference for common OT/ICS threat scenarios.
+
+  | Technique ID | Technique Name                        | Scenarios                                                                                                        |
+  | ------------ | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+  | T0859        | Valid Accounts / Unauthorized Command | Spoofing PLC/HMI identity on unauthenticated protocols (Modbus, DNP3). Device accepts commands from any source.  |
+  | T0855        | Unauthorized Command Message          | Sending malformed or out-of-range values via industrial protocols to manipulate process variables.               |
+  | T0814        | Denial of Service                     | Bus contention, frame flooding, communication disruption on serial or network interfaces.                        |
+  | T0843        | Program Download / Code Injection     | Exploiting firmware update mechanisms, buffer overflows, or protocol parsing vulnerabilities for code execution. |
+  | T0801        | Monitor Process State                 | Passive eavesdropping on unencrypted industrial protocols (Modbus RTU/TCP, SSP, proprietary serial).             |
+  | T0852        | Screen Capture / Replay               | Capturing and replaying valid protocol messages when no sequence numbers or timestamps exist.                    |
+  | T0842        | Hardware Debug                        | Exploiting JTAG, SWD, or UART debug interfaces for firmware extraction or modification.                          |
+  | T0831        | Manipulation of Control               | Issuing unauthorized setpoint changes or mode transitions via compromised HMI or protocol injection.             |
+
 ### 3.4. CWE
 
 Use [MITRE CWE](https://cwe.mitre.org/) to classify the underlying weakness that enables the threat.
-
-Use CWE to identify the root weakness that makes the threat plausible or exploitable.
 
 - Weakness Rule
   > Prefer the most specific CWE supported by the row description and analyst justification.
@@ -204,42 +225,40 @@ Use the [BSI Dringlichkeit / Eintrittspotenzial](https://www.bsi.bund.de/DE/Serv
 ## 4. Workflow
 
 > [!IMPORTANT]
-> When this skill is activated execute every step below in order. Do not skip, reorder, or merge steps. Stop at any blocking gate and wait for user input before continuing. Resume from the blocked step once input is received; do not restart from step 1.
+> Execute every step below in order. Do not skip, reorder, or merge steps. Stop at any blocking gate and wait for user input before continuing. Resume from the blocked step once input is received; do not restart from step 1.
 
-1. Threat Model Diagram
+> [!NOTE]
+> Save intermediate results after each step to ensure continuity across steps.
+
+### 4.1. Preparation
+
+1. Locate or create the threat model diagram
 
     **Action:** Locate or create the threat model diagram for the target OT/ICS system.
-
     - Search the current context for a Mermaid diagram file. Prefer filenames such as `<device-name>-threat-model.md`.
     - If a diagram file is found, extract architecture elements, trust boundaries, data flows, and interfaces from it.
+    - If no Mermaid diagram is found, search for a Microsoft TMT model file (`*.tm7`) and extract the same architecture evidence from the model.
     - **Blocking gate:** If no diagram is available, ask the user to provide one of the following before continuing:
       - A Mermaid diagram file path.
+      - A Microsoft TMT model file path (`*.tm7`).
       - External documentation or links describing the system architecture.
       - A textual description of the system components and trust relationships sufficient to draft a Mermaid diagram.
     - Draft the Mermaid diagram from the provided input if one does not already exist, and save it as `<device-name>-threat-model.md`.
+    - If the source is a TM7 file, normalize names and labels only enough to make the diagram readable, but preserve the modeled trust boundaries, interfaces, and flow directions.
     - Do not proceed to step 2 until the diagram is available or the user explicitly waives this step.
 
-    > [!NOTE]
-    > Save intermediate results as needed to ensure continuity across steps.
+2. Identify and classify the input CSV
 
-2. Confirm the artifact type
-
-    **Action:** Identify the input CSV and classify it before any review work begins.
-
-    - Locate the input CSV. Prefer filenames such as `<device-name>-model.csv` and `<device-name>-threat-model-review.csv`, but rely on the header row rather than the filename alone to determine artifact type.
+    **Action:** Locate the input CSV and classify it before any review work begins.
+    - Locate the input CSV. Prefer filenames such as `<device-name>-threat-model.csv` and `<device-name>-threat-model-review.csv`, but rely on the header row rather than the filename alone to determine artifact type.
     - Classify the artifact as one of: raw TMT export, partially reviewed file, or completed review file.
     - **Blocking gate:** If no CSV is available, ask the user to provide the exported TMT CSV before continuing.
     - Do not proceed to step 3 until the artifact type is confirmed.
 
-    > [!NOTE]
-    > Save intermediate results as needed to ensure continuity across steps.
-
-3. Detect the native TMT columns
+3. Detect native TMT columns
 
     **Action:** Identify and record the native TMT column set present in the input file.
-
     - Confirm that the header row contains native TMT fields. Expect fields such as:
-
       - `Id`
       - `Title`
       - `Category`
@@ -254,16 +273,10 @@ Use the [BSI Dringlichkeit / Eintrittspotenzial](https://www.bsi.bund.de/DE/Serv
 
     - Record the exact source header spelling and column order as found in the file. Use this record for all subsequent output.
 
-    > [!NOTE]
-    > Save intermediate results as needed to ensure continuity across steps.
-
-4. Detect review columns already present
+4. Detect existing review columns
 
     **Action:** Determine which review columns, if any, are already appended to the native TMT columns.
-
-    - Locate the review CSV. Prefer filenames such as `<device-name>-threat-model-review.csv`, but rely on the header row rather than the filename alone to determine artifact type.
-    - Check whether any of the following review fields are present:
-
+    - Check whether any of the following review fields are present in the CSV identified in step 2:
       - `MITRE ID`
       - `CWE ID`
       - `CVSS v4.0 Vector`
@@ -275,120 +288,155 @@ Use the [BSI Dringlichkeit / Eintrittspotenzial](https://www.bsi.bund.de/DE/Serv
     - If those columns already exist, update them in place for each row rather than adding duplicate columns.
     - If they are absent, append them to the right of the last native TMT column in the output file.
 
-5. Preserve the raw export non-destructively
+5. Establish preservation constraints
 
-    **Action:** Lock native TMT columns against modification before beginning row review.
-
+    **Action:** Lock descriptive TMT columns against modification before beginning row review.
     - Do not delete any native TMT column.
-    - Do not overwrite the values in `Title`, `Category`, `Description`, `Priority`, or `Interaction` with rewritten text.
+    - Do not overwrite the values in `Title`, `Category`, `Description`, or `Interaction` with rewritten text.
+    - The operational fields `State`, `Priority`, and `Justification` may be updated during row review (steps 8–10) as these reflect analyst decisions rather than original TMT-generated content.
 
-    > [!NOTE]
-    > Save intermediate results as needed to ensure continuity across steps.
+6. Establish evidence thresholds
 
-6. Review each row
+    **Action:** Define what evidence is required before filling analyst fields.
+    - Do not assign `Not Applicable` unless the row conflicts with an architecture fact visible in the diagram, TM7 model, or provided documentation. Name that fact in `Justification`.
+    - Do not assign MITRE ATT&CK, CWE, CVSS, or `Likelihood of Exploit` from the STRIDE category or title alone. Require support from the modeled protocol, interface behavior, privilege boundary, or component capability.
+    - Do not bulk-apply a single score, likelihood, or state to every row in an interaction family without checking whether the specific row changes the target, impact path, or exploit preconditions.
+    - If evidence is insufficient, prefer `Needs Investigation` and blank review fields over a templated or forced value.
+
+    **Common Not Applicable Patterns for OT/ICS:**
+
+    > Use these patterns as guidance for efficiently classifying structurally inapplicable threats. Always cite the specific architectural fact in the justification.
+
+    | Pattern                                  | Applicable Threat Types                         | Justification Template                                                                                                  |
+    | ---------------------------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+    | Passive hardware (motor, valve, sensor)  | Impersonation, code execution, memory tampering | `<Component> is a passive <actuator/sensor> with no execution context or identity. Cannot <impersonate/execute code>.`  |
+    | Analog signal path                       | Replay, collision, packet-based attacks         | `<Interface> transmits continuous analog signals, not discrete messages. <Threat type> requires packet-based protocol.` |
+    | Point-to-point serial (RS-232, UART)     | Collision attacks, data overlap                 | `<Interface> is point-to-point serial. No packet reassembly or shared medium. Collision attacks do not apply.`          |
+    | Internal device flow (MCU to peripheral) | External spoofing, network sniffing             | `Internal <bus type> flow within device boundary. No external access path for <threat type>.`                           |
+    | Privilege direction mismatch             | Lower impersonating higher                      | `<Higher component> has greater privilege than <lower component>. Impersonation yields no privilege escalation.`        |
+    | Local GUI interaction                    | Network sniffing, remote interruption           | `GUI interaction is local to workstation. No network data flow to intercept.`                                           |
+    | Development/debug interface (production) | Debug session interruption                      | `<Debug interface> is development tool. Interruption affects development session, not production operation.`            |
+    | I2C/SPI slave device                     | Master impersonation, autonomous action         | `<Slave device> responds only to master requests. No autonomous action or impersonation capability.`                    |
+
+### 4.2. Row-by-Row Review
+
+7. Read each row
 
     **Action:** For every row in the dataset, read all native TMT fields together as a single unit before forming any judgment.
-
     - `Title`
-      > Read as the initial threat statement generated by TMT. Interpret together with `Description`.
-
+      > The initial threat statement generated by TMT. Interpret together with `Description`.
     - `Category`
       > The STRIDE classification assigned by TMT. Use it to anchor the threat type.
-
     - `Interaction`
       > The data flow or trust relationship associated with the threat. Use it to determine the attack vector and applicable controls.
-
     - `Description`
       > Additional detail about the threat consequences and high-level mitigations. Read together with `Category` and `Title`.
-
     - `Priority`
-      > The initial risk ranking assigned by TMT. Treat as a reference point only, the analyst review in steps 7–14 may revise it.
-
+      > The initial risk ranking assigned by TMT. Treat as a reference point only; the analyst review in steps 8–15 may revise it.
     - `State`
-      > The current review status of the threat. Update it in step 7.
+      > The current review status of the threat. Update it in step 8.
 
-    Repeat steps 7–15 for every row before writing the output in step 16.
+    Perform steps 8–15 for every row before proceeding to step 16. Leave review fields blank when sufficient evidence is not available; a blank is correct when the evidence is insufficient, and a forced mapping is not.
 
-    > [!NOTE]
-    > Save intermediate results as needed to ensure continuity across steps.
+    **Interaction Family Batching:**
+    > When the dataset contains many rows for the same interaction (e.g., multiple STRIDE categories for `PLC to RS-485 (Modbus RTU)`), process them as a group to maintain consistency. However, each row still requires individual assessment of:
+    >
+    > - Whether the specific STRIDE category applies to this interface (e.g., collision attacks may not apply to point-to-point serial)
+    > - The appropriate CVSS impact metrics for this specific threat type
+    > - Whether the row is `Not Applicable` due to architectural constraints
 
-7. Update each `State`
+8. Review or update `State`
 
-    **Action:** Set the `State` field for each row to reflect the outcome of the analyst review.
+   **Action:** Set the `State` field for each row based on `Title`, `Category`, `Interaction`, `Description`, and the analyst's review of the threat.
+   - Use the state vocabulary already present in the file.
+     - `Not Started`
+       > The threat has not yet been reviewed by an analyst. This is the default state for all rows in a raw TMT export.
+     - `Needs Investigation`
+       > The threat requires further analysis, information gathering, or clarification before a decision can be made.
+     - `Mitigated`
+       > The threat is accepted but mitigated through design changes, compensating controls, or operational measures.
+     - `Not Applicable`
+       > The threat is not relevant to the system context or is already fully addressed by existing controls.
+     - `Transferred`
+       > The risk is accepted but transferred to a third party (e.g., insurance, vendor responsibility).
 
-    - Use the state vocabulary already present in the file.
-    - Common values include:
+   - Default decision rule:
+     - Use `Needs Investigation` when the threat is plausible but controls, exploitability, or impact cannot yet be confirmed.
+     - Use `Not Applicable` only when the row is contradicted by the architecture or by the semantics of the modeled component.
 
-      - `Not Started`
-      - `Needs Investigation`
-      - `Mitigated`
-      - `Not Applicable`
-      - `Transferred`
+9. Set or update `Priority`
 
-    > [!NOTE]
-    > Save intermediate results as needed to ensure continuity across steps.
-
-8. Update each `Priority`
-
-    **Action:** Revise the `Priority` field for each row if the analyst review justifies a change from the TMT-assigned value.
-
+    **Action:** Revise the `Priority` field for each row based on `Title`, `Category`, `Interaction`, `Description`, and the analyst's review of the threat.
     - Use the priority vocabulary already present in the file.
-    - Common values include:
+     - `Low`
+       > The threat is accepted with minimal concern. No immediate action is required, but it should be monitored for changes.
+     - `Medium`
+       > Mitigation planning should be initiated, and the threat should be tracked in the security backlog.
+     - `High`
+       > The threat is significant and requires prompt mitigation. It should be prioritized in the security backlog and may require escalation.
 
-      - `Low`
-      - `Medium`
-      - `High`
+   - Do not downgrade a row to `Low` solely because the threat is physically local. In OT/ICS systems, local or adjacent access may still be operationally significant.
 
-    > [!NOTE]
-    > Save intermediate results as needed to ensure continuity across steps.
-
-9. Write a `Justification` security-review
+10. Write or update `Justification`
 
     **Action:** Write a concise, technically grounded analyst statement in the `Justification` field for each row.
 
     - State why the threat is accepted, mitigated, transferred, not applicable, or still under investigation.
     - Reference the modeled protocol, interface, trust relationship, validation behavior, or compensating control that informs the decision.
+    - When using `Not Applicable`, name the specific architecture contradiction (e.g., passive sensor, analog signal path, human actor rather than machine endpoint, or no independent execution context).
     - Keep the text brief enough to remain readable in a CSV cell.
 
-    > [!NOTE]
-    > Save intermediate results as needed to ensure continuity across steps.
-
-10. Add MITRE mapping
+11. Map MITRE ATT&CK
 
     **Action:** Populate the `MITRE ID` field for each row when a concrete ATT&CK for ICS technique can be supported by the row contents and justification.
-
     - Record the most relevant ATT&CK for ICS tactic and technique ID (e.g., `T0856`).
-    - Leave the field blank when the threat statement is too generic, ambiguous, or design-level to support a reliable mapping. A blank is correct, a forced mapping is not.
+    - Prefer MITRE ATT&CK for ICS techniques that describe industrial access, command messaging, engineering workstation abuse, controller compromise, inhibit response function, or impair process control.
+    - Leave the field blank when the threat statement is too generic, ambiguous, or design-level to support a reliable mapping. A blank is correct; a forced mapping is not.
 
-    > [!NOTE]
-    > Save intermediate results as needed to ensure continuity across steps.
-
-11. Add CWE classification
+12. Classify CWE
 
     **Action:** Populate the `CWE ID` field for each row when the root weakness is identifiable from the threat statement and justification.
-
     - Prefer the most specific CWE that fits the described weakness.
     - Use comma-separated values when the finding depends on more than one concrete weakness (e.g., `CWE-290, CWE-345`).
+    - Do not assign a CWE when the row is generic but the underlying weakness is still unclear after reviewing the modeled interaction.
     - Leave the field blank when the evidence is insufficient.
 
-    > [!NOTE]
-    > Save intermediate results as needed to ensure continuity across steps.
-
-12. Determine `CVSS v4.0`
+13. Score CVSS v4.0
 
     **Action:** Populate `CVSS v4.0 Vector`, `CVSS v4.0 Score`, and `CVSS v4.0 Severity` together for each row when the exploitability and impact can be assessed.
-
     - All three fields must be populated together or left blank together. Do not record a severity without a vector. Do not record a vector without a score.
     - Derive the score from the [CVSS v4.0 calculator](https://www.first.org/cvss/calculator/4.0) using the modeled attack scenario and justification as input.
     - Record the base score (`0.0`–`10.0`), the severity label (`None`, `Low`, `Medium`, `High`, `Critical`), and the full vector string (e.g., `CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:H/VA:H/SC:N/SI:H/SA:H`).
+    - Do not derive a CVSS vector from the STRIDE category alone. Confirm the actual access path (`AV`), attacker friction (`AC`, `AT`, `UI`), and safety/availability consequences from the modeled interaction.
+    - When the target is a human actor, passive peripheral, or purely analog/mechanical path, only score the row if the exploit scenario and affected digital asset are still technically coherent.
+
+    **OT/ICS Attack Vector Guidelines:**
+    > Select the appropriate attack vector based on the physical and logical access requirements of the modeled interface.
+
+    | Attack Vector     | OT/ICS Scenarios                                                  | Example Interfaces                          |
+    | ----------------- | ----------------------------------------------------------------- | ------------------------------------------- |
+    | `AV:N` (Network)  | IP-connected devices, remote SCADA, cloud-connected gateways      | Modbus/TCP, EtherNet/IP, OPC UA, MQTT       |
+    | `AV:A` (Adjacent) | Shared industrial bus, field network segment, same VLAN           | Modbus RTU (RS-485 bus), PROFIBUS, CAN bus  |
+    | `AV:L` (Local)    | Workstation software, HMI application, local file access          | TROVIS-VIEW, engineering software, local DB |
+    | `AV:P` (Physical) | Direct cable connection, removable debug port, hardware tampering | RS-232, JTAG, SWD, USB, hardware buttons    |
+
+    **Subsequent System Impact (SC/SI/SA) for OT/ICS:**
+    > In OT/ICS environments, compromising one component often affects downstream systems. Use SC/SI/SA to capture cascading effects on the physical process, safety systems, or connected devices.
+
+    | Scenario                                         | SC  | SI  | SA  | Rationale                                                                                                                      |
+    | ------------------------------------------------ | --- | --- | --- | ------------------------------------------------------------------------------------------------------------------------------ |
+    | Compromised PLC affects downstream actuators     | N   | H   | H   | PLC compromise enables unauthorized control of physical process, affecting integrity and availability of actuators and valves. |
+    | Firmware tampering enables lateral movement      | H   | H   | H   | Compromised device can be used to attack other devices on same network segment.                                                |
+    | Debug interface exposes firmware secrets         | H   | N   | N   | Extracted credentials or keys may compromise other devices using shared secrets.                                               |
+    | DoS on communication interface                   | N   | N   | H   | Loss of communication causes upstream PLC to trigger fault handling or fail-safe mode.                                         |
+    | Configuration change via engineering workstation | N   | H   | N   | Modified setpoints propagate to field devices, affecting process integrity.                                                    |
 
     **Mapping:** Map STRIDE categories to CVSS v4 Impact Metrics using the primary impact metrics to determine the base score and severity, and the secondary impact metrics to inform the justification and vector details.
 
     CVSS v4 Vulnerable System Impact Metrics
-
-      - VC = Vulnerable System Confidentiality
-      - VI = Vulnerable System Integrity
-      - VA = Vulnerable System Availability
+    - VC = Vulnerable System Confidentiality
+    - VI = Vulnerable System Integrity
+    - VA = Vulnerable System Availability
 
     | STRIDE Category            | Primary CVSS v4 Impact Metrics | Secondary CVSS v4 Impact Metrics | Confidence      | Rationale                                                                                                                                                                                                                                                                                                                                                                                                                                   |
     | -------------------------- | ------------------------------ | -------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -397,43 +445,38 @@ Use the [BSI Dringlichkeit / Eintrittspotenzial](https://www.bsi.bund.de/DE/Serv
     | **Repudiation**            | **VI**                         | **VC**                           | **Medium-Low**  | CVSS has no explicit non-repudiation or auditability metric. Repudiation is therefore best represented through integrity harm to logs, records, and transaction evidence, with occasional secondary confidentiality implications.                                                                                                                                                                                                           |
     | **Information Disclosure** | **VC**                         | **VI**                           | **High**        | Unauthorized exposure of information is directly a confidentiality impact. Integrity is only indirect or downstream.                                                                                                                                                                                                                                                                                                                        |
     | **Denial of Service**      | **VA**                         | **VI**                           | **High**        | Service degradation or outage is directly an availability impact. Integrity may be secondarily affected where incomplete processing or inconsistent state results.                                                                                                                                                                                                                                                                          |
-    | **Elevation of Privilege** | **VI, VC, VA**                 | **None**                         | **Medium-High** | Privilege gain commonly enables unauthorized modification and unauthorized access, making integrity and confidentiality primary. Availability is often a secondary consequence when elevated rights permit shutdown, deletion, or resource exhaustion. The primary impact depends on the privileges gained: <br>• *Read* access → **Confidentiality**<br>• *Write* access → **Integrity**<br>• *Admin/Execution* access → **Availability**. |
+    | **Elevation of Privilege** | **VI, VC, VA**                 | **None**                         | **Medium-High** | Privilege gain commonly enables unauthorized modification and unauthorized access, making integrity and confidentiality primary. Availability is often a secondary consequence when elevated rights permit shutdown, deletion, or resource exhaustion. The primary impact depends on the privileges gained: <br>• _Read_ access → **Confidentiality**<br>• _Write_ access → **Integrity**<br>• _Admin/Execution_ access → **Availability**. |
 
-    > [!NOTE]
-    > Save intermediate results as needed to ensure continuity across steps.
-
-13. Determine `Likelihood of Exploit`
+14. Determine `Likelihood of Exploit`
 
     **Action:** Populate `Likelihood of Exploit` using the BSI `Dringlichkeit / Eintrittspotenzial` logic when the row provides enough evidence to classify exploit status and exploitation style.
-
     - Add or update a `Likelihood of Exploit` column in the review CSV rather than creating duplicate fields.
     - Use the BSI reference for `Eintrittspotenzial` as the basis: combine exploit status with exploitation style.
     - When the dataset does not explicitly track BSI lifecycle states such as `theoretisch`, `aktiv`, or `Exploit veröffentlicht`, treat concretely assessable threats as `ausnutzbar` unless the row justification provides stronger evidence.
     - Determine exploitation style as follows:
-
       - `manual` when the scenario depends on physical presence, user participation, high attack complexity, or explicit attack prerequisites. In practice this usually aligns with CVSS indicators such as `AV:P`, `UI:P`, `AC:H`, or `AT:P`.
       - `automated` when the scenario is adjacent `AV:A` or network-reachable `AV:N`, low complexity `AC:L`, and does not require additional prerequisites `AT:N` or user participation `UI:N`.
       - `self-replicating` when the attack can propagate without user interaction or additional prerequisites, often indicated by `AV:N`, `AC:L`, `AT:N`, `UI:N`, and a scenario that describes wormable or bot-like behavior.
 
     - Only assign `High` or `Critical` when the row justification explicitly supports a stronger BSI status such as active exploitation or a published exploit.
+    - Do not infer `High` merely from severe impact, likelihood must come from exploitability evidence, not consequence severity.
     - If the evidence is insufficient to determine either exploit status or exploitation style, leave the field blank rather than forcing a value.
 
     **Mapping:** Map CVSS Exploitability Metrics and analyst justification to BSI Likelihood of Exploit categories. Use the following table as a reference, but prioritize the analyst justification when it conflicts with CVSS indicators. When in doubt, default to `ausnutzbar` with `manual` style unless stronger evidence is present.
 
-    | Status / Method                            | Manual (Manuell)                                                                          | Automated (Automatisch)                                                                | Self-Replicating (Replizierend)                                                             |
-    | ------------------------------------------ | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-    | Theoretical (Theoretisch)                  | Info (sehr gering)<br>CVSS:4.0/AV:P/AC:H/AT:P/PR:N/UI:A/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N/E:U | Low (gering)<br>CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N/E:U    | Medium (mittel)<br>CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N/E:U      |
-    | Exploitable (Ausnutzbar)                   | Low (gering)<br>CVSS:4.0/AV:L/AC:H/AT:P/PR:N/UI:A/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N/E:P       | Medium (mittel)<br>CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N/E:P | High (hoch)<br>CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N/E:P          |
-    | Active (Aktiv)                             | Medium (mittel)<br>CVSS:4.0/AV:L/AC:H/AT:P/PR:N/UI:A/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N/E:A    | High (hoch)<br>CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N/E:A     | High (hoch)<br>CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N/E:A          |
-    | Exploit Published (Exploit Veröffentlicht) | Medium (mittel)<br>CVSS:4.0/AV:L/AC:H/AT:P/PR:N/UI:A/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N/E:A    | High (hoch)<br>CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N//VC:N/VI:N/VA:N/SC:N/SI:N/SA:NE:A     | Critical (sehr hoch)<br>CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N/E:A |
-
     > [!NOTE]
-    > Save intermediate results as needed to ensure continuity across steps.
+    > The likelihood mapping uses only CVSS v4.0 exploitability metrics (`AV`, `AC`, `AT`, `UI`, `E`). Impact metrics are excluded since likelihood derives from exploit feasibility, not consequence severity. CVSS v4.0 does not distinguish `Active (Aktiv)` from `Exploit Published (Exploit Veröffentlicht)` (both map to `E:A`) so analyst justification must preserve the BSI state.
 
-14. Determine `Risk Prioritization`
+    | Status / Method                            | Manual (Manuell)                    | Automated (Automatisch)             | Self-Replicating (Replizierend)       |
+    | ------------------------------------------ | ----------------------------------- | ----------------------------------- | ------------------------------------- |
+    | Theoretical (Theoretisch)                  | Info<br>`AV:P/AC:H/AT:P/UI:P/E:U`   | Low<br>`AV:A/AC:L/AT:N/UI:N/E:U`    | Medium<br>`AV:N/AC:L/AT:N/UI:N/E:U`   |
+    | Exploitable (Ausnutzbar)                   | Low<br>`AV:L/AC:H/AT:P/UI:P/E:P`    | Medium<br>`AV:A/AC:L/AT:N/UI:N/E:P` | High<br>`AV:N/AC:L/AT:N/UI:N/E:P`     |
+    | Active (Aktiv)                             | Medium<br>`AV:L/AC:H/AT:P/UI:P/E:A` | High<br>`AV:A/AC:L/AT:N/UI:N/E:A`   | High<br>`AV:N/AC:L/AT:N/UI:N/E:A`     |
+    | Exploit Published (Exploit Veröffentlicht) | Medium<br>`AV:L/AC:H/AT:P/UI:P/E:A` | High<br>`AV:A/AC:L/AT:N/UI:N/E:A`   | Critical<br>`AV:N/AC:L/AT:N/UI:N/E:A` |
+
+15. Determine `Risk Prioritization`
 
     **Action:** Populate Risk-Based Vulnerability Prioritization by combining `CVSS v4.0 Severity` and `Likelihood of Exploit` severity for each row.
-
     - Add or update a `Risk Prioritization` column in the review CSV rather than creating duplicate fields.
     - Only assign `Risk Prioritization` when both `CVSS v4.0 Severity` and `Likelihood of Exploit` are present.
     - Prioritization levels: `Info` < `Low` < `Medium` < `High` < `Critical`.
@@ -448,28 +491,19 @@ Use the [BSI Dringlichkeit / Eintrittspotenzial](https://www.bsi.bund.de/DE/Serv
     | High                  | Low    | Medium | High   | High     | Critical |
     | Critical              | Medium | High   | High   | Critical | Critical |
 
-    > [!NOTE]
-    > Save intermediate results as needed to ensure continuity across steps.
+### 4.3. Output
 
-15. Preserve blanks intentionally
+16. Validate and produce the reviewed CSV
 
-    **Action:** Leave review fields empty when sufficient evidence is not available.
+    **Action:** Validate the analyst decisions, then write the complete enriched dataset to the output file.
 
-    - A blank `MITRE ID`, `CWE ID`, `CVSS`, `Likelihood of Exploit`, or `Risk Prioritization` field is correct when the evidence is insufficient. Do not force a mapping or score to fill the cell.
-
-    > [!NOTE]
-    > Save intermediate results as needed to ensure continuity across steps.
-
-16. Produce the reviewed CSV
-
-    **Action:** Write the complete enriched dataset to the output file.
-
+    - Review at least one representative row from each major interaction family before saving.
+    - Check that `Not Applicable` rows are justified by architecture facts rather than by generic skepticism toward TMT output.
+    - Check that CVSS and likelihood values are absent where evidence is weak, rather than populated with repeated template values.
+    - Check that identical scores across many rows are defensible from the modeled scenario and not simply inherited from the STRIDE category.
     - Save the result as `<device-name>-threat-model-review.csv`.
     - Preserve the delimiter, quoting style, encoding, and header order from the source file.
     - Verify that all native TMT columns are present and unmodified in the output before saving.
-
-    > [!NOTE]
-    > Save intermediate results as needed to ensure continuity across steps.
 
 ## 5. Deliverables
 
@@ -477,7 +511,21 @@ When asked to perform or assist with TMT threat review, produce the following as
 
 1. Reviewed CSV
 
-   A completed `<device-name>-threat-model-review.csv` that preserves the native TMT export and appends or updates review fields.
+    A completed `<device-name>-threat-model-review.csv` that preserves the native TMT export and appends or updates review fields.
+
+2. Review Summary
+
+    A short Markdown summary of the review that lists the highest-risk interactions, the main assumptions, rows marked `Not Applicable` by rationale category, and the main evidence gaps that keep rows in `Needs Investigation`.
+
+    **Recommended Summary Sections:**
+    - Executive Summary with threat counts by state and risk level
+    - Highest Risk Findings table with ID, Threat, Interface, CVSS, Risk Factor
+    - Primary Attack Vectors with techniques, impact, and mitigations
+    - Not Applicable Rationale Summary by pattern category
+    - MITRE ATT&CK for ICS Mapping table
+    - CWE Weakness Classification summary
+    - Assumptions and Evidence Gaps
+    - Recommended Mitigations by priority (Immediate, Short-Term, Long-Term)
 
 ## 6. Style Guide
 
@@ -501,6 +549,9 @@ When asked to perform or assist with TMT threat review, produce the following as
 
 - Keep justifications compact
   > A good justification is specific, technically grounded, and brief enough to remain readable in a CSV cell.
+
+- Prefer architecture-backed analyst judgment over pattern matching
+  > Repeated TMT rows may be reviewed efficiently, but final state, CWE, CVSS, and likelihood decisions must still be tied to the actual modeled asset, trust boundary, and exploit path.
 
 ## 7. Example
 
@@ -548,7 +599,7 @@ When asked to perform or assist with TMT threat review, produce the following as
 #### 7.1.2. Depth Layer 1 (Process)
 
 - `<device-name>-threat-model.md`
-  > A depth layer 0 (system) diagram showing the internal components, interfaces, and data flows within the depth layer 1 (process) device boundary.
+  > A depth layer 1 (process) diagram showing the internal components, interfaces, and data flows within the device boundary.
 
   > [!IMPORTANT]
   > Be precise in technical labeling of components, interfaces, and data flows to support accurate threat review and mapping.
