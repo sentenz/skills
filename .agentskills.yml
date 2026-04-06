@@ -62,6 +62,12 @@ skills:
     languages: [go, golang]
     description: API documentation creation using godoc conventions
 
+  # Security Skills
+  - name: threat-modeling
+    path: skills/threat-modeling
+    languages: [markdown, yaml, json]
+    description: Structured threat modeling for software systems using STRIDE, PASTA, LINDDUN, CVSS v4.0, MITRE ATT&CK, and CWE
+
 # Integration settings
 integration:
   cli_version: ">=1.0.0"
