@@ -35,7 +35,8 @@ This repository provides reusable agent skills and configuration templates for A
 │       ├── go-unit-testing/     # Go unit testing skill
 │       ├── go-fuzz-testing/     # Go fuzz testing skill
 │       ├── go-benchmark-testing/  # Go benchmark testing skill
-│       └── go-api-documentation/  # Go API documentation skill
+│       ├── go-api-documentation/  # Go API documentation skill
+│       └── threat-modeling/     # Threat modeling skill
 ├── AGENTS.md                    # Template for AI agent instructions
 └── README.md                    # This file
 ```
@@ -82,6 +83,11 @@ Agent skills are modular capabilities documented in individual `SKILL.md` files.
 
 - **[Go API Documentation](skills/go-api-documentation/SKILL.md)**
   > Generates API documentation using godoc conventions and best practices for Go projects.
+
+#### 3.1.3. Security Skills
+
+- **[Threat Modeling](skills/threat-modeling/SKILL.md)**
+  > Performs structured threat modeling for software systems, web applications, APIs, and cloud architectures using STRIDE, PASTA, LINDDUN, CVSS v4.0, MITRE ATT&CK Enterprise, and CWE.
 
 ## 4. AGENTS.md Template
 
