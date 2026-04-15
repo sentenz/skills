@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/sentenz/skills/compare/v1.4.0...v1.4.1) (2026-04-15)
+
+
+### Bug Fixes
+
+* remand skill name from threat-modeling-tmt to threat-modeling-ics ([30b1411](https://github.com/sentenz/skills/commit/30b1411fe668f79f18232fed6bac057e84875ba3))
+
 # [1.4.0](https://github.com/sentenz/skills/compare/v1.3.0...v1.4.0) (2026-04-15)
 
 
