@@ -2,17 +2,17 @@
 
 Agent skills are modular capabilities that AI agents can utilize to perform specific tasks within a project. Skills enhance the functionality of AI agents by providing them with specialized context knowledge and tools.
 
-- [1. Details](#1-details)
-  - [1.1. Agent Skills](#11-agent-skills)
-    - [1.1.1. C++ Skills](#111-c-skills)
-    - [1.1.2. Go Skills](#112-go-skills)
+- [1. Agent Skills](#1-agent-skills)
+  - [1.1. C++ Skills](#11-c-skills)
+  - [1.2. Go Skills](#12-go-skills)
+  - [1.3. Threat Modeling Skills](#13-threat-modeling-skills)
 - [2. References](#2-references)
 
-## 1.1. Agent Skills
+## 1. Agent Skills
 
 Skills are documented in individual `SKILL.md` files located in appropriate subdirectories following the [Agent Skills](https://agentskills.io/specification) specification, containing metadata and descriptions of their purpose, usage, and integration within the project.
 
-### 1.1.1. C++ Skills
+### 1.1. C++ Skills
 
 - [C++ Unit Testing](cpp-unit-testing/SKILL.md)
   > Unit test creation using GoogleTest (GTest) framework with In-Got-Want, Table-Driven Testing, and AAA patterns.
@@ -29,7 +29,7 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 - [C++ API Documentation](cpp-api-documentation/SKILL.md)
   > API documentation creation using Doxygen-compatible comments for C++ header files.
 
-### 1.1.2. Go Skills
+### 1.2. Go Skills
 
 - [Go Unit Testing](go-unit-testing/SKILL.md)
   > Unit test creation for Go projects using the standard testing package with consistent software testing patterns.
@@ -43,10 +43,10 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 - [Go API Documentation](go-api-documentation/SKILL.md)
   > API documentation creation using godoc conventions and best practices for Go projects.
 
-### 1.1.2. Threat Modeling Skills
+### 1.3. Threat Modeling Skills
 
-- [Threat Modeling ICS](TODO)
-  > TODO
+- [Threat Modeling ICS](threat-modeling-ics/SKILL.md)
+  > Threat modeling for OT/ICS systems using Microsoft TMT, STRIDE, MITRE ATT&CK for ICS, CWE, and CVSS v4.0.
 
 ## 2. References
 
