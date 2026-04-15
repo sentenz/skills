@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.3.0](https://github.com/sentenz/skills/compare/v1.2.0...v1.3.0) (2026-04-15)
+
+
+### Features
+
+* update SKILL.md for Threat Modeling ([52580e4](https://github.com/sentenz/skills/commit/52580e473f5f87a939910c929bf0e83d29d7e6e9))
+
 # [1.2.0](https://github.com/sentenz/skills/compare/v1.1.0...v1.2.0) (2026-03-27)
 
 
