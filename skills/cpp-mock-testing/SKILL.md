@@ -28,18 +28,20 @@ metadata:
 Instructions for AI coding agents on automating mock test creation using Google Mock (GMock) with consistent software testing patterns in this C++ project.
 
 - [1. Benefits](#1-benefits)
-- [2. Patterns](#2-patterns)
-- [3. Workflow](#3-workflow)
-- [4. Commands](#4-commands)
-- [5. Style Guide](#5-style-guide)
-- [6. Template](#6-template)
-  - [6.1. File Header Template](#61-file-header-template)
-  - [6.2. Mock Class Template](#62-mock-class-template)
-  - [6.3. Table-Driven Mock Test Template](#63-table-driven-mock-test-template)
-  - [6.4. Sequence Verification Template](#64-sequence-verification-template)
-  - [6.5. Exception Testing Template](#65-exception-testing-template)
-  - [6.6. NiceMock Template](#66-nicemock-template)
-- [7. References](#7-references)
+- [2. Principles](#2-principles)
+  - [2.1. FIRST](#21-first)
+- [3. Patterns](#3-patterns)
+- [4. Workflow](#4-workflow)
+- [5. Commands](#5-commands)
+- [6. Style Guide](#6-style-guide)
+- [7. Template](#7-template)
+  - [7.1. File Header Template](#71-file-header-template)
+  - [7.2. Mock Class Template](#72-mock-class-template)
+  - [7.3. Table-Driven Mock Test Template](#73-table-driven-mock-test-template)
+  - [7.4. Sequence Verification Template](#74-sequence-verification-template)
+  - [7.5. Exception Testing Template](#75-exception-testing-template)
+  - [7.6. NiceMock Template](#76-nicemock-template)
+- [8. References](#8-references)
 
 ## 1. Benefits
 
@@ -55,7 +57,28 @@ Instructions for AI coding agents on automating mock test creation using Google 
 - Flexibility
   > Supports various testing scenarios including strict mocks, nice mocks, and sequence verification for complex interactions.
 
-## 2. Patterns
+## 2. Principles
+
+### 2.1. FIRST
+
+The `FIRST` principles for mock testing focus on creating effective and maintainable tests.
+
+- Fast
+  > Mock tests should execute quickly by replacing slow dependencies (network, file system, databases) with fast mock implementations to provide rapid feedback.
+
+- Independent
+  > Each mock test should be self-contained with its own mock setup and not rely on the state or behavior of other tests.
+
+- Repeatable
+  > Mock tests should produce deterministic results every time by controlling dependency behavior through expectations and return values.
+
+- Self-Validating
+  > Mock tests should have clear pass/fail outcomes with automatic verification of mock expectations and assertion results.
+
+- Timely
+  > Mock tests should be written alongside production code to validate the interaction contracts between components.
+
+## 3. Patterns
 
 - Mock Objects
   > Simulated objects that mimic the behavior of real objects in controlled ways. They verify interactions between the unit under test and its dependencies.
@@ -72,7 +95,7 @@ Instructions for AI coding agents on automating mock test creation using Google 
 - Exception Injection
   > Using mocks to simulate error conditions by throwing exceptions, enabling tests to verify error handling logic.
 
-## 3. Workflow
+## 4. Workflow
 
 1. Identify Dependencies
 
@@ -118,7 +141,7 @@ Instructions for AI coding agents on automating mock test creation using Google 
 
     Structure all tests using the template pattern below.
 
-## 4. Commands
+## 5. Commands
 
 | Command                             | Description                                                                         |
 | ----------------------------------- | ----------------------------------------------------------------------------------- |
@@ -126,7 +149,7 @@ Instructions for AI coding agents on automating mock test creation using Google 
 | `make cmake-gcc-test-unit-run`      | Execute tests via ctest (mock tests are part of unit tests)                         |
 | `make cmake-gcc-test-unit-coverage` | Execute tests via ctest  and generate coverage reports including mock test coverage |
 
-## 5. Style Guide
+## 6. Style Guide
 
 - Test Framework
   > Use [Google Mock (GMock)](https://google.github.io/googletest/gmock_for_dummies.html) framework via `#include <gmock/gmock.h>` and `#include <gtest/gtest.h>`.
@@ -177,11 +200,11 @@ Instructions for AI coding agents on automating mock test creation using Google 
 - Assertions
   > Use `EXPECT_*` macros to allow all test cases to run. Mock expectations are automatically verified at the end of each test.
 
-## 6. Template
+## 7. Template
 
 Use these templates for new mock tests. Replace placeholders with actual values.
 
-### 6.1. File Header Template
+### 7.1. File Header Template
 
 ```cpp
 #include <gmock/gmock.h>
@@ -198,7 +221,7 @@ using namespace <namespace>;
 using namespace ::testing;
 ```
 
-### 6.2. Mock Class Template
+### 7.2. Mock Class Template
 
 ```cpp
 /**
@@ -212,7 +235,7 @@ public:
 };
 ```
 
-### 6.3. Table-Driven Mock Test Template
+### 7.3. Table-Driven Mock Test Template
 
 ```cpp
 TEST(<Module>Test, <FunctionName>WithMock)
@@ -274,7 +297,7 @@ TEST(<Module>Test, <FunctionName>WithMock)
 }
 ```
 
-### 6.4. Sequence Verification Template
+### 7.4. Sequence Verification Template
 
 ```cpp
 TEST(<Module>Test, <FunctionName>WithSequence)
@@ -296,7 +319,7 @@ TEST(<Module>Test, <FunctionName>WithSequence)
 }
 ```
 
-### 6.5. Exception Testing Template
+### 7.5. Exception Testing Template
 
 ```cpp
 TEST(<Module>Test, <FunctionName>ThrowsOnError)
@@ -314,7 +337,7 @@ TEST(<Module>Test, <FunctionName>ThrowsOnError)
 }
 ```
 
-### 6.6. NiceMock Template
+### 7.6. NiceMock Template
 
 ```cpp
 TEST(<Module>Test, <FunctionName>WithNiceMock)
@@ -339,7 +362,7 @@ TEST(<Module>Test, <FunctionName>WithNiceMock)
 }
 ```
 
-## 7. References
+## 8. References
 
 - GoogleTest [Mocking for Dummies](https://google.github.io/googletest/gmock_for_dummies.html) guide.
 - GoogleTest [Mocking Cookbook](https://google.github.io/googletest/gmock_cook_book.html) guide.

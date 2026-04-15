@@ -28,21 +28,23 @@ metadata:
 Instructions for AI coding agents on automating benchmark test creation using consistent software testing patterns in this Go project.
 
 - [1. Benefits](#1-benefits)
-- [2. Patterns](#2-patterns)
-  - [2.1. Microbenchmarking](#21-microbenchmarking)
-  - [2.2. Comparative Benchmarking](#22-comparative-benchmarking)
-  - [2.3. Memory Profiling](#23-memory-profiling)
-  - [2.4. Statistical Benchmarking](#24-statistical-benchmarking)
-  - [2.5. Sub-benchmarks](#25-sub-benchmarks)
-  - [2.6. Table-Driven Testing](#26-table-driven-testing)
-- [3. Workflow](#3-workflow)
-- [4. Commands](#4-commands)
-- [5. Style Guide](#5-style-guide)
-- [6. Template](#6-template)
-  - [6.1. Multi-Scenario Benchmarks](#61-multi-scenario-benchmarks)
-  - [6.2. Simple Benchmarks](#62-simple-benchmarks)
-  - [6.3. Benchmarks with Validation](#63-benchmarks-with-validation)
-- [7. References](#7-references)
+- [2. Principles](#2-principles)
+  - [2.1. FIRST](#21-first)
+- [3. Patterns](#3-patterns)
+  - [3.1. Microbenchmarking](#31-microbenchmarking)
+  - [3.2. Comparative Benchmarking](#32-comparative-benchmarking)
+  - [3.3. Memory Profiling](#33-memory-profiling)
+  - [3.4. Statistical Benchmarking](#34-statistical-benchmarking)
+  - [3.5. Sub-benchmarks](#35-sub-benchmarks)
+  - [3.6. Table-Driven Testing](#36-table-driven-testing)
+- [4. Workflow](#4-workflow)
+- [5. Commands](#5-commands)
+- [6. Style Guide](#6-style-guide)
+- [7. Template](#7-template)
+  - [7.1. Multi-Scenario Benchmarks](#71-multi-scenario-benchmarks)
+  - [7.2. Simple Benchmarks](#72-simple-benchmarks)
+  - [7.3. Benchmarks with Validation](#73-benchmarks-with-validation)
+- [8. References](#8-references)
 
 ## 1. Benefits
 
@@ -61,33 +63,54 @@ Instructions for AI coding agents on automating benchmark test creation using co
 - Resource Profiling
   > Memory allocation tracking helps identify unnecessary allocations and optimize memory usage patterns.
 
-## 2. Patterns
+## 2. Principles
 
-### 2.1. Microbenchmarking
+### 2.1. FIRST
+
+The `FIRST` principles for benchmark testing focus on creating reliable and meaningful measurements.
+
+- Fast
+  > Benchmark setup and teardown should be minimal and excluded from timing to ensure accurate measurement of the function under test.
+
+- Independent
+  > Each benchmark should be self-contained and not depend on shared state or results from other benchmarks to ensure isolated performance measurements.
+
+- Repeatable
+  > Benchmarks should produce consistent, comparable results across runs and environments by controlling inputs and avoiding non-deterministic operations.
+
+- Self-Validating
+  > Benchmarks should optionally validate results to prevent the compiler from optimizing away the code under measurement.
+
+- Timely
+  > Benchmarks should be established before optimization work begins to provide a performance baseline and measure the impact of changes.
+
+## 3. Patterns
+
+### 3.1. Microbenchmarking
 
 Microbenchmarking is a software testing technique that measures the performance of small, isolated code units to identify performance characteristics and bottlenecks.
 
-### 2.2. Comparative Benchmarking
+### 3.2. Comparative Benchmarking
 
 Comparative Benchmarking is a testing approach that compares the performance of different implementations or algorithms side-by-side using consistent workloads.
 
-### 2.3. Memory Profiling
+### 3.3. Memory Profiling
 
 Memory Profiling is the process of measuring memory allocations and usage patterns during benchmark execution using `-benchmem` flag.
 
-### 2.4. Statistical Benchmarking
+### 3.4. Statistical Benchmarking
 
 Statistical Benchmarking uses multiple iterations to calculate statistical measures (mean, variance) to ensure reliable and reproducible results.
 
-### 2.5. Sub-benchmarks
+### 3.5. Sub-benchmarks
 
 Sub-benchmarks organize related benchmark cases using `b.Run()` to group variations of the same function with different input scenarios.
 
-### 2.6. Table-Driven Testing
+### 3.6. Table-Driven Testing
 
 Table-Driven Testing is a software testing technique in which benchmark cases are organized in a tabular format to systematically cover different input scenarios.
 
-## 3. Workflow
+## 4. Workflow
 
 1. Identify
 
@@ -108,13 +131,13 @@ Table-Driven Testing is a software testing technique in which benchmark cases ar
 
 4. Apply Templates
 
-    Structure all benchmark tests using the [template](#6-template) pattern.
+    Structure all benchmark tests using the [template](#7-template) pattern.
 
 5. Baseline Measurements
 
     Establish performance baselines by running benchmarks on stable code before making changes.
 
-## 4. Commands
+## 5. Commands
 
 | Command                                                         | Description                                        |
 | --------------------------------------------------------------- | -------------------------------------------------- |
@@ -125,7 +148,7 @@ Table-Driven Testing is a software testing technique in which benchmark cases ar
 | `go test -bench=. -benchtime=10s ./pkg/percent`                 | Run benchmarks for a specific duration             |
 | `benchstat old.txt new.txt`                                     | Compare benchmark results before and after changes |
 
-## 5. Style Guide
+## 6. Style Guide
 
 - Test Framework
   > Use the standard Go `testing` package with `testing.B` for benchmark tests.
@@ -151,11 +174,11 @@ Table-Driven Testing is a software testing technique in which benchmark cases ar
 - Result Validation
   > Optionally validate results in benchmarks to prevent compiler optimizations from eliminating dead code.
 
-## 6. Template
+## 7. Template
 
 Use this template for new benchmark test functions. Replace placeholders with actual values and adjust as needed for the use case.
 
-### 6.1. Multi-Scenario Benchmarks
+### 7.1. Multi-Scenario Benchmarks
 
 For benchmarking multiple scenarios or input variations, use sub-benchmarks with table-driven approach.
 
@@ -195,7 +218,7 @@ func Benchmark<FunctionName>(b *testing.B) {
 }
 ```
 
-### 6.2. Simple Benchmarks
+### 7.2. Simple Benchmarks
 
 For benchmarking a single scenario, use a simple loop without sub-benchmarks.
 
@@ -213,7 +236,7 @@ func Benchmark<FunctionName>(b *testing.B) {
 }
 ```
 
-### 6.3. Benchmarks with Validation
+### 7.3. Benchmarks with Validation
 
 For benchmarks that need to prevent compiler optimizations, store results in package-level variables.
 
@@ -236,7 +259,7 @@ func Benchmark<FunctionName>(b *testing.B) {
 }
 ```
 
-## 7. References
+## 8. References
 
 - Go [Benchmarks](https://pkg.go.dev/testing#hdr-Benchmarks) documentation.
 - Go [testing.B](https://pkg.go.dev/testing#B) package documentation.
