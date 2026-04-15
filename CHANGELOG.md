@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.4.0](https://github.com/sentenz/skills/compare/v1.3.0...v1.4.0) (2026-04-15)
+
+
+### Features
+
+* add FIRST principle to testing skill files ([911b87e](https://github.com/sentenz/skills/commit/911b87ebbdcec91adb36562d991366487228c1e8))
+
 # [1.3.0](https://github.com/sentenz/skills/compare/v1.2.0...v1.3.0) (2026-04-15)
 
 
