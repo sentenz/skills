@@ -28,23 +28,25 @@ metadata:
 Instructions for AI coding agents on automating unit test creation using consistent software testing patterns in this Go project.
 
 - [1. Benefits](#1-benefits)
-- [2. Patterns](#2-patterns)
-  - [2.1. In-Got-Want](#21-in-got-want)
-  - [2.2. Table-Driven Testing](#22-table-driven-testing)
-  - [2.3. Data-Driven Testing (DDT)](#23-data-driven-testing-ddt)
-  - [2.4. Arrange, Act, Assert (AAA)](#24-arrange-act-assert-aaa)
-  - [2.5. Test Fixtures](#25-test-fixtures)
-- [3. Workflow](#3-workflow)
-- [4. Commands](#4-commands)
-- [5. Style Guide](#5-style-guide)
-- [6. Template](#6-template)
-  - [6.1. File Header Template](#61-file-header-template)
-  - [6.2. Table-Driven Test Template](#62-table-driven-test-template)
-  - [6.3. Test Fixture Template](#63-test-fixture-template)
-  - [6.4. Error Test Template](#64-error-test-template)
-  - [6.5. Boundary Value Test Template](#65-boundary-value-test-template)
-  - [6.6. Data-Driven Test Template (JSON)](#66-data-driven-test-template-json)
-- [7. References](#7-references)
+- [2. Principles](#2-principles)
+  - [2.1. FIRST](#21-first)
+- [3. Patterns](#3-patterns)
+  - [3.1. In-Got-Want](#31-in-got-want)
+  - [3.2. Table-Driven Testing](#32-table-driven-testing)
+  - [3.3. Data-Driven Testing (DDT)](#33-data-driven-testing-ddt)
+  - [3.4. Arrange, Act, Assert (AAA)](#34-arrange-act-assert-aaa)
+  - [3.5. Test Fixtures](#35-test-fixtures)
+- [4. Workflow](#4-workflow)
+- [5. Commands](#5-commands)
+- [6. Style Guide](#6-style-guide)
+- [7. Template](#7-template)
+  - [7.1. File Header Template](#71-file-header-template)
+  - [7.2. Table-Driven Test Template](#72-table-driven-test-template)
+  - [7.3. Test Fixture Template](#73-test-fixture-template)
+  - [7.4. Error Test Template](#74-error-test-template)
+  - [7.5. Boundary Value Test Template](#75-boundary-value-test-template)
+  - [7.6. Data-Driven Test Template (JSON)](#76-data-driven-test-template-json)
+- [8. References](#8-references)
 
 ## 1. Benefits
 
@@ -60,9 +62,30 @@ Instructions for AI coding agents on automating unit test creation using consist
 - Debuggability
   > Scoped traces and detailed assertion messages pinpoint failures quickly during continuous integration and local testing.
 
-## 2. Patterns
+## 2. Principles
 
-### 2.1. In-Got-Want
+### 2.1. FIRST
+
+The `FIRST` principles for unit testing focus on creating effective and maintainable tests.
+
+- Fast
+  > Unit tests should execute quickly to provide rapid feedback during development and continuous integration.
+
+- Independent
+  > Each unit test should be self-contained and not rely on the state or behavior of other tests.
+
+- Repeatable
+  > Unit tests should produce deterministic results every time they are run, regardless of the environment or order of execution.
+
+- Self-Validating
+  > Unit tests should have clear pass/fail outcomes without requiring manual inspection.
+
+- Timely
+  > Unit tests should be written and executed early in the development process to catch issues as soon as possible.
+
+## 3. Patterns
+
+### 3.1. In-Got-Want
 
 The In-Got-Want pattern structures each test case into three clear sections.
 
@@ -75,7 +98,7 @@ The In-Got-Want pattern structures each test case into three clear sections.
 - Want
   > Specifies the expected output or result that the test is verifying against.
 
-### 2.2. Table-Driven Testing
+### 3.2. Table-Driven Testing
 
 Table-driven testing organizes test cases in a tabular format, allowing multiple scenarios to be defined concisely.
 
@@ -85,7 +108,7 @@ Table-driven testing organizes test cases in a tabular format, allowing multiple
 - Iteration
   > The test framework iterates over each row, executing the same test logic with different data.
 
-### 2.3. Data-Driven Testing (DDT)
+### 3.3. Data-Driven Testing (DDT)
 
 Data-driven testing separates test data from test logic, enabling the same test logic to be executed with multiple sets of input data.
 
@@ -95,7 +118,7 @@ Data-driven testing separates test data from test logic, enabling the same test 
 - Reusability
   > The same test logic can be reused with different datasets, enhancing maintainability and coverage.
 
-### 2.4. Arrange, Act, Assert (AAA)
+### 3.4. Arrange, Act, Assert (AAA)
 
 The AAA pattern structures each test case into three clear phases.
 
@@ -108,7 +131,7 @@ The AAA pattern structures each test case into three clear phases.
 - Assert
   > Verify that the actual output matches the expected output.
 
-### 2.5. Test Fixtures
+### 3.5. Test Fixtures
 
 Test fixtures provide a consistent and reusable setup and teardown mechanism for test cases.
 
@@ -118,7 +141,7 @@ Test fixtures provide a consistent and reusable setup and teardown mechanism for
 - Teardown
   > Clean up resources or reset state after each test.
 
-## 3. Workflow
+## 4. Workflow
 
 1. Identify
 
@@ -140,16 +163,16 @@ Test fixtures provide a consistent and reusable setup and teardown mechanism for
 
 4. Apply Templates
 
-    Structure all tests using the [template](#6-template) pattern.
+    Structure all tests using the [template](#7-template) pattern.
 
-## 4. Commands
+## 5. Commands
 
 | Command                 | Description                                        |
 | ----------------------- | -------------------------------------------------- |
 | `make go-test-unit`     | Execute tests with race detection and JUnit report |
 | `make go-test-coverage` | Generate coverage reports (HTML and XML)           |
 
-## 5. Style Guide
+## 6. Style Guide
 
 - Test Framework
   > Use the standard Go `testing` package.
@@ -172,11 +195,11 @@ Test fixtures provide a consistent and reusable setup and teardown mechanism for
 - Assertions
   > Use `cmp.Equal` for value comparisons and `errors.Is` for error checking.
 
-## 6. Template
+## 7. Template
 
 Use these templates for new unit tests. Replace placeholders with actual values.
 
-### 6.1. File Header Template
+### 7.1. File Header Template
 
 ```go
 // SPDX-License-Identifier: Apache-2.0
@@ -191,7 +214,7 @@ import (
 )
 ```
 
-### 6.2. Table-Driven Test Template
+### 7.2. Table-Driven Test Template
 
 ```go
 func Test<FunctionName>(t *testing.T) {
@@ -256,7 +279,7 @@ func Test<FunctionName>(t *testing.T) {
 }
 ```
 
-### 6.3. Test Fixture Template
+### 7.3. Test Fixture Template
 
 ```go
 // testFixture holds common test state and provides setup/teardown.
@@ -309,7 +332,7 @@ func Test<FunctionName>WithFixture(t *testing.T) {
 }
 ```
 
-### 6.4. Error Test Template
+### 7.4. Error Test Template
 
 ```go
 func Test<FunctionName>Error(t *testing.T) {
@@ -367,7 +390,7 @@ func Test<FunctionName>Error(t *testing.T) {
 }
 ```
 
-### 6.5. Boundary Value Test Template
+### 7.5. Boundary Value Test Template
 
 ```go
 func Test<FunctionName>BoundaryValues(t *testing.T) {
@@ -436,7 +459,7 @@ func Test<FunctionName>BoundaryValues(t *testing.T) {
 }
 ```
 
-### 6.6. Data-Driven Test Template (JSON)
+### 7.6. Data-Driven Test Template (JSON)
 
 ```go
 import (
@@ -528,7 +551,7 @@ func Test<FunctionName>DataDriven(t *testing.T) {
   }
   ```
 
-## 7. References
+## 8. References
 
 - Go [Testing](https://pkg.go.dev/testing) package documentation.
 - Google [go-cmp](https://github.com/google/go-cmp) package documentation.
