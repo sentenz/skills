@@ -18,17 +18,14 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
 ### 1.1. Prerequisites
 
 - [Node.js](https://nodejs.org/)
-
   > JavaScript runtime required to install and run the Skills CLI.
 
   ```bash
   # For linux/amd64
-  curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
   sudo apt install -y nodejs
   ```
 
 - [Skills CLI](https://skills.sh/docs/cli)
-
   > CLI tool for managing AI agent skills in development projects.
 
   ```bash
@@ -38,7 +35,6 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
 ### 1.2. Installation
 
 - Install
-
   > Add skills to a project using the Skills CLI.
 
   ```bash
@@ -46,21 +42,12 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
   skills init
 
   # Add a specific skill
-  skills add cpp-unit-testing
-  ```
-
-- Manual
-
-  > Copy skills directly to your project's `skills/` directory.
-
-  ```bash
-  cp -r path/to/skills/skills/cpp-unit-testing .github/skills/
+  skills add sentenz/skills/cpp-unit-testing
   ```
 
 ### 1.3. Usage
 
 - Manage
-
   > List, update, and validate skills in your project.
 
   ```bash
@@ -74,48 +61,29 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
   skills validate
   ```
 
-- Git Submodule
-
-  > Use a git submodule for dynamic updates from the catalog.
-
-  ```bash
-  # Add this repository as a submodule
-  git submodule add https://github.com/sentenz/skills skills-catalog
-
-  # Update skills from the catalog
-  git submodule update --remote
-  ```
-
 ## 2. Contribute
 
 [CONTRIBUTING.md](CONTRIBUTING.md) provides guidelines and instructions for contributing to the project.
 
 - [Getting Started](CONTRIBUTING.md#1-getting-started)
-
   > Familiarize yourself with the Agent Skills Specification and existing skills before contributing.
 
 - [Adding a New Skill](CONTRIBUTING.md#2-adding-a-new-skill)
-
   > Step-by-step instructions for creating and submitting a new skill to the catalog.
 
 - [Skill Structure](CONTRIBUTING.md#3-skill-structure)
-
   > Template and format for `SKILL.md` files including metadata frontmatter and documentation sections.
 
 - [Metadata Guidelines](CONTRIBUTING.md#4-metadata-guidelines)
-
   > Guidelines for versioning, activation triggers, language/path matching, and usage configuration.
 
 - [Testing Your Skill](CONTRIBUTING.md#5-testing-your-skill)
-
   > Validation steps to verify skill frontmatter, links, activation triggers, and real-world behavior.
 
 - [Submitting Your Changes](CONTRIBUTING.md#6-submitting-your-changes)
-
   > Instructions for forking, branching, committing, and opening a pull request.
 
 - [Guidelines for Good Skills](CONTRIBUTING.md#7-guidelines-for-good-skills)
-
   > Best practices for writing focused, well-documented, and maintainable skills.
 
 ## 3. Troubleshoot
@@ -129,5 +97,3 @@ TODO
 - [AGENTS.md](https://agents.md/) specification page.
 - Agent Skills [Specification](https://agentskills.io/specification) page.
 - [Skills CLI](https://skills.sh/docs/cli) documentation.
-- Sentenz [Template C++](https://github.com/sentenz/template-cpp) repository.
-- Sentenz [Percent](https://github.com/sentenz/percent) repository.
