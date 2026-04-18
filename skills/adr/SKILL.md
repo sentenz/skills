@@ -22,7 +22,7 @@ metadata:
         - "docs/decisions/**/*.md"
         - "**/decisions/**/*.md"
         - "**/adr/**/*.md"
-      prompt_regex: "(?i)(adr|architecture decision|architectural decision|decision record|technical decision|design decision)"
+      prompt_regex: "(?i)(\\badr\\b|architecture decision|architectural decision|decision record|technical decision|design decision)"
   usage:
     load_on_prompt: true
     autodispatch: true
