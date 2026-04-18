@@ -21,7 +21,7 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
   > JavaScript runtime required to install and run the Skills CLI.
 
   ```bash
-  # For linux/amd64
+  # For Debian/Ubuntu (apt-based) on amd64
   sudo apt install -y nodejs
   ```
 
