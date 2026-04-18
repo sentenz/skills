@@ -234,7 +234,7 @@ The References section lists all external and internal resources cited in the AD
   > Use H1 (`#`) for the ADR title, H2 (`##`) for top-level sections (State, Context, etc.), and H3 (`###`) for subsections (individual options under Considered or Decision).
 
 - Decision Drivers
-  > Group decision drivers under a single numbered list item (`1. Decision Drivers`). List each driver as a bullet (`-`) with a blockquote (`>`) providing a one-sentence description. This keeps drivers visually grouped while the parent numbered heading signals they form a prioritised set.
+  > Group decision drivers under a single numbered list item (`1. Decision Drivers`). List each driver as a bullet (`-`) with a blockquote (`>`) providing a one-sentence description.
 
 - Alternatives
   > Each considered option should be a H3 subsection using the option's proper name. Use `- Pros` / `- Cons` with nested blockquote descriptions for each point.
