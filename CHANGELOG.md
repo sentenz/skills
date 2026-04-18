@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.5.0](https://github.com/sentenz/skills/compare/v1.4.1...v1.5.0) (2026-04-18)
+
+
+### Features
+
+* **skills:** add Architecture Decision Records (ADR) skill ([#24](https://github.com/sentenz/skills/issues/24)) ([8bcf445](https://github.com/sentenz/skills/commit/8bcf445ee836933d21dd6696749d8891cd634c23))
+
 ## [1.4.1](https://github.com/sentenz/skills/compare/v1.4.0...v1.4.1) (2026-04-15)
 
 
