@@ -174,6 +174,9 @@ Available skills:
 - [Threat Modeling ICS](skills/threat-modeling-ics/SKILL.md)
   > Performs threat modeling for OT/ICS systems using Microsoft TMT, STRIDE, MITRE ATT&CK for ICS, CWE, and CVSS v4.0.
 
+- [Architecture Decision Records (ADR)](skills/adr/SKILL.md)
+  > Creates and maintains Architecture Decision Records with structured State, Context, Decision, Considered, Consequences, Implementation, and References sections.
+
 ## 8. References
 
 - [AGENTS.md](https://agents.md/) specification page.

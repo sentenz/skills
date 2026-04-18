@@ -48,6 +48,11 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 - [Threat Modeling ICS](threat-modeling-ics/SKILL.md)
   > Threat modeling for OT/ICS systems using Microsoft TMT, STRIDE, MITRE ATT&CK for ICS, CWE, and CVSS v4.0.
 
+### 1.4. Documentation Skills
+
+- [Architecture Decision Records (ADR)](adr/SKILL.md)
+  > Creates and maintains Architecture Decision Records following a structured format with State, Context, Decision, Considered, Consequences, Implementation, and References sections.
+
 ## 2. References
 
 - [AGENTS.md](https://agents.md/) page.
