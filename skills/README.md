@@ -6,6 +6,7 @@ Agent skills are modular capabilities that AI agents can utilize to perform spec
   - [1.1. C++ Skills](#11-c-skills)
   - [1.2. Go Skills](#12-go-skills)
   - [1.3. Threat Modeling Skills](#13-threat-modeling-skills)
+  - [1.4. Documentation Skills](#14-documentation-skills)
 - [2. References](#2-references)
 
 ## 1. Agent Skills
