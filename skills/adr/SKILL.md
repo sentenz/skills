@@ -371,8 +371,8 @@ Architectural Decision Records (ADR) on <brief one-sentence description of the d
 
 ## 7. References
 
-- <Reference 1 title> [link](<url>).
-- <Reference 2 title> [link](<url>).
+- <Reference 1> [title](<url>) page/repo/article.
+- <Reference 2> [title](<url>) page/repo/article.
 ```
 
 ## 7. References
