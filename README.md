@@ -29,7 +29,7 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
   > CLI tool for managing AI agent skills in development projects.
 
   ```bash
-  npm install -g @agentskills/cli
+  npm install -g skills
   ```
 
 ### 1.2. Installation
@@ -42,7 +42,7 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
   skills init
 
   # Add a specific skill
-  skills add sentenz/skills/cpp-unit-testing
+  skills add sentenz/skills
   ```
 
 ### 1.3. Usage
