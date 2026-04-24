@@ -82,8 +82,8 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
 - Compliance Alignment
   > Threat modeling supports the risk assessment and technical documentation expectations of frameworks such as EU CRA, ISO/IEC 27005, NIST SP 800-30, IEC 62443-3-2, and GDPR Article 25 by producing documented evidence of security due diligence, assumptions, mitigations, and residual risk.
 
-- Risk Treatment Decisions
-  > Assigning a concrete treatment option—Reduce, Avoid, Transfer, or Accept—to each identified threat produces traceable evidence that stakeholders have deliberately addressed every risk. This record supports regulatory obligations, stakeholder accountability, and residual risk communication.
+- Risk Treatment Traceability
+  > Assigning a concrete risk treatment decision (`Mitigate`, `Transfer`, `Accept`, or `Avoid`) to each identified threat produces traceable evidence that stakeholders have deliberately addressed every risk. Recording risk treatment supports regulatory obligations, stakeholder accountability, and residual risk communication.
 
 - Tactics, Techniques, and Procedures (TTPs)
   > Modeling realistic attack scenarios based on known adversary TTPs utilizing frameworks such as MITRE ATT&CK ensures that mitigations are effective against actual threats rather than hypothetical ones.
@@ -246,19 +246,22 @@ MITRE ATT&CK for ICS to map a TMT threat to realistic adversary behavior affecti
 
 ### 3.7. Risk Treatment
 
-Risk treatment defines the action taken to address each identified risk after it has been prioritized. Aligned with ISO 31000 and IEC 62443-3-2, every threat row must be assigned a treatment option that is traceable to the risk prioritization evidence.
+Risk treatment defines the disposition decision after each identified risk has been prioritized based on severity and likelihood evaluation.
 
-- Reduce (Mitigate)
-  > Apply security controls, compensating measures, or design changes to lower the likelihood, impact, or both to an acceptable level. Document the specific controls applied and record the residual risk that remains after mitigation. Maps to TMT `State: Mitigated`.
+> [!NOTE]
+> Aligned with ISO 31000 and IEC 62443-3-2, every threat row must be assigned a treatment option that is traceable to the risk prioritization evidence.
 
-- Avoid
-  > Remove or restructure the system element, function, interface, or data flow that introduces the risk so the threat is no longer applicable. Risk avoidance eliminates the risk at its source. Maps to TMT `State: Not Applicable`.
+- Risk Avoidance
+  > Remove or restructure the system element, function, interface, or data flow that introduces the risk so the threat is no longer applicable. Risk avoidance eliminates the risk at its source.
 
-- Transfer (Share)
-  > Shift financial, operational, or legal responsibility for the risk to a third party through insurance, contractual SLA, vendor warranty, or managed service agreements. The technical exposure remains but the consequence is shared or delegated. Maps to TMT `State: Transferred`.
+- Risk Mitigation
+  > Apply security controls, compensating measures, or design changes to reduce the likelihood of exploitability or impact to an acceptable level. Document the specific controls applied and record the residual risk that remains after mitigation.
 
-- Accept (Retain)
-  > Consciously retain the risk without additional controls when the cost or feasibility of treatment exceeds the benefit, or when the risk falls within the defined acceptance threshold. Acceptance must be explicitly documented and approved by the responsible stakeholder. Maps to TMT `State: Accepted`.
+- Risk Acceptance
+  > Consciously retain the risk without additional controls when the cost or feasibility of treatment exceeds the benefit, or when the risk falls within the defined acceptance threshold. Acceptance must be explicitly documented and approved by the responsible stakeholder.
+
+- Risk Transfer
+  > Shift financial, operational, or legal responsibility for the residual risk to a third party through insurance, contractual SLA, vendor warranty, or managed service agreements. The technical exposure remains but the consequence is shared or delegated.
 
 ## 4. Workflow
 
@@ -384,13 +387,11 @@ Risk treatment defines the action taken to address each identified risk after it
 
     **Action:** Assign a risk treatment decision to each row based on the derived `Risk Prioritization`, see [Risk Treatment](#37-risk-treatment).
     - Add or update a `Risk Treatment` column in the review CSV rather than creating duplicate fields.
-    - Only assign `Risk Treatment` when `Risk Prioritization` is present.
-    - Select one of the following treatment options:
-      - `Reduce` — apply or reference the security control or compensating measure that lowers the risk.
-      - `Avoid` — document how the system element, interface, or data flow is removed or restructured to eliminate the risk.
-      - `Transfer` — identify the third party, contract, SLA, or insurance policy that accepts the risk.
-      - `Accept` — document the business rationale, residual risk level, and responsible stakeholder who approves retention.
-    - Align the treatment decision with the TMT `State` field: `Reduce` → `Mitigated`, `Avoid` → `Not Applicable`, `Transfer` → `Transferred`, `Accept` → `Accepted`.
+    - Select one of the following risk treatment preferences based on the order of priority:
+      - `Avoid`: document how the system element, interface, or data flow is removed or restructured to eliminate the risk.
+      - `Mitigate`: apply or reference the security control or compensating measure that lowers the risk.
+      - `Accept`: document the business rationale, residual risk level, and responsible stakeholder who approves retention.
+      - `Transfer`: identify the third party, contract, SLA, or insurance policy that accepts the risk.
     - Reference the [Risk Treatment Mapping](#527-risk-treatment-mapping) section for guidance on selecting the appropriate treatment option based on risk prioritization.
 
 8. TMT State
@@ -402,17 +403,13 @@ Risk treatment defines the action taken to address each identified risk after it
       - `Needs Investigation`
         > The threat requires further analysis, information gathering, or clarification before a decision can be made.
       - `Mitigated`
-        > The threat has been addressed through design changes, compensating controls, or operational measures. Corresponds to the `Reduce` risk treatment option.
+        > The threat has been addressed through design changes, compensating controls, or operational measures.
       - `Not Applicable`
-        > The threat is not relevant to the system context, or the risk source has been eliminated. Corresponds to the `Avoid` risk treatment option.
-      - `Transferred`
-        > The risk responsibility has been delegated to a third party. Corresponds to the `Transfer` risk treatment option.
-      - `Accepted`
-        > The residual risk is consciously retained without additional controls, within the defined acceptance threshold. Corresponds to the `Accept` risk treatment option. The `Justification` field must record the residual risk level, the acceptance rationale, and the name or role of the stakeholder who approved retention.
-    - State decisions must be traceable to the modeled architecture, available evidence, and any documented assumption.
-    - When using `Needs Investigation`, name the missing evidence, unanswered question, or dependency that prevents closure.
-    - When using `Mitigated` or `Transferred`, identify the control, compensating measure, or responsibility boundary that supports the decision.
-    - When using `Accepted`, record the residual risk level, the acceptance rationale, and the approving stakeholder name or role in the `Justification` field.
+        > The threat is not relevant to the system context, or the risk source has been eliminated.
+    - Select the state decision that best fits the evidence and rationale.
+      - `Not Applicable`: The attack path is architecturally impossible (e.g., analog-only interface, passive sensor with no network exposure, human actor rather than a machine endpoint with no independent execution context), OR the risk source has been structurally removed through an Risk Avoidance (`Avoid`) treatment. The specific architectural contradiction or eliminated element must be named in `Justification`.
+      - `Mitigated`: One or more security controls, compensating measures, or design changes are confirmed in place and reduce the risk to an accepted level Risk Mitigation (`Mitigate`) treatment. Also assign `Mitigated` when a Risk Transfer (`Transfer`) decision has formally shifted ownership to a named third party, or when an Risk Acceptance (`Accept`) decision has been explicitly approved by a responsible stakeholder and the residual risk is documented.
+      - `Needs Investigation`: Critical evidence is missing, a key assumption cannot be validated, or the attack path cannot be closed without additional architecture information or clarification. The specific evidence gap or unanswered question must be named in `Justification`; do not leave a row in `Needs Investigation` without identifying the blocker.
 
 9. TMT Priority
 
@@ -435,7 +432,7 @@ Risk treatment defines the action taken to address each identified risk after it
     - When a mitigation reduces but does not eliminate exposure, state the residual risk in concise technical terms.
     - When the row remains open, state the most important evidence gap or assumption that must be resolved.
     - When using `Not Applicable`, name the specific architecture contradiction (e.g., passive sensor, analog signal path, human actor rather than machine endpoint, or no independent execution context).
-    - When using `Accepted`, record the residual risk level and the name or role of the stakeholder who approved the acceptance decision.
+    - When using Risk Acceptance (`Accept`), record the residual risk level and the name or role of the stakeholder who approved the acceptance decision.
     - Keep the text brief enough to remain readable in a CSV cell.
 
     > [!IMPORTANT]
@@ -473,7 +470,7 @@ Risk treatment defines the action taken to address each identified risk after it
     - CWE Weakness Classification summary
     - Assumptions and Evidence Gaps
     - Residual Risk Summary and Unresolved Decisions
-    - Risk Treatment Summary with counts and rationale by treatment option (Reduce, Avoid, Transfer, Accept)
+    - Risk Treatment Summary with counts and rationale by treatment option
     - Recommended Mitigations by priority (Immediate, Short-Term, Long-Term)
 
 ## 5. Example
@@ -730,18 +727,18 @@ The BSI Likelihood of Exploit categorizes the probability of a threat being succ
 #### 5.2.7. Risk Treatment Mapping
 
 - Risk Treatment
-  > Select the appropriate risk treatment option based on the `Risk Prioritization` level and the available mitigation options for the threat. Align the treatment with the TMT `State` field as indicated.
+  > Select the appropriate risk treatment option based on the `Risk Prioritization` level and the available mitigation options for the threat.
 
-  | Risk Prioritization | Recommended Treatment | TMT State         | Rationale                                                                                                                           |
-  | ------------------- | --------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-  | Info                | Accept                | Accepted          | Negligible risk level. Acceptance is typically appropriate; elevate to `Low` and reassess if context reveals additional exposure.   |
-  | Low                 | Accept / Reduce       | Accepted/Mitigated | Low risk. Accept when residual exposure is within the organization's defined risk tolerance; reduce when cost-effective controls exist. |
-  | Medium              | Reduce / Transfer     | Mitigated/Transferred | Moderate risk. Apply compensating controls or transfer where direct technical mitigation is not feasible.                           |
-  | High                | Reduce                | Mitigated         | Significant risk. Mitigation controls are required; document the specific measures and the residual risk that remains after application. |
-  | Critical            | Reduce / Avoid        | Mitigated/Not Applicable | Unacceptable risk. Immediate mitigation or redesign to eliminate the threat source is required before system deployment.         |
+  | Risk Prioritization | Recommended Risk Treatment                                | Rationale                                                                                                                                |
+  | ------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+  | Info                | Risk Acceptance (`Accept`)                                | Negligible risk level. Acceptance is typically appropriate, elevate to `Low` and reassess if context reveals additional exposure.        |
+  | Low                 | Risk Acceptance (`Accept`) / Risk Mitigation (`Mitigate`) | Low risk. Accept when residual exposure is within the organization's defined risk tolerance, reduce when cost-effective controls exist.  |
+  | Medium              | Risk Mitigation (`Mitigate`) / Risk Transfer (`Transfer`) | Moderate risk. Apply compensating controls or transfer where direct technical mitigation is not feasible or inherent limitations exist.  |
+  | High                | Risk Mitigation (`Mitigate`)                              | Significant risk. Mitigation controls are required, document the specific measures and the residual risk that remains after application. |
+  | Critical            | Risk Mitigation (`Mitigate`) / Risk Avoidance (`Avoid`)   | Unacceptable risk. Immediate mitigation or redesign to eliminate the threat source is required before system deployment.                 |
 
   > [!NOTE]
-  > These are default recommendations. Adjust the treatment option based on the specific system context, available controls, regulatory requirements, and the organization's defined risk appetite and risk acceptance threshold. Risk tolerance thresholds are organization-specific and must be agreed with the responsible stakeholder before the review begins. Any deviation from the recommended treatment must be justified in the `Justification` field and, where applicable, approved by a responsible stakeholder. Threats that remain in `Needs Investigation` state do not yet have a definitive Risk Treatment assignment; assign treatment only once Risk Prioritization is established.
+  > Adjust the risk treatment option based on the specific system context, available controls, regulatory requirements, and the organization's defined risk appetite and risk acceptance threshold. Risk tolerance thresholds are organization-specific and must be agreed with the responsible stakeholder before the review begins. Any deviation from the recommended treatment must be justified in the `Justification` field and, where applicable, approved by a responsible stakeholder. Threats that remain in `Needs Investigation` state do not yet have a definitive Risk Treatment assignment, assign treatment only once Risk Prioritization is established.
 
 ### 5.3. Template
 
@@ -766,9 +763,9 @@ Use these templates for Microsoft TMT CSV intake and review.
 
   ```csv
   Id;Title;Category;Diagram;Interaction;Priority;State;Changed By;Description;Justification;Last Modified;MITRE ID;CWE ID;CVSS v4.0 Vector;CVSS-B v4.0 Score;CVSS v4.0 Severity;Likelihood of Exploit;Risk Prioritization;Risk Treatment
-  0;Spoofing the MCU Process;Spoofing;<Device_Name>;Debugger to MCU over JTAG;Medium;Needs Investigation;;"MCU may be spoofed by an attacker and this may lead to information disclosure by Debugger Probe. Consider using a standard authentication mechanism to identify the destination process.";"The physical JTAG debug interface is a physically attached maintenance path. If the service tool cannot verify the real actuator endpoint, a rogue interposer or substituted board can impersonate the MCU and capture debug or programming traffic.";Generated;T0842;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N;"6,7";Medium;Medium;Medium;Reduce
-  38;Data Flow MCU to CFG over Modbus RTU (RS-232) Is Potentially Interrupted;Denial Of Service;<Device_Name>;MCU to CFG over Modbus RTU (RS-232);Low;Mitigated;;"An external agent interrupts data flowing across a trust boundary in either direction.";"Interruption of local Configurator service connection over RS-232 affects a local maintenance session more than the primary control function. The actuator remains locally autonomous, and the product supports fail-safe action, so loss of outbound diagnostics is a bounded availability issue.";Generated;T0814;CWE-693;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:L;"2,4";Low;Low;Low;Accept
-  72;Elevation Using Impersonation;Elevation Of Privilege;<Device_Name>;Operator to MCU over Switches (GPIO);Low;Not Applicable;;"MCU may be able to impersonate the context of Operator in order to gain additional privilege.";"The modeled peer on local dry-contact GPIO/operator switch path is an external tool or human interface, not a separate MCU privilege domain that the MCU can impersonate to gain rights.";Generated;;;;;;;;;Avoid
+  0;Spoofing the MCU Process;Spoofing;<Device_Name>;Debugger to MCU over JTAG;Medium;Needs Investigation;;"MCU may be spoofed by an attacker and this may lead to information disclosure by Debugger Probe. Consider using a standard authentication mechanism to identify the destination process.";"The physical JTAG debug interface is a physically attached maintenance path. If the service tool cannot verify the real actuator endpoint, a rogue interposer or substituted board can impersonate the MCU and capture debug or programming traffic. Treatment is Mitigate through authenticated debug unlock and production-time debug lockout; residual risk owner remains product security.";Generated;T0842;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N;"6,7";Medium;Medium;Medium;Mitigate
+  38;Data Flow MCU to CFG over Modbus RTU (RS-232) Is Potentially Interrupted;Denial Of Service;<Device_Name>;MCU to CFG over Modbus RTU (RS-232);Low;Mitigated;;"An external agent interrupts data flowing across a trust boundary in either direction.";"Interruption of local Configurator service connection over RS-232 affects a local maintenance session more than the primary control function. The actuator remains locally autonomous, and the product supports fail-safe action, so loss of outbound diagnostics is a bounded availability issue. Treatment is Accept with monitoring because residual impact is low.";Generated;T0814;CWE-693;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:L;"2,4";Low;Low;Low;Accept
+  72;Elevation Using Impersonation;Elevation Of Privilege;<Device_Name>;Operator to MCU over Switches (GPIO);Low;Not Applicable;;"MCU may be able to impersonate the context of Operator in order to gain additional privilege.";"The modeled peer on local dry-contact GPIO/operator switch path is an external tool or human interface, not a separate MCU privilege domain that the MCU can impersonate to gain rights. Treatment is Avoid by maintaining no machine-to-machine trust path on this interface.";Generated;;;;;;;Avoid
   ```
 
 ## 6. References
@@ -782,6 +779,5 @@ Use these templates for Microsoft TMT CSV intake and review.
 - FIRST [CVSS v4.0 Calculator](https://www.first.org/cvss/calculator/4.0) page.
 - BSI [Risk Prioritization](https://www.bsi.bund.de/DE/Service-Navi/Abonnements/Newsletter/Buerger-CERT-Abos/Buerger-CERT-Sicherheitshinweise/Risikostufen/risikostufen.html) page.
 - IEC [62443 Industrial Automation and Control Systems Security](https://www.iec.ch/cyber-security) standards.
-- IEC 62443-3-2 Security risk assessment for system design.
 - ISO [31000 Risk Management](https://www.iso.org/iso-31000-risk-management.html) standard.
 - NIST [SP 800-82 Guide to OT Security](https://csrc.nist.gov/publications/detail/sp/800-82/rev-3/final) publication.
