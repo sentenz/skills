@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/sentenz/skills/compare/v1.6.0...v1.6.1) (2026-04-24)
+
+
+### Bug Fixes
+
+* revise risk treatment and TMT state sections ([dc53893](https://github.com/sentenz/skills/commit/dc5389344e2002a890342c7eecdea0b7937a0327))
+
 # [1.6.0](https://github.com/sentenz/skills/compare/v1.5.0...v1.6.0) (2026-04-24)
 
 
