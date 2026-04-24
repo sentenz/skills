@@ -407,9 +407,14 @@ Risk treatment defines the disposition decision after each identified risk has b
       - `Not Applicable`
         > The threat is not relevant to the system context, or the risk source has been eliminated.
     - Select the state decision that best fits the evidence and rationale.
-      - `Not Applicable`: The attack path is architecturally impossible (e.g., analog-only interface, passive sensor with no network exposure, human actor rather than a machine endpoint with no independent execution context), OR the risk source has been structurally removed through a Risk Avoidance (`Avoidance`) treatment. The specific architectural contradiction or eliminated element must be named in `Justification`.
-      - `Mitigated`: One or more security controls, compensating measures, or design changes are confirmed in place and reduce the risk to an accepted level via a Risk Mitigation (`Mitigation`) treatment. Also assign `Mitigated` when a Risk Transfer (`Transfer`) decision has formally shifted ownership to a named third party, or when a Risk Acceptance (`Acceptance`) decision has been explicitly approved by a responsible stakeholder and the residual risk is documented.
+      - `Not Applicable`: The attack path is architecturally impossible (e.g., analog-only interface, passive sensor with no network exposure, human actor rather than a machine endpoint with no independent execution context), or the risk source has been structurally eliminated. The specific architectural contradiction or eliminated element must be named in `Justification`.
+      - `Mitigated`: One or more security controls, compensating measures, or design changes are confirmed in place and reduce the risk to an accepted level. The applied control or measure must be identified in `Justification`.
       - `Needs Investigation`: Critical evidence is missing, a key assumption cannot be validated, or the attack path cannot be closed without additional architecture information or clarification. The specific evidence gap or unanswered question must be named in `Justification`; do not leave a row in `Needs Investigation` without identifying the blocker.
+    - Align the `State` with the `Risk Treatment` assigned in the previous step. Microsoft TMT supports only the four states listed above; `Transfer` and `Acceptance` outcomes have no dedicated TMT state and are expressed through the `Risk Treatment` column.
+      - `Avoidance` → `Not Applicable`: The risk source has been structurally removed; the threat is no longer applicable to the system.
+      - `Mitigation` → `Mitigated`: A security control reduces the risk to an accepted level.
+      - `Transfer` → `Mitigated`: Risk ownership has been formally shifted to a named third party; document the third party, contract, or SLA in `Justification`.
+      - `Acceptance` → `Mitigated`: Residual risk has been explicitly approved by a responsible stakeholder; document the residual risk level and approving stakeholder in `Justification`.
 
 9. TMT Priority
 
