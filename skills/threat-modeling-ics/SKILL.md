@@ -65,7 +65,6 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
     - [5.2.4. CVSS v4.0 Mapping](#524-cvss-v40-mapping)
     - [5.2.5. Likelihood of Exploit Mapping](#525-likelihood-of-exploit-mapping)
     - [5.2.6. Risk Prioritization Mapping](#526-risk-prioritization-mapping)
-    - [5.2.7. Risk Treatment Mapping](#527-risk-treatment-mapping)
   - [5.3. Template](#53-template)
     - [5.3.1. Raw TMT Export CSV Template](#531-raw-tmt-export-csv-template)
     - [5.3.2. Reviewed TMT CSV Template](#532-reviewed-tmt-csv-template)
@@ -383,40 +382,15 @@ Risk treatment defines the disposition decision after each identified risk has b
     - Only assign `Risk Prioritization` when both `CVSS v4.0 Severity` and `Likelihood of Exploit` are present.
     - Reference the [Risk Prioritization Mapping](#526-risk-prioritization-mapping) section for guidance on combining severity and likelihood into prioritization category.
 
-7. Risk Treatment
+7. TMT State
 
-    **Action:** Assign a risk treatment decision to each row based on the derived `Risk Prioritization`, see [Risk Treatment](#37-risk-treatment).
-    - Add or update a `Risk Treatment` column in the review CSV rather than creating duplicate fields.
-    - Select one of the following risk treatment preferences based on the order of priority:
-      - `Avoidance`: document how the system element, interface, or data flow is removed or restructured to eliminate the risk.
-      - `Mitigation`: apply or reference the security control or compensating measure that lowers the risk.
-      - `Acceptance`: document the business rationale, residual risk level, and responsible stakeholder who approves retention.
-      - `Transfer`: identify the third party, contract, SLA, or insurance policy that accepts the risk.
-    - Reference the [Risk Treatment Mapping](#527-risk-treatment-mapping) section for guidance on selecting the appropriate treatment option based on risk prioritization.
-
-8. TMT State
-
-    **Action:** Revise the `State` field for each row using the full analytical context: TMT threat fields, MITRE ATT&CK technique, CWE root weakness, CVSS severity, Risk Prioritization, and Risk Treatment.
-    - Use the state vocabulary already present in the file.
-      - `Not Started`
-        > The threat has not yet been reviewed by an analyst. This is the default state for all rows in a raw TMT export.
-      - `Needs Investigation`
-        > The threat requires further analysis, information gathering, or clarification before a decision can be made.
-      - `Mitigated`
-        > The threat has been addressed through design changes, compensating controls, or operational measures.
-      - `Not Applicable`
-        > The threat is not relevant to the system context, or the risk source has been eliminated.
-    - Select the state decision that best fits the evidence and rationale.
+    **Action:** Revise the `State` field for each row using the full analytical context: TMT threat fields, MITRE ATT&CK technique, CWE root weakness, CVSS severity, and Risk Prioritization.
+    - State selection guidance: Select the state decision that best fits the evidence and rationale.
       - `Not Applicable`: The attack path is architecturally impossible (e.g., analog-only interface, passive sensor with no network exposure, human actor rather than a machine endpoint with no independent execution context), or the risk source has been structurally eliminated. The specific architectural contradiction or eliminated element must be named in `Justification`.
-      - `Mitigated`: One or more security controls, compensating measures, or design changes are confirmed in place and reduce the risk to an accepted level. The applied control or measure must be identified in `Justification`.
-      - `Needs Investigation`: Critical evidence is missing, a key assumption cannot be validated, or the attack path cannot be closed without additional architecture information or clarification. The specific evidence gap or unanswered question must be named in `Justification`; do not leave a row in `Needs Investigation` without identifying the blocker.
-    - Align the `State` with the `Risk Treatment` assigned in the previous step. Microsoft TMT supports only the four states listed above; `Transfer` and `Acceptance` outcomes have no dedicated TMT state and are expressed through the `Risk Treatment` column.
-      - `Avoidance` → `Not Applicable`: The risk source has been structurally removed; the threat is no longer applicable to the system.
-      - `Mitigation` → `Mitigated`: A security control reduces the risk to an accepted level.
-      - `Transfer` → `Mitigated`: Risk ownership has been formally shifted to a named third party; document the third party, contract, or SLA in `Justification`.
-      - `Acceptance` → `Mitigated`: Residual risk has been explicitly approved by a responsible stakeholder; document the residual risk level and approving stakeholder in `Justification`.
+      - `Mitigated`: One or more security controls, compensating measures, or design changes are confirmed in place and reduce the risk to an accepted level. The applied control, measure or residual risk must be identified in `Justification`.
+      - `Needs Investigation`: Critical evidence is missing, a key assumption cannot be validated, or the attack path cannot be closed without additional architecture information or clarification. The specific evidence gap or unanswered question must be named in `Justification`, do not leave a row in `Needs Investigation` without identifying the blocker.
 
-9. TMT Priority
+8. TMT Priority
 
     **Action:** Revise the `Priority` field for each row. Use the derived `Risk Prioritization` as the primary signal and adjust only when the modeled context provides a specific reason to deviate.
     - Use the priority vocabulary already present in the file.
@@ -427,7 +401,7 @@ Risk treatment defines the disposition decision after each identified risk has b
       - `High`
         > The threat is significant and requires prompt mitigation. It should be prioritized in the security backlog and may require escalation.
 
-10. TMT Justification
+9. TMT Justification
 
     **Action:** Write a concise, technically precise analyst statement in the `Justification` field for each row, synthesizing all prior enrichment steps.
     - State why the threat is accepted, mitigated, transferred, not applicable, or still under investigation.
@@ -442,6 +416,17 @@ Risk treatment defines the disposition decision after each identified risk has b
 
     > [!IMPORTANT]
     > The justification is the most critical part of the security review. It is written last so it can synthesize the full analytical picture.
+
+
+10. Risk Treatment
+
+    **Action:** Assign a risk treatment decision to each row based on the derived `Risk Prioritization`, see [Risk Treatment](#37-risk-treatment).
+    - Add or update a `Risk Treatment` column in the review CSV rather than creating duplicate fields.
+    - Treatment selection guidance: Select one of the following risk treatment preferences based on the order of priority:
+      - `Avoidance`: document how the system element, interface, or data flow is removed or restructured to eliminate the risk.
+      - `Mitigation`: apply or reference the security control or compensating measure that lowers the risk. Residual risk must be explicitly approved by a responsible stakeholder.
+      - `Acceptance`: document the business rationale, residual risk level, and responsible stakeholder who approves retention.
+      - `Transfer`: identify the third party, contract, SLA, or insurance policy that accepts the risk.
 
 ### 4.3. Deliverables
 
@@ -728,22 +713,6 @@ The BSI Likelihood of Exploit categorizes the probability of a threat being succ
   | Medium                | Low    | Low    | Medium | High     | High     |
   | High                  | Low    | Medium | High   | High     | Critical |
   | Critical              | Medium | High   | High   | Critical | Critical |
-
-#### 5.2.7. Risk Treatment Mapping
-
-- Risk Treatment
-  > Select the appropriate risk treatment option based on the `Risk Prioritization` level and the available mitigation options for the threat.
-
-  | Risk Prioritization | Recommended Risk Treatment                                | Rationale                                                                                                                                |
-  | ------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-  | Info                | Risk Acceptance (`Acceptance`)                                          | Negligible risk level. Acceptance is typically appropriate, elevate to `Low` and reassess if context reveals additional exposure.        |
-  | Low                 | Risk Acceptance (`Acceptance`) / Risk Mitigation (`Mitigation`)         | Low risk. Accept when residual exposure is within the organization's defined risk tolerance, reduce when cost-effective controls exist.  |
-  | Medium              | Risk Mitigation (`Mitigation`) / Risk Transfer (`Transfer`)             | Moderate risk. Apply compensating controls or transfer where direct technical mitigation is not feasible or inherent limitations exist.  |
-  | High                | Risk Mitigation (`Mitigation`)                                          | Significant risk. Mitigation controls are required, document the specific measures and the residual risk that remains after application. |
-  | Critical            | Risk Mitigation (`Mitigation`) / Risk Avoidance (`Avoidance`)           | Unacceptable risk. Immediate mitigation or redesign to eliminate the threat source is required before system deployment.                 |
-
-  > [!NOTE]
-  > Adjust the risk treatment option based on the specific system context, available controls, regulatory requirements, and the organization's defined risk appetite and risk acceptance threshold. Risk tolerance thresholds are organization-specific and must be agreed with the responsible stakeholder before the review begins. Any deviation from the recommended treatment must be justified in the `Justification` field and, where applicable, approved by a responsible stakeholder. Threats that remain in `Needs Investigation` state do not yet have a definitive Risk Treatment assignment, assign treatment only once Risk Prioritization is established.
 
 ### 5.3. Template
 
