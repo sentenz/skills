@@ -421,9 +421,9 @@ Risk treatment defines the disposition decision after each identified risk has b
     **Action:** Assign a risk treatment decision to each row based on the derived `Risk Prioritization`, see [Risk Treatment](#37-risk-treatment).
     - Add or update a `Risk Treatment` column in the review CSV rather than creating duplicate fields.
     - Treatment selection guidance: Select one of the following risk treatment preferences based on the order of priority:
-      - `Avoidance`: if documented how the system element, interface, or data flow is removed or restructured to eliminate the risk.
-      - `Mitigation`: apply if the security control, compensating measure that lowers the risk are documented. Residual risk must be explicitly approved by a responsible stakeholder.
-      - `Acceptance`: document the business rationale, residual risk level, and responsible stakeholder who approves retention.
+      - `Avoidance`: apply if it is documented how the system element, interface, or data flow is removed or restructured to eliminate the risk.
+      - `Mitigation`: apply if security controls or compensating measures that lower the risk are documented. Residual risk must be explicitly approved by a responsible stakeholder.
+      - `Acceptance`: document the business rationale, residual risk level, and the responsible stakeholder who approves retention.
       - `Transfer`: identify the third party, contract, SLA, or insurance policy that accepts the risk.
 
 ### 4.3. Deliverables
