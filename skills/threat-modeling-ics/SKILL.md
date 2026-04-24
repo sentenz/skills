@@ -1,6 +1,6 @@
 ---
 name: threat-modeling-ics
-description: Performs end-to-end threat modeling for OT/ICS systems from Microsoft Threat Modeling Tool (TMT) threat-list exports (`*.csv`) and model files (`*.tm7`). Uses TMT and STRIDE for initial threat enumeration, then enriches each threat with OT/ICS context, MITRE ATT&CK for ICS mappings, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization, Risk Treatment decisions, STRIDE-to-Mitigation mapping for SCADA, PLC, PAC, and HMI assets, and OT impact categories ranging from Denial of View to Physical Damage to Property.
+description: Performs end-to-end threat modeling for OT/ICS systems from Microsoft Threat Modeling Tool (TMT) threat-list exports (`*.csv`) and model files (`*.tm7`). Uses TMT and STRIDE for initial threat enumeration, then enriches each threat with OT/ICS context, MITRE ATT&CK for ICS mappings, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization, Risk Treatment decisions, STRIDE to Mitigation mapping for SCADA, PLC, PAC, and HMI assets, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
   version: "1.4.1"
   activation:
@@ -334,9 +334,9 @@ Risk treatment defines the disposition decision after each identified risk has b
     - `Description`
       > Additional detail about the threat consequences and high-level mitigations. Read together with `Category` and `Title`.
     - `Priority`
-      > The initial risk ranking assigned by TMT.
+      > The initial priority assigned by TMT.
     - `State`
-      > The current review status of the threat.
+      > The initial review status assigned by TMT.
     - Record assumptions and missing evidence when the native TMT fields do not fully resolve the threat decision.
     - When the assessment objective is compliance-oriented, treat each row as a traceable product risk statement tied to a concrete interface, trust relationship, or maintenance path.
 
@@ -411,7 +411,6 @@ Risk treatment defines the disposition decision after each identified risk has b
     - When `State` is `Not Applicable`, name the specific architectural contradiction or eliminated element (e.g., passive sensor, analog signal path, human actor rather than machine endpoint, or no independent execution context).
     - When `State` is `Mitigated`, identify the applied security control, compensating measure, or design change. State the residual risk level if exposure is not fully eliminated. If risk ownership is formally transferred to a third party, identify the named organization, contract, or SLA.
     - When `State` is `Needs Investigation`, state the most important evidence gap or assumption that must be resolved before a decision can be made.
-    - Keep the text brief enough to remain readable in a CSV cell.
 
     > [!IMPORTANT]
     > The justification is the most critical part of the security review. It is written last so it can synthesize the full analytical picture.
