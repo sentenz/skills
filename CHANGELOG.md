@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.6.0](https://github.com/sentenz/skills/compare/v1.5.0...v1.6.0) (2026-04-24)
+
+
+### Features
+
+* **skill:** add Risk Treatment to threat modeling SKILL.md ([#28](https://github.com/sentenz/skills/issues/28)) ([4719e3f](https://github.com/sentenz/skills/commit/4719e3fce902214c83203eda0fca53a68a74671f))
+
 # [1.5.0](https://github.com/sentenz/skills/compare/v1.4.1...v1.5.0) (2026-04-18)
 
 
