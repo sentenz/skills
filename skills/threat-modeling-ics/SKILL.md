@@ -407,11 +407,10 @@ Risk treatment defines the disposition decision after each identified risk has b
     - State why the threat is accepted, mitigated, transferred, not applicable, or still under investigation.
     - Reference the modeled protocol, interface, trust relationship, validation behavior, or compensating control that informs the decision.
     - Reference the assigned MITRE ATT&CK technique, CWE weakness, CVSS severity, Risk Prioritization, and Risk Treatment where they support the rationale. Prefer technique name/behavior phrasing over repeating raw MITRE IDs that are already captured in `MITRE ID`.
-    - Do not use identifier-only placeholders in `Justification` (e.g., `(T0859)`, `(CWE-787)`, or a lone CVSS vector). The cell must remain a concise analyst rationale sentence.
     - When a mitigation reduces but does not eliminate exposure, state the residual risk in concise technical terms.
     - When the row remains open, state the most important evidence gap or assumption that must be resolved.
-    - When using `Not Applicable`, name the specific architecture contradiction (e.g., passive sensor, analog signal path, human actor rather than machine endpoint, or no independent execution context).
-    - When using Risk Acceptance (`Acceptance`), record the residual risk level and the name or role of the stakeholder who approved the acceptance decision.
+    - When using state `Not Applicable`, name the specific architecture contradiction (e.g., passive sensor, analog signal path, human actor rather than machine endpoint, or no independent execution context).
+    - When using state `Mitigated `, record the residual risk level and the name or role of the stakeholder who approved the acceptance decision.
     - Keep the text brief enough to remain readable in a CSV cell.
 
     > [!IMPORTANT]
@@ -423,8 +422,8 @@ Risk treatment defines the disposition decision after each identified risk has b
     **Action:** Assign a risk treatment decision to each row based on the derived `Risk Prioritization`, see [Risk Treatment](#37-risk-treatment).
     - Add or update a `Risk Treatment` column in the review CSV rather than creating duplicate fields.
     - Treatment selection guidance: Select one of the following risk treatment preferences based on the order of priority:
-      - `Avoidance`: document how the system element, interface, or data flow is removed or restructured to eliminate the risk.
-      - `Mitigation`: apply or reference the security control or compensating measure that lowers the risk. Residual risk must be explicitly approved by a responsible stakeholder.
+      - `Avoidance`: if documented how the system element, interface, or data flow is removed or restructured to eliminate the risk.
+      - `Mitigation`: apply if the security control, compensating measure that lowers the risk are documented. Residual risk must be explicitly approved by a responsible stakeholder.
       - `Acceptance`: document the business rationale, residual risk level, and responsible stakeholder who approves retention.
       - `Transfer`: identify the third party, contract, SLA, or insurance policy that accepts the risk.
 
