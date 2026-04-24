@@ -83,7 +83,7 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
   > Threat modeling supports the risk assessment and technical documentation expectations of frameworks such as EU CRA, ISO/IEC 27005, NIST SP 800-30, IEC 62443-3-2, and GDPR Article 25 by producing documented evidence of security due diligence, assumptions, mitigations, and residual risk.
 
 - Risk Treatment Traceability
-  > Assigning a concrete risk treatment decision (`Mitigate`, `Transfer`, `Accept`, or `Avoid`) to each identified threat produces traceable evidence that stakeholders have deliberately addressed every risk. Recording risk treatment supports regulatory obligations, stakeholder accountability, and residual risk communication.
+  > Assigning a concrete risk treatment decision (`Mitigation`, `Transfer`, `Acceptance`, or `Avoidance`) to each identified threat produces traceable evidence that stakeholders have deliberately addressed every risk. Recording risk treatment supports regulatory obligations, stakeholder accountability, and residual risk communication.
 
 - Tactics, Techniques, and Procedures (TTPs)
   > Modeling realistic attack scenarios based on known adversary TTPs utilizing frameworks such as MITRE ATT&CK ensures that mitigations are effective against actual threats rather than hypothetical ones.
@@ -388,9 +388,9 @@ Risk treatment defines the disposition decision after each identified risk has b
     **Action:** Assign a risk treatment decision to each row based on the derived `Risk Prioritization`, see [Risk Treatment](#37-risk-treatment).
     - Add or update a `Risk Treatment` column in the review CSV rather than creating duplicate fields.
     - Select one of the following risk treatment preferences based on the order of priority:
-      - `Avoid`: document how the system element, interface, or data flow is removed or restructured to eliminate the risk.
-      - `Mitigate`: apply or reference the security control or compensating measure that lowers the risk.
-      - `Accept`: document the business rationale, residual risk level, and responsible stakeholder who approves retention.
+      - `Avoidance`: document how the system element, interface, or data flow is removed or restructured to eliminate the risk.
+      - `Mitigation`: apply or reference the security control or compensating measure that lowers the risk.
+      - `Acceptance`: document the business rationale, residual risk level, and responsible stakeholder who approves retention.
       - `Transfer`: identify the third party, contract, SLA, or insurance policy that accepts the risk.
     - Reference the [Risk Treatment Mapping](#527-risk-treatment-mapping) section for guidance on selecting the appropriate treatment option based on risk prioritization.
 
@@ -407,8 +407,8 @@ Risk treatment defines the disposition decision after each identified risk has b
       - `Not Applicable`
         > The threat is not relevant to the system context, or the risk source has been eliminated.
     - Select the state decision that best fits the evidence and rationale.
-      - `Not Applicable`: The attack path is architecturally impossible (e.g., analog-only interface, passive sensor with no network exposure, human actor rather than a machine endpoint with no independent execution context), OR the risk source has been structurally removed through an Risk Avoidance (`Avoid`) treatment. The specific architectural contradiction or eliminated element must be named in `Justification`.
-      - `Mitigated`: One or more security controls, compensating measures, or design changes are confirmed in place and reduce the risk to an accepted level Risk Mitigation (`Mitigate`) treatment. Also assign `Mitigated` when a Risk Transfer (`Transfer`) decision has formally shifted ownership to a named third party, or when an Risk Acceptance (`Accept`) decision has been explicitly approved by a responsible stakeholder and the residual risk is documented.
+      - `Not Applicable`: The attack path is architecturally impossible (e.g., analog-only interface, passive sensor with no network exposure, human actor rather than a machine endpoint with no independent execution context), OR the risk source has been structurally removed through a Risk Avoidance (`Avoidance`) treatment. The specific architectural contradiction or eliminated element must be named in `Justification`.
+      - `Mitigated`: One or more security controls, compensating measures, or design changes are confirmed in place and reduce the risk to an accepted level via a Risk Mitigation (`Mitigation`) treatment. Also assign `Mitigated` when a Risk Transfer (`Transfer`) decision has formally shifted ownership to a named third party, or when a Risk Acceptance (`Acceptance`) decision has been explicitly approved by a responsible stakeholder and the residual risk is documented.
       - `Needs Investigation`: Critical evidence is missing, a key assumption cannot be validated, or the attack path cannot be closed without additional architecture information or clarification. The specific evidence gap or unanswered question must be named in `Justification`; do not leave a row in `Needs Investigation` without identifying the blocker.
 
 9. TMT Priority
@@ -432,7 +432,7 @@ Risk treatment defines the disposition decision after each identified risk has b
     - When a mitigation reduces but does not eliminate exposure, state the residual risk in concise technical terms.
     - When the row remains open, state the most important evidence gap or assumption that must be resolved.
     - When using `Not Applicable`, name the specific architecture contradiction (e.g., passive sensor, analog signal path, human actor rather than machine endpoint, or no independent execution context).
-    - When using Risk Acceptance (`Accept`), record the residual risk level and the name or role of the stakeholder who approved the acceptance decision.
+    - When using Risk Acceptance (`Acceptance`), record the residual risk level and the name or role of the stakeholder who approved the acceptance decision.
     - Keep the text brief enough to remain readable in a CSV cell.
 
     > [!IMPORTANT]
@@ -731,11 +731,11 @@ The BSI Likelihood of Exploit categorizes the probability of a threat being succ
 
   | Risk Prioritization | Recommended Risk Treatment                                | Rationale                                                                                                                                |
   | ------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-  | Info                | Risk Acceptance (`Accept`)                                | Negligible risk level. Acceptance is typically appropriate, elevate to `Low` and reassess if context reveals additional exposure.        |
-  | Low                 | Risk Acceptance (`Accept`) / Risk Mitigation (`Mitigate`) | Low risk. Accept when residual exposure is within the organization's defined risk tolerance, reduce when cost-effective controls exist.  |
-  | Medium              | Risk Mitigation (`Mitigate`) / Risk Transfer (`Transfer`) | Moderate risk. Apply compensating controls or transfer where direct technical mitigation is not feasible or inherent limitations exist.  |
-  | High                | Risk Mitigation (`Mitigate`)                              | Significant risk. Mitigation controls are required, document the specific measures and the residual risk that remains after application. |
-  | Critical            | Risk Mitigation (`Mitigate`) / Risk Avoidance (`Avoid`)   | Unacceptable risk. Immediate mitigation or redesign to eliminate the threat source is required before system deployment.                 |
+  | Info                | Risk Acceptance (`Acceptance`)                                          | Negligible risk level. Acceptance is typically appropriate, elevate to `Low` and reassess if context reveals additional exposure.        |
+  | Low                 | Risk Acceptance (`Acceptance`) / Risk Mitigation (`Mitigation`)         | Low risk. Accept when residual exposure is within the organization's defined risk tolerance, reduce when cost-effective controls exist.  |
+  | Medium              | Risk Mitigation (`Mitigation`) / Risk Transfer (`Transfer`)             | Moderate risk. Apply compensating controls or transfer where direct technical mitigation is not feasible or inherent limitations exist.  |
+  | High                | Risk Mitigation (`Mitigation`)                                          | Significant risk. Mitigation controls are required, document the specific measures and the residual risk that remains after application. |
+  | Critical            | Risk Mitigation (`Mitigation`) / Risk Avoidance (`Avoidance`)           | Unacceptable risk. Immediate mitigation or redesign to eliminate the threat source is required before system deployment.                 |
 
   > [!NOTE]
   > Adjust the risk treatment option based on the specific system context, available controls, regulatory requirements, and the organization's defined risk appetite and risk acceptance threshold. Risk tolerance thresholds are organization-specific and must be agreed with the responsible stakeholder before the review begins. Any deviation from the recommended treatment must be justified in the `Justification` field and, where applicable, approved by a responsible stakeholder. Threats that remain in `Needs Investigation` state do not yet have a definitive Risk Treatment assignment, assign treatment only once Risk Prioritization is established.
@@ -763,9 +763,9 @@ Use these templates for Microsoft TMT CSV intake and review.
 
   ```csv
   Id;Title;Category;Diagram;Interaction;Priority;State;Changed By;Description;Justification;Last Modified;MITRE ID;CWE ID;CVSS v4.0 Vector;CVSS-B v4.0 Score;CVSS v4.0 Severity;Likelihood of Exploit;Risk Prioritization;Risk Treatment
-  0;Spoofing the MCU Process;Spoofing;<Device_Name>;Debugger to MCU over JTAG;Medium;Needs Investigation;;"MCU may be spoofed by an attacker and this may lead to information disclosure by Debugger Probe. Consider using a standard authentication mechanism to identify the destination process.";"The physical JTAG debug interface is a physically attached maintenance path. If the service tool cannot verify the real actuator endpoint, a rogue interposer or substituted board can impersonate the MCU and capture debug or programming traffic. Treatment is Mitigate through authenticated debug unlock and production-time debug lockout; residual risk owner remains product security.";Generated;T0842;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N;"6,7";Medium;Medium;Medium;Mitigate
-  38;Data Flow MCU to CFG over Modbus RTU (RS-232) Is Potentially Interrupted;Denial Of Service;<Device_Name>;MCU to CFG over Modbus RTU (RS-232);Low;Mitigated;;"An external agent interrupts data flowing across a trust boundary in either direction.";"Interruption of local Configurator service connection over RS-232 affects a local maintenance session more than the primary control function. The actuator remains locally autonomous, and the product supports fail-safe action, so loss of outbound diagnostics is a bounded availability issue. Treatment is Accept with monitoring because residual impact is low.";Generated;T0814;CWE-693;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:L;"2,4";Low;Low;Low;Accept
-  72;Elevation Using Impersonation;Elevation Of Privilege;<Device_Name>;Operator to MCU over Switches (GPIO);Low;Not Applicable;;"MCU may be able to impersonate the context of Operator in order to gain additional privilege.";"The modeled peer on local dry-contact GPIO/operator switch path is an external tool or human interface, not a separate MCU privilege domain that the MCU can impersonate to gain rights. Treatment is Avoid by maintaining no machine-to-machine trust path on this interface.";Generated;;;;;;;Avoid
+  0;Spoofing the MCU Process;Spoofing;<Device_Name>;Debugger to MCU over JTAG;Medium;Needs Investigation;;"MCU may be spoofed by an attacker and this may lead to information disclosure by Debugger Probe. Consider using a standard authentication mechanism to identify the destination process.";"The physical JTAG debug interface is a physically attached maintenance path. If the service tool cannot verify the real actuator endpoint, a rogue interposer or substituted board can impersonate the MCU and capture debug or programming traffic. Treatment is Mitigation through authenticated debug unlock and production-time debug lockout; residual risk owner remains product security.";Generated;T0842;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N;"6,7";Medium;Medium;Medium;Mitigation
+  38;Data Flow MCU to CFG over Modbus RTU (RS-232) Is Potentially Interrupted;Denial Of Service;<Device_Name>;MCU to CFG over Modbus RTU (RS-232);Low;Mitigated;;"An external agent interrupts data flowing across a trust boundary in either direction.";"Interruption of local Configurator service connection over RS-232 affects a local maintenance session more than the primary control function. The actuator remains locally autonomous, and the product supports fail-safe action, so loss of outbound diagnostics is a bounded availability issue. Treatment is Acceptance with monitoring because residual impact is low.";Generated;T0814;CWE-693;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:L;"2,4";Low;Low;Low;Acceptance
+  72;Elevation Using Impersonation;Elevation Of Privilege;<Device_Name>;Operator to MCU over Switches (GPIO);Low;Not Applicable;;"MCU may be able to impersonate the context of Operator in order to gain additional privilege.";"The modeled peer on local dry-contact GPIO/operator switch path is an external tool or human interface, not a separate MCU privilege domain that the MCU can impersonate to gain rights. Treatment is Avoidance by maintaining no machine-to-machine trust path on this interface.";Generated;;;;;;;Avoidance
   ```
 
 ## 6. References
