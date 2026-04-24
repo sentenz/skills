@@ -404,13 +404,12 @@ Risk treatment defines the disposition decision after each identified risk has b
 9. TMT Justification
 
     **Action:** Write a concise, technically precise analyst statement in the `Justification` field for each row, synthesizing all prior enrichment steps.
-    - State why the threat is accepted, mitigated, transferred, not applicable, or still under investigation.
+    - State the evidence-based rationale that supports the assigned `State` and `Risk Treatment`.
     - Reference the modeled protocol, interface, trust relationship, validation behavior, or compensating control that informs the decision.
-    - Reference the assigned MITRE ATT&CK technique, CWE weakness, CVSS severity, Risk Prioritization, and Risk Treatment where they support the rationale. Prefer technique name/behavior phrasing over repeating raw MITRE IDs that are already captured in `MITRE ID`.
-    - When a mitigation reduces but does not eliminate exposure, state the residual risk in concise technical terms.
-    - When the row remains open, state the most important evidence gap or assumption that must be resolved.
-    - When using state `Not Applicable`, name the specific architecture contradiction (e.g., passive sensor, analog signal path, human actor rather than machine endpoint, or no independent execution context).
-    - When using state `Mitigated `, record the residual risk level and the name or role of the stakeholder who approved the acceptance decision.
+    - Reference the assigned MITRE ATT&CK technique, CWE weakness, CVSS severity, Risk Prioritization, and Risk Treatment where they support the rationale. Prefer technique name and behavior phrasing over repeating raw MITRE IDs that are already captured in `MITRE ID`.
+    - When `State` is `Not Applicable`, name the specific architectural contradiction or eliminated element (e.g., passive sensor, analog signal path, human actor rather than machine endpoint, or no independent execution context).
+    - When `State` is `Mitigated`, identify the applied security control, compensating measure, or design change. When `Risk Treatment` is `Acceptance`, also record the residual risk level and the name or role of the approving stakeholder. When `Risk Treatment` is `Transfer`, identify the named third party, contract, or SLA that accepts the risk.
+    - When `State` is `Needs Investigation`, state the most important evidence gap or assumption that must be resolved before a decision can be made.
     - Keep the text brief enough to remain readable in a CSV cell.
 
     > [!IMPORTANT]
