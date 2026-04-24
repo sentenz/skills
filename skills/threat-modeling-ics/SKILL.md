@@ -404,12 +404,12 @@ Risk treatment defines the disposition decision after each identified risk has b
 
 9. TMT Justification
 
-    **Action:** Write a concise, technically precise analyst statement in the `Justification` field for each row, synthesizing all prior enrichment steps.
-    - State the evidence-based rationale that supports the assigned `State` and `Risk Treatment`.
+    **Action:** Write a concise, technically precise analyst statement in the `Justification` field for each row, synthesizing all prior enrichment steps. The justification provides the evidence-based rationale that supports the assigned `State` and informs the `Risk Treatment` decision in the next step.
+    - State the evidence-based rationale that supports the assigned `State`.
     - Reference the modeled protocol, interface, trust relationship, validation behavior, or compensating control that informs the decision.
-    - Reference the assigned MITRE ATT&CK technique, CWE weakness, CVSS severity, Risk Prioritization, and Risk Treatment where they support the rationale. Prefer technique name and behavior phrasing over repeating raw MITRE IDs that are already captured in `MITRE ID`.
+    - Reference the assigned MITRE ATT&CK technique, CWE weakness, CVSS severity, and Risk Prioritization where they support the rationale. Prefer technique name and behavior phrasing over repeating raw MITRE IDs that are already captured in `MITRE ID`.
     - When `State` is `Not Applicable`, name the specific architectural contradiction or eliminated element (e.g., passive sensor, analog signal path, human actor rather than machine endpoint, or no independent execution context).
-    - When `State` is `Mitigated`, identify the applied security control, compensating measure, or design change. When `Risk Treatment` is `Acceptance`, also record the residual risk level and the name or role of the approving stakeholder. When `Risk Treatment` is `Transfer`, identify the named third party, contract, or SLA that accepts the risk.
+    - When `State` is `Mitigated`, identify the applied security control, compensating measure, or design change. State the residual risk level if exposure is not fully eliminated. If risk ownership is formally transferred to a third party, identify the named organization, contract, or SLA.
     - When `State` is `Needs Investigation`, state the most important evidence gap or assumption that must be resolved before a decision can be made.
     - Keep the text brief enough to remain readable in a CSV cell.
 
