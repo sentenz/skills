@@ -1,8 +1,8 @@
 ---
 name: threat-modeling-ics
-description: Performs end-to-end threat modeling for OT/ICS systems from Microsoft Threat Modeling Tool (TMT) threat-list exports (`*.csv`) and model files (`*.tm7`). Uses TMT and STRIDE for initial threat enumeration, then enriches each threat with OT/ICS context, MITRE ATT&CK for ICS mappings, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization, STRIDE-to-Mitigation mapping for SCADA, PLC, PAC, and HMI assets, and OT impact categories ranging from Denial of View to Physical Damage to Property.
+description: Performs end-to-end threat modeling for OT/ICS systems from Microsoft Threat Modeling Tool (TMT) threat-list exports (`*.csv`) and model files (`*.tm7`). Uses TMT and STRIDE for initial threat enumeration, then enriches each threat with OT/ICS context, MITRE ATT&CK for ICS mappings, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization, Risk Treatment decisions, STRIDE-to-Mitigation mapping for SCADA, PLC, PAC, and HMI assets, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.3.2"
+  version: "1.4.0"
   activation:
     implicit: true
     priority: 1
@@ -15,6 +15,7 @@ metadata:
       - "cwe"
       - "cvss"
       - "likelihood"
+      - "risk treatment"
       - "threat review"
       - "security review"
     match:
@@ -23,7 +24,7 @@ metadata:
         - "**/*.tm7"
         - "**/*threat-model*.csv"
         - "**/*threat-model*.md"
-      prompt_regex: "(?i)(microsoft tmt|threat modeling|stride|mitre att&ck|cwe|cvss|likelihood|threat review|security review)"
+      prompt_regex: "(?i)(microsoft tmt|threat modeling|stride|mitre att&ck|cwe|cvss|likelihood|risk treatment|threat review|security review)"
   usage:
     load_on_prompt: true
     autodispatch: true
@@ -49,6 +50,7 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
   - [3.4. CWE](#34-cwe)
   - [3.5. CVSS](#35-cvss)
   - [3.6. BSI Likelihood of Exploit](#36-bsi-likelihood-of-exploit)
+  - [3.7. Risk Treatment](#37-risk-treatment)
 - [4. Workflow](#4-workflow)
   - [4.1. Preparation](#41-preparation)
   - [4.2. Review](#42-review)
@@ -63,6 +65,7 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
     - [5.2.4. CVSS v4.0 Mapping](#524-cvss-v40-mapping)
     - [5.2.5. Likelihood of Exploit Mapping](#525-likelihood-of-exploit-mapping)
     - [5.2.6. Risk Prioritization Mapping](#526-risk-prioritization-mapping)
+    - [5.2.7. Risk Treatment Mapping](#527-risk-treatment-mapping)
   - [5.3. Template](#53-template)
     - [5.3.1. Raw TMT Export CSV Template](#531-raw-tmt-export-csv-template)
     - [5.3.2. Reviewed TMT CSV Template](#532-reviewed-tmt-csv-template)
@@ -78,6 +81,9 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
 
 - Compliance Alignment
   > Threat modeling supports the risk assessment and technical documentation expectations of frameworks such as EU CRA, ISO/IEC 27005, NIST SP 800-30, IEC 62443-3-2, and GDPR Article 25 by producing documented evidence of security due diligence, assumptions, mitigations, and residual risk.
+
+- Risk Treatment Decisions
+  > Assigning a concrete treatment option—Reduce, Avoid, Transfer, or Accept—to each identified threat produces traceable evidence that stakeholders have deliberately addressed every risk. This record supports regulatory obligations, stakeholder accountability, and residual risk communication.
 
 - Tactics, Techniques, and Procedures (TTPs)
   > Modeling realistic attack scenarios based on known adversary TTPs utilizing frameworks such as MITRE ATT&CK ensures that mitigations are effective against actual threats rather than hypothetical ones.
@@ -238,6 +244,22 @@ MITRE ATT&CK for ICS to map a TMT threat to realistic adversary behavior affecti
   - Exploit Published (Exploit Veröffentlicht)
     > A public attack tool has been released, the effort to attack drops significantly.
 
+### 3.7. Risk Treatment
+
+Risk treatment defines the action taken to address each identified risk after it has been prioritized. Aligned with ISO 31000 and IEC 62443-3-2, every threat row must be assigned a treatment option that is traceable to the risk prioritization evidence.
+
+- Reduce (Mitigate)
+  > Apply security controls, compensating measures, or design changes to lower the likelihood, impact, or both to an acceptable level. Document the specific controls applied and record the residual risk that remains after mitigation. Maps to TMT `State: Mitigated`.
+
+- Avoid
+  > Remove or restructure the system element, function, interface, or data flow that introduces the risk so the threat is no longer applicable. Risk avoidance eliminates the risk at its source. Maps to TMT `State: Not Applicable`.
+
+- Transfer (Share)
+  > Shift financial, operational, or legal responsibility for the risk to a third party through insurance, contractual SLA, vendor warranty, or managed service agreements. The technical exposure remains but the consequence is shared or delegated. Maps to TMT `State: Transferred`.
+
+- Accept (Retain)
+  > Consciously retain the risk without additional controls when the cost or feasibility of treatment exceeds the benefit, or when the risk falls within the defined acceptance threshold. Acceptance must be explicitly documented and approved by the responsible stakeholder. Maps to TMT `State: Accepted`.
+
 ## 4. Workflow
 
 > [!IMPORTANT]
@@ -317,7 +339,7 @@ MITRE ATT&CK for ICS to map a TMT threat to realistic adversary behavior affecti
     - When the assessment objective is compliance-oriented, treat each row as a traceable product risk statement tied to a concrete interface, trust relationship, or maintenance path.
 
     > [!NOTE]
-    > Perform steps 2–9 for every row before proceeding to section 4.3.
+    > Perform steps 2–10 for every row before proceeding to section 4.3.
 
 2. MITRE ATT&CK
 
@@ -358,25 +380,41 @@ MITRE ATT&CK for ICS to map a TMT threat to realistic adversary behavior affecti
     - Only assign `Risk Prioritization` when both `CVSS v4.0 Severity` and `Likelihood of Exploit` are present.
     - Reference the [Risk Prioritization Mapping](#526-risk-prioritization-mapping) section for guidance on combining severity and likelihood into prioritization category.
 
-7. TMT State
+7. Risk Treatment
 
-    **Action:** Revise the `State` field for each row using the full analytical context: TMT threat fields, MITRE ATT&CK technique, CWE root weakness, CVSS severity, and Risk Prioritization.
+    **Action:** Assign a risk treatment decision to each row based on the derived `Risk Prioritization`, see [Risk Treatment](#37-risk-treatment).
+    - Add or update a `Risk Treatment` column in the review CSV rather than creating duplicate fields.
+    - Only assign `Risk Treatment` when `Risk Prioritization` is present.
+    - Select one of the following treatment options:
+      - `Reduce` — apply or reference the security control or compensating measure that lowers the risk.
+      - `Avoid` — document how the system element, interface, or data flow is removed or restructured to eliminate the risk.
+      - `Transfer` — identify the third party, contract, SLA, or insurance policy that accepts the risk.
+      - `Accept` — document the business rationale, residual risk level, and responsible stakeholder who approves retention.
+    - Align the treatment decision with the TMT `State` field: `Reduce` → `Mitigated`, `Avoid` → `Not Applicable`, `Transfer` → `Transferred`, `Accept` → `Accepted`.
+    - Reference the [Risk Treatment Mapping](#527-risk-treatment-mapping) section for guidance on selecting the appropriate treatment option based on risk prioritization.
+
+8. TMT State
+
+    **Action:** Revise the `State` field for each row using the full analytical context: TMT threat fields, MITRE ATT&CK technique, CWE root weakness, CVSS severity, Risk Prioritization, and Risk Treatment.
     - Use the state vocabulary already present in the file.
       - `Not Started`
         > The threat has not yet been reviewed by an analyst. This is the default state for all rows in a raw TMT export.
       - `Needs Investigation`
         > The threat requires further analysis, information gathering, or clarification before a decision can be made.
       - `Mitigated`
-        > The threat is accepted but mitigated through design changes, compensating controls, or operational measures.
+        > The threat has been addressed through design changes, compensating controls, or operational measures. Corresponds to the `Reduce` risk treatment option.
       - `Not Applicable`
-        > The threat is not relevant to the system context or is already fully addressed by existing controls.
+        > The threat is not relevant to the system context, or the risk source has been eliminated. Corresponds to the `Avoid` risk treatment option.
       - `Transferred`
-        > The risk is accepted but transferred to a third party (e.g., insurance, vendor responsibility).
+        > The risk responsibility has been delegated to a third party. Corresponds to the `Transfer` risk treatment option.
+      - `Accepted`
+        > The residual risk is consciously retained without additional controls, within the defined acceptance threshold. Corresponds to the `Accept` risk treatment option. The `Justification` field must record the residual risk level, the acceptance rationale, and the name or role of the stakeholder who approved retention.
     - State decisions must be traceable to the modeled architecture, available evidence, and any documented assumption.
     - When using `Needs Investigation`, name the missing evidence, unanswered question, or dependency that prevents closure.
     - When using `Mitigated` or `Transferred`, identify the control, compensating measure, or responsibility boundary that supports the decision.
+    - When using `Accepted`, record the residual risk level, the acceptance rationale, and the approving stakeholder name or role in the `Justification` field.
 
-8. TMT Priority
+9. TMT Priority
 
     **Action:** Revise the `Priority` field for each row. Use the derived `Risk Prioritization` as the primary signal and adjust only when the modeled context provides a specific reason to deviate.
     - Use the priority vocabulary already present in the file.
@@ -387,16 +425,17 @@ MITRE ATT&CK for ICS to map a TMT threat to realistic adversary behavior affecti
       - `High`
         > The threat is significant and requires prompt mitigation. It should be prioritized in the security backlog and may require escalation.
 
-9. TMT Justification
+10. TMT Justification
 
     **Action:** Write a concise, technically precise analyst statement in the `Justification` field for each row, synthesizing all prior enrichment steps.
     - State why the threat is accepted, mitigated, transferred, not applicable, or still under investigation.
     - Reference the modeled protocol, interface, trust relationship, validation behavior, or compensating control that informs the decision.
-    - Reference the assigned MITRE ATT&CK technique, CWE weakness, CVSS severity, and Risk Prioritization where they support the rationale. Prefer technique name/behavior phrasing over repeating raw MITRE IDs that are already captured in `MITRE ID`.
+    - Reference the assigned MITRE ATT&CK technique, CWE weakness, CVSS severity, Risk Prioritization, and Risk Treatment where they support the rationale. Prefer technique name/behavior phrasing over repeating raw MITRE IDs that are already captured in `MITRE ID`.
     - Do not use identifier-only placeholders in `Justification` (e.g., `(T0859)`, `(CWE-787)`, or a lone CVSS vector). The cell must remain a concise analyst rationale sentence.
     - When a mitigation reduces but does not eliminate exposure, state the residual risk in concise technical terms.
     - When the row remains open, state the most important evidence gap or assumption that must be resolved.
     - When using `Not Applicable`, name the specific architecture contradiction (e.g., passive sensor, analog signal path, human actor rather than machine endpoint, or no independent execution context).
+    - When using `Accepted`, record the residual risk level and the name or role of the stakeholder who approved the acceptance decision.
     - Keep the text brief enough to remain readable in a CSV cell.
 
     > [!IMPORTANT]
@@ -414,7 +453,7 @@ MITRE ATT&CK for ICS to map a TMT threat to realistic adversary behavior affecti
     - Verify that all native TMT columns are present and unmodified in the output before saving.
     - Perform a final column-scope consistency check: keep IDs and score artifacts in dedicated columns, and keep `Justification` as narrative rationale.
     - Reject rows where `Justification` is only an identifier token or parenthetical code reference.
-    - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, and residual risk posture.
+    - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, residual risk posture, and risk treatment decision.
 
 2. Review Summary
 
@@ -434,6 +473,7 @@ MITRE ATT&CK for ICS to map a TMT threat to realistic adversary behavior affecti
     - CWE Weakness Classification summary
     - Assumptions and Evidence Gaps
     - Residual Risk Summary and Unresolved Decisions
+    - Risk Treatment Summary with counts and rationale by treatment option (Reduce, Avoid, Transfer, Accept)
     - Recommended Mitigations by priority (Immediate, Short-Term, Long-Term)
 
 ## 5. Example
@@ -687,6 +727,22 @@ The BSI Likelihood of Exploit categorizes the probability of a threat being succ
   | High                  | Low    | Medium | High   | High     | Critical |
   | Critical              | Medium | High   | High   | Critical | Critical |
 
+#### 5.2.7. Risk Treatment Mapping
+
+- Risk Treatment
+  > Select the appropriate risk treatment option based on the `Risk Prioritization` level and the available mitigation options for the threat. Align the treatment with the TMT `State` field as indicated.
+
+  | Risk Prioritization | Recommended Treatment | TMT State         | Rationale                                                                                                                           |
+  | ------------------- | --------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+  | Info                | Accept                | Accepted          | Negligible risk level. Acceptance is typically appropriate; elevate to `Low` and reassess if context reveals additional exposure.   |
+  | Low                 | Accept / Reduce       | Accepted/Mitigated | Low risk. Accept when residual exposure is within the organization's defined risk tolerance; reduce when cost-effective controls exist. |
+  | Medium              | Reduce / Transfer     | Mitigated/Transferred | Moderate risk. Apply compensating controls or transfer where direct technical mitigation is not feasible.                           |
+  | High                | Reduce                | Mitigated         | Significant risk. Mitigation controls are required; document the specific measures and the residual risk that remains after application. |
+  | Critical            | Reduce / Avoid        | Mitigated/Not Applicable | Unacceptable risk. Immediate mitigation or redesign to eliminate the threat source is required before system deployment.         |
+
+  > [!NOTE]
+  > These are default recommendations. Adjust the treatment option based on the specific system context, available controls, regulatory requirements, and the organization's defined risk appetite and risk acceptance threshold. Risk tolerance thresholds are organization-specific and must be agreed with the responsible stakeholder before the review begins. Any deviation from the recommended treatment must be justified in the `Justification` field and, where applicable, approved by a responsible stakeholder. Threats that remain in `Needs Investigation` state do not yet have a definitive Risk Treatment assignment; assign treatment only once Risk Prioritization is established.
+
 ### 5.3. Template
 
 Use these templates for Microsoft TMT CSV intake and review.
@@ -709,10 +765,10 @@ Use these templates for Microsoft TMT CSV intake and review.
   > The completed analyst review of the TMT export in semi-colon delimited CSV format with review columns appended.
 
   ```csv
-  Id;Title;Category;Diagram;Interaction;Priority;State;Changed By;Description;Justification;Last Modified;MITRE ID;CWE ID;CVSS v4.0 Vector;CVSS-B v4.0 Score;CVSS v4.0 Severity;Likelihood of Exploit;Risk Prioritization
-  0;Spoofing the MCU Process;Spoofing;<Device_Name>;Debugger to MCU over JTAG;Medium;Needs Investigation;;"MCU may be spoofed by an attacker and this may lead to information disclosure by Debugger Probe. Consider using a standard authentication mechanism to identify the destination process.";"The physical JTAG debug interface is a physically attached maintenance path. If the service tool cannot verify the real actuator endpoint, a rogue interposer or substituted board can impersonate the MCU and capture debug or programming traffic.";Generated;T0842;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N;"6,7";Medium;Medium;Medium
-  38;Data Flow MCU to CFG over Modbus RTU (RS-232) Is Potentially Interrupted;Denial Of Service;<Device_Name>;MCU to CFG over Modbus RTU (RS-232);Low;Mitigated;;"An external agent interrupts data flowing across a trust boundary in either direction.";"Interruption of local Configurator service connection over RS-232 affects a local maintenance session more than the primary control function. The actuator remains locally autonomous, and the product supports fail-safe action, so loss of outbound diagnostics is a bounded availability issue.";Generated;T0814;CWE-693;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:L;"2,4";Low;Low;Low
-  72;Elevation Using Impersonation;Elevation Of Privilege;<Device_Name>;Operator to MCU over Switches (GPIO);Low;Not Applicable;;"MCU may be able to impersonate the context of Operator in order to gain additional privilege.";"The modeled peer on local dry-contact GPIO/operator switch path is an external tool or human interface, not a separate MCU privilege domain that the MCU can impersonate to gain rights.";Generated;;;;;;;
+  Id;Title;Category;Diagram;Interaction;Priority;State;Changed By;Description;Justification;Last Modified;MITRE ID;CWE ID;CVSS v4.0 Vector;CVSS-B v4.0 Score;CVSS v4.0 Severity;Likelihood of Exploit;Risk Prioritization;Risk Treatment
+  0;Spoofing the MCU Process;Spoofing;<Device_Name>;Debugger to MCU over JTAG;Medium;Needs Investigation;;"MCU may be spoofed by an attacker and this may lead to information disclosure by Debugger Probe. Consider using a standard authentication mechanism to identify the destination process.";"The physical JTAG debug interface is a physically attached maintenance path. If the service tool cannot verify the real actuator endpoint, a rogue interposer or substituted board can impersonate the MCU and capture debug or programming traffic.";Generated;T0842;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N;"6,7";Medium;Medium;Medium;Reduce
+  38;Data Flow MCU to CFG over Modbus RTU (RS-232) Is Potentially Interrupted;Denial Of Service;<Device_Name>;MCU to CFG over Modbus RTU (RS-232);Low;Mitigated;;"An external agent interrupts data flowing across a trust boundary in either direction.";"Interruption of local Configurator service connection over RS-232 affects a local maintenance session more than the primary control function. The actuator remains locally autonomous, and the product supports fail-safe action, so loss of outbound diagnostics is a bounded availability issue.";Generated;T0814;CWE-693;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:L;"2,4";Low;Low;Low;Accept
+  72;Elevation Using Impersonation;Elevation Of Privilege;<Device_Name>;Operator to MCU over Switches (GPIO);Low;Not Applicable;;"MCU may be able to impersonate the context of Operator in order to gain additional privilege.";"The modeled peer on local dry-contact GPIO/operator switch path is an external tool or human interface, not a separate MCU privilege domain that the MCU can impersonate to gain rights.";Generated;;;;;;;;;Avoid
   ```
 
 ## 6. References
@@ -726,4 +782,6 @@ Use these templates for Microsoft TMT CSV intake and review.
 - FIRST [CVSS v4.0 Calculator](https://www.first.org/cvss/calculator/4.0) page.
 - BSI [Risk Prioritization](https://www.bsi.bund.de/DE/Service-Navi/Abonnements/Newsletter/Buerger-CERT-Abos/Buerger-CERT-Sicherheitshinweise/Risikostufen/risikostufen.html) page.
 - IEC [62443 Industrial Automation and Control Systems Security](https://www.iec.ch/cyber-security) standards.
+- IEC 62443-3-2 Security risk assessment for system design.
+- ISO [31000 Risk Management](https://www.iso.org/iso-31000-risk-management.html) standard.
 - NIST [SP 800-82 Guide to OT Security](https://csrc.nist.gov/publications/detail/sp/800-82/rev-3/final) publication.
