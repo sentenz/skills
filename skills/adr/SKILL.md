@@ -353,13 +353,28 @@ Architectural Decision Records (ADR) on <brief one-sentence description of the d
 ## 5. Consequences
 
 - Positive
-  > <Expected benefits and improvements.>
+
+  - <Positive 1>
+    > <Expected benefits and improvements.>
+
+  - <Positive 2>
+    > <Expected benefits and improvements.>
 
 - Negative
-  > <Known trade-offs, technical debt, or limitations introduced.>
+
+  - <Negative 1>
+    > <Known trade-offs, technical debt, or limitations introduced.>
+
+  - <Negative 2>
+    > <Known trade-offs, technical debt, or limitations introduced.>
 
 - Risks
-  > <Residual risks and planned mitigations.>
+
+  - <Risk 1>
+    > <Residual risks and planned mitigations.>
+
+  - <Risk 2>
+    > <Residual risks and planned mitigations.>
 
 ## 6. Implementation
 
