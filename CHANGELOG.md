@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.2](https://github.com/sentenz/skills/compare/v1.6.1...v1.6.2) (2026-04-30)
+
+
+### Bug Fixes
+
+* refine Agent Skill for ADR ([27c9057](https://github.com/sentenz/skills/commit/27c9057fa37409210e02f291fbbbcc328e9c79a0))
+
 ## [1.6.1](https://github.com/sentenz/skills/compare/v1.6.0...v1.6.1) (2026-04-24)
 
 
