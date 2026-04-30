@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.4](https://github.com/sentenz/skills/compare/v1.6.3...v1.6.4) (2026-04-30)
+
+
+### Bug Fixes
+
+* refine implementation section in ADR SKILL.md ([6feb8fc](https://github.com/sentenz/skills/commit/6feb8fc5c3d791a30cffeed98e21c99c609ec4d0))
+
 ## [1.6.3](https://github.com/sentenz/skills/compare/v1.6.2...v1.6.3) (2026-04-30)
 
 
