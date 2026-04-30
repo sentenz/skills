@@ -2,7 +2,7 @@
 name: adr
 description: Creates and maintains Architecture Decision Records (ADRs) following a structured format with State, Context, Decision, Considered, Consequences, Implementation, and References sections. Use when creating, updating, or reviewing architectural decisions, or when the user mentions ADR, architecture decisions, technical decisions, or design records.
 metadata:
-  version: "1.0.1"
+  version: "1.0.2"
   activation:
     implicit: true
     priority: 1
@@ -378,11 +378,17 @@ Architectural Decision Records (ADR) on <brief one-sentence description of the d
 
 ## 6. Implementation
 
-1. <Step 1: describe the first implementation action.>
+1. <Step 1>
 
-2. <Step 2: describe the next implementation action.>
+    <Describe the first implementation action.>
 
-3. <Step 3: describe validation or verification.>
+2. <Step 2>
+
+    <Describe the next implementation action.>
+
+3. <Step 3>
+
+    <Describe validation or verification.>
 
 ## 7. References
 
