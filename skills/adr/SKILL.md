@@ -320,7 +320,7 @@ Architectural Decision Records (ADR) on <brief one-sentence description of the d
 
 [<Option 1 Name>](<link-to-official-docs-or-repo>) <brief one-sentence description>.
 
-- Pros:
+- Pros
 
   - <Strength 1>
     > <Description.>
@@ -328,7 +328,7 @@ Architectural Decision Records (ADR) on <brief one-sentence description of the d
   - <Strength 2>
     > <Description.>
 
-- Cons:
+- Cons
 
   - <Weakness 1>
     > <Description.>
@@ -340,12 +340,12 @@ Architectural Decision Records (ADR) on <brief one-sentence description of the d
 
 [<Option 2 Name>](<link-to-official-docs-or-repo>) <brief one-sentence description>.
 
-- Pros:
+- Pros
 
   - <Strength 1>
     > <Description.>
 
-- Cons:
+- Cons
 
   - <Weakness 1>
     > <Description.>
