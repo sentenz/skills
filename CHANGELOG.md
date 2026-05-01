@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.5](https://github.com/sentenz/skills/compare/v1.6.4...v1.6.5) (2026-05-01)
+
+
+### Bug Fixes
+
+* remove colons from Pros/Cons in ADR SKILL.md ([cbff3ff](https://github.com/sentenz/skills/commit/cbff3ffb02488426c65ab507e9df97cbdede9c21))
+
 ## [1.6.4](https://github.com/sentenz/skills/compare/v1.6.3...v1.6.4) (2026-04-30)
 
 
