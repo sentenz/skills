@@ -2,7 +2,7 @@
 name: adr
 description: Creates and maintains Architecture Decision Records (ADRs) following a structured format with State, Context, Decision, Considered, Consequences, Implementation, and References sections. Use when creating, updating, or reviewing architectural decisions, or when the user mentions ADR, architecture decisions, technical decisions, or design records.
 metadata:
-  version: "1.0.3"
+  version: "1.1.0"
   activation:
     implicit: true
     priority: 1
@@ -41,6 +41,8 @@ Instructions for AI agents on creating and maintaining Architecture Decision Rec
   - [3.2. Context](#32-context)
   - [3.3. Decision](#33-decision)
   - [3.4. Considered](#34-considered)
+    - [3.4.1. Option Entries](#341-option-entries)
+    - [3.4.2. Comparison Matrix](#342-comparison-matrix)
   - [3.5. Consequences](#35-consequences)
   - [3.6. Implementation](#36-implementation)
   - [3.7. References](#37-references)
@@ -131,17 +133,21 @@ The Context section describes the circumstances that necessitated the decision.
 
 ### 3.3. Decision
 
-The Decision section records the chosen option and explains why it was selected.
+The Decision section records the chosen option and explains why it was selected over all considered alternatives.
 
 - Chosen Option
   > State clearly which option was selected. Use a subsection heading named after the chosen tool, pattern, or approach.
 
 - Rationale
-  > For each decision driver listed in Context, provide a concise explanation of how the chosen option satisfies that criterion.
+  > For each decision driver listed in Context, provide a concise explanation of how the chosen option satisfies that criterion better than the alternatives evaluated in the Considered section.
 
 ### 3.4. Considered
 
-The Considered section enumerates all options evaluated before reaching the decision.
+The Considered section enumerates all options evaluated before reaching the decision. At least two options must be documented; three or more options are strongly preferred to demonstrate thorough evaluation.
+
+#### 3.4.1. Option Entries
+
+Each option receives its own H3 subsection.
 
 - Option Description
   > Briefly describe each option, including a link to its official documentation or repository.
@@ -151,6 +157,10 @@ The Considered section enumerates all options evaluated before reaching the deci
 
 - Cons
   > List the weaknesses, limitations, or risks of the option.
+
+#### 3.4.2. Comparison Matrix
+
+After all individual option entries, include a Markdown table that maps every option against every decision driver. Use a consistent rating scale such as `✅ High`, `⚠️ Medium`, or `❌ Low` to express how well each option satisfies each driver. This matrix provides a concise visual summary that supports the rationale stated in the Decision section.
 
 ### 3.5. Consequences
 
@@ -237,7 +247,10 @@ The References section lists all external and internal resources cited in the AD
   > Group decision drivers under a single numbered list item (`1. Decision Drivers`). List each driver as a bullet (`-`) with a blockquote (`>`) providing a one-sentence description.
 
 - Alternatives
-  > Each considered option should be a H3 subsection using the option's proper name. Use `- Pros` / `- Cons` with nested blockquote descriptions for each point.
+  > Each considered option should be a H3 subsection using the option's proper name. Use `- Pros` / `- Cons` with nested blockquote descriptions for each point. Include at least two options; three or more are strongly preferred.
+
+- Comparison Matrix
+  > After all individual option entries in the Considered section, always include a Markdown comparison table with options as columns and decision drivers as rows. Use `✅ High`, `⚠️ Medium`, and `❌ Low` as rating values to indicate how well each option satisfies each driver.
 
 - Status Field
   > Always include exactly one of the defined statuses: `Proposed`, `Accepted`, `Rejected`, `Deprecated`, or `Superseded`.
@@ -272,6 +285,7 @@ Architectural Decision Records (ADR) on <brief one-sentence description of the d
 - [4. Considered](#4-considered)
   - [4.1. <Option 1 Name>](#41-<option-1-anchor>)
   - [4.2. <Option 2 Name>](#42-<option-2-anchor>)
+  - [4.3. <Option 3 Name>](#43-<option-3-anchor>)
 - [5. Consequences](#5-consequences)
 - [6. Implementation](#6-implementation)
 - [7. References](#7-references)
@@ -301,7 +315,7 @@ Architectural Decision Records (ADR) on <brief one-sentence description of the d
 
 ### 3.1. <Chosen Option Name>
 
-<Explain why this option was selected over the alternatives. Reference the decision drivers to justify the choice.>
+<Explain why this option was selected over the alternatives. Reference the decision drivers and the comparison matrix in the Considered section to justify the choice.>
 
 1. Rationale
 
@@ -349,6 +363,28 @@ Architectural Decision Records (ADR) on <brief one-sentence description of the d
 
   - <Weakness 1>
     > <Description.>
+
+### 4.3. <Option 3 Name>
+
+[<Option 3 Name>](<link-to-official-docs-or-repo>) <brief one-sentence description>.
+
+- Pros
+
+  - <Strength 1>
+    > <Description.>
+
+- Cons
+
+  - <Weakness 1>
+    > <Description.>
+
+### Comparison Matrix
+
+| Decision Driver | <Option 1 Name> | <Option 2 Name> | <Option 3 Name> |
+| --------------- | --------------- | --------------- | --------------- |
+| <Driver 1>      | ✅ High         | ⚠️ Medium       | ❌ Low          |
+| <Driver 2>      | ⚠️ Medium       | ✅ High         | ⚠️ Medium       |
+| <Driver 3>      | ✅ High         | ❌ Low          | ✅ High         |
 
 ## 5. Consequences
 
