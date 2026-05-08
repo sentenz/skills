@@ -1,8 +1,8 @@
 ---
 name: adr
-description: Creates and maintains Architecture Decision Records (ADRs) following a structured format with State, Context, Decision, Considered, Consequences, Implementation, and References sections. Supports single decisions, multiple complementary decisions, and deferred decisions. Use when creating, updating, or reviewing architectural decisions, or when the user mentions ADR, architecture decisions, technical decisions, or design records.
+description: Creates and maintains Architecture Decision Records (ADRs) following a structured format with State, Context, Decision, Considered, Consequences, Implementation, and References sections. Supports single-option decisions, multi-option decisions within one decision scope, multiple complementary decisions, and deferred decisions. Use when creating, updating, or reviewing architectural decisions, or when the user mentions ADR, architecture decisions, technical decisions, or design records.
 metadata:
-  version: "1.0.4"
+  version: "1.0.5"
   activation:
     implicit: true
     priority: 1
@@ -74,7 +74,7 @@ Instructions for AI agents on creating and maintaining Architecture Decision Rec
 ADRs should embody the following characteristics to maximize their value.
 
 - Atomic
-  > Each ADR addresses a single, clearly scoped decision. Avoid bundling multiple unrelated decisions in one record.
+  > Each ADR addresses one clearly scoped decision concern. A single ADR may select one option or multiple complementary options from Considered, but it must not bundle unrelated decision concerns in one record.
 
 - Immutable
   > Once an ADR reaches `Accepted` status, its content should not be altered retroactively. Changes in direction require a new ADR that supersedes the old one.
@@ -203,7 +203,7 @@ The References section lists all external and internal resources cited in the AD
     Assign the next sequential three-digit number and create a descriptive kebab-case file name derived from the canonical ADR title context following the convention:
 
     ```plaintext
-    NNN-adr-<topic>-<scope>.md
+    NNN-adr-<topic>[-<scope>].md
     ```
 
     Examples:
@@ -218,7 +218,7 @@ The References section lists all external and internal resources cited in the AD
     Create the ADR file in the designated decisions directory:
 
     ```plaintext
-    docs/decisions/NNN-adr-<topic>-<scope>.md
+    docs/decisions/NNN-adr-<topic>[-<scope>].md
     ```
 
 5. Draft
@@ -248,7 +248,7 @@ The References section lists all external and internal resources cited in the AD
     > Optional. Include `for <Scope>` only when it meaningfully narrows the decision applicability.
 
 - File Naming
-  > Use the pattern `NNN-adr-<topic>-<scope>.md` with lowercase kebab-case for the title segment. The prefix `NNN` is a zero-padded three-digit sequence number (e.g., `001`, `012`). Derive the slug from the canonical ADR title. Omit scope terms from the slug when scope is not present.
+  > Use the pattern `NNN-adr-<topic>[-<scope>].md` with lowercase kebab-case for the title segment. The prefix `NNN` is a zero-padded three-digit sequence number (e.g., `001`, `012`). The `-<scope>` segment is optional and must be omitted when scope is not present (do not leave a trailing dash). Derive the slug from the canonical ADR title.
 
 - Heading Levels
   > Use H1 (`#`) for the ADR title, H2 (`##`) for top-level sections (State, Context, Decision, Considered, etc.), and H3 (`###`) for subsections (individual options or decisions under Decision or options under Considered). Support multiple decisions by using multiple H3 subsections under Decision (e.g., 3.1, 3.2, 3.3) when applicable.
