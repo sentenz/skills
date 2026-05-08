@@ -333,7 +333,7 @@ Architectural Decision Records (ADR) on <brief one-sentence description of the d
     - <Driver 2>
       > <How this option satisfies this driver.>
 
-### 3.2. <Option Name 2> (if applicable)
+### 3.2. <Option Name 2>
 
 <If multiple options are selected, include additional subsections for each chosen option. If no options are selected, document the deferral reason and next steps.>
 
