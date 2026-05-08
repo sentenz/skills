@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.6](https://github.com/sentenz/skills/compare/v1.6.5...v1.6.6) (2026-05-08)
+
+
+### Bug Fixes
+
+* enhance Agent Skill for ADR with detailed decision options and rationale ([#31](https://github.com/sentenz/skills/issues/31)) ([9c6cce5](https://github.com/sentenz/skills/commit/9c6cce586ff24fa34019c53bb7ccfaf42940bc7c))
+
 ## [1.6.5](https://github.com/sentenz/skills/compare/v1.6.4...v1.6.5) (2026-05-01)
 
 
