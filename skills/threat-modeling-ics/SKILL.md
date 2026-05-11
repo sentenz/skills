@@ -128,23 +128,26 @@ The Purdue Model (ISA-95 / IEC 62264) partitions an industrial automation enviro
 
 ### 2.3. Threat Actors
 
-- Nation-State Actors / APTs
+Threat modeling must assign the minimum-capable adversary type relevant to the OT/ICS attack path. Use canonical threat actor classes aligned with common CISA and NIST threat-source terminology so the `Threat Actor` field records actor type rather than campaign style, access vector, or tooling maturity.
+
+- Use exactly one standardized `Threat Actor` label per reviewed CSV row. Allowed labels are:
+  - `Nation-State Actor`
+  - `Cybercriminal`
+  - `Insider Threat`
+  - `Hacktivist`
+- Do not use `APT`, `Ransomware Operator`, `Supply Chain Attacker`, or `Script Kiddie` as standalone labels. Treat those as supporting context that helps justify one of the canonical actor classes below.
+
+- Nation-State Actor
   > State-sponsored actors conduct long-duration, multi-stage campaigns targeting critical infrastructure for geopolitical objectives: espionage, pre-positioning for disruption, or physical sabotage. They invest significant resources in custom tooling, zero-day exploits, and supply-chain compromise to penetrate defense-in-depth architectures and reach Level 0 field devices.
 
-- Cybercriminals
+- Cybercriminal
   > Financially motivated actors deploy ransomware or extortion campaigns that pivot across the IT/OT boundary. By encrypting historian databases, engineering workstations, or SCADA servers they force operators to halt processes or pay ransom to restore visibility and control. OT-targeting ransomware groups increasingly understand industrial protocol semantics.
 
-- Insider Threats
+- Insider Threat
   > Insiders hold privileged physical or logical access to control systems without requiring an initial intrusion phase. Malicious insiders may intentionally manipulate setpoints, corrupt configuration files, introduce rogue commands, or disable safety interlocks. Negligent insiders introduce risk by bypassing security controls or mishandling engineering-level credentials.
 
-- Hacktivists
+- Hacktivist
   > Hacktivists target publicly visible OT assets to advance political or ideological agendas. They exploit internet-exposed HMIs, Shodan-indexed SCADA web interfaces, or default credentials to post proof-of-access, deface operator displays, or make coarse setpoint changes for publicity rather than sustained operational damage.
-
-- Supply Chain Attacker
-  > Supply chain attackers compromise ICS assets before they are deployed or during legitimate update workflows by inserting malicious code or hardware into products, firmware images, or software packages distributed by trusted vendors. The attack surface spans firmware, engineering software, managed service provider (MSP) remote access tooling, and third-party libraries used in HMI and SCADA applications.
-
-- Script Kiddie
-  > Low-capability actors scan for internet-exposed OT services using tools such as Shodan or Censys, then apply public exploit scripts or default credentials against unpatched targets. They typically seek notoriety or curiosity rather than mission-specific impact, but can trigger unintentional process disruption through careless command execution on live control systems.
 
 ### 2.4. Diagram Depth Layers
 
@@ -748,15 +751,16 @@ Normalize the `Threat Actor` decision from common OT/ICS threat-path characteris
 
 | Threat-path characteristics                                                                 | Minimum Threat Actor                  | Selection logic                                                                                           |
 | -------------------------------------------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Internet-exposed HMI, VPN, web service, or remote access path exploitable with public tools | `Opportunistic / Script Kiddie`       | Use when public exposure and commodity tooling are sufficient and no OT-specific process knowledge is required. |
-| Public disruption, defacement, or proof-of-access against exposed OT assets                 | `Hacktivist`                          | Use when the objective is visibility or disruption for messaging rather than sustained control of process operations. |
-| Extortion, ransomware staging, or financially motivated IT/OT pivoting                      | `Cybercriminal / Ransomware Operator` | Use when commodity or affiliate-operated intrusion tradecraft is enough to disrupt operations for payment. |
+| Internet-exposed HMI, VPN, web service, or remote access path exploitable with public tools | `Cybercriminal`                       | Use when public exposure and commodity intrusion tradecraft are sufficient. Low sophistication alone does not create a separate actor class. |
+| Public disruption, defacement, or proof-of-access against exposed OT assets                 | `Hacktivist`                          | Use when the primary objective is political or ideological messaging, visibility, or symbolic disruption rather than monetization. |
+| Extortion, ransomware staging, or financially motivated IT/OT pivoting                      | `Cybercriminal`                       | Use when commodity or affiliate-operated intrusion tradecraft is enough to disrupt operations for payment or fraud. |
 | Trusted maintenance path, engineering workstation misuse, badge access, or privileged misuse | `Insider Threat`                      | Use when success depends on privileged local access, physical presence, or direct operational familiarity. |
-| Malicious firmware, tainted software update, compromised vendor tooling, or MSP channel     | `Supply Chain Attacker`               | Use when the attack relies on pre-positioning through a trusted supplier, integrator, or update workflow. |
-| Coordinated multi-stage intrusion needing custom tooling, stealth, or deep process expertise | `Nation-State / APT`                  | Use only when lower-tier actors cannot plausibly achieve the path without advanced tradecraft or mission-specific OT knowledge. |
+| Malicious firmware, tainted software update, compromised vendor tooling, or MSP channel used for stealthy pre-positioning or sabotage | `Nation-State Actor` | Use when the supplier-channel compromise requires sustained stealth, custom tooling, or mission-specific OT manipulation. |
+| Malicious software update, compromised vendor tooling, or MSP channel reused for broad extortion or monetized access | `Cybercriminal` | Use when the supplier-channel compromise is primarily a scalable access mechanism for fraud, ransomware, or other financially motivated disruption. |
+| Coordinated multi-stage intrusion needing custom tooling, stealth, or deep process expertise | `Nation-State Actor`                  | Use only when lower-tier actors cannot plausibly achieve the path without advanced tradecraft or mission-specific OT knowledge. |
 
 > [!NOTE]
-> The presence of high impact alone does not justify a more capable actor.
+> The presence of high impact alone does not justify a more capable actor. Terms such as `APT`, `Ransomware Operator`, `Supply Chain Attacker`, and `Script Kiddie` may appear in justification text, but not as `Threat Actor` labels.
 
 ### 5.3. Template
 
@@ -798,4 +802,7 @@ Use these templates for Microsoft TMT CSV intake and review.
 - BSI [Risk Prioritization](https://www.bsi.bund.de/DE/Service-Navi/Abonnements/Newsletter/Buerger-CERT-Abos/Buerger-CERT-Sicherheitshinweise/Risikostufen/risikostufen.html) page.
 - IEC [62443 Industrial Automation and Control Systems Security](https://www.iec.ch/cyber-security) standards.
 - ISO [31000 Risk Management](https://www.iso.org/iso-31000-risk-management.html) standard.
+- NIST [SP 800-30 Guide for Conducting Risk Assessments](https://csrc.nist.gov/publications/detail/sp/800-30/rev-1/final) publication.
 - NIST [SP 800-82 Guide to OT Security](https://csrc.nist.gov/publications/detail/sp/800-82/rev-3/final) publication.
+- CISA [Nation-State Threats](https://www.cisa.gov/topics/cyber-threats-and-advisories/nation-state-cyber-actors) page.
+- CISA [Defining Insider Threats](https://www.cisa.gov/topics/physical-security/insider-threat-mitigation/defining-insider-threats) page.
