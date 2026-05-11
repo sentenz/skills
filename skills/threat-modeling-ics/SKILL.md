@@ -760,6 +760,7 @@ Use these templates for Microsoft TMT CSV intake and review.
 
 - `<Device_Name>_Threat_Model_Generated.csv`
   > The completed analyst review of the TMT export in semi-colon delimited CSV format with review columns appended.
+  > Review column order requirement: `...;Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment`.
 
   ```csv
   Id;Title;Category;Diagram;Interaction;Priority;State;Changed By;Description;Justification;Last Modified;MITRE ID;CWE ID;CVSS v4.0 Vector;CVSS-B v4.0 Score;CVSS v4.0 Severity;Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment
