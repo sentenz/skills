@@ -421,7 +421,7 @@ Risk treatment defines the disposition decision after each identified risk has b
     **Action:** Write a concise, technically precise analyst statement in the `Justification` field for each row, synthesizing all prior enrichment steps. The justification provides the evidence-based rationale that supports the assigned `State` and informs the `Risk Treatment` decision in the next step.
     - State the evidence-based rationale that supports the assigned `State`.
     - Reference the modeled protocol, interface, trust relationship, validation behavior, or compensating control that informs the decision.
-    - Reference the assigned minimum required `Threat Actor`, MITRE ATT&CK technique, CWE weakness, CVSS severity, and Risk Prioritization where they support the rationale. Prefer technique name and behavior phrasing over repeating raw MITRE IDs that are already captured in `MITRE ID`.
+    - Reference the assigned minimum required `Threat Actor`, MITRE ATT&CK technique, CWE weakness, CVSS severity, and Risk Prioritization where they support the rationale. Keep the canonical actor label in the dedicated `Threat Actor` column; in `Justification`, include only concise rationale for why that actor level is sufficient. Prefer technique name and behavior phrasing over repeating raw MITRE IDs that are already captured in `MITRE ID`.
     - When `State` is `Not Applicable`, name the specific architectural contradiction or eliminated element (e.g., passive sensor, analog signal path, human actor rather than machine endpoint, or no independent execution context).
     - When `State` is `Mitigated`, identify the applied security control, compensating measure, or design change. State the residual risk level if exposure is not fully eliminated. If risk ownership is formally transferred to a third party, identify the named organization, contract, or SLA.
     - When `State` is `Needs Investigation`, state the most important evidence gap or assumption that must be resolved before a decision can be made.
@@ -760,7 +760,7 @@ Use these templates for Microsoft TMT CSV intake and review.
 
 - `<Device_Name>_Threat_Model_Generated.csv`
   > The completed analyst review of the TMT export in semi-colon delimited CSV format with review columns appended.
-  > Review column order requirement: after the standard TMT columns and enrichment columns shown in the header template below, the final four columns must appear in this exact order: `Likelihood of Exploit`, `Risk Prioritization`, `Threat Actor`, `Risk Treatment`.
+  > Review column order requirement: after the standard TMT columns and enrichment columns shown in the header template below, the final four columns must appear in this exact order: `Likelihood of Exploit`, `Risk Prioritization`, `Threat Actor`, `Risk Treatment`. `Threat Actor` is intentionally inserted immediately before `Risk Treatment` so risk treatment remains the final decision column.
 
   ```csv
   Id;Title;Category;Diagram;Interaction;Priority;State;Changed By;Description;Justification;Last Modified;MITRE ID;CWE ID;CVSS v4.0 Vector;CVSS-B v4.0 Score;CVSS v4.0 Severity;Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment
