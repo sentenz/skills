@@ -128,32 +128,22 @@ The Purdue Model (ISA-95 / IEC 62264) partitions an industrial automation enviro
 
 ### 2.3. Threat Actors
 
-Threat modeling must assign the minimum-capable adversary type relevant to the OT/ICS attack path. Apply the selection criteria during workflow step `7. Threat Actor` for each reviewed CSV row.
-
-- Use exactly one standardized `Threat Actor` label per reviewed CSV row. Allowed labels are:
-  - `Nation-State / APT`
-  - `Cybercriminal / Ransomware Operator`
-  - `Insider Threat`
-  - `Hacktivist`
-  - `Supply Chain Attacker`
-  - `Opportunistic / Script Kiddie`
-
-- Nation-State / APT
+- Nation-State Actors / APTs
   > State-sponsored actors conduct long-duration, multi-stage campaigns targeting critical infrastructure for geopolitical objectives: espionage, pre-positioning for disruption, or physical sabotage. They invest significant resources in custom tooling, zero-day exploits, and supply-chain compromise to penetrate defense-in-depth architectures and reach Level 0 field devices.
 
-- Cybercriminal / Ransomware Operator
+- Cybercriminals
   > Financially motivated actors deploy ransomware or extortion campaigns that pivot across the IT/OT boundary. By encrypting historian databases, engineering workstations, or SCADA servers they force operators to halt processes or pay ransom to restore visibility and control. OT-targeting ransomware groups increasingly understand industrial protocol semantics.
 
-- Insider Threat
+- Insider Threats
   > Insiders hold privileged physical or logical access to control systems without requiring an initial intrusion phase. Malicious insiders may intentionally manipulate setpoints, corrupt configuration files, introduce rogue commands, or disable safety interlocks. Negligent insiders introduce risk by bypassing security controls or mishandling engineering-level credentials.
 
-- Hacktivist
+- Hacktivists
   > Hacktivists target publicly visible OT assets to advance political or ideological agendas. They exploit internet-exposed HMIs, Shodan-indexed SCADA web interfaces, or default credentials to post proof-of-access, deface operator displays, or make coarse setpoint changes for publicity rather than sustained operational damage.
 
 - Supply Chain Attacker
   > Supply chain attackers compromise ICS assets before they are deployed or during legitimate update workflows by inserting malicious code or hardware into products, firmware images, or software packages distributed by trusted vendors. The attack surface spans firmware, engineering software, managed service provider (MSP) remote access tooling, and third-party libraries used in HMI and SCADA applications.
 
-- Opportunistic / Script Kiddie
+- Script Kiddie
   > Low-capability actors scan for internet-exposed OT services using tools such as Shodan or Censys, then apply public exploit scripts or default credentials against unpatched targets. They typically seek notoriety or curiosity rather than mission-specific impact, but can trigger unintentional process disruption through careless command execution on live control systems.
 
 ### 2.4. Diagram Depth Layers
