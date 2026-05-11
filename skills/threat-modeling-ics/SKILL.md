@@ -128,7 +128,7 @@ The Purdue Model (ISA-95 / IEC 62264) partitions an industrial automation enviro
 
 ### 2.3. Threat Actors
 
-Threat modeling must assign the minimum-capable adversary type relevant to the OT/ICS attack path.
+Threat modeling must assign the minimum-capable adversary type relevant to the OT/ICS attack path. Apply the selection criteria during workflow step `7. Threat Actor` for each reviewed CSV row.
 
 - Use exactly one standardized `Threat Actor` label per reviewed CSV row. Allowed labels are:
   - `Nation-State / APT`
@@ -137,13 +137,6 @@ Threat modeling must assign the minimum-capable adversary type relevant to the O
   - `Hacktivist`
   - `Supply Chain Attacker`
   - `Opportunistic / Script Kiddie`
-- Choose the minimum required actor, not the most severe or most newsworthy actor.
-- Base the selection on three criteria together:
-  - **Capability:** tooling maturity, exploit sophistication, and ability to chain multiple steps.
-  - **Access Path:** internet-reachable, adjacent industrial network, local workstation, maintenance path, or physical access requirement.
-  - **Operational Knowledge:** generic IT tradecraft, OT protocol familiarity, process-specific engineering knowledge, or privileged insider context.
-- Escalate to a more capable actor only when the attack path cannot reasonably succeed with a less capable one.
-- Do not assign multiple actors in one row. If several actors could plausibly perform the attack, record the minimum actor that can realistically achieve the described effect.
 
 - Nation-State / APT
   > State-sponsored actors conduct long-duration, multi-stage campaigns targeting critical infrastructure for geopolitical objectives: espionage, pre-positioning for disruption, or physical sabotage. They invest significant resources in custom tooling, zero-day exploits, and supply-chain compromise to penetrate defense-in-depth architectures and reach Level 0 field devices.
@@ -411,8 +404,16 @@ Risk treatment defines the disposition decision after each identified risk has b
 
     **Action:** Assign the minimum capable `Threat Actor` for each row using the standardized labels from [Threat Actors](#23-threat-actors).
     - Add or update a `Threat Actor` column in the review CSV rather than creating duplicate fields.
+    - Use exactly one standardized `Threat Actor` label per reviewed CSV row.
+    - Choose the minimum required actor, not the most severe or most newsworthy actor.
     - Base the decision on the modeled attack path, required access, exploit maturity, and the amount of OT-specific knowledge required.
+    - Evaluate the assignment against all three selection criteria together:
+      - **Capability:** tooling maturity, exploit sophistication, and ability to chain multiple steps.
+      - **Access Path:** internet-reachable, adjacent industrial network, local workstation, maintenance path, or physical access requirement.
+      - **Operational Knowledge:** generic IT tradecraft, OT protocol familiarity, process-specific engineering knowledge, or privileged insider context.
     - Prefer the least capable actor that can still plausibly execute the threat end-to-end.
+    - Escalate to a more capable actor only when the attack path cannot reasonably succeed with a less capable one.
+    - Do not assign multiple actors in one row. If several actors could plausibly perform the attack, record the minimum actor that can realistically achieve the described effect.
     - Reference the [Threat Actor Mapping](#527-threat-actor-mapping) section for common actor selections from attack-path characteristics.
 
 8. TMT State
