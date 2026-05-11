@@ -135,7 +135,7 @@ Threat modeling must assign the minimum-capable adversary type relevant to the O
   - `Cybercriminal`
   - `Insider Threat`
   - `Hacktivist`
-- Do not use `APT`, `Ransomware Operator`, `Supply Chain Attacker`, or `Script Kiddie` as standalone labels. Treat those as supporting context that helps justify one of the canonical actor classes below.
+- Do not use `APT`, `Ransomware Operator`, `Supply Chain Attacker`, or `Script Kiddie` as standalone labels. Treat those as supporting context that helps justify one of the four canonical actor classes (`Nation-State Actor`, `Cybercriminal`, `Insider Threat`, `Hacktivist`).
 
 - Nation-State Actor
   > State-sponsored actors conduct long-duration, multi-stage campaigns targeting critical infrastructure for geopolitical objectives: espionage, pre-positioning for disruption, or physical sabotage. They invest significant resources in custom tooling, zero-day exploits, and supply-chain compromise to penetrate defense-in-depth architectures and reach Level 0 field devices.
@@ -751,7 +751,7 @@ Normalize the `Threat Actor` decision from common OT/ICS threat-path characteris
 
 | Threat-path characteristics                                                                 | Minimum Threat Actor                  | Selection logic                                                                                           |
 | -------------------------------------------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Internet-exposed HMI, VPN, web service, or remote access path exploitable with public tools | `Cybercriminal`                       | Use when public exposure and commodity intrusion tradecraft are sufficient. Low sophistication alone does not create a separate actor class. |
+| Internet-exposed HMI, VPN, web service, or remote access path exploitable with public tools | `Cybercriminal`                       | Use when public exposure and commodity intrusion tradecraft are sufficient and the scenario points to monetization, fraud, or unauthorized access for gain. If the same exposed path is primarily used for ideological messaging or public disruption, choose `Hacktivist` instead. |
 | Public disruption, defacement, or proof-of-access against exposed OT assets                 | `Hacktivist`                          | Use when the primary objective is political or ideological messaging, visibility, or symbolic disruption rather than monetization. |
 | Extortion, ransomware staging, or financially motivated IT/OT pivoting                      | `Cybercriminal`                       | Use when commodity or affiliate-operated intrusion tradecraft is enough to disrupt operations for payment or fraud. |
 | Trusted maintenance path, engineering workstation misuse, badge access, or privileged misuse | `Insider Threat`                      | Use when success depends on privileged local access, physical presence, or direct operational familiarity. |
@@ -761,6 +761,8 @@ Normalize the `Threat Actor` decision from common OT/ICS threat-path characteris
 
 > [!NOTE]
 > The presence of high impact alone does not justify a more capable actor. Terms such as `APT`, `Ransomware Operator`, `Supply Chain Attacker`, and `Script Kiddie` may appear in justification text, but not as `Threat Actor` labels.
+>
+> The same supplier-channel path can support different actor classes. When vendor tooling, firmware distribution, or MSP access is involved, still record exactly one canonical label based on the modeled campaign objective: sabotage or covert pre-positioning maps to `Nation-State Actor`, while monetized reuse maps to `Cybercriminal`.
 
 ### 5.3. Template
 
