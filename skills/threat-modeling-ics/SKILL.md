@@ -128,14 +128,15 @@ The Purdue Model (ISA-95 / IEC 62264) partitions an industrial automation enviro
 
 ### 2.3. Threat Actors
 
-Threat modeling must assign the minimum-capable adversary type relevant to the OT/ICS attack path. Use canonical threat actor classes aligned with common CISA and NIST threat-source terminology so the `Threat Actor` field records actor type rather than campaign style, access vector, or tooling maturity.
+Threat modeling must assign the minimum-capable adversary type relevant to the OT/ICS attack path.
+Use canonical threat actor classes aligned with common CISA and NIST threat-source terminology so the `Threat Actor` field records actor type rather than campaign style, access vector, or tooling maturity.
 
 - Use exactly one standardized `Threat Actor` label per reviewed CSV row. Allowed labels are:
   - `Nation-State Actor`
   - `Cybercriminal`
   - `Insider Threat`
   - `Hacktivist`
-- Do not use `APT`, `Ransomware Operator`, `Supply Chain Attacker`, or `Script Kiddie` as standalone labels. Treat those as supporting context that helps justify one of the four canonical actor classes (`Nation-State Actor`, `Cybercriminal`, `Insider Threat`, `Hacktivist`).
+- Do not use `APT`, `Ransomware Operator`, `Supply Chain Attacker`, or `Script Kiddie` as standalone labels. Treat those as supporting context that helps justify one of the four canonical actor classes listed above.
 
 - Nation-State Actor
   > State-sponsored actors conduct long-duration, multi-stage campaigns targeting critical infrastructure for geopolitical objectives: espionage, pre-positioning for disruption, or physical sabotage. They invest significant resources in custom tooling, zero-day exploits, and supply-chain compromise to penetrate defense-in-depth architectures and reach Level 0 field devices.
@@ -751,12 +752,12 @@ Normalize the `Threat Actor` decision from common OT/ICS threat-path characteris
 
 | Threat-path characteristics                                                                 | Minimum Threat Actor                  | Selection logic                                                                                           |
 | -------------------------------------------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Internet-exposed HMI, VPN, web service, or remote access path exploitable with public tools | `Cybercriminal`                       | Use when public exposure and commodity intrusion tradecraft are sufficient and the scenario points to monetization, fraud, or unauthorized access for gain. If the same exposed path is primarily used for ideological messaging or public disruption, choose `Hacktivist` instead. |
-| Public disruption, defacement, or proof-of-access against exposed OT assets                 | `Hacktivist`                          | Use when the primary objective is political or ideological messaging, visibility, or symbolic disruption rather than monetization. |
+| Internet-exposed HMI, VPN, web service, or remote access path exploited with commodity tooling for extortion, fraud, or monetized access | `Cybercriminal` | Use when public exposure and commodity intrusion tradecraft are sufficient and the modeled outcome is financial gain or scalable criminal reuse. |
+| Internet-exposed HMI, VPN, web service, or remote access path exploited for publicity, protest, or symbolic disruption | `Hacktivist` | Use when the same exposed path is primarily used for ideological messaging, defacement, or proof-of-access rather than monetization. |
 | Extortion, ransomware staging, or financially motivated IT/OT pivoting                      | `Cybercriminal`                       | Use when commodity or affiliate-operated intrusion tradecraft is enough to disrupt operations for payment or fraud. |
 | Trusted maintenance path, engineering workstation misuse, badge access, or privileged misuse | `Insider Threat`                      | Use when success depends on privileged local access, physical presence, or direct operational familiarity. |
-| Malicious firmware, tainted software update, compromised vendor tooling, or MSP channel used for stealthy pre-positioning or sabotage | `Nation-State Actor` | Use when the supplier-channel compromise requires sustained stealth, custom tooling, or mission-specific OT manipulation. |
-| Malicious software update, compromised vendor tooling, or MSP channel reused for broad extortion or monetized access | `Cybercriminal` | Use when the supplier-channel compromise is primarily a scalable access mechanism for fraud, ransomware, or other financially motivated disruption. |
+| Malicious firmware, tainted software update, compromised vendor tooling, or MSP channel used for stealthy pre-positioning or sabotage | `Nation-State Actor` | Use when the supplier-channel compromise requires sustained stealth, custom tooling, or mission-specific OT manipulation. Example: a trojanized engineering software update that quietly establishes long-term access to safety controllers. |
+| Malicious software update, compromised vendor tooling, or MSP channel reused for broad extortion or monetized access | `Cybercriminal` | Use when the supplier-channel compromise is primarily a scalable access mechanism for fraud, ransomware, or other financially motivated disruption. Example: a compromised remote management platform reused to deploy ransomware across multiple customer sites. |
 | Coordinated multi-stage intrusion needing custom tooling, stealth, or deep process expertise | `Nation-State Actor`                  | Use only when lower-tier actors cannot plausibly achieve the path without advanced tradecraft or mission-specific OT knowledge. |
 
 > [!NOTE]
