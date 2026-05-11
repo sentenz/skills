@@ -467,14 +467,14 @@ Risk treatment defines the disposition decision after each identified risk has b
 1. Reviewed CSV
 
     **Action:** Validate the analyst decisions, then write the complete enriched dataset to the output file `<Device_Name>_Threat_Model_Generated.csv`.
-    - Generate a semi-colon delimited output CSV format.
+    - Generate a semicolon-delimited output CSV format.
     - Review each row from the source before saving.
     - Check that identical scores across many rows are defensible from the modeled scenario and not simply inherited from the STRIDE category.
     - Preserve the delimiter, quoting style, encoding, and header order from the source file.
     - Verify that all native TMT columns are present and unmodified in the output before saving.
     - Perform a final column-scope consistency check: keep IDs and score artifacts in dedicated columns, and keep `Justification` as narrative rationale.
     - Verify that every reviewed row has exactly one allowed `Threat Actor` label.
-    - Verify that the tail-column order, using the semi-colon CSV delimiter, is `Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment`.
+    - Verify that the tail-column order, using the semicolon CSV delimiter, is `Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment`.
     - Reject rows where `Justification` is only an identifier token or parenthetical code reference.
     - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, residual risk posture, threat actor selection, and risk treatment decision.
 
@@ -786,7 +786,7 @@ Use these templates for Microsoft TMT CSV intake and review.
 #### 5.3.2. Reviewed TMT CSV Template
 
 - `<Device_Name>_Threat_Model_Generated.csv`
-  > The completed analyst review of the TMT export in semi-colon delimited CSV format with review columns appended. The required tail-column order is `Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment`.
+  > The completed analyst review of the TMT export in semicolon-delimited CSV format with review columns appended. The required tail-column order is `Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment`.
 
   ```csv
   Id;Title;Category;Diagram;Interaction;Priority;State;Changed By;Description;Justification;Last Modified;MITRE ID;CWE ID;CVSS v4.0 Vector;CVSS-B v4.0 Score;CVSS v4.0 Severity;Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment
