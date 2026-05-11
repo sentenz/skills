@@ -128,7 +128,7 @@ The Purdue Model (ISA-95 / IEC 62264) partitions an industrial automation enviro
 
 ### 2.3. Threat Actors
 
-Threat modeling must assign the minimum capable adversary type relevant to the OT/ICS attack path.
+Threat modeling must assign the minimum-capable adversary type relevant to the OT/ICS attack path.
 
 - Use exactly one standardized `Threat Actor` label per reviewed CSV row. Allowed labels are:
   - `Nation-State / APT`
@@ -421,7 +421,7 @@ Risk treatment defines the disposition decision after each identified risk has b
     - State selection guidance: Select the state decision that best fits the evidence and rationale.
       - `Not Started`: Default/export state for rows that have not yet been reviewed. Use this only to indicate genuinely unreviewed work remaining in a partially completed CSV. Once a row has been analyzed in this step, move it out of `Not Started` and assign the best-fit reviewed state below.
       - `Not Applicable`: The attack path is architecturally impossible (e.g., analog-only interface, passive sensor with no network exposure, human actor rather than a machine endpoint with no independent execution context), or the risk source has been structurally eliminated.
-        - In `Justification`, name the specific architectural contradiction or eliminated element and explain why the assigned threat actor is still the minimum candidate considered for the rejected path.
+        - In `Justification`, name the specific architectural contradiction or eliminated element. If a `Threat Actor` is still recorded for row-level traceability, explain why that actor was the minimum candidate considered before the path was rejected.
       - `Mitigated`: One or more security controls, compensating measures, or design changes are confirmed in place and reduce the risk to an accepted level. The applied control, measure, residual risk, and how those controls constrain the assigned threat actor must be identified in `Justification`.
       - `Needs Investigation`: Critical evidence is missing, a key assumption cannot be validated, or the attack path cannot be closed without additional architecture information or clarification. The specific evidence gap or unanswered question must be named in `Justification`, including whether the unknowns affect the assigned threat actor, and do not leave a row in `Needs Investigation` without identifying the blocker.
 
@@ -474,7 +474,7 @@ Risk treatment defines the disposition decision after each identified risk has b
     - Verify that all native TMT columns are present and unmodified in the output before saving.
     - Perform a final column-scope consistency check: keep IDs and score artifacts in dedicated columns, and keep `Justification` as narrative rationale.
     - Verify that every reviewed row has exactly one allowed `Threat Actor` label.
-    - Verify that the tail-column order is `Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment`.
+    - Verify that the tail-column order, using the semi-colon CSV delimiter, is `Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment`.
     - Reject rows where `Justification` is only an identifier token or parenthetical code reference.
     - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, residual risk posture, threat actor selection, and risk treatment decision.
 
