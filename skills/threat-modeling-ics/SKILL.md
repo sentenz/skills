@@ -421,7 +421,7 @@ Risk treatment defines the disposition decision after each identified risk has b
     - State selection guidance: Select the state decision that best fits the evidence and rationale.
       - `Not Started`: Default/export state for rows that have not yet been reviewed. Use this only to indicate genuinely unreviewed work remaining in a partially completed CSV. Once a row has been analyzed in this step, move it out of `Not Started` and assign the best-fit reviewed state below.
       - `Not Applicable`: The attack path is architecturally impossible (e.g., analog-only interface, passive sensor with no network exposure, human actor rather than a machine endpoint with no independent execution context), or the risk source has been structurally eliminated.
-        The specific architectural contradiction or eliminated element must be named in `Justification`, together with why the assigned threat actor still represents the minimum candidate considered for the rejected path.
+        - In `Justification`, name the specific architectural contradiction or eliminated element and explain why the assigned threat actor is still the minimum candidate considered for the rejected path.
       - `Mitigated`: One or more security controls, compensating measures, or design changes are confirmed in place and reduce the risk to an accepted level. The applied control, measure, residual risk, and how those controls constrain the assigned threat actor must be identified in `Justification`.
       - `Needs Investigation`: Critical evidence is missing, a key assumption cannot be validated, or the attack path cannot be closed without additional architecture information or clarification. The specific evidence gap or unanswered question must be named in `Justification`, including whether the unknowns affect the assigned threat actor, and do not leave a row in `Needs Investigation` without identifying the blocker.
 
@@ -753,7 +753,7 @@ The BSI Likelihood of Exploit categorizes the probability of a threat being succ
 
 #### 5.2.7. Threat Actor Mapping
 
-Normalize the `Threat Actor` decision from common OT/ICS threat-path characteristics. Always pick the minimum actor that satisfies the required access, capability, and process knowledge.
+Normalize the `Threat Actor` decision from common OT/ICS threat-path characteristics. Always pick the minimum actor that satisfies the required access, capability, and process knowledge, and only reassess upward when the modeled path requires capabilities beyond the currently selected label.
 
 | Threat-path characteristics                                                                 | Minimum Threat Actor                  | Selection logic                                                                                           |
 | -------------------------------------------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------- |
@@ -765,7 +765,7 @@ Normalize the `Threat Actor` decision from common OT/ICS threat-path characteris
 | Coordinated multi-stage intrusion needing custom tooling, stealth, or deep process expertise | `Nation-State / APT`                  | Use only when lower-tier actors cannot plausibly achieve the path without advanced tradecraft or mission-specific OT knowledge. |
 
 > [!NOTE]
-> Reassess the actor upward only when the modeled path requires capabilities beyond the currently selected label. The presence of high impact alone does not justify a more capable actor.
+> The presence of high impact alone does not justify a more capable actor.
 
 ### 5.3. Template
 
