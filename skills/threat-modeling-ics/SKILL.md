@@ -128,7 +128,7 @@ The Purdue Model (ISA-95 / IEC 62264) partitions an industrial automation enviro
 
 ### 2.3. Threat Actors
 
-Threat modeling must assign the minimum-capable adversary type relevant to the OT/ICS attack path.
+Threat modeling must assign the minimum-capable adversary type relevant to the OT/ICS attack-path.
 Use canonical threat actor classes aligned with common CISA and NIST threat-source terminology so the `Threat Actor` field records actor type rather than campaign style, access vector, or tooling maturity.
 
 - Use exactly one standardized `Threat Actor` label per reviewed CSV row. Allowed labels are:
@@ -756,8 +756,8 @@ Normalize the `Threat Actor` decision from common OT/ICS threat-path characteris
 | Internet-exposed HMI, VPN, web service, or remote access path exploited for publicity, protest, or symbolic disruption | `Hacktivist` | Choose this label when the differentiator in the modeled row is ideological messaging, defacement, or proof-of-access rather than monetization. |
 | Extortion, ransomware staging, or financially motivated IT/OT pivoting                      | `Cybercriminal`                       | Use when commodity or affiliate-operated intrusion tradecraft is enough to disrupt operations for payment or fraud. |
 | Trusted maintenance path, engineering workstation misuse, badge access, or privileged misuse | `Insider Threat`                      | Use when success depends on privileged local access, physical presence, or direct operational familiarity. |
-| Trojanized engineering software, malicious firmware, or a tainted vendor update used for covert pre-positioning or sabotage | `Nation-State Actor` | The same supplier-channel path can support other actors, but choose this label when the modeled objective is covert pre-positioning or mission-specific sabotage. Example: a trojanized engineering software update that quietly establishes long-term access to safety controllers. |
-| Compromised vendor tooling, update service, or MSP remote-management channel reused for broad extortion or monetized access | `Cybercriminal` | The same supplier-channel path can support other actors, but choose this label when the modeled objective is scalable extortion, fraud, or ransomware deployment. Example: a compromised remote management platform reused to deploy ransomware across multiple customer sites. |
+| Trojanized engineering software, malicious firmware, or a tainted vendor update used for covert pre-positioning or sabotage | `Nation-State Actor` | Choose this label when the modeled objective is covert pre-positioning or mission-specific sabotage. Example: a trojanized engineering software update that quietly establishes long-term access to safety controllers. |
+| Compromised vendor tooling, update service, or MSP remote-management channel reused for broad extortion or monetized access | `Cybercriminal` | Choose this label when the modeled objective is scalable extortion, fraud, or ransomware deployment. Example: a compromised remote management platform reused to deploy ransomware across multiple customer sites. |
 | Coordinated multi-stage intrusion needing custom tooling, stealth, or deep process expertise | `Nation-State Actor`                  | Use only when lower-tier actors cannot plausibly achieve the path without advanced tradecraft or mission-specific OT knowledge. |
 
 > [!NOTE]
@@ -765,7 +765,7 @@ Normalize the `Threat Actor` decision from common OT/ICS threat-path characteris
 >
 > When an internet-exposed path could support both financially motivated and ideologically motivated abuse, choose the actor that best matches the modeled objective in the row. Default to `Cybercriminal` when the scenario emphasizes monetization or reusable unauthorized access; choose `Hacktivist` when the primary effect is messaging, protest, or public proof-of-access.
 >
-> The same supplier-channel path can support different actor classes. When vendor tooling, firmware distribution, or MSP access is involved, still record exactly one canonical label based on the modeled campaign objective: sabotage or covert pre-positioning maps to `Nation-State Actor`, while monetized reuse maps to `Cybercriminal`.
+> The same supplier-channel path can support different actor classes. When vendor tooling, firmware distribution, or MSP access is involved, still record exactly one canonical label based on the modeled campaign objective: sabotage or covert pre-positioning typically maps to `Nation-State Actor`, while monetized reuse typically maps to `Cybercriminal`. Use `Insider Threat` when the supplier-channel abuse depends on authorized insider or contractor access, and use `Hacktivist` only when the compromised channel is primarily used for ideological messaging or symbolic disruption.
 
 ### 5.3. Template
 
