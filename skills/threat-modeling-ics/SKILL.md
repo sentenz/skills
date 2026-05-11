@@ -1,8 +1,8 @@
 ---
 name: threat-modeling-ics
-description: Performs end-to-end threat modeling for OT/ICS systems from Microsoft Threat Modeling Tool (TMT) threat-list exports (`*.csv`) and model files (`*.tm7`). Uses TMT and STRIDE for initial threat enumeration, then enriches each threat with OT/ICS context, MITRE ATT&CK for ICS mappings, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization, Risk Treatment decisions, STRIDE to Mitigation mapping for SCADA, PLC, PAC, and HMI assets, and OT impact categories ranging from Denial of View to Physical Damage to Property.
+description: Performs end-to-end threat modeling for OT/ICS systems from Microsoft Threat Modeling Tool (TMT) threat-list exports (`*.csv`) and model files (`*.tm7`). Uses TMT and STRIDE for initial threat enumeration, then enriches each threat with OT/ICS context, MITRE ATT&CK for ICS mappings, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization, minimum-capable Threat Actor assignment, Risk Treatment decisions, STRIDE to Mitigation mapping for SCADA, PLC, PAC, and HMI assets, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.4.1"
+  version: "1.5.0"
   activation:
     implicit: true
     priority: 1
@@ -65,6 +65,7 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
     - [5.2.4. CVSS v4.0 Mapping](#524-cvss-v40-mapping)
     - [5.2.5. Likelihood of Exploit Mapping](#525-likelihood-of-exploit-mapping)
     - [5.2.6. Risk Prioritization Mapping](#526-risk-prioritization-mapping)
+    - [5.2.7. Threat Actor Mapping](#527-threat-actor-mapping)
   - [5.3. Template](#53-template)
     - [5.3.1. Raw TMT Export CSV Template](#531-raw-tmt-export-csv-template)
     - [5.3.2. Reviewed TMT CSV Template](#532-reviewed-tmt-csv-template)
@@ -118,9 +119,24 @@ The Purdue Model (ISA-95 / IEC 62264) partitions an industrial automation enviro
 
 ### 2.3. Threat Actors
 
-Threat modeling consider realistic adversary types relevant to the OT/ICS domain.
+Threat modeling must assign the minimum capable adversary type relevant to the OT/ICS attack path.
 
-- Nation-State / Advanced Persistent Threat (APT)
+- Use exactly one standardized `Threat Actor` label per reviewed CSV row. Allowed labels are:
+  - `Nation-State / APT`
+  - `Cybercriminal / Ransomware Operator`
+  - `Insider Threat`
+  - `Hacktivist`
+  - `Supply Chain Attacker`
+  - `Opportunistic / Script Kiddie`
+- Choose the minimum required actor, not the most severe or most newsworthy actor.
+- Base the selection on three criteria together:
+  - **Capability:** tooling maturity, exploit sophistication, and ability to chain multiple steps.
+  - **Access Path:** internet-reachable, adjacent industrial network, local workstation, maintenance path, or physical access requirement.
+  - **Operational Knowledge:** generic IT tradecraft, OT protocol familiarity, process-specific engineering knowledge, or privileged insider context.
+- Escalate to a more capable actor only when the attack path cannot reasonably succeed with a less capable one.
+- Do not assign multiple actors in one row. If several actors could plausibly perform the attack, record the minimum actor that can realistically achieve the described effect.
+
+- Nation-State / APT
   > State-sponsored actors conduct long-duration, multi-stage campaigns targeting critical infrastructure for geopolitical objectives: espionage, pre-positioning for disruption, or physical sabotage. They invest significant resources in custom tooling, zero-day exploits, and supply-chain compromise to penetrate defense-in-depth architectures and reach Level 0 field devices.
 
 - Cybercriminal / Ransomware Operator
@@ -341,7 +357,7 @@ Risk treatment defines the disposition decision after each identified risk has b
     - When the assessment objective is compliance-oriented, treat each row as a traceable product risk statement tied to a concrete interface, trust relationship, or maintenance path.
 
     > [!NOTE]
-    > Perform steps 2–10 for every row before proceeding to section 4.3.
+    > Perform steps 2–11 for every row before proceeding to section 4.3.
 
 2. MITRE ATT&CK
 
@@ -382,16 +398,24 @@ Risk treatment defines the disposition decision after each identified risk has b
     - Only assign `Risk Prioritization` when both `CVSS v4.0 Severity` and `Likelihood of Exploit` are present.
     - Reference the [Risk Prioritization Mapping](#526-risk-prioritization-mapping) section for guidance on combining severity and likelihood into prioritization category.
 
-7. TMT State
+7. Threat Actor
 
-    **Action:** Revise the `State` field for each row using the full analytical context: TMT threat fields, MITRE ATT&CK technique, CWE root weakness, CVSS severity, and Risk Prioritization.
+    **Action:** Assign the minimum capable `Threat Actor` for each row using the standardized labels from [Threat Actors](#23-threat-actors).
+    - Add or update a `Threat Actor` column in the review CSV rather than creating duplicate fields.
+    - Base the decision on the modeled attack path, required access, exploit maturity, and the amount of OT-specific knowledge required.
+    - Prefer the least capable actor that can still plausibly execute the threat end-to-end.
+    - Reference the [Threat Actor Mapping](#527-threat-actor-mapping) section for common actor selections from attack-path characteristics.
+
+8. TMT State
+
+    **Action:** Revise the `State` field for each row using the full analytical context: TMT threat fields, MITRE ATT&CK technique, CWE root weakness, CVSS severity, Risk Prioritization, and assigned Threat Actor.
     - State selection guidance: Select the state decision that best fits the evidence and rationale.
       - `Not Started`: Default/export state for rows that have not yet been reviewed. Use this only to indicate genuinely unreviewed work remaining in a partially completed CSV. Once a row has been analyzed in this step, move it out of `Not Started` and assign the best-fit reviewed state below.
-      - `Not Applicable`: The attack path is architecturally impossible (e.g., analog-only interface, passive sensor with no network exposure, human actor rather than a machine endpoint with no independent execution context), or the risk source has been structurally eliminated. The specific architectural contradiction or eliminated element must be named in `Justification`.
-      - `Mitigated`: One or more security controls, compensating measures, or design changes are confirmed in place and reduce the risk to an accepted level. The applied control, measure or residual risk must be identified in `Justification`.
-      - `Needs Investigation`: Critical evidence is missing, a key assumption cannot be validated, or the attack path cannot be closed without additional architecture information or clarification. The specific evidence gap or unanswered question must be named in `Justification`, do not leave a row in `Needs Investigation` without identifying the blocker.
+      - `Not Applicable`: The attack path is architecturally impossible (e.g., analog-only interface, passive sensor with no network exposure, human actor rather than a machine endpoint with no independent execution context), or the risk source has been structurally eliminated. The specific architectural contradiction or eliminated element must be named in `Justification`, together with why the assigned threat actor still represents the minimum candidate considered for the rejected path.
+      - `Mitigated`: One or more security controls, compensating measures, or design changes are confirmed in place and reduce the risk to an accepted level. The applied control, measure, residual risk, and how those controls constrain the assigned threat actor must be identified in `Justification`.
+      - `Needs Investigation`: Critical evidence is missing, a key assumption cannot be validated, or the attack path cannot be closed without additional architecture information or clarification. The specific evidence gap or unanswered question must be named in `Justification`, including whether the unknowns affect the assigned threat actor, and do not leave a row in `Needs Investigation` without identifying the blocker.
 
-8. TMT Priority
+9. TMT Priority
 
     **Action:** Revise the `Priority` field for each row. Use the derived `Risk Prioritization` as the primary signal and adjust only when the modeled context provides a specific reason to deviate.
     - Use the priority vocabulary already present in the file.
@@ -402,12 +426,13 @@ Risk treatment defines the disposition decision after each identified risk has b
       - `High`
         > The threat is significant and requires prompt mitigation. It should be prioritized in the security backlog and may require escalation.
 
-9. TMT Justification
+10. TMT Justification
 
-    **Action:** Write a concise, technically precise analyst statement in the `Justification` field for each row, synthesizing all prior enrichment steps. The justification provides the evidence-based rationale that supports the assigned `State` and informs the `Risk Treatment` decision in the next step.
+    **Action:** Write a concise, technically precise analyst statement in the `Justification` field for each row, synthesizing all prior enrichment steps. The justification provides the evidence-based rationale that supports the assigned `State`, explains the assigned `Threat Actor`, and informs the `Risk Treatment` decision in the next step.
     - State the evidence-based rationale that supports the assigned `State`.
     - Reference the modeled protocol, interface, trust relationship, validation behavior, or compensating control that informs the decision.
-    - Reference the assigned MITRE ATT&CK technique, CWE weakness, CVSS severity, and Risk Prioritization where they support the rationale. Prefer technique name and behavior phrasing over repeating raw MITRE IDs that are already captured in `MITRE ID`.
+    - Reference the assigned MITRE ATT&CK technique, CWE weakness, CVSS severity, Risk Prioritization, and Threat Actor where they support the rationale. Prefer technique name and behavior phrasing over repeating raw MITRE IDs that are already captured in `MITRE ID`.
+    - State why the chosen actor is the minimum capable adversary by describing the required access path and operational knowledge.
     - When `State` is `Not Applicable`, name the specific architectural contradiction or eliminated element (e.g., passive sensor, analog signal path, human actor rather than machine endpoint, or no independent execution context).
     - When `State` is `Mitigated`, identify the applied security control, compensating measure, or design change. State the residual risk level if exposure is not fully eliminated. If risk ownership is formally transferred to a third party, identify the named organization, contract, or SLA.
     - When `State` is `Needs Investigation`, state the most important evidence gap or assumption that must be resolved before a decision can be made.
@@ -416,10 +441,11 @@ Risk treatment defines the disposition decision after each identified risk has b
     > The justification is the most critical part of the security review. It is written last so it can synthesize the full analytical picture.
 
 
-10. Risk Treatment
+11. Risk Treatment
 
     **Action:** Assign a risk treatment decision to each row based on the derived `Risk Prioritization`, see [Risk Treatment](#37-risk-treatment).
     - Add or update a `Risk Treatment` column in the review CSV rather than creating duplicate fields.
+    - Preserve `Risk Treatment` as the final decision column in the reviewed CSV.
     - Treatment selection guidance: Select one of the following risk treatment preferences based on the order of priority:
       - `Avoidance`: apply if it is documented how the system element, interface, or data flow is removed or restructured to eliminate the risk.
       - `Mitigation`: apply if security controls or compensating measures that lower the risk are documented. Residual risk must be explicitly approved by a responsible stakeholder.
@@ -437,8 +463,10 @@ Risk treatment defines the disposition decision after each identified risk has b
     - Preserve the delimiter, quoting style, encoding, and header order from the source file.
     - Verify that all native TMT columns are present and unmodified in the output before saving.
     - Perform a final column-scope consistency check: keep IDs and score artifacts in dedicated columns, and keep `Justification` as narrative rationale.
+    - Verify that every reviewed row has exactly one allowed `Threat Actor` label and that the tail-column order is `Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment`.
+    - Preserve `Risk Treatment` as the last column in the reviewed CSV.
     - Reject rows where `Justification` is only an identifier token or parenthetical code reference.
-    - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, residual risk posture, and risk treatment decision.
+    - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, residual risk posture, threat actor selection, and risk treatment decision.
 
 2. Review Summary
 
@@ -450,9 +478,10 @@ Risk treatment defines the disposition decision after each identified risk has b
 
     **Recommended Summary Sections:**
     - Assessment Objective and Product Scope
-    - Executive Summary with threat counts by state and risk level
-    - Highest Risk Findings table with ID, Threat, Interface, CVSS, Risk Factor
+    - Executive Summary with threat counts by state, risk level, and threat actor
+    - Highest Risk Findings table with ID, Threat, Interface, CVSS, Risk Factor, Threat Actor
     - Primary Attack Vectors with techniques, impact, and mitigations
+    - Threat Actor Distribution with key access-path and knowledge assumptions
     - Not Applicable Rationale Summary by pattern category
     - MITRE ATT&CK for ICS Mapping table
     - CWE Weakness Classification summary
@@ -712,6 +741,22 @@ The BSI Likelihood of Exploit categorizes the probability of a threat being succ
   | High                  | Low    | Medium | High   | High     | Critical |
   | Critical              | Medium | High   | High   | Critical | Critical |
 
+#### 5.2.7. Threat Actor Mapping
+
+Normalize the `Threat Actor` decision from common OT/ICS threat-path characteristics. Always pick the minimum actor that satisfies the required access, capability, and process knowledge.
+
+| Threat-path characteristics                                                                 | Minimum Threat Actor                  | Selection logic                                                                                           |
+| -------------------------------------------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Internet-exposed HMI, VPN, web service, or remote access path exploitable with public tools | `Opportunistic / Script Kiddie`       | Use when public exposure and commodity tooling are sufficient and no OT-specific process knowledge is required. |
+| Public disruption, defacement, or proof-of-access against exposed OT assets                 | `Hacktivist`                          | Use when the objective is visibility or disruption for messaging rather than sustained control of process operations. |
+| Extortion, ransomware staging, or financially motivated IT/OT pivoting                      | `Cybercriminal / Ransomware Operator` | Use when commodity or affiliate-operated intrusion tradecraft is enough to disrupt operations for payment. |
+| Trusted maintenance path, engineering workstation misuse, badge access, or privileged misuse | `Insider Threat`                      | Use when success depends on privileged local access, physical presence, or direct operational familiarity. |
+| Malicious firmware, tainted software update, compromised vendor tooling, or MSP channel     | `Supply Chain Attacker`               | Use when the attack relies on pre-positioning through a trusted supplier, integrator, or update workflow. |
+| Coordinated multi-stage intrusion needing custom tooling, stealth, or deep process expertise | `Nation-State / APT`                  | Use only when lower-tier actors cannot plausibly achieve the path without advanced tradecraft or mission-specific OT knowledge. |
+
+> [!NOTE]
+> Reassess the actor upward only when the modeled path requires capabilities beyond the currently selected label. The presence of high impact alone does not justify a more capable actor.
+
 ### 5.3. Template
 
 Use these templates for Microsoft TMT CSV intake and review.
@@ -731,13 +776,13 @@ Use these templates for Microsoft TMT CSV intake and review.
 #### 5.3.2. Reviewed TMT CSV Template
 
 - `<Device_Name>_Threat_Model_Generated.csv`
-  > The completed analyst review of the TMT export in semi-colon delimited CSV format with review columns appended.
+  > The completed analyst review of the TMT export in semi-colon delimited CSV format with review columns appended. The required tail-column order is `Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment`.
 
   ```csv
-  Id;Title;Category;Diagram;Interaction;Priority;State;Changed By;Description;Justification;Last Modified;MITRE ID;CWE ID;CVSS v4.0 Vector;CVSS-B v4.0 Score;CVSS v4.0 Severity;Likelihood of Exploit;Risk Prioritization;Risk Treatment
-  0;Spoofing the MCU Process;Spoofing;<Device_Name>;Debugger to MCU over JTAG;Medium;Needs Investigation;;"MCU may be spoofed by an attacker and this may lead to information disclosure by Debugger Probe. Consider using a standard authentication mechanism to identify the destination process.";"The physical JTAG debug interface is a physically attached maintenance path. If the service tool cannot verify the real actuator endpoint, a rogue interposer or substituted board can impersonate the MCU and capture debug or programming traffic. Treatment is Mitigation through authenticated debug unlock and production-time debug lockout; residual risk owner remains product security.";Generated;T0842;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N;"6,7";Medium;Medium;Medium;Mitigation
-  38;Data Flow MCU to CFG over Modbus RTU (RS-232) Is Potentially Interrupted;Denial Of Service;<Device_Name>;MCU to CFG over Modbus RTU (RS-232);Low;Mitigated;;"An external agent interrupts data flowing across a trust boundary in either direction.";"Interruption of local Configurator service connection over RS-232 affects a local maintenance session more than the primary control function. The actuator remains locally autonomous, and the product supports fail-safe action, so loss of outbound diagnostics is a bounded availability issue. Treatment is Acceptance with monitoring because residual impact is low.";Generated;T0814;CWE-693;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:L;"2,4";Low;Low;Low;Acceptance
-  72;Elevation Using Impersonation;Elevation Of Privilege;<Device_Name>;Operator to MCU over Switches (GPIO);Low;Not Applicable;;"MCU may be able to impersonate the context of Operator in order to gain additional privilege.";"The modeled peer on local dry-contact GPIO/operator switch path is an external tool or human interface, not a separate MCU privilege domain that the MCU can impersonate to gain rights. Treatment is Avoidance by maintaining no machine-to-machine trust path on this interface.";Generated;;;;;;;Avoidance
+  Id;Title;Category;Diagram;Interaction;Priority;State;Changed By;Description;Justification;Last Modified;MITRE ID;CWE ID;CVSS v4.0 Vector;CVSS-B v4.0 Score;CVSS v4.0 Severity;Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment
+  0;Spoofing the MCU Process;Spoofing;<Device_Name>;Debugger to MCU over JTAG;Medium;Needs Investigation;;"MCU may be spoofed by an attacker and this may lead to information disclosure by Debugger Probe. Consider using a standard authentication mechanism to identify the destination process.";"The physical JTAG debug interface is a physically attached maintenance path. The minimum capable actor is Insider Threat because success depends on local physical maintenance access and debug workflow familiarity rather than advanced intrusion tradecraft. If the service tool cannot verify the real actuator endpoint, a rogue interposer or substituted board can impersonate the MCU and capture debug or programming traffic. Treatment is Mitigation through authenticated debug unlock and production-time debug lockout; residual risk owner remains product security.";Generated;T0842;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N;"6,7";Medium;Medium;Medium;Insider Threat;Mitigation
+  38;Data Flow MCU to CFG over Modbus RTU (RS-232) Is Potentially Interrupted;Denial Of Service;<Device_Name>;MCU to CFG over Modbus RTU (RS-232);Low;Mitigated;;"An external agent interrupts data flowing across a trust boundary in either direction.";"Interruption of local Configurator service connection over RS-232 affects a local maintenance session more than the primary control function. The minimum capable actor is Insider Threat because the attack requires direct physical or maintenance-port access to the serial path. The actuator remains locally autonomous, and the product supports fail-safe action, so loss of outbound diagnostics is a bounded availability issue. Treatment is Acceptance with monitoring because residual impact is low.";Generated;T0814;CWE-693;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:L;"2,4";Low;Low;Low;Insider Threat;Acceptance
+  72;Elevation Using Impersonation;Elevation Of Privilege;<Device_Name>;Operator to MCU over Switches (GPIO);Low;Not Applicable;;"MCU may be able to impersonate the context of Operator in order to gain additional privilege.";"The minimum candidate actor considered is Insider Threat because only local operator-side access is in scope, but the modeled peer on this dry-contact GPIO/operator switch path is an external tool or human interface, not a separate MCU privilege domain that the MCU can impersonate to gain rights. Treatment is Avoidance by maintaining no machine-to-machine trust path on this interface.";Generated;;;;;;;;Insider Threat;Avoidance
   ```
 
 ## 6. References
