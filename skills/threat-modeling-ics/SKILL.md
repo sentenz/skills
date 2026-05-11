@@ -464,7 +464,6 @@ Risk treatment defines the disposition decision after each identified risk has b
     - Verify that all native TMT columns are present and unmodified in the output before saving.
     - Perform a final column-scope consistency check: keep IDs and score artifacts in dedicated columns, and keep `Justification` as narrative rationale.
     - Verify that every reviewed row has exactly one allowed `Threat Actor` label and that the tail-column order is `Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment`.
-    - Preserve `Risk Treatment` as the last column in the reviewed CSV.
     - Reject rows where `Justification` is only an identifier token or parenthetical code reference.
     - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, residual risk posture, threat actor selection, and risk treatment decision.
 
