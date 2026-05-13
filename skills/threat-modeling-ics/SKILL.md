@@ -130,6 +130,8 @@ The Purdue Model (ISA-95 / IEC 62264) partitions an industrial automation enviro
 | Insider Threat     | Low-High    | Internal Access | Low-High    | Very High            | Greed, grievance, coercion, or negligence               | Employer systems, plant networks, engineering assets, maintenance interfaces | Data exfiltration, sabotage, privilege abuse, misconfiguration, unsafe media handling |
 | Hacktivist         | Low-Medium  | Low             | Low-Medium  | Low-Medium           | Political, social, or ideological cause                 | Governments, corporations, public-facing HMIs, media outlets                 | DDoS, website defacement, doxing, data leaks                                          |
 
+Use only these canonical labels in the reviewed CSV. Low-skill or opportunistic behavior such as commodity exploit use, default-credential abuse, or DDoS-for-hire is supporting context, not a standalone `Threat Actor` value; classify it under the minimum canonical actor that best matches the modeled objective.
+
 - Nation-State Actor
   > State-sponsored actors conduct long-duration, multi-stage campaigns targeting critical infrastructure for geopolitical objectives: espionage, pre-positioning for disruption, or physical sabotage. They invest significant resources in custom tooling, zero-day exploits, and supply-chain compromise to penetrate defense-in-depth architectures and reach Level 0 field devices.
 
