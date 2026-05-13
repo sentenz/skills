@@ -72,7 +72,7 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
     - [5.2.7. Threat Actor Mapping](#527-threat-actor-mapping)
   - [5.3. Template](#53-template)
     - [5.3.1. Raw TMT Export CSV Template](#531-raw-tmt-export-csv-template)
-    - [5.3.2. Genereted TMT CSV Template](#532-generated-tmt-csv-template)
+    - [5.3.2. Generated TMT CSV Template](#532-generated-tmt-csv-template)
 - [6. References](#6-references)
 
 ## 1. Benefits
@@ -125,13 +125,12 @@ The Purdue Model (ISA-95 / IEC 62264) partitions an industrial automation enviro
 
 | Threat Actor       | Skill Level | Resources       | Persistence | Detection Difficulty | Primary Motivation                                      | Common Targets                                                               | Typical TTPs                                                                          |
 | ------------------ | ----------- | --------------- | ----------- | -------------------- | ------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Nation-State / APT | Very High   | Very High       | Very High   | Very High            | Espionage, geopolitical dominance, strategic objectives | Government, defense, critical infrastructure, research, financial systems    | Zero-days, supply-chain compromise, living-off-the-land, lateral movement, SIGINT     |
+| Nation-State Actor | Very High   | Very High       | Very High   | Very High            | Espionage, geopolitical dominance, strategic objectives | Government, defense, critical infrastructure, research, financial systems    | Zero-days, supply-chain compromise, living-off-the-land, lateral movement, SIGINT     |
 | Cybercriminal      | Low-High    | Low-High        | Low-High    | Low-High             | Financial gain                                          | Individuals, SMBs, enterprises, banks, healthcare, exposed OT gateways       | Ransomware-as-a-service, phishing, BEC, credential theft, identity fraud              |
 | Insider Threat     | Low-High    | Internal Access | Low-High    | Very High            | Greed, grievance, coercion, or negligence               | Employer systems, plant networks, engineering assets, maintenance interfaces | Data exfiltration, sabotage, privilege abuse, misconfiguration, unsafe media handling |
 | Hacktivist         | Low-Medium  | Low             | Low-Medium  | Low-Medium           | Political, social, or ideological cause                 | Governments, corporations, public-facing HMIs, media outlets                 | DDoS, website defacement, doxing, data leaks                                          |
-| Script Kiddie      | Low-Medium  | Low             | Low         | Low                  | Curiosity, notoriety, thrill, or mischief               | Random or opportunistic systems, internet-exposed OT services                | Pre-built exploit kits, DDoS-for-hire, default credential attacks, simple defacement  |
 
-- Nation-State Actor / APT
+- Nation-State Actor
   > State-sponsored actors conduct long-duration, multi-stage campaigns targeting critical infrastructure for geopolitical objectives: espionage, pre-positioning for disruption, or physical sabotage. They invest significant resources in custom tooling, zero-day exploits, and supply-chain compromise to penetrate defense-in-depth architectures and reach Level 0 field devices.
 
 - Cybercriminal
@@ -142,9 +141,6 @@ The Purdue Model (ISA-95 / IEC 62264) partitions an industrial automation enviro
 
 - Hacktivist
   > Hacktivists target publicly visible OT assets to advance political or ideological agendas. They exploit internet-exposed HMIs, Shodan-indexed SCADA web interfaces, or default credentials to post proof-of-access, deface operator displays, or make coarse setpoint changes for publicity rather than sustained operational damage.
-
-- Script Kiddie
-  > Unskilled actors opportunistically attack exposed OT services using pre-built exploit kits, default credential lists, or DDoS-for-hire services. They typically cause low-impact disruption or defacement without a specific target in mind.
 
 ### 2.4. Diagram Depth Layers
 
@@ -756,13 +752,13 @@ Normalize the `Threat Actor` decision from common OT/ICS threat-path characteris
 
 | Attack Path / Scenario                                                                                                                                | Minimum Threat Actor | Key Indicators                                                                                                                      | ICS Tactics, Techniques, and Procedures (TTPs) |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| Internet-exposed service with public exploit, default credentials, or unauthenticated interface                                                       | `Script Kiddie`      | `AV:N`, `AC:L`; pre-built tooling; no plant-specific knowledge; opportunistic targeting                                             | `T0883`, `T0819`, `T0814`, `T0815`             |
+| Internet-exposed service with public exploit, default credentials, or unauthenticated interface                                                       | `Cybercriminal`      | `AV:N`, `AC:L`; pre-built tooling; no plant-specific knowledge; opportunistic targeting or commodity compromise path               | `T0883`, `T0819`, `T0814`, `T0815`             |
 | Internet-exposed HMI, SCADA web UI, or public-facing OT asset targeted for ideological messaging, defacement, or symbolic proof-of-access             | `Hacktivist`         | Visible, high-profile target; protest or propaganda objective; short-lived campaign; no persistent access sought                    | `T0883`, `T0814`, `T0815`, `T0832`             |
 | Internet-exposed service or IT/OT boundary exploited for financial gain: ransomware staging, credential theft, extortion, or fraud                    | `Cybercriminal`      | IT-to-OT pivot; commodity or affiliate malware; stolen or phished credentials; business disruption for payment                      | `T0822`, `T0859`, `T0881`, `T0829`, `T0831`    |
 | Compromised vendor tooling, update service, or MSP remote-management channel reused for scalable extortion or ransomware deployment                   | `Cybercriminal`      | Third-party trust dependency; monetized supply-chain reuse; commodity ransomware payload; no mission-specific objective             | `T0862`, `T0881`, `T0809`                      |
 | Trusted maintenance path, local engineering workstation, removable media, direct cable or debug interface, or privileged badge access                 | `Insider Threat`     | `AV:P` or `AV:L`; trusted plant or engineering access; process familiarity; maintenance tooling or insider credentials              | `T0847`, `T0843`, `T0836`, `T1692.001`         |
-| Trojanized engineering software, signed firmware package, or tainted vendor update used for covert pre-positioning or mission-specific sabotage       | `Nation-State / APT` | Supply-chain compromise; custom or signed tooling; covert persistence objective; strategic or safety-critical target                | `T0862`, `T0873`, `T1693`, `T0879`             |
-| Bespoke multi-stage intrusion against a segmented ICS requiring custom tooling, zero-day exploits, covert lateral movement, or deep process expertise | `Nation-State / APT` | Custom tradecraft; zero-days; long-dwell access; strategic high-value target; objective is disruption, sabotage, or pre-positioning | `T0821`, `T0831`, `T0878`, `T0879`, `T0880`    |
+| Trojanized engineering software, signed firmware package, or tainted vendor update used for covert pre-positioning or mission-specific sabotage       | `Nation-State Actor` | Supply-chain compromise; custom or signed tooling; covert persistence objective; strategic or safety-critical target                | `T0862`, `T0873`, `T1693`, `T0879`             |
+| Bespoke multi-stage intrusion against a segmented ICS requiring custom tooling, zero-day exploits, covert lateral movement, or deep process expertise | `Nation-State Actor` | Custom tradecraft; zero-days; long-dwell access; strategic high-value target; objective is disruption, sabotage, or pre-positioning | `T0821`, `T0831`, `T0878`, `T0879`, `T0880`    |
 
 ### 5.3. Template
 
