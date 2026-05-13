@@ -129,8 +129,9 @@ The Purdue Model (ISA-95 / IEC 62264) partitions an industrial automation enviro
 | Cybercriminal      | Low-High    | Low-High        | Low-High    | Low-High             | Financial gain                                          | Individuals, SMBs, enterprises, banks, healthcare, exposed OT gateways       | Ransomware-as-a-service, phishing, BEC, credential theft, identity fraud              |
 | Insider Threat     | Low-High    | Internal Access | Low-High    | Very High            | Greed, grievance, coercion, or negligence               | Employer systems, plant networks, engineering assets, maintenance interfaces | Data exfiltration, sabotage, privilege abuse, misconfiguration, unsafe media handling |
 | Hacktivist         | Low-Medium  | Low             | Low-Medium  | Low-Medium           | Political, social, or ideological cause                 | Governments, corporations, public-facing HMIs, media outlets                 | DDoS, website defacement, doxing, data leaks                                          |
+| Script Kiddies     | Low-Medium  | Low             | Low         | Low                  | Curiosity, notoriety, thrill, or mischief               | Random or opportunistic systems, internet-exposed OT services                | Pre-built exploit kits, DDoS-for-hire, default credential attacks, simple defacement  |
 
-Use only these canonical labels in the reviewed CSV. Low-skill or opportunistic behavior such as commodity exploit use, default-credential abuse, or DDoS-for-hire is supporting context, not a standalone `Threat Actor` value; classify it under the minimum canonical actor that best matches the modeled objective.
+Use only these standardized labels in the reviewed CSV. Use `Script Kiddies` when the modeled path is opportunistic and succeeds with public exploits, default credentials, commodity tooling, or nuisance-level disruption without requiring a stronger motivation or deeper operator knowledge; otherwise classify the row under the minimum actor that best matches the modeled objective.
 
 - Nation-State Actor
   > State-sponsored actors conduct long-duration, multi-stage campaigns targeting critical infrastructure for geopolitical objectives: espionage, pre-positioning for disruption, or physical sabotage. They invest significant resources in custom tooling, zero-day exploits, and supply-chain compromise to penetrate defense-in-depth architectures and reach Level 0 field devices.
@@ -143,6 +144,9 @@ Use only these canonical labels in the reviewed CSV. Low-skill or opportunistic 
 
 - Hacktivist
   > Hacktivists target publicly visible OT assets to advance political or ideological agendas. They exploit internet-exposed HMIs, Shodan-indexed SCADA web interfaces, or default credentials to post proof-of-access, deface operator displays, or make coarse setpoint changes for publicity rather than sustained operational damage.
+
+- Script Kiddies
+  > Unskilled actors opportunistically attack exposed OT services using pre-built exploit kits, default credential lists, or DDoS-for-hire services. They typically cause low-impact disruption or defacement without a specific target in mind.
 
 ### 2.4. Diagram Depth Layers
 
@@ -754,7 +758,7 @@ Normalize the `Threat Actor` decision from common OT/ICS threat-path characteris
 
 | Attack Path / Scenario                                                                                                                                | Minimum Threat Actor | Key Indicators                                                                                                                      | ICS Tactics, Techniques, and Procedures (TTPs) |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| Internet-exposed service with public exploit, default credentials, or unauthenticated interface                                                       | `Cybercriminal`      | `AV:N`, `AC:L`; pre-built tooling; no plant-specific knowledge; opportunistic targeting or commodity compromise path               | `T0883`, `T0819`, `T0814`, `T0815`             |
+| Internet-exposed service with public exploit, default credentials, or unauthenticated interface                                                       | `Script Kiddies`     | `AV:N`, `AC:L`; pre-built tooling; no plant-specific knowledge; opportunistic targeting or commodity compromise path               | `T0883`, `T0819`, `T0814`, `T0815`             |
 | Internet-exposed HMI, SCADA web UI, or public-facing OT asset targeted for ideological messaging, defacement, or symbolic proof-of-access             | `Hacktivist`         | Visible, high-profile target; protest or propaganda objective; short-lived campaign; no persistent access sought                    | `T0883`, `T0814`, `T0815`, `T0832`             |
 | Internet-exposed service or IT/OT boundary exploited for financial gain: ransomware staging, credential theft, extortion, or fraud                    | `Cybercriminal`      | IT-to-OT pivot; commodity or affiliate malware; stolen or phished credentials; business disruption for payment                      | `T0822`, `T0859`, `T0881`, `T0829`, `T0831`    |
 | Compromised vendor tooling, update service, or MSP remote-management channel reused for scalable extortion or ransomware deployment                   | `Cybercriminal`      | Third-party trust dependency; monetized supply-chain reuse; commodity ransomware payload; no mission-specific objective             | `T0862`, `T0881`, `T0809`                      |
