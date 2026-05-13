@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.7.0](https://github.com/sentenz/skills/compare/v1.6.6...v1.7.0) (2026-05-13)
+
+
+### Features
+
+* refine threat actor assignment and taxonomy in OT/ICS threat-model ([#34](https://github.com/sentenz/skills/issues/34)) ([51f5f50](https://github.com/sentenz/skills/commit/51f5f505d71007c5405aa4f8050134a9d2b7cb18))
+
 ## [1.6.6](https://github.com/sentenz/skills/compare/v1.6.5...v1.6.6) (2026-05-08)
 
 
