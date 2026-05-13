@@ -72,7 +72,7 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
     - [5.2.7. Threat Actor Mapping](#527-threat-actor-mapping)
   - [5.3. Template](#53-template)
     - [5.3.1. Raw TMT Export CSV Template](#531-raw-tmt-export-csv-template)
-    - [5.3.2. Reviewed TMT CSV Template](#532-reviewed-tmt-csv-template)
+    - [5.3.2. Genereted TMT CSV Template](#532-generated-tmt-csv-template)
 - [6. References](#6-references)
 
 ## 1. Benefits
@@ -780,10 +780,10 @@ Use these templates for Microsoft TMT CSV intake and review.
   72,Elevation Using Impersonation,Elevation Of Privilege,<Device_Name>,Operator to MCU over Switches (GPIO),High,Not Started,,MCU may be able to impersonate the context of Operator in order to gain additional privilege.,,Generated
   ```
 
-#### 5.3.2. Reviewed TMT CSV Template
+#### 5.3.2. Generated TMT CSV Template
 
 - `<Device_Name>_Threat_Model_Generated.csv`
-  > The completed analyst review of the TMT export in semicolon delimited CSV format with review columns appended.
+  > The completed security review of the raw TMT export in semicolon delimited CSV format with appended columns.
 
   ```csv
   Id;Title;Category;Diagram;Interaction;Priority;State;Changed By;Description;Justification;Last Modified;MITRE ID;CWE ID;CVSS v4.0 Vector;CVSS-B v4.0 Score;CVSS v4.0 Severity;Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment
