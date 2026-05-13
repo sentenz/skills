@@ -452,7 +452,7 @@ Risk treatment defines the disposition decision after each identified risk has b
 
 ### 4.3. Deliverables
 
-1. Reviewed CSV
+1. Generate CSV
 
     **Action:** Validate the analyst decisions, then write the complete enriched dataset to the output file `<Device_Name>_Threat_Model_Generated.csv`.
     - Generate a semicolon delimited output CSV format.
