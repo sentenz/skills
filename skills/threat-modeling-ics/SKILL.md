@@ -209,16 +209,22 @@ MITRE ATT&CK for ICS to map a TMT threat to realistic adversary behavior affecti
 
 ### 3.4. MITRE EMB3D
 
-MITRE EMB3D adds a device-centric lens for embedded and cyber-physical products used in OT/ICS environments. Use it to analyze how hardware, firmware, boot, update, identity, communications, and physical service interfaces change the attack surface and the feasible mitigations for a given TMT row.
+MITRE EMB3D is the device-level enrichment layer for embedded OT/ICS assets. Use it to map modeled device properties to embedded-device threats and vendor-oriented mitigations. EMB3D complements MITRE ATT&CK for ICS: ATT&CK describes adversary behavior in industrial environments, while EMB3D describes device properties, threat exposure, and security mechanisms for embedded devices.
 
-- Device Security Properties
-  > Identify the dominant embedded-device exposure behind the threat, such as debug/test access, insecure boot, weak update validation, extractable secrets, unauthenticated fieldbus traffic, or missing tamper resistance.
+- [Properties](https://emb3d.mitre.org/properties/)
+  > Device characteristics that enable or constrain threat exposure, such as processors, external memory, hardware debug interfaces, bootloaders, firmware update mechanisms, operating systems, credentials, cryptography, logging, network services, and peripheral interfaces.
 
-- Mitigation Patterns
-  > Select concrete device-native controls that fit the modeled asset and interface, such as authenticated debug unlock, secure/measured boot, signed firmware updates, protected key storage, protocol integrity controls, and tamper-evident enclosures.
+- [Threats](https://emb3d.mitre.org/threats/)
+  > Embedded-device threat entries, identified as `TID-*`, that capture hardware, firmware, software, and interface-level attack actions.
 
-- Gap Analysis
-  > When reviewing PLCs, PACs, RTUs, field devices, or engineering maintenance paths, use EMB3D to determine whether missing embedded protections are the root reason the threat remains exploitable.
+- [Mitigations](https://emb3d.mitre.org/mitigations/)
+  > Technical security mechanisms, identified as `MID-*`, that device vendors or product teams can implement to reduce or eliminate the corresponding embedded-device threat.
+
+- [STIX Data](https://emb3d.mitre.org/subtabs/data.html)
+  > Machine-readable EMB3D data suitable for automation. Use STIX where available to keep property, threat, and mitigation identifiers traceable and current.
+
+> [!NOTE]
+> Use EMB3D when the modeled asset is, contains, or depends on an embedded device: PLC, PAC, RTU, SIS controller, HMI appliance, gateway, industrial edge node, drive, intelligent sensor, actuator, or embedded communication module. Do not use EMB3D as a substitute for ATT&CK for ICS; use both layers when evidence supports both.
 
 ### 3.5. CWE
 
