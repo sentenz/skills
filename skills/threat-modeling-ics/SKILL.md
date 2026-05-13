@@ -2,11 +2,12 @@
 name: threat-modeling-ics
 description: >-
   Performs end-to-end threat modeling for OT/ICS systems from Microsoft Threat Modeling Tool (TMT) threat-list exports (`*.csv`) and model files (`*.tm7`).
-  Uses TMT and STRIDE for initial threat enumeration, then enriches each threat with OT/ICS context, MITRE ATT&CK for ICS mappings, CWE weakness
-  classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization, minimum-capable Threat Actor assignment, Risk Treatment
-  decisions, STRIDE to Mitigation mapping for SCADA, PLC, PAC, and HMI assets, and OT impact categories ranging from Denial of View to Physical Damage to Property.
+  Uses TMT and STRIDE for initial threat enumeration, then enriches each threat with OT/ICS context, MITRE ATT&CK for ICS mappings, MITRE EMB3D
+  device-centric mitigation guidance, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization,
+  minimum-capable Threat Actor assignment, Risk Treatment decisions, STRIDE to Mitigation mapping for SCADA, PLC, PAC, and HMI assets, and OT
+  impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.5.1"
+  version: "1.6.0"
   activation:
     implicit: true
     priority: 1
@@ -16,6 +17,7 @@ metadata:
       - "threat modeling"
       - "stride"
       - "mitre att&ck"
+      - "emb3d"
       - "cwe"
       - "cvss"
       - "likelihood"
@@ -28,7 +30,7 @@ metadata:
         - "**/*.tm7"
         - "**/*threat-model*.csv"
         - "**/*threat-model*.md"
-      prompt_regex: "(?i)(microsoft tmt|threat modeling|stride|mitre att&ck|cwe|cvss|likelihood|risk treatment|threat review|security review)"
+      prompt_regex: "(?i)(microsoft tmt|threat modeling|stride|mitre att&ck|emb3d|cwe|cvss|likelihood|risk treatment|threat review|security review)"
   usage:
     load_on_prompt: true
     autodispatch: true
@@ -51,10 +53,11 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
   - [3.1. Microsoft Threat Modeling Tool](#31-microsoft-threat-modeling-tool)
   - [3.2. STRIDE](#32-stride)
   - [3.3. MITRE ATT\&CK](#33-mitre-attck)
-  - [3.4. CWE](#34-cwe)
-  - [3.5. CVSS](#35-cvss)
-  - [3.6. BSI Likelihood of Exploit](#36-bsi-likelihood-of-exploit)
-  - [3.7. Risk Treatment](#37-risk-treatment)
+  - [3.4. MITRE EMB3D](#34-mitre-emb3d)
+  - [3.5. CWE](#35-cwe)
+  - [3.6. CVSS](#36-cvss)
+  - [3.7. BSI Likelihood of Exploit](#37-bsi-likelihood-of-exploit)
+  - [3.8. Risk Treatment](#38-risk-treatment)
 - [4. Workflow](#4-workflow)
   - [4.1. Preparation](#41-preparation)
   - [4.2. Review](#42-review)
@@ -66,10 +69,11 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
     - [5.2.1. Purdue Model Mapping](#521-purdue-model-mapping)
     - [5.2.2. STRIDE Mapping](#522-stride-mapping)
     - [5.2.3. MITRE ATT\&CK Mapping](#523-mitre-attck-mapping)
-    - [5.2.4. CVSS v4.0 Mapping](#524-cvss-v40-mapping)
-    - [5.2.5. Likelihood of Exploit Mapping](#525-likelihood-of-exploit-mapping)
-    - [5.2.6. Risk Prioritization Mapping](#526-risk-prioritization-mapping)
-    - [5.2.7. Threat Actor Mapping](#527-threat-actor-mapping)
+    - [5.2.4. MITRE EMB3D Mapping](#524-mitre-emb3d-mapping)
+    - [5.2.5. CVSS v4.0 Mapping](#525-cvss-v40-mapping)
+    - [5.2.6. Likelihood of Exploit Mapping](#526-likelihood-of-exploit-mapping)
+    - [5.2.7. Risk Prioritization Mapping](#527-risk-prioritization-mapping)
+    - [5.2.8. Threat Actor Mapping](#528-threat-actor-mapping)
   - [5.3. Template](#53-template)
     - [5.3.1. Raw TMT Export CSV Template](#531-raw-tmt-export-csv-template)
     - [5.3.2. Generated TMT CSV Template](#532-generated-tmt-csv-template)
@@ -203,12 +207,25 @@ MITRE ATT&CK for ICS to map a TMT threat to realistic adversary behavior affecti
 - [Techniques](https://attack.mitre.org/techniques/ics/)
   > The specific adversary behavior or method used to achieve the tactic (e.g., `T1692.001: Unauthorized Message – Command Message`).
 
-### 3.4. CWE
+### 3.4. MITRE EMB3D
+
+MITRE EMB3D adds a device-centric lens for embedded and cyber-physical products used in OT/ICS environments. Use it to analyze how hardware, firmware, boot, update, identity, communications, and physical service interfaces change the attack surface and the feasible mitigations for a given TMT row.
+
+- Device Security Properties
+  > Identify the dominant embedded-device exposure behind the threat, such as debug/test access, insecure boot, weak update validation, extractable secrets, unauthenticated fieldbus traffic, or missing tamper resistance.
+
+- Mitigation Patterns
+  > Select concrete device-native controls that fit the modeled asset and interface, such as authenticated debug unlock, secure/measured boot, signed firmware updates, protected key storage, protocol integrity controls, and tamper-evident enclosures.
+
+- Gap Analysis
+  > When reviewing PLCs, PACs, RTUs, field devices, or engineering maintenance paths, use EMB3D to determine whether missing embedded protections are the root reason the threat remains exploitable.
+
+### 3.5. CWE
 
 - [MITRE CWE](https://cwe.mitre.org/)
   > The underlying software or design weakness that enables the threat (e.g., `CWE-20: Improper Input Validation`).
 
-### 3.5. CVSS
+### 3.6. CVSS
 
 [FIRST CVSS v4.0](https://www.first.org/cvss/) to score the technical severity of the threat based on the modeled attack scenario and its consequences.
 
@@ -224,7 +241,7 @@ MITRE ATT&CK for ICS to map a TMT threat to realistic adversary behavior affecti
 - CVSS Vector
   > Record the CVSS v4.0 vector string (`CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N`) when a base score is recorded.
 
-### 3.6. BSI Likelihood of Exploit
+### 3.7. BSI Likelihood of Exploit
 
 [BSI Dringlichkeit / Eintrittspotenzial](https://www.bsi.bund.de/DE/Service-Navi/Abonnements/Newsletter/Buerger-CERT-Abos/Buerger-CERT-Sicherheitshinweise/Risikostufen/risikostufen.html) to assess the likelihood of exploit based on the current state of the vulnerability and the style of exploitation.
 
@@ -251,7 +268,7 @@ MITRE ATT&CK for ICS to map a TMT threat to realistic adversary behavior affecti
   - Exploit Published (Exploit Veröffentlicht)
     > A public attack tool has been released, the effort to attack drops significantly.
 
-### 3.7. Risk Treatment
+### 3.8. Risk Treatment
 
 Risk treatment defines the disposition decision after each identified risk has been prioritized based on severity and likelihood evaluation.
 
@@ -349,7 +366,7 @@ Risk treatment defines the disposition decision after each identified risk has b
     - When the assessment objective is compliance-oriented, treat each row as a traceable product risk statement tied to a concrete interface, trust relationship, or maintenance path.
 
     > [!NOTE]
-    > Perform steps 2–11 for every row before proceeding to section 4.3.
+    > Perform steps 2–12 for every row before proceeding to section 4.3.
 
 2. MITRE ATT&CK
 
@@ -360,37 +377,45 @@ Risk treatment defines the disposition decision after each identified risk has b
     - Leave the field blank when the threat statement is ambiguous.
     - Reference the [MITRE ATT&CK for ICS Mapping](#523-mitre-attck-mapping) section for common technique mappings based on STRIDE categories.
 
-3. MITRE CWE
+3. MITRE EMB3D
 
-    **Action:** Populate the `CWE ID` field for each row when the root weakness is identifiable from the TMT threat fields, see [MITRE CWE](#34-cwe).
+    **Action:** Apply [MITRE EMB3D](#34-mitre-emb3d) to determine the embedded-device exposure and mitigation family that best explains the row.
+    - Use EMB3D especially for PLC, PAC, RTU, field-device, firmware, maintenance-port, removable-media, and device-identity scenarios.
+    - Capture the EMB3D-relevant device property or missing control in `Justification` and in the recommended mitigations rather than duplicating generic wording.
+    - Prefer concrete device phrases such as `debug interface left enabled in production`, `unsigned firmware update path`, `shared device credential`, `no secure boot`, or `no tamper response`.
+    - Reference the [MITRE EMB3D Mapping](#524-mitre-emb3d-mapping) section for common embedded-device exposure classes and representative controls.
+
+4. MITRE CWE
+
+    **Action:** Populate the `CWE ID` field for each row when the root weakness is identifiable from the TMT threat fields, see [MITRE CWE](#35-cwe).
     - Prefer the most specific CWE that fits the described weakness.
     - Use comma-separated values when the finding depends on more than one concrete weakness (e.g., `CWE-290, CWE-345`).
     - Store CWE identifiers in the dedicated `CWE ID` column. In `Justification`, prefer weakness name or exploit behavior wording unless repeating the ID is required for disambiguation.
     - Do not assign a CWE when the row is generic but the underlying weakness is still unclear after reviewing the modeled interaction.
     - Leave the field blank when the evidence is insufficient.
 
-4. CVSS v4.0
+5. CVSS v4.0
 
-    **Action:** Populate the CVSS v4.0 Base Metrics `CVSS v4.0 Vector`, `CVSS v4.0 Severity`, and `CVSS-B v4.0 Score` together for each row, see [CVSS](#35-cvss).
+    **Action:** Populate the CVSS v4.0 Base Metrics `CVSS v4.0 Vector`, `CVSS v4.0 Severity`, and `CVSS-B v4.0 Score` together for each row, see [CVSS](#36-cvss).
     - All three fields must be populated together or left blank together. Do not record a severity without a vector. Do not record a vector without a score.
     - Keep raw CVSS artifacts in dedicated columns (`CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`) rather than duplicating them in `Justification`.
-    - Derive the score from the [CVSS v4.0 calculator](https://www.first.org/cvss/calculator/4.0) using the native TMT threat fields (`Title`, `Category`, `Interaction`, `Description`) and the MITRE ATT&CK technique as input.
-    - Reference the [CVSS v4.0 Mapping](#524-cvss-v40-mapping) section for guidance on mapping STRIDE categories to CVSS impact metrics.
+    - Derive the score from the [CVSS v4.0 calculator](https://www.first.org/cvss/calculator/4.0) using the native TMT threat fields (`Title`, `Category`, `Interaction`, `Description`), the MITRE ATT&CK technique, and the EMB3D-informed device exposure as input.
+    - Reference the [CVSS v4.0 Mapping](#525-cvss-v40-mapping) section for guidance on mapping STRIDE categories to CVSS impact metrics.
 
-5. Likelihood of Exploit
+6. Likelihood of Exploit
 
-    **Action:** Populate the `Likelihood of Exploit` using the BSI `Dringlichkeit / Eintrittspotenzial` logic, see [BSI Likelihood of Exploit](#36-bsi-likelihood-of-exploit).
+    **Action:** Populate the `Likelihood of Exploit` using the BSI `Dringlichkeit / Eintrittspotenzial` logic, see [BSI Likelihood of Exploit](#37-bsi-likelihood-of-exploit).
     - Add or update a `Likelihood of Exploit` column in the review CSV rather than creating duplicate fields.
-    - Reference the [Likelihood of Exploit Mapping](#525-likelihood-of-exploit-mapping) section for guidance on mapping CVSS exploitability metrics and TMT statements to BSI likelihood categories.
+    - Reference the [Likelihood of Exploit Mapping](#526-likelihood-of-exploit-mapping) section for guidance on mapping CVSS exploitability metrics and TMT statements to BSI likelihood categories.
 
-6. Risk Prioritization
+7. Risk Prioritization
 
     **Action:** Populate Risk-Based Vulnerability Prioritization by combining `CVSS v4.0 Severity` and `Likelihood of Exploit` for each row.
     - Add or update a `Risk Prioritization` column in the review CSV rather than creating duplicate fields.
     - Only assign `Risk Prioritization` when both `CVSS v4.0 Severity` and `Likelihood of Exploit` are present.
-    - Reference the [Risk Prioritization Mapping](#526-risk-prioritization-mapping) section for guidance on combining severity and likelihood into prioritization category.
+    - Reference the [Risk Prioritization Mapping](#527-risk-prioritization-mapping) section for guidance on combining severity and likelihood into prioritization category.
 
-7. Threat Actor
+8. Threat Actor
 
     **Action:** Assign the minimum capable `Threat Actor` for each row using the standardized labels from [Threat Actors](#23-threat-actors).
     - Add or update a `Threat Actor` column in the review CSV rather than creating duplicate fields.
@@ -403,11 +428,11 @@ Risk treatment defines the disposition decision after each identified risk has b
       - **Operational Knowledge:** generic IT tradecraft, OT protocol familiarity, process-specific engineering knowledge, or privileged insider context.
     - Escalate to a more capable actor only when the attack path cannot reasonably succeed with a less capable one.
     - Do not assign multiple actors in one row. If several actors could plausibly perform the attack, record the minimum actor that can realistically achieve the described effect.
-    - Reference the [Threat Actor Mapping](#527-threat-actor-mapping) section for common actor selections from attack-path characteristics.
+    - Reference the [Threat Actor Mapping](#528-threat-actor-mapping) section for common actor selections from attack-path characteristics.
 
-8. TMT State
+9. TMT State
 
-    **Action:** Revise the `State` field for each row using the full analytical context: TMT threat fields, MITRE ATT&CK technique, CWE root weakness, CVSS severity, Risk Prioritization, and assigned Threat Actor.
+    **Action:** Revise the `State` field for each row using the full analytical context: TMT threat fields, MITRE ATT&CK technique, EMB3D device exposure, CWE root weakness, CVSS severity, Risk Prioritization, and assigned Threat Actor.
     - State selection guidance: Select the state decision that best fits the evidence and rationale.
       - `Not Started`: Default/export state for rows that have not yet been reviewed. Use this only to indicate genuinely unreviewed work remaining in a partially completed CSV. Once a row has been analyzed in this step, move it out of `Not Started` and assign the best-fit reviewed state below.
       - `Not Applicable`: The attack path is architecturally impossible (e.g., analog-only interface, passive sensor with no network exposure, human actor rather than a machine endpoint with no independent execution context), or the risk source has been structurally eliminated.
@@ -415,7 +440,7 @@ Risk treatment defines the disposition decision after each identified risk has b
       - `Mitigated`: One or more security controls, compensating measures, or design changes are confirmed in place and reduce the risk to an accepted level. The applied control, measure, residual risk, and how those controls constrain the assigned threat actor must be identified in `Justification`.
       - `Needs Investigation`: Critical evidence is missing, a key assumption cannot be validated, or the attack path cannot be closed without additional architecture information or clarification. The specific evidence gap or unanswered question must be named in `Justification`, including whether the unknowns affect the assigned threat actor, and do not leave a row in `Needs Investigation` without identifying the blocker.
 
-9. TMT Priority
+10. TMT Priority
 
     **Action:** Revise the `Priority` field for each row. Use the derived `Risk Prioritization` as the primary signal and adjust only when the modeled context provides a specific reason to deviate.
     - Use the priority vocabulary already present in the file.
@@ -426,12 +451,12 @@ Risk treatment defines the disposition decision after each identified risk has b
       - `High`
         > The threat is significant and requires prompt mitigation. It should be prioritized in the security backlog and may require escalation.
 
-10. TMT Justification
+11. TMT Justification
 
     **Action:** Write a concise, technically precise analyst statement in the `Justification` field for each row, synthesizing all prior enrichment steps. The justification provides the evidence-based rationale that supports the assigned `State`, explains the assigned `Threat Actor`, and informs the `Risk Treatment` decision in the next step.
     - State the evidence-based rationale that supports the assigned `State`.
     - Reference the modeled protocol, interface, trust relationship, validation behavior, or compensating control that informs the decision.
-    - Reference the assigned MITRE ATT&CK technique, CWE weakness, CVSS severity, Risk Prioritization, and Threat Actor where they support the rationale. Prefer technique name and behavior phrasing over repeating raw MITRE IDs that are already captured in `MITRE ID`.
+    - Reference the assigned MITRE ATT&CK technique, EMB3D-relevant device exposure or missing control, CWE weakness, CVSS severity, Risk Prioritization, and Threat Actor where they support the rationale. Prefer technique name and behavior phrasing over repeating raw MITRE IDs that are already captured in `MITRE ID`.
     - State why the chosen actor is the minimum capable adversary by describing the required access path and operational knowledge.
     - When `State` is `Not Applicable`, name the specific architectural contradiction or eliminated element (e.g., passive sensor, analog signal path, human actor rather than machine endpoint, or no independent execution context).
     - When `State` is `Mitigated`, identify the applied security control, compensating measure, or design change. State the residual risk level if exposure is not fully eliminated. If risk ownership is formally transferred to a third party, identify the named organization, contract, or SLA.
@@ -440,9 +465,9 @@ Risk treatment defines the disposition decision after each identified risk has b
     > [!IMPORTANT]
     > The justification is the most critical part of the security review. It is written last so it can synthesize the full analytical picture.
 
-11. Risk Treatment
+12. Risk Treatment
 
-    **Action:** Assign a risk treatment decision to each row based on the derived `Risk Prioritization`, see [Risk Treatment](#37-risk-treatment).
+    **Action:** Assign a risk treatment decision to each row based on the derived `Risk Prioritization`, see [Risk Treatment](#38-risk-treatment).
     - Add or update a `Risk Treatment` column in the review CSV rather than creating duplicate fields.
     - Treatment selection guidance: Select one of the following risk treatment preferences based on the order of priority:
       - `Avoidance`: apply if it is documented how the system element, interface, or data flow is removed or restructured to eliminate the risk.
@@ -481,6 +506,7 @@ Risk treatment defines the disposition decision after each identified risk has b
     - Threat Actor Distribution with key access-path and knowledge assumptions
     - Not Applicable Rationale Summary by pattern category
     - MITRE ATT&CK for ICS Mapping table
+    - MITRE EMB3D device exposure and mitigation-gap summary
     - CWE Weakness Classification summary
     - Assumptions and Evidence Gaps
     - Residual Risk Summary and Unresolved Decisions
@@ -555,7 +581,7 @@ Classify ICS assets by Purdue zone before assigning STRIDE categories or selecti
 STRIDE to Mitigation reference for OT/ICS assets. Use these mappings to populate the `Justification` field, to select compensating controls, and to populate the Recommended Mitigations section of the review summary.
 
 > [!NOTE]
-> Reference section [5.2.1. Purdue Model Mapping](#521-purdue-model-mapping) to identify the asset type and Purdue zone. Reference section [5.2.3. MITRE ATT&CK Mapping](#523-mitre-attck-mapping) to identify the OT-specific consequence before selecting mitigations.
+> Reference section [5.2.1. Purdue Model Mapping](#521-purdue-model-mapping) to identify the asset type and Purdue zone. Reference section [5.2.3. MITRE ATT&CK Mapping](#523-mitre-attck-mapping) to identify the OT-specific consequence, then use [5.2.4. MITRE EMB3D Mapping](#524-mitre-emb3d-mapping) to select device-native mitigations before finalizing the row.
 
 - Spoofing
   > Identity impersonation of SCADA servers, PLCs, PACs, or HMI stations allows attackers to inject unauthorized commands or intercept control traffic.
@@ -664,7 +690,23 @@ MITRE ATT&CK technique reference for OT/ICS threat scenarios. Use these mappings
 > [!NOTE]
 > T0815 (Denial of View) covers intentional operator blinding caused by adversarial action (e.g., alarm suppression via T0878, display injection, replayed stale data). T0829 (Loss of View) results from system unavailability (e.g., server crash, network outage, communication failure). Distinguish the root cause in the `Justification` field by stating whether the origin is adversarial manipulation or system unavailability.
 
-#### 5.2.4. CVSS v4.0 Mapping
+#### 5.2.4. MITRE EMB3D Mapping
+
+MITRE EMB3D reference for embedded-device exposures and mitigation families. Use this mapping to explain why a threat is feasible on the target device and to choose concrete device-native controls for the `Justification`, summary, and mitigation recommendations.
+
+| EMB3D Focus Area            | Typical Embedded Exposure                                                                 | Example Evidence in TMT / Model                                             | Representative Device-Native Controls                                                                 |
+| --------------------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Debug & Test Interfaces     | Production debug or service interface remains reachable or can be unlocked without strong control | JTAG, SWD, UART, vendor service port, maintenance connector, probe header   | Disable or fuse debug in production; authenticated debug unlock; maintenance mode approval; port seals |
+| Boot & Initialization       | Device trust chain does not verify what executes first                                     | Unsigned bootloader, no secure boot, rollback to vulnerable image           | Hardware root of trust; secure/measured boot; anti-rollback; boot integrity monitoring                |
+| Firmware & Project Updates  | Firmware, logic, or project files can be loaded without authenticity and integrity checks  | Unsigned firmware update, unauthenticated PLC program download, rogue project file | Signed update packages; version enforcement; secure download path; change approval and provenance checks |
+| Device Identity & Secrets   | Credentials, keys, certificates, or device identity are shared, default, or extractable    | Shared engineering password, default account, plaintext key storage         | Unique device identity; secure element/TPM-backed key storage; credential rotation; remove defaults   |
+| Communications & Protocol Trust | Device accepts commands or discloses state without sufficient authenticity, integrity, or replay protection | Unauthenticated Modbus/DNP3 traffic, plaintext telemetry, no sequence validation | IEC 62351 where applicable; DNP3 SAv5; message signing; allow-listing; replay detection               |
+| Physical Access & Tamper Response | Physical access to enclosure, removable media, jumpers, or local controls enables compromise | USB service port, exposed DIP switch, removable storage, unsealed enclosure | Tamper-evident enclosure; interface shielding; media control; intrusion detection; logged maintenance  |
+
+> [!NOTE]
+> EMB3D complements MITRE ATT&CK for ICS. Use ATT&CK to capture the adversary behavior and operational effect; use EMB3D to capture the embedded-device weakness pattern and the most relevant mitigation family.
+
+#### 5.2.5. CVSS v4.0 Mapping
 
 - Exploitability Metrics
   > Select the appropriate attack vector based on the physical and logical access requirements of the modeled interface.
@@ -699,7 +741,7 @@ MITRE ATT&CK technique reference for OT/ICS threat scenarios. Use these mappings
   | DoS on communication interface                   | N   | N   | H   | Loss of communication causes upstream PLC to trigger fault handling or fail-safe mode.                                         |
   | Configuration change via engineering workstation | N   | H   | N   | Modified setpoints propagate to field devices, affecting process integrity.                                                    |
 
-#### 5.2.5. Likelihood of Exploit Mapping
+#### 5.2.6. Likelihood of Exploit Mapping
 
 The BSI Likelihood of Exploit categorizes the probability of a threat being successfully exploited. It considers both the technical feasibility and the availability of exploit techniques.
 
@@ -737,7 +779,7 @@ The BSI Likelihood of Exploit categorizes the probability of a threat being succ
   | Active (Aktiv)                             | Medium (mittel)    | High (hoch)             | High (hoch)                     |
   | Exploit Published (Exploit Veröffentlicht) | Medium (mittel)    | High (hoch)             | Critical (sehr hoch)            |
 
-#### 5.2.6. Risk Prioritization Mapping
+#### 5.2.7. Risk Prioritization Mapping
 
 - Risk Prioritization
   > Combine `CVSS v4.0 Severity` and `Likelihood of Exploit` to determine an overall risk prioritization level for each threat.
@@ -750,7 +792,7 @@ The BSI Likelihood of Exploit categorizes the probability of a threat being succ
   | High                  | Low    | Medium | High   | High     | Critical |
   | Critical              | Medium | High   | High   | Critical | Critical |
 
-#### 5.2.7. Threat Actor Mapping
+#### 5.2.8. Threat Actor Mapping
 
 Normalize the `Threat Actor` decision from common OT/ICS threat-path characteristics. Always pick the minimum actor that satisfies the required access, capability, and process knowledge, and only reassess upward when the modeled path requires capabilities beyond the currently selected label.
 
