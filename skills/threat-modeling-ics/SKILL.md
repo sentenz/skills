@@ -1,17 +1,12 @@
 ---
 name: threat-modeling-ics
 description: >-
-  Performs end-to-end threat modeling for OT/ICS systems from Microsoft Threat
-  Modeling Tool (TMT) threat-list exports (`*.csv`) and model files (`*.tm7`).
-  Uses TMT and STRIDE for initial threat enumeration, then enriches each threat
-  with OT/ICS context, MITRE ATT&CK for ICS mappings, CWE weakness
-  classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based
-  Prioritization, minimum-capable Threat Actor assignment, Risk Treatment
-  decisions, STRIDE to Mitigation mapping for SCADA, PLC, PAC, and HMI assets,
-  and OT impact categories ranging from Denial of View to Physical Damage to
-  Property.
+  Performs end-to-end threat modeling for OT/ICS systems from Microsoft Threat Modeling Tool (TMT) threat-list exports (`*.csv`) and model files (`*.tm7`).
+  Uses TMT and STRIDE for initial threat enumeration, then enriches each threat with OT/ICS context, MITRE ATT&CK for ICS mappings, CWE weakness
+  classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization, minimum-capable Threat Actor assignment, Risk Treatment
+  decisions, STRIDE to Mitigation mapping for SCADA, PLC, PAC, and HMI assets, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.5.0"
+  version: "1.5.1"
   activation:
     implicit: true
     priority: 1
@@ -128,17 +123,15 @@ The Purdue Model (ISA-95 / IEC 62264) partitions an industrial automation enviro
 
 ### 2.3. Threat Actors
 
-Threat modeling must assign the minimum-capable adversary type relevant to the OT/ICS attack-path.
-Use canonical threat actor classes aligned with common CISA and NIST threat-source terminology so the `Threat Actor` field records actor type rather than campaign style, access vector, or tooling maturity.
+| Threat Actor       | Skill Level | Resources       | Persistence | Detection Difficulty | Primary Motivation                                      | Common Targets                                                               | Typical TTPs                                                                          |
+| ------------------ | ----------- | --------------- | ----------- | -------------------- | ------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Nation-State / APT | Very High   | Very High       | Very High   | Very High            | Espionage, geopolitical dominance, strategic objectives | Government, defense, critical infrastructure, research, financial systems    | Zero-days, supply-chain compromise, living-off-the-land, lateral movement, SIGINT     |
+| Cybercriminal      | Low-High    | Low-High        | Low-High    | Low-High             | Financial gain                                          | Individuals, SMBs, enterprises, banks, healthcare, exposed OT gateways       | Ransomware-as-a-service, phishing, BEC, credential theft, identity fraud              |
+| Insider Threat     | Low-High    | Internal Access | Low-High    | Very High            | Greed, grievance, coercion, or negligence               | Employer systems, plant networks, engineering assets, maintenance interfaces | Data exfiltration, sabotage, privilege abuse, misconfiguration, unsafe media handling |
+| Hacktivist         | Low-Medium  | Low             | Low-Medium  | Low-Medium           | Political, social, or ideological cause                 | Governments, corporations, public-facing HMIs, media outlets                 | DDoS, website defacement, doxing, data leaks                                          |
+| Script Kiddie      | Low-Medium  | Low             | Low         | Low                  | Curiosity, notoriety, thrill, or mischief               | Random or opportunistic systems, internet-exposed OT services                | Pre-built exploit kits, DDoS-for-hire, default credential attacks, simple defacement  |
 
-- Use exactly one standardized `Threat Actor` label per reviewed CSV row. Allowed labels are:
-  - `Nation-State Actor`
-  - `Cybercriminal`
-  - `Insider Threat`
-  - `Hacktivist`
-- Do not use `APT`, `Ransomware Operator`, `Supply Chain Attacker`, or `Script Kiddie` as standalone labels. Treat those as supporting context that helps justify one of the four canonical actor classes listed above.
-
-- Nation-State Actor
+- Nation-State Actor / APT
   > State-sponsored actors conduct long-duration, multi-stage campaigns targeting critical infrastructure for geopolitical objectives: espionage, pre-positioning for disruption, or physical sabotage. They invest significant resources in custom tooling, zero-day exploits, and supply-chain compromise to penetrate defense-in-depth architectures and reach Level 0 field devices.
 
 - Cybercriminal
@@ -149,6 +142,9 @@ Use canonical threat actor classes aligned with common CISA and NIST threat-sour
 
 - Hacktivist
   > Hacktivists target publicly visible OT assets to advance political or ideological agendas. They exploit internet-exposed HMIs, Shodan-indexed SCADA web interfaces, or default credentials to post proof-of-access, deface operator displays, or make coarse setpoint changes for publicity rather than sustained operational damage.
+
+- Script Kiddie
+  > Unskilled actors opportunistically attack exposed OT services using pre-built exploit kits, default credential lists, or DDoS-for-hire services. They typically cause low-impact disruption or defacement without a specific target in mind.
 
 ### 2.4. Diagram Depth Layers
 
@@ -205,7 +201,7 @@ MITRE ATT&CK for ICS to map a TMT threat to realistic adversary behavior affecti
   > The adversary's tactical goal or motivation for the attack (e.g., `TA0043: Impact`).
 
 - [Techniques](https://attack.mitre.org/techniques/ics/)
-  > The specific adversary behavior or method used to achieve the tactic (e.g., `T0855: Unauthorized Command Message`).
+  > The specific adversary behavior or method used to achieve the tactic (e.g., `T1692.001: Unauthorized Message – Command Message`).
 
 ### 3.4. CWE
 
@@ -405,7 +401,6 @@ Risk treatment defines the disposition decision after each identified risk has b
       - **Capability:** tooling maturity, exploit sophistication, and ability to chain multiple steps.
       - **Access Path:** internet-reachable, adjacent industrial network, local workstation, maintenance path, or physical access requirement.
       - **Operational Knowledge:** generic IT tradecraft, OT protocol familiarity, process-specific engineering knowledge, or privileged insider context.
-    - Prefer the least capable actor that can still plausibly execute the threat end-to-end.
     - Escalate to a more capable actor only when the attack path cannot reasonably succeed with a less capable one.
     - Do not assign multiple actors in one row. If several actors could plausibly perform the attack, record the minimum actor that can realistically achieve the described effect.
     - Reference the [Threat Actor Mapping](#527-threat-actor-mapping) section for common actor selections from attack-path characteristics.
@@ -445,12 +440,10 @@ Risk treatment defines the disposition decision after each identified risk has b
     > [!IMPORTANT]
     > The justification is the most critical part of the security review. It is written last so it can synthesize the full analytical picture.
 
-
 11. Risk Treatment
 
     **Action:** Assign a risk treatment decision to each row based on the derived `Risk Prioritization`, see [Risk Treatment](#37-risk-treatment).
     - Add or update a `Risk Treatment` column in the review CSV rather than creating duplicate fields.
-    - Preserve `Risk Treatment` as the final decision column in the reviewed CSV.
     - Treatment selection guidance: Select one of the following risk treatment preferences based on the order of priority:
       - `Avoidance`: apply if it is documented how the system element, interface, or data flow is removed or restructured to eliminate the risk.
       - `Mitigation`: apply if security controls or compensating measures that lower the risk are documented. Residual risk must be explicitly approved by a responsible stakeholder.
@@ -462,14 +455,13 @@ Risk treatment defines the disposition decision after each identified risk has b
 1. Reviewed CSV
 
     **Action:** Validate the analyst decisions, then write the complete enriched dataset to the output file `<Device_Name>_Threat_Model_Generated.csv`.
-    - Generate a semicolon-delimited output CSV format.
+    - Generate a semicolon delimited output CSV format.
     - Review each row from the source before saving.
     - Check that identical scores across many rows are defensible from the modeled scenario and not simply inherited from the STRIDE category.
     - Preserve the delimiter, quoting style, encoding, and header order from the source file.
     - Verify that all native TMT columns are present and unmodified in the output before saving.
-    - Perform a final column-scope consistency check: keep IDs and score artifacts in dedicated columns, and keep `Justification` as narrative rationale.
     - Verify that every reviewed row has exactly one allowed `Threat Actor` label.
-    - Verify that the review columns are appended immediately after the native TMT columns and that the tail-column order, using the semicolon CSV delimiter, is `Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment`.
+    - Perform a final column-scope consistency check: keep IDs and score artifacts in dedicated columns, and keep `Justification` as narrative rationale.
     - Reject rows where `Justification` is only an identifier token or parenthetical code reference.
     - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, residual risk posture, threat actor selection, and risk treatment decision.
 
@@ -638,27 +630,39 @@ STRIDE to Mitigation reference for OT/ICS assets. Use these mappings to populate
 
 MITRE ATT&CK technique reference for OT/ICS threat scenarios. Use these mappings to populate the `MITRE ID` field with specific adversary behaviors.
 
-| Technique ID | Technique Name                        | Scenarios                                                                                                        |
-| ------------ | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| T0801        | Monitor Process State                 | Passive eavesdropping on unencrypted industrial protocols (Modbus RTU/TCP, PROFIBUS, proprietary serial).        |
-| T0813        | Denial of Control                     | Legitimate control commands blocked or discarded; process cannot be adjusted during upsets.                      |
-| T0814        | Denial of Service                     | Bus contention, frame flooding, communication disruption on serial or network interfaces.                        |
-| T0827        | Loss of Control                       | Operators unable to send control commands to field devices; manual override may be the only option.              |
-| T0828        | Environmental Release                 | Unauthorized release of hazardous materials or contamination events triggered by control manipulation.           |
-| T0829        | Loss of View (Denial)                 | Operators blinded by corrupted, suppressed, or replayed HMI/SCADA displays and alarm outputs.                    |
-| T0829        | Loss of View (Availability)           | Process visibility lost due to HMI or SCADA server unavailability; operators cannot monitor state.               |
-| T0831        | Manipulation of Control               | Issuing unauthorized setpoint changes or mode transitions via compromised HMI or protocol injection.             |
-| T0832        | Manipulation of View                  | False process data injected into historian records or displayed on HMI to mislead operators.                     |
-| T0842        | Hardware Debug                        | Exploiting JTAG, SWD, or UART debug interfaces for firmware extraction or modification.                          |
-| T0843        | Program Download / Code Injection     | Exploiting firmware update mechanisms, buffer overflows, or protocol parsing vulnerabilities for code execution. |
-| T0852        | Screen Capture / Replay               | Capturing and replaying valid protocol messages when no sequence numbers or timestamps exist.                    |
-| T0855        | Unauthorized Command Message          | Sending malformed or out-of-range values via industrial protocols to manipulate process variables.               |
-| T0859        | Valid Accounts / Unauthorized Command | Spoofing PLC/HMI identity on unauthenticated protocols (Modbus, DNP3). Device accepts commands from any source.  |
-| T0879        | Physical Damage to Property           | Physical destruction of machinery or infrastructure caused by out-of-range commands or safety bypass.            |
-| T0880        | Personnel Safety Risk                 | Conditions created that endanger human operators or maintenance personnel.                                       |
+| Technique ID | Technique Name                         | Scenarios                                                                                                                                                                   |
+| ------------ | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| T0801        | Monitor Process State                  | Passive eavesdropping on unencrypted industrial protocols (Modbus RTU/TCP, PROFIBUS, proprietary serial) to gather process values, setpoints, and operational state.        |
+| T0809        | Data Destruction                       | Intentional erasure of PLC programs, historian records, or engineering project files to deny recovery and maximize operational disruption (e.g., ransomware wiper payload). |
+| T0813        | Denial of Control                      | Legitimate control commands blocked or discarded; process cannot be adjusted or halted during abnormal conditions.                                                          |
+| T0814        | Denial of Service                      | Bus contention, frame flooding, or communication disruption on serial or network interfaces preventing message delivery to field devices.                                   |
+| T0815        | Denial of View                         | Intentional blinding of operators by corrupting, suppressing, or replaying HMI/SCADA displays, alarm outputs, or historian feeds to conceal process changes.                |
+| T0819        | Exploit Public-Facing Application      | Exploiting vulnerabilities in internet-accessible OT services (HMI web UI, VPN gateway, remote access server) to gain initial access without credentials.                   |
+| T0821        | Modify Controller Tasking              | Altering scan rates, I/O mapping, task priorities, or execution scheduling in a PLC or PAC to change control behavior without modifying the application program.            |
+| T0822        | External Remote Services               | Abusing legitimate remote access services (VPN, RDP, engineering remote connect tools) to pivot from IT networks into the OT environment.                                   |
+| T0827        | Loss of Control                        | Operators unable to send control commands to field devices; process relies on last known state or fails to a safe position; manual override may be the only option.         |
+| T0828        | Loss of Productivity and Revenue       | Operational disruption halting production, delaying batch completion, or forcing emergency shutdown, resulting in financial and schedule losses.                            |
+| T0829        | Loss of View                           | Process visibility lost due to HMI or SCADA server unavailability, network outage, or communication failure; operators cannot monitor process state.                        |
+| T0831        | Manipulation of Control                | Issuing unauthorized setpoint changes, mode transitions, or command sequences via compromised HMI, engineering workstation, or industrial protocol injection.               |
+| T0832        | Manipulation of View                   | Injecting false process data into historian records or HMI displays to mislead operators and conceal unauthorized process changes.                                          |
+| T0836        | Modify Parameter                       | Changing setpoints, PID tuning values, alarm thresholds, or calibration offsets on a running controller without downloading a new program.                                  |
+| T0842        | Network Sniffing                       | Passive capture of industrial network or bus traffic to harvest credentials, protocol sequences, process values, or device fingerprints for reconnaissance or replay.       |
+| T0843        | Program Download                       | Downloading a modified or malicious PLC/PAC program to a field controller via engineering software or a compromised programming interface.                                  |
+| T0847        | Replication Through Removable Media    | Using USB drives or removable storage to introduce malware, modified firmware, or malicious project files into air-gapped or network-isolated OT segments.                  |
+| T0852        | Screen Capture                         | Capturing HMI screen contents for reconnaissance of process topology, alarm states, operator credentials, or current setpoints.                                             |
+| T0859        | Valid Accounts                         | Using stolen, default, or shared credentials to authenticate to engineering software, historian databases, HMI servers, or remote access portals.                           |
+| T0862        | Supply Chain Compromise                | Inserting malicious code or backdoors into vendor-supplied engineering software, firmware packages, hardware, or update channels before delivery to the target.             |
+| T0873        | Project File Infection                 | Embedding malicious code in PLC or HMI project files so that engineers unknowingly deploy it during routine configuration updates or commissioning.                         |
+| T0878        | Alarm Suppression                      | Disabling or silencing process alarms to prevent operators from detecting unauthorized control changes, equipment faults, or ongoing attack activity.                       |
+| T0879        | Damage to Property                     | Physical destruction of machinery or infrastructure caused by out-of-range commands, actuator abuse, or safety system bypass.                                               |
+| T0880        | Loss of Safety                         | Compromising safety instrumented systems or overriding protection logic to create conditions that endanger personnel, equipment, or the environment.                        |
+| T0881        | Service Stop                           | Terminating critical OT services (SCADA server, historian, OPC server, communication daemon) to deny operator visibility and control.                                       |
+| T0883        | Internet Accessible Device             | Presence of an internet-reachable OT device (HMI, RTU, engineering server) enabling direct adversary access without traversing a DMZ or enterprise network.                 |
+| T1692.001    | Unauthorized Message – Command Message | Sending forged or injected command messages on unauthenticated industrial protocols (Modbus, DNP3) to manipulate process variables or issue unsafe commands.                |
+| T1693        | Modify Firmware                        | Replacing or patching device firmware to implant persistent backdoors, disable security features, or alter control behavior across power cycles and reboots.                |
 
 > [!NOTE]
-> T0829 covers two distinct impact categories. **Denial of View** is intentional blinding (e.g., alarm suppression, display injection). **Loss of View** results from availability failure (e.g., server crash, network outage). Distinguish the root cause in the `Justification` field by stating whether the origin is adversarial manipulation or system unavailability.
+> T0815 (Denial of View) covers intentional operator blinding caused by adversarial action (e.g., alarm suppression via T0878, display injection, replayed stale data). T0829 (Loss of View) results from system unavailability (e.g., server crash, network outage, communication failure). Distinguish the root cause in the `Justification` field by stating whether the origin is adversarial manipulation or system unavailability.
 
 #### 5.2.4. CVSS v4.0 Mapping
 
@@ -750,22 +754,15 @@ The BSI Likelihood of Exploit categorizes the probability of a threat being succ
 
 Normalize the `Threat Actor` decision from common OT/ICS threat-path characteristics. Always pick the minimum actor that satisfies the required access, capability, and process knowledge, and only reassess upward when the modeled path requires capabilities beyond the currently selected label.
 
-| Threat-path characteristics                                                                 | Minimum Threat Actor                  | Selection logic                                                                                           |
-| -------------------------------------------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Internet-exposed HMI, VPN, web service, or remote access path exploited with commodity tooling for extortion, fraud, or monetized access | `Cybercriminal` | Choose this label when the differentiator in the modeled row is financial gain, fraud, or scalable criminal reuse. |
-| Internet-exposed HMI, VPN, web service, or remote access path exploited for publicity, protest, or symbolic disruption | `Hacktivist` | Choose this label when the differentiator in the modeled row is ideological messaging, defacement, or proof-of-access rather than monetization. |
-| Extortion, ransomware staging, or financially motivated IT/OT pivoting                      | `Cybercriminal`                       | Use when commodity or affiliate-operated intrusion tradecraft is enough to disrupt operations for payment or fraud. |
-| Trusted maintenance path, engineering workstation misuse, badge access, or privileged misuse | `Insider Threat`                      | Use when success depends on privileged local access, physical presence, or direct operational familiarity. |
-| Trojanized engineering software, malicious firmware, or a tainted vendor update used for covert pre-positioning or sabotage | `Nation-State Actor` | Choose this label when the modeled objective is covert pre-positioning or mission-specific sabotage. Example: a trojanized engineering software update that quietly establishes long-term access to safety controllers. |
-| Compromised vendor tooling, update service, or MSP remote-management channel reused for broad extortion or monetized access | `Cybercriminal` | Choose this label when the modeled objective is scalable extortion, fraud, or ransomware deployment. Example: a compromised remote management platform reused to deploy ransomware across multiple customer sites. |
-| Coordinated multi-stage intrusion needing custom tooling, stealth, or deep process expertise | `Nation-State Actor`                  | Use only when lower-tier actors cannot plausibly achieve the path without advanced tradecraft or mission-specific OT knowledge. |
-
-> [!NOTE]
-> The presence of high impact alone does not justify a more capable actor. Terms such as `APT`, `Ransomware Operator`, `Supply Chain Attacker`, and `Script Kiddie` may appear in justification text, but not as `Threat Actor` labels.
->
-> When an internet-exposed path could support both financially motivated and ideologically motivated abuse, choose the actor that best matches the modeled objective in the row. Default to `Cybercriminal` when the scenario emphasizes monetization or reusable unauthorized access; choose `Hacktivist` when the primary effect is messaging, protest, or public proof-of-access.
->
-> The same supplier-channel path can support different actor classes. When vendor tooling, firmware distribution, or MSP access is involved, still record exactly one canonical label based on the modeled campaign objective: sabotage or covert pre-positioning typically maps to `Nation-State Actor`, while monetized reuse typically maps to `Cybercriminal`. Use `Insider Threat` when the supplier-channel abuse depends on authorized insider or contractor access, and use `Hacktivist` only when the compromised channel is primarily used for ideological messaging or symbolic disruption.
+| Attack Path / Scenario                                                                                                                                | Minimum Threat Actor | Key Indicators                                                                                                                      | ICS Tactics, Techniques, and Procedures (TTPs) |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| Internet-exposed service with public exploit, default credentials, or unauthenticated interface                                                       | `Script Kiddie`      | `AV:N`, `AC:L`; pre-built tooling; no plant-specific knowledge; opportunistic targeting                                             | `T0883`, `T0819`, `T0814`, `T0815`             |
+| Internet-exposed HMI, SCADA web UI, or public-facing OT asset targeted for ideological messaging, defacement, or symbolic proof-of-access             | `Hacktivist`         | Visible, high-profile target; protest or propaganda objective; short-lived campaign; no persistent access sought                    | `T0883`, `T0814`, `T0815`, `T0832`             |
+| Internet-exposed service or IT/OT boundary exploited for financial gain: ransomware staging, credential theft, extortion, or fraud                    | `Cybercriminal`      | IT-to-OT pivot; commodity or affiliate malware; stolen or phished credentials; business disruption for payment                      | `T0822`, `T0859`, `T0881`, `T0829`, `T0831`    |
+| Compromised vendor tooling, update service, or MSP remote-management channel reused for scalable extortion or ransomware deployment                   | `Cybercriminal`      | Third-party trust dependency; monetized supply-chain reuse; commodity ransomware payload; no mission-specific objective             | `T0862`, `T0881`, `T0809`                      |
+| Trusted maintenance path, local engineering workstation, removable media, direct cable or debug interface, or privileged badge access                 | `Insider Threat`     | `AV:P` or `AV:L`; trusted plant or engineering access; process familiarity; maintenance tooling or insider credentials              | `T0847`, `T0843`, `T0836`, `T1692.001`         |
+| Trojanized engineering software, signed firmware package, or tainted vendor update used for covert pre-positioning or mission-specific sabotage       | `Nation-State / APT` | Supply-chain compromise; custom or signed tooling; covert persistence objective; strategic or safety-critical target                | `T0862`, `T0873`, `T1693`, `T0879`             |
+| Bespoke multi-stage intrusion against a segmented ICS requiring custom tooling, zero-day exploits, covert lateral movement, or deep process expertise | `Nation-State / APT` | Custom tradecraft; zero-days; long-dwell access; strategic high-value target; objective is disruption, sabotage, or pre-positioning | `T0821`, `T0831`, `T0878`, `T0879`, `T0880`    |
 
 ### 5.3. Template
 
@@ -786,13 +783,13 @@ Use these templates for Microsoft TMT CSV intake and review.
 #### 5.3.2. Reviewed TMT CSV Template
 
 - `<Device_Name>_Threat_Model_Generated.csv`
-  > The completed analyst review of the TMT export in semicolon-delimited CSV format with review columns appended. The required tail-column order is `Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment`.
+  > The completed analyst review of the TMT export in semicolon delimited CSV format with review columns appended.
 
   ```csv
   Id;Title;Category;Diagram;Interaction;Priority;State;Changed By;Description;Justification;Last Modified;MITRE ID;CWE ID;CVSS v4.0 Vector;CVSS-B v4.0 Score;CVSS v4.0 Severity;Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment
   0;Spoofing the MCU Process;Spoofing;<Device_Name>;Debugger to MCU over JTAG;Medium;Needs Investigation;;"MCU may be spoofed by an attacker and this may lead to information disclosure by Debugger Probe. Consider using a standard authentication mechanism to identify the destination process.";"The physical JTAG maintenance path makes Insider Threat the minimum actor because physical service access and debug familiarity are required. A rogue interposer or substituted board could impersonate the MCU and capture debug traffic. Treatment is Mitigation through authenticated debug unlock and production-time debug lockout; residual risk owner remains product security.";Generated;T0842;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N;"6,7";Medium;Medium;Medium;Insider Threat;Mitigation
-  38;Data Flow MCU to CFG over Modbus RTU (RS-232) Is Potentially Interrupted;Denial Of Service;<Device_Name>;MCU to CFG over Modbus RTU (RS-232);Low;Mitigated;;"An external agent interrupts data flowing across a trust boundary in either direction.";"This RS-232 interruption affects a local maintenance session more than the primary control function. Insider Threat is the minimum actor because the attack requires direct physical or maintenance-port access. The actuator remains locally autonomous with fail-safe behavior, so residual impact is low. Treatment is Acceptance with monitoring.";Generated;T0814;CWE-693;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:L;"2,4";Low;Low;Low;Insider Threat;Acceptance
-  72;Elevation Using Impersonation;Elevation Of Privilege;<Device_Name>;Operator to MCU over Switches (GPIO);Low;Not Applicable;;"MCU may be able to impersonate the context of Operator in order to gain additional privilege.";"Insider Threat is the minimum candidate because only local operator-side access is in scope, but this dry-contact GPIO path has no machine-to-machine trust boundary the MCU can impersonate. Treatment is Avoidance by keeping the interface free of machine-authenticated trust.";Generated;;;;;;;;Insider Threat;Avoidance
+  38;Data Flow MCU to CFG over Modbus RTU (RS-232) Is Potentially Interrupted;Denial Of Service;<Device_Name>;MCU to CFG over Modbus RTU (RS-232);Low;Mitigated;;"An external agent interrupts data flowing across a trust boundary in either direction.";"This RS-232 interruption affects a local maintenance session more than the primary control function. Insider Threat is the minimum actor because the attack requires direct physical or maintenance-port access. The actuator remains locally autonomous with fail-safe behavior, the residual impact of the loss of outbound availability is low. Treatment is Acceptance with monitoring.";Generated;T0814;CWE-693;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:L;"2,4";Low;Low;Low;Insider Threat;Acceptance
+  72;Elevation Using Impersonation;Elevation Of Privilege;<Device_Name>;Operator to MCU over Switches (GPIO);Low;Not Applicable;;"MCU may be able to impersonate the context of Operator in order to gain additional privilege.";"The dry-contact GPIO path has no machine-to-machine trust boundary the MCU can impersonate, Insider Threat is the minimum candidate because only local operator-side access is in scope. Treatment is Avoidance by keeping the interface free of machine-authenticated trust.";Generated;;;;;;;;Insider Threat;Avoidance
   ```
 
 ## 6. References
@@ -802,6 +799,7 @@ Use these templates for Microsoft TMT CSV intake and review.
 - STRIDE [Threat Modeling](https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats) guide.
 - MITRE [ATT&CK for ICS](https://attack.mitre.org/matrices/ics/) matrix.
 - MITRE [CWE](https://cwe.mitre.org/) page.
+- MITRE [EMB3D](https://emb3d.mitre.org/) page.
 - FIRST [CVSS v4.0 Specification](https://www.first.org/cvss/v4.0/specification-document) page.
 - FIRST [CVSS v4.0 Calculator](https://www.first.org/cvss/calculator/4.0) page.
 - BSI [Risk Prioritization](https://www.bsi.bund.de/DE/Service-Navi/Abonnements/Newsletter/Buerger-CERT-Abos/Buerger-CERT-Sicherheitshinweise/Risikostufen/risikostufen.html) page.
