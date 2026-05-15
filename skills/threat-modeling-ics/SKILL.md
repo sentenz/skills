@@ -7,7 +7,7 @@ description: >-
   Threat Actor assignment, Risk Treatment decisions, STRIDE to Mitigation mapping for SCADA, PLC, PAC, and HMI assets, and OT impact categories ranging from Denial
   of View to Physical Damage to Property.
 metadata:
-  version: "1.5.11"
+  version: "1.6.0"
   activation:
     implicit: true
     priority: 1
