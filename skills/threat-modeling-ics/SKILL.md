@@ -7,7 +7,7 @@ description: >-
   Threat Actor assignment, Risk Treatment decisions, STRIDE to Mitigation mapping for SCADA, PLC, PAC, and HMI assets, and OT impact categories ranging from Denial
   of View to Physical Damage to Property.
 metadata:
-  version: "1.6.0"
+  version: "1.6.1"
   activation:
     implicit: true
     priority: 1
@@ -128,7 +128,7 @@ Threat actors are individuals, groups, or organizations with the motivation and 
 
 | #   | Threat Actor       | Skill Level | Resources | Persistence | Detection Difficulty | Primary Motivation                                      | Common Targets                                                            | Typical TTPs                                                                               |
 | --- | ------------------ | ----------- | --------- | ----------- | -------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| 1   | Nation-State / APT | Very High   | Very High | Very High   | Very High            | Espionage, Geopolitical Dominance, Strategic Objectives | Government, Defense, Critical Infrastructure, Research, Financial Systems | Zero-days, Supply Chain Attacks, Living-off-the-Land (LOTL), Lateral Movement, SIGINT      |
+| 1   | Nation-State Actor | Very High   | Very High | Very High   | Very High            | Espionage, Geopolitical Dominance, Strategic Objectives | Government, Defense, Critical Infrastructure, Research, Financial Systems | Zero-days, Supply Chain Attacks, Living-off-the-Land (LOTL), Lateral Movement, SIGINT      |
 | 2   | Insider Threat     | Low–High    | Low–High  | Low–High    | Very High            | Greed, Grievance, Coercion, or Negligence / Human Error | Employer's Sensitive Systems & Data                                       | Data Exfiltration, Sabotage, Privilege Abuse, Misconfiguration, Unauthorized Data Transfer |
 | 3   | Cybercriminal      | Low–High    | Low–High  | Low–High    | Low–High             | Financial Gain                                          | Individuals, SMBs, Enterprises, Banks, Healthcare                         | Ransomware-as-a-Service, Phishing, BEC, Carding, Credential Theft, Identity Fraud          |
 | 4   | Hacktivist         | Low–Medium  | Low       | Low–Medium  | Low–Medium           | Political, Social, or Ideological Cause                 | Governments, Corporations, Media Outlets                                  | DDoS, Website Defacement, Doxing, Data Leaks                                               |
@@ -432,7 +432,7 @@ Risk treatment defines the disposition decision after each identified risk has b
 
 3. MITRE EMB3D
 
-    **Action:** Populate the `ATT&CK ID` and apply [MITRE EMB3D](#34-mitre-emb3d) to determine the embedded-device exposure and mitigation family that best explains the row.
+    **Action:** Populate the `EMB3D TID` and apply [MITRE EMB3D](#34-mitre-emb3d) to determine the embedded-device exposure and mitigation family that best explains the row.
     - Use EMB3D especially for PLC, PAC, RTU, field-device, firmware, maintenance-port, removable-media, and device-identity scenarios.
     - Store the matched [EMB3D Threats](https://emb3d.mitre.org/threats) Enumeration TID(s) in the dedicated `EMB3D TID` column. Apply EMB3D [Device Properties](https://emb3d.mitre.org/properties-list/) Mapper to support the justification for the TID selection.
     - Use comma-separated values when more than one TID applies (e.g., `TID-116, TID-119`). Leave the field blank when no EMB3D threat applies to the row.
