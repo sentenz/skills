@@ -7,7 +7,7 @@ description: >-
   Threat Actor assignment, Risk Treatment decisions, STRIDE to Mitigation mapping for SCADA, PLC, PAC, and HMI assets, and OT impact categories ranging from Denial
   of View to Physical Damage to Property.
 metadata:
-  version: "1.5.3"
+  version: "1.5.11"
   activation:
     implicit: true
     priority: 1
@@ -129,19 +129,19 @@ Threat actors are individuals, groups, or organizations with the motivation and 
 | #   | Threat Actor       | Skill Level | Resources | Persistence | Detection Difficulty | Primary Motivation                                      | Common Targets                                                            | Typical TTPs                                                                               |
 | --- | ------------------ | ----------- | --------- | ----------- | -------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | 1   | Nation-State / APT | Very High   | Very High | Very High   | Very High            | Espionage, Geopolitical Dominance, Strategic Objectives | Government, Defense, Critical Infrastructure, Research, Financial Systems | Zero-days, Supply Chain Attacks, Living-off-the-Land (LOTL), Lateral Movement, SIGINT      |
-| 2   | Cybercriminal      | Low–High    | Low–High  | Low–High    | Low–High             | Financial Gain                                          | Individuals, SMBs, Enterprises, Banks, Healthcare                         | Ransomware-as-a-Service, Phishing, BEC, Carding, Credential Theft, Identity Fraud          |
-| 3   | Insider Threat     | Low–High    | Low–High  | Low–High    | Very High            | Greed, Grievance, Coercion, or Negligence / Human Error | Employer's Sensitive Systems & Data                                       | Data Exfiltration, Sabotage, Privilege Abuse, Misconfiguration, Unauthorized Data Transfer |
+| 2   | Insider Threat     | Low–High    | Low–High  | Low–High    | Very High            | Greed, Grievance, Coercion, or Negligence / Human Error | Employer's Sensitive Systems & Data                                       | Data Exfiltration, Sabotage, Privilege Abuse, Misconfiguration, Unauthorized Data Transfer |
+| 3   | Cybercriminal      | Low–High    | Low–High  | Low–High    | Low–High             | Financial Gain                                          | Individuals, SMBs, Enterprises, Banks, Healthcare                         | Ransomware-as-a-Service, Phishing, BEC, Carding, Credential Theft, Identity Fraud          |
 | 4   | Hacktivist         | Low–Medium  | Low       | Low–Medium  | Low–Medium           | Political, Social, or Ideological Cause                 | Governments, Corporations, Media Outlets                                  | DDoS, Website Defacement, Doxing, Data Leaks                                               |
 | 5   | Script Kiddie      | Low–Medium  | Low       | Low         | Low                  | Curiosity, Notoriety, Thrill, or Mischief               | Random / Opportunistic Systems                                            | Pre-built Exploit Kits, DDoS-for-Hire, Unauthorized Vulnerability Discovery, Defacement    |
 
 - Nation-State Actor
   > State-sponsored actors conduct long-duration, multi-stage campaigns targeting critical infrastructure for geopolitical objectives: espionage, pre-positioning for disruption, or physical sabotage. They invest significant resources in custom tooling, zero-day exploits, and supply-chain compromise to penetrate defense-in-depth architectures and reach Level 0 field devices.
 
-- Cybercriminal
-  > Financially motivated actors deploy ransomware or extortion campaigns that pivot across the IT/OT boundary. By encrypting historian databases, engineering workstations, or SCADA servers they force operators to halt processes or pay ransom to restore visibility and control. OT-targeting ransomware groups increasingly understand industrial protocol semantics.
-
 - Insider Threat
   > Insiders hold privileged physical or logical access to control systems without requiring an initial intrusion phase. Malicious insiders may intentionally manipulate setpoints, corrupt configuration files, introduce rogue commands, or disable safety interlocks. Negligent insiders introduce risk by bypassing security controls or mishandling engineering-level credentials.
+
+- Cybercriminal
+  > Financially motivated actors deploy ransomware or extortion campaigns that pivot across the IT/OT boundary. By encrypting historian databases, engineering workstations, or SCADA servers they force operators to halt processes or pay ransom to restore visibility and control. OT-targeting ransomware groups increasingly understand industrial protocol semantics.
 
 - Hacktivist
   > Hacktivists target publicly visible OT assets to advance political or ideological agendas. They exploit internet-exposed HMIs, Shodan-indexed SCADA web interfaces, or default credentials to post proof-of-access, deface operator displays, or make coarse setpoint changes for publicity rather than sustained operational damage.
@@ -154,7 +154,7 @@ Threat actors are individuals, groups, or organizations with the motivation and 
 Use Microsoft [diagram depth layers](https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/1b-depth-layers) when creating or validating the threat model diagram.
 
 - Layer 0 (`System`)
-  > System layer for high-level architecture and trust boundaries between major zones or subsystems interactions.
+  > System layer for high-level architecture and trust boundaries between major zones or subsystems.
 
 - Layer 1 (`Process`)
   > Process layer for process-level data flows in each major part.
@@ -163,7 +163,7 @@ Use Microsoft [diagram depth layers](https://learn.microsoft.com/en-us/training/
   > Subprocess layer for critical system subparts.
 
 - Layer 3 (`Lower-Level`)
-  > Lower-Level layer for highly critical or kernel-level detail.
+  > Lower-Level layer for highly critical or firmware-level and driver-level detail.
 
 ## 3. Frameworks
 
@@ -396,7 +396,7 @@ Risk treatment defines the disposition decision after each identified risk has b
     - Do not edit the original `<Device_Name>_Threat_Model.csv` file — treat it as immutable evidence.
     - **Preserve** (never overwrite, even if the source value appears to contain a typo or formatting difference): `Id`, `Title`, `Category`, `Diagram`, `Interaction`, `Changed By`, `Description`, `Last Modified`.
     - **Update** (may be revised based on analyst review): `State`, `Priority`, `Justification`.
-    - **Append** (add to the output only; not present in the raw TMT export): `ATT&CK ID`, `CWE ID`, `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Threat Actor`, `Risk Treatment`.
+    - **Append** (add to the output only; not present in the raw TMT export): `ATT&CK ID`, `EMB3D TID`, `CWE ID`, `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Threat Actor`, `Risk Treatment`.
     - Every row in the output must trace back to exactly one row in the source CSV, identified by its native `Id` value.
 
 ### 4.2. Review
@@ -416,42 +416,40 @@ Risk treatment defines the disposition decision after each identified risk has b
       > The initial priority assigned by TMT.
     - `State`
       > The initial review status assigned by TMT.
-    - Record assumptions and missing evidence when the native TMT fields do not fully resolve the threat decision.
+    - Record assumptions and missing evidence in the `Justification` field when the native TMT fields do not fully determine the threat decision.
     - When the assessment objective is compliance-oriented, treat each row as a traceable product risk statement tied to a concrete interface, trust relationship, or maintenance path.
 
     > [!NOTE]
-    > Perform steps 2–11 for every row before proceeding to section 4.3.
+    > Perform steps 2–12 for every row before proceeding to section 4.3.
 
 2. MITRE ATT&CK
 
     **Action:** Populate the `ATT&CK ID` field for each row when a concrete ATT&CK for ICS technique can be supported by the TMT threat fields, see [MITRE ATT&CK](#33-mitre-attck).
-    - Record the most relevant ATT&CK IDs for ICS (e.g., `TA0043, T0856`).
+    - Record the most relevant ATT&CK IDs for ICS [Techniques](https://attack.mitre.org/techniques/ics/).
     - Store MITRE technique IDs in the dedicated `ATT&CK ID` column.
     - Avoid duplicating the same ATT&CK ID string in `Justification` when the `ATT&CK ID` column is populated. In `Justification`, prefer technique name or behavior wording unless repeating the ID is necessary for disambiguation.
-    - Leave the field blank when the threat statement is ambiguous.
-    - Reference the [3.3. MITRE ATT\&CK](#33-mitre-attck) section for common technique mappings based on STRIDE categories.
+    - Leave the field blank when no ICS-specific ATT&CK technique can be directly supported by the available TMT threat fields.
 
 3. MITRE EMB3D
 
-    **Action:** Apply [MITRE EMB3D](#34-mitre-emb3d) to determine the embedded-device exposure and mitigation family that best explains the row.
+    **Action:** Populate the `ATT&CK ID` and apply [MITRE EMB3D](#34-mitre-emb3d) to determine the embedded-device exposure and mitigation family that best explains the row.
     - Use EMB3D especially for PLC, PAC, RTU, field-device, firmware, maintenance-port, removable-media, and device-identity scenarios.
-    - Capture the EMB3D-relevant device property or missing control in `Justification` and in the recommended mitigations rather than duplicating generic wording.
-    - Prefer concrete device phrases such as `debug interface left enabled in production`, `unsigned firmware update path`, `shared device credential`, `no secure boot`, or `no tamper response`.
-    - Reference the [MITRE EMB3D](#34-mitre-emb3d) section for common embedded-device exposure classes and representative controls.
+    - Store the matched [EMB3D Threats](https://emb3d.mitre.org/threats) Enumeration TID(s) in the dedicated `EMB3D TID` column. Apply EMB3D [Device Properties](https://emb3d.mitre.org/properties-list/) Mapper to support the justification for the TID selection.
+    - Use comma-separated values when more than one TID applies (e.g., `TID-116, TID-119`). Leave the field blank when no EMB3D threat applies to the row.
+    - In `Justification`, describe the mapped device property or missing control; avoid duplicating TIDs already captured in `EMB3D TID`.
+    - When the `Interaction` names a hardware or embedded-software interface (JTAG, UART, RS-232, RS-485, SPI, I²C, GPIO, USB, Modbus RTU, proprietary serial, or a firmware update path), cross-reference the MITRE EMB3D [Properties Mapper](https://emb3d.mitre.org/properties-mapper/) to identify device-property-mapped threats (TIDs) and their associated CWE IDs before finalizing the `CWE ID` assignment in step 4.
 
 4. MITRE CWE
 
-    **Action:** Populate the `CWE ID` field for each row when the root weakness is identifiable from the TMT threat fields, see [MITRE CWE](#35-cwe).
+    **Action:** Populate the `CWE ID` field for each row when the root weakness is identifiable from the TMT threat fields, see [3.5. MITRE CWE](#35-mitre-cwe).
     - Prefer the most specific CWE that fits the described weakness.
     - Use comma-separated values when the finding depends on more than one concrete weakness (e.g., `CWE-290, CWE-345`).
     - Store CWE identifiers in the dedicated `CWE ID` column. In `Justification`, prefer weakness name or exploit behavior wording unless repeating the ID is required for disambiguation.
-    - Do not assign a CWE when the row is generic but the underlying weakness is still unclear after reviewing the modeled interaction.
-    - Leave the field blank when the evidence is insufficient.
-    - For rows where the `Interaction` names a hardware or embedded-software interface (JTAG, UART, RS-232, RS-485, SPI, I²C, GPIO, USB, Modbus RTU, proprietary serial, or a firmware update path), cross-reference the MITRE EMB3D [Properties Mapper](https://emb3d.mitre.org/properties-mapper/) to identify device-property-mapped threats (TIDs) and their associated CWE IDs before finalizing the `CWE ID` assignment, see [MITRE EMB3D](#34-mitre-emb3d).
+    - Leave the field blank when the evidence is insufficient to identify the root weakness.
 
 5. FIRST CVSS v4.0
 
-    **Action:** Populate the CVSS v4.0 Base Metrics `CVSS v4.0 Vector`, `CVSS v4.0 Severity`, and `CVSS-B v4.0 Score` together for each row, see [CVSS](#36-cvss).
+    **Action:** Populate the CVSS v4.0 Base Metrics `CVSS v4.0 Vector`, `CVSS v4.0 Severity`, and `CVSS-B v4.0 Score` together for each row, see [3.6. FIRST CVSS](#36-first-cvss).
     - All three fields must be populated together or left blank together. Do not record a severity without a vector. Do not record a vector without a score.
     - Keep raw CVSS artifacts in dedicated columns (`CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`) rather than duplicating them in `Justification`.
     - Derive the score from the [CVSS v4.0 calculator](https://www.first.org/cvss/calculator/4.0) using the native TMT threat fields (`Title`, `Category`, `Interaction`, `Description`) and the MITRE ATT&CK technique as input.
@@ -459,21 +457,18 @@ Risk treatment defines the disposition decision after each identified risk has b
 
 6. BSI Likelihood of Exploit
 
-    **Action:** Populate the `Likelihood of Exploit` using the BSI `Dringlichkeit / Eintrittspotenzial` logic, see [BSI Likelihood of Exploit](#37-bsi-likelihood-of-exploit).
-    - Add or update a `Likelihood of Exploit` column in the review CSV rather than creating duplicate fields.
+    **Action:** Populate the `Likelihood of Exploit` column using the BSI `Dringlichkeit / Eintrittspotenzial` logic, see [3.7. BSI Likelihood of Exploit](#37-bsi-likelihood-of-exploit).
     - Reference the [5.2.3. Likelihood of Exploit Mapping](#523-likelihood-of-exploit-mapping) section for guidance on mapping CVSS exploitability metrics and TMT statements to BSI likelihood categories.
 
 7. Risk Prioritization
 
-    **Action:** Populate Risk-Based Vulnerability Prioritization by combining `CVSS v4.0 Severity` and `Likelihood of Exploit` for each row.
-    - Add or update a `Risk Prioritization` column in the review CSV rather than creating duplicate fields.
-    - Only assign `Risk Prioritization` when both `CVSS v4.0 Severity` and `Likelihood of Exploit` are present.
+    **Action:** Populate the `Risk Prioritization` column using the combined information from `CVSS v4.0 Severity` and `Likelihood of Exploit` for each row.
+    - Leave the field blank when either `CVSS v4.0 Severity` or `Likelihood of Exploit` is blank.
     - Reference the [5.2.4. Risk Prioritization Mapping](#524-risk-prioritization-mapping) section for guidance on combining severity and likelihood into prioritization category.
 
 8. Threat Actor
 
-    **Action:** Assign the minimum capable `Threat Actor` for each row using the standardized labels from [Threat Actors](#23-threat-actors).
-    - Add or update a `Threat Actor` column in the review CSV rather than creating duplicate fields.
+    **Action:** Populate the `Threat Actor` column by assigning the minimum capable `Threat Actor` for each row using the standardized labels from [Threat Actors](#23-threat-actors).
     - Use exactly one standardized `Threat Actor` label per reviewed CSV row.
     - Choose the minimum required actor, not the most severe or most newsworthy actor.
     - Base the decision on the modeled attack path, required access, exploit maturity, and the amount of OT-specific knowledge required.
@@ -492,13 +487,13 @@ Risk treatment defines the disposition decision after each identified risk has b
       - `Not Started`: Default/export state for rows that have not yet been reviewed. Use this only to indicate genuinely unreviewed work remaining in a partially completed CSV. Once a row has been analyzed in this step, move it out of `Not Started` and assign the best-fit reviewed state below.
       - `Not Applicable`: The attack path is architecturally impossible (e.g., analog-only interface, passive sensor with no network exposure, human actor rather than a machine endpoint with no independent execution context), or the risk source has been structurally eliminated.
         - In `Justification`, name the specific architectural contradiction or eliminated element. Keep the required `Threat Actor` value and explain why that actor was the minimum candidate considered before the path was rejected.
-      - `Mitigated`: One or more security controls, compensating measures, or design changes are confirmed in place and reduce the risk to an accepted level. The applied control, measure, residual risk, and how those controls constrain the assigned threat actor must be identified in `Justification`.
+      - `Mitigated`: One or more security controls, compensating measures, or design changes are confirmed in place and reduce the risk to an accepted level. The applied control, measure, residual risk, and what residual attack surface remains for the assigned threat actor after those controls are applied must be identified in `Justification`.
       - `Needs Investigation`: Critical evidence is missing, a key assumption cannot be validated, or the attack path cannot be closed without additional architecture information or clarification. The specific evidence gap or unanswered question must be named in `Justification`, including whether the unknowns affect the assigned threat actor, and do not leave a row in `Needs Investigation` without identifying the blocker.
 
 10. TMT Priority
 
     **Action:** Revise the `Priority` field for each row. Use the derived `Risk Prioritization` as the primary signal and adjust only when the modeled context provides a specific reason to deviate.
-    - Use the priority vocabulary already present in the file.
+    - Assign one of the following three priority values.
       - `Low`
         > The threat is accepted with minimal concern. No immediate action is required, but it should be monitored for changes.
       - `Medium`
@@ -514,17 +509,17 @@ Risk treatment defines the disposition decision after each identified risk has b
     - Reference the assigned MITRE ATT&CK technique, CWE weakness, CVSS severity, Risk Prioritization, and Threat Actor where they support the rationale. Prefer technique name and behavior phrasing over repeating raw ATT&CK IDs that are already captured in `ATT&CK ID`.
     - State why the chosen actor is the minimum capable adversary by describing the required access path and operational knowledge.
     - When `State` is `Not Applicable`, name the specific architectural contradiction or eliminated element (e.g., passive sensor, analog signal path, human actor rather than machine endpoint, or no independent execution context).
-    - When `State` is `Mitigated`, identify the applied security control, compensating measure, or design change. State the residual risk level if exposure is not fully eliminated. If risk ownership is formally transferred to a third party, identify the named organization, contract, or SLA.
+    - When `State` is `Mitigated`, identify the applied security control, compensating measure, or design change. State the residual risk level if exposure is not fully eliminated.
     - When `State` is `Needs Investigation`, state the most important evidence gap or assumption that must be resolved before a decision can be made.
+    - When `Risk Treatment` is `Transfer`, identify in `Justification` the named organization, contract, SLA, or insurance policy responsible for the transferred risk.
 
     > [!IMPORTANT]
     > The justification is the most critical part of the security review. It is written last so it can synthesize the full analytical picture.
 
 12. Risk Treatment
 
-    **Action:** Assign a risk treatment decision to each row based on the derived `Risk Prioritization`, see [Risk Treatment](#38-risk-treatment).
-    - Add or update a `Risk Treatment` column in the review CSV rather than creating duplicate fields.
-    - Treatment selection guidance: Select one of the following risk treatment preferences based on the order of priority:
+    **Action:** Populate the `Risk Treatment` column by assigning a risk treatment decision to each row based on the derived `Risk Prioritization`, see [Risk Treatment](#38-risk-treatment).
+    - Treatment selection guidance: Select one of the following risk treatment options, in order of preference — apply the first option that the available evidence can support:
       - `Avoidance`: apply if it is documented how the system element, interface, or data flow is removed or restructured to eliminate the risk.
       - `Mitigation`: apply if security controls or compensating measures that lower the risk are documented. Residual risk must be explicitly approved by a responsible stakeholder.
       - `Acceptance`: document the business rationale, residual risk level, and the responsible stakeholder who approves retention.
@@ -536,9 +531,9 @@ Risk treatment defines the disposition decision after each identified risk has b
 
     **Action:** Validate the analyst decisions, then write the complete enriched dataset to the output file `<Device_Name>_Threat_Model_Generated.csv`.
     - Generate a semicolon delimited output CSV format.
-    - Review each row from the source before saving.
-    - Check that identical scores across many rows are defensible from the modeled scenario and not simply inherited from the STRIDE category.
-    - Preserve the delimiter, quoting style, encoding, and header order from the source file.
+    - Verify each output row against its source row to confirm no enrichment values were dropped or overwritten.
+    - Flag any CVSS vector string that is identical across three or more rows in the same `Category` — verify that each score reflects the specific modeled scenario and is not copy-forwarded from the category default.
+    - Preserve the quoting style and encoding from the source file; retain native TMT columns in their source order and append the review columns in the order defined in section [4.1. Preparation](#41-preparation).
     - Verify that all native TMT columns are present and unmodified in the output before saving.
     - Verify that every reviewed row has exactly one allowed `Threat Actor` label.
     - Perform a final column-scope consistency check: keep IDs and score artifacts in dedicated columns, and keep `Justification` as narrative rationale.
@@ -547,17 +542,17 @@ Risk treatment defines the disposition decision after each identified risk has b
 
 2. Review Summary
 
-    **Action:** A short Markdown `<Device_Name>_Threat_Model_Summary.md` summary file of the review that lists the highest-risk interactions, the main assumptions, rows marked `Not Applicable` by rationale category, the main evidence gaps that keep rows in `Needs Investigation`, and the residual risks that remain after documented mitigations.
+    **Action:** Write a Markdown summary file `<Device_Name>_Threat_Model_Summary.md` of the review that lists the highest-risk interactions, the main assumptions, rows marked `Not Applicable` by rationale category, the main evidence gaps that keep rows in `Needs Investigation`, and the residual risks that remain after documented mitigations.
 
     **Compliance Traceability Guidance:**
     - When the main objective is EU CRA or another product compliance framework, structure the summary so it can be reused as risk-assessment evidence and as an input to technical documentation.
-    - Capture product scope, intended use, assessment assumptions, open evidence gaps, and residual risks in terms that remain traceable to the reviewed threat rows.
+    - Capture product scope, intended use, assessment assumptions, open evidence gaps, and residual risks — each risk claim must reference at minimum one threat row `Id`.
 
     **Recommended Summary Sections:**
     - Assessment Objective and Product Scope
     - Executive Summary with threat counts by state, risk level, and threat actor
-    - Highest Risk Findings table with ID, Threat, Interface, CVSS, Risk Factor, Threat Actor
-    - Primary Attack Vectors with techniques, impact, and mitigations
+    - Highest Risk Findings table with ID, Threat, Interface, CVSS, Risk Prioritization, Threat Actor
+    - Primary Attack Vectors with techniques, impact, and risk treatment
     - Threat Actor Distribution with key access-path and knowledge assumptions
     - Not Applicable Rationale Summary by pattern category
     - MITRE ATT&CK for ICS Mapping table
@@ -565,7 +560,7 @@ Risk treatment defines the disposition decision after each identified risk has b
     - Assumptions and Evidence Gaps
     - Residual Risk Summary and Unresolved Decisions
     - Risk Treatment Summary with counts and rationale by treatment option
-    - Recommended Mitigations by priority (Immediate, Short-Term, Long-Term)
+    - Recommended Mitigations by priority (High, Medium, Low)
 
 ## 5. Example
 
@@ -617,45 +612,48 @@ Risk treatment defines the disposition decision after each identified risk has b
 
 #### 5.2.1. Purdue Model Mapping
 
-Classify ICS assets by Purdue zone before assigning STRIDE categories or selecting mitigations. Each zone has a characteristic threat surface and a primary set of STRIDE categories.
+Use this table to identify the Purdue zone of each asset from `Interaction` or `Diagram`, and to validate that the modeled threat surface is consistent with the zone's prevalent STRIDE categories. Do not use this table to override the `Category` values assigned by TMT.
 
-| Purdue Level | Zone        | Asset Type                                 | Examples                                                          | Primary STRIDE Categories                                      |
-| ------------ | ----------- | ------------------------------------------ | ----------------------------------------------------------------- | -------------------------------------------------------------- |
-| Level 4–5    | Enterprise  | SCADA Server / Historian                   | OSIsoft PI, AVEVA System Platform, Wonderware                     | Information Disclosure, Repudiation, Elevation of Privilege    |
-| Level 3      | Operations  | Engineering Workstation / OPC Server       | Siemens TIA Portal, Rockwell Studio 5000, OPC UA Server           | Spoofing, Tampering, Elevation of Privilege                    |
-| Level 2      | Supervisory | HMI / Operator Station                     | Siemens WinCC, FactoryTalk View SE, Inductive Automation Ignition | Spoofing, Tampering, Information Disclosure, Denial of Service |
-| Level 1      | Control     | PLC / PAC                                  | Siemens S7, Allen-Bradley ControlLogix, Schneider Modicon         | Tampering, Denial of Service, Elevation of Privilege           |
-| Level 0      | Field       | Sensors / Actuators / RTUs / Field Devices | Transmitters, positioners, motor drives, RTUs                     | Tampering, Denial of Service                                   |
+| Purdue Level | Zone        | Asset Type                                 | Examples                                                          | Prevalent STRIDE Categories                                                            |
+| ------------ | ----------- | ------------------------------------------ | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Level 4–5    | Enterprise  | SCADA Server / Historian                   | OSIsoft PI, AVEVA System Platform, Wonderware                     | Information Disclosure, Repudiation, Denial of Service, Elevation of Privilege         |
+| Level 3      | Operations  | Engineering Workstation / OPC Server       | Siemens TIA Portal, Rockwell Studio 5000, OPC UA Server           | Spoofing, Tampering, Information Disclosure, Denial of Service, Elevation of Privilege |
+| Level 2      | Supervisory | HMI / Operator Station                     | Siemens WinCC, FactoryTalk View SE, Inductive Automation Ignition | Spoofing, Tampering, Information Disclosure, Denial of Service                         |
+| Level 1      | Control     | PLC / PAC                                  | Siemens S7, Allen-Bradley ControlLogix, Schneider Modicon         | Tampering, Denial of Service, Elevation of Privilege                                   |
+| Level 0      | Field       | Sensors / Actuators / RTUs / Field Devices | Transmitters, positioners, motor drives, RTUs                     | Tampering, Denial of Service                                                           |
 
 > [!NOTE]
-> PAC (Programmable Automation Controller) occupies Level 1 alongside PLCs but typically provides broader I/O handling (higher module count, protocol diversity, or distributed I/O over EtherNet/IP or PROFINET) and higher processing capacity. Treat PAC threats identically to PLC threats unless the PAC exposes additional network-facing services (e.g., built-in web server, RESTful API, OPC UA endpoint, or MQTT client) that expand the attack surface beyond standard fieldbus communication.
+> The listed categories are most prevalent for each zone. TMT may generate rows with other STRIDE categories at these levels; do not deprioritize or dismiss them based on this table.
+
+> [!NOTE]
+> PAC (Programmable Automation Controller) occupies Level 1 alongside PLCs but typically provides broader I/O handling (higher module count, protocol diversity, or distributed I/O over EtherNet/IP or PROFINET) and higher processing capacity. Treat PAC threats identically to PLC threats unless the PAC exposes additional network-facing services (e.g., built-in web server, RESTful API, OPC UA endpoint, or MQTT client).
 
 #### 5.2.2. CVSS v4.0 Mapping
 
 - Exploitability Metrics
   > Select the appropriate attack vector based on the physical and logical access requirements of the modeled interface.
 
-  | Attack Vector     | OT/ICS Scenarios                                                  | Example Interfaces                       |
-  | ----------------- | ----------------------------------------------------------------- | ---------------------------------------- |
-  | `AV:N` (Network)  | IP-connected devices, remote SCADA, cloud-connected gateways      | Modbus/TCP, EtherNet/IP, OPC UA, MQTT    |
-  | `AV:A` (Adjacent) | Shared industrial bus, field network segment, same VLAN           | Modbus RTU (RS-485), PROFIBUS, CAN       |
-  | `AV:L` (Local)    | Workstation software, HMI application, local file access          | Engineering software, local DB           |
-  | `AV:P` (Physical) | Direct cable connection, removable debug port, hardware tampering | RS-232, JTAG, SWD, USB, hardware buttons |
+  | Attack Vector     | OT/ICS Scenarios                                                                       | Example Interfaces                       |
+  | ----------------- | -------------------------------------------------------------------------------------- | ---------------------------------------- |
+  | `AV:N` (Network)  | IP-connected devices, remote SCADA, cloud-connected gateways                           | Modbus/TCP, EtherNet/IP, OPC UA, MQTT    |
+  | `AV:A` (Adjacent) | Shared industrial bus, field network segment, same VLAN                                | Modbus RTU (RS-485), PROFIBUS, CAN       |
+  | `AV:L` (Local)    | Workstation software, HMI application, locally-executed software or configuration tool | Engineering software, local DB           |
+  | `AV:P` (Physical) | Direct cable connection, removable debug port, hardware tampering                      | RS-232, JTAG, SWD, USB, hardware buttons |
 
 - Vulnerable System Impact Metrics
-  > Map STRIDE categories to CVSS v4 Impact Metrics using the primary impact metrics to determine the base score and severity, and the secondary impact metrics to inform the justification and vector details.
+  > Map STRIDE categories to CVSS v4 Impact Metrics using the primary impact metrics to determine the base score and severity, and the secondary impact metrics to inform the justification and vector details. Metric abbreviations: `VC` = Vulnerable System Confidentiality Impact, `VI` = Vulnerable System Integrity Impact, `VA` = Vulnerable System Availability Impact.
 
-  | STRIDE Category        | Primary CVSS v4 | Secondary CVSS v4 | Confidence  | Rationale                                                                                                                                                                                                                                                                                                                                                                                                                       |
-  | ---------------------- | --------------- | ----------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-  | Spoofing               | VI              | VC                | Medium      | Identity impersonation primarily corrupts trust and authorization decisions, which is best represented as integrity impact. Confidentiality is often a follow-on effect when impersonation grants access to protected data.                                                                                                                                                                                                     |
-  | Tampering              | VI              | VA, VC            | High        | Unauthorized modification is directly an integrity impact. Availability and confidentiality may also be affected when tampering disrupts operation or alters protection controls.                                                                                                                                                                                                                                               |
-  | Repudiation            | VI              | VC                | Medium-Low  | CVSS has no explicit non-repudiation or auditability metric. Repudiation is therefore best represented through integrity harm to logs, records, and transaction evidence, with occasional secondary confidentiality implications.                                                                                                                                                                                               |
-  | Information Disclosure | VC              | VI                | High        | Unauthorized exposure of information is directly a confidentiality impact. Integrity is only indirect or downstream.                                                                                                                                                                                                                                                                                                            |
-  | Denial of Service      | VA              | VI                | High        | Service degradation or outage is directly an availability impact. Integrity may be secondarily affected where incomplete processing or inconsistent state results.                                                                                                                                                                                                                                                              |
-  | Elevation of Privilege | VI, VC, VA      | None              | Medium-High | Privilege gain commonly enables unauthorized modification and unauthorized access, making integrity and confidentiality primary. Availability is often a secondary consequence when elevated rights permit shutdown, deletion, or resource exhaustion. The primary impact depends on the privileges gained: <br>• _Read_ access → Confidentiality<br>• _Write_ access → Integrity<br>• _Admin/Execution_ access → Availability. |
+  | STRIDE Category        | Primary Impact Metric | Secondary Impact Metric | Confidence  | Rationale                                                                                                                                                                                                                                                                                                                                                                                               |
+  | ---------------------- | --------------------- | ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | Spoofing               | VI                    | VC                      | Medium      | Identity impersonation primarily corrupts trust and authorization decisions, which is best represented as integrity impact. Confidentiality is often a follow-on effect when impersonation grants access to protected data.                                                                                                                                                                             |
+  | Tampering              | VI                    | VA, VC                  | High        | Unauthorized modification is directly an integrity impact. Availability and confidentiality may also be affected when tampering disrupts operation or alters protection controls.                                                                                                                                                                                                                       |
+  | Repudiation            | VI                    | VC                      | Medium-Low  | CVSS has no explicit non-repudiation or auditability metric. Repudiation is therefore best represented through integrity harm to logs, records, and transaction evidence, with occasional secondary confidentiality implications.                                                                                                                                                                       |
+  | Information Disclosure | VC                    | VI                      | High        | Unauthorized exposure of information is directly a confidentiality impact. Integrity is only indirect or downstream.                                                                                                                                                                                                                                                                                    |
+  | Denial of Service      | VA                    | VI                      | High        | Service degradation or outage is directly an availability impact. Integrity may be secondarily affected where incomplete processing or inconsistent state results.                                                                                                                                                                                                                                      |
+  | Elevation of Privilege | VI                    | VC, VA                  | Medium-High | Privilege gain commonly enables unauthorized modification and unauthorized access, making integrity and confidentiality primary. Availability is often a secondary consequence when elevated rights permit shutdown, deletion, or resource exhaustion. The primary impact depends on the privileges gained: <br>• _Read_ access → `VC`<br>• _Write_ access → `VI`<br>• _Admin/Execution_ access → `VA`. |
 
 - Subsequent System Impact Metrics for OT/ICS
-  > In OT/ICS environments, compromising one component often affects downstream systems. Use SC/SI/SA to capture cascading effects on the physical process, safety systems, or connected devices.
+  > In OT/ICS environments, compromising one component often affects downstream systems. Use SC/SI/SA to capture cascading effects on the physical process, safety systems, or connected devices. Metric abbreviations: `SC` = Subsequent System Confidentiality Impact, `SI` = Subsequent System Integrity Impact, `SA` = Subsequent System Availability Impact. Values: `N` = None, `H` = High.
 
   | Scenario                                         | SC  | SI  | SA  | Rationale                                                                                                                      |
   | ------------------------------------------------ | --- | --- | --- | ------------------------------------------------------------------------------------------------------------------------------ |
@@ -675,24 +673,24 @@ The BSI Likelihood of Exploit categorizes the probability of a threat being succ
 - Exploitation Method
   > Determine the exploitation method (columns) based on the modeled attack scenario and CVSS Exploitability Metrics.
 
-  | Method                          | CVSS Exploitability Metrics                                       | Description                                                                                        |
-  | ------------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-  | Manual (Manuell)                | `AV:P` and at least one of `AC:H`, `AT:P`, `PR:H`, `UI:P`, `UI:A` | Requires physical presence, user participation, high complexity, or explicit attack prerequisites. |
-  | Automated (Automatisch)         | `AV:A` or `AV:L`, `AC:L`, `AT:N`, `PR:N`, `PR:L`, `UI:N`          | Remotely or adjacently exploitable with low complexity and no user interaction.                    |
-  | Self-Replicating (Replizierend) | `AV:N`, `AC:L`, `AT:N`, `PR:N`, `UI:N`                            | Network-reachable with zero friction and the scenario describes autonomous propagation behavior.   |
+  | Method                          | CVSS Exploitability Metrics              | Description                                                                                                      |
+  | ------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+  | Manual (Manuell)                | `AV:P`                                   | Requires direct physical device access. Any `AV:P` attack qualifies as Manual regardless of other metric values. |
+  | Automated (Automatisch)         | `AV:A` or `AV:L`, `AC:L`, `AT:N`, `UI:N` | Adjacently or locally exploitable with low complexity and no user interaction.                                   |
+  | Self-Replicating (Replizierend) | `AV:N`, `AC:L`, `AT:N`, `PR:N`, `UI:N`   | Network-reachable with zero friction and the scenario describes autonomous propagation behavior.                 |
 
   > [!NOTE]
-  > `PR` (Privileges Required) is independent of the exploitation method in most cases. Do not change the method classification based on `PR` alone. Self-Replicating typically implies `PR:N` because autonomous propagation rarely depends on pre-existing credentials.
+  > `PR` (Privileges Required) is independent of the exploitation method in most cases. Do not change the method classification based on `PR` alone. Self-Replicating typically implies `PR:N` because autonomous propagation rarely depends on pre-existing credentials. For `AV:N` threats that do not explicitly describe autonomous propagation behavior, classify as `Automated`, not `Self-Replicating`.
 
 - Vulnerability State
   > Determine the vulnerability state (rows) based on evidence of exploit maturity, which may come from the `Justification` field or from external sources such as threat intelligence, public exploit databases, or observed attack activity.
 
-  | State                                      | CVSS Threat Metrics | Description                                                                                                                                |
-  | ------------------------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-  | Theoretical (Theoretisch)                  | `E:U`               | No known exploit,  attack is conceptually possible but unverified.                                                                         |
-  | Exploitable (Ausnutzbar)                   | `E:P`               | Proof-of-concept exists or the technique is documented and reproducible.                                                                   |
-  | Active (Aktiv)                             | `E:A`               | Active exploitation observed in the wild or in targeted campaigns.                                                                         |
-  | Exploit Published (Exploit Veröffentlicht) | `E:A`               | Public exploit code or tooling is freely available. CVSS does not distinguish from Active, apply when public availability amplifies reach. |
+  | State                                      | CVSS Threat Metrics | Description                                                                                                                                                            |
+  | ------------------------------------------ | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | Theoretical (Theoretisch)                  | `E:U`               | No known exploit; attack is conceptually possible but unverified.                                                                                                      |
+  | Exploitable (Ausnutzbar)                   | `E:P`               | Proof-of-concept exists or the technique is documented and reproducible.                                                                                               |
+  | Active (Aktiv)                             | `E:A`               | Active exploitation observed in the wild or in targeted campaigns.                                                                                                     |
+  | Exploit Published (Exploit Veröffentlicht) | `E:A`               | Public exploit code or tooling is freely available. Prefer Exploit Published over Active when a public exploit tool or module is directly usable without modification. |
 
 - Likelihood Matrix
 
@@ -706,7 +704,7 @@ The BSI Likelihood of Exploit categorizes the probability of a threat being succ
 #### 5.2.4. Risk Prioritization Mapping
 
 - Risk Prioritization
-  > Combine `CVSS v4.0 Severity` and `Likelihood of Exploit` to determine an overall risk prioritization level for each threat.
+  > Combine information from `CVSS v4.0 Severity` and `Likelihood of Exploit` to determine an overall risk prioritization level for each threat.
 
   | Likelihood \ Severity | None   | Low    | Medium | High     | Critical |
   | --------------------- | ------ | ------ | ------ | -------- | -------- |
@@ -716,19 +714,28 @@ The BSI Likelihood of Exploit categorizes the probability of a threat being succ
   | High                  | Low    | Medium | High   | High     | Critical |
   | Critical              | Medium | High   | High   | Critical | Critical |
 
+  > [!NOTE]
+  > CVSS Severity `None` and Likelihood `Info` are determined independently from their respective lookups; establish both values before entering the matrix.
+
 #### 5.2.5. Threat Actor Mapping
 
 Normalize the `Threat Actor` decision from common OT/ICS threat-path characteristics. Always pick the minimum actor that satisfies the required access, capability, and process knowledge, and only reassess upward when the modeled path requires capabilities beyond the currently selected label.
 
-| Attack Path / Scenario                                                                                                                                | Minimum Threat Actor | Key Indicators                                                                                                                      | ICS Tactics, Techniques, and Procedures (TTPs) |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| Internet-exposed service with public exploit, default credentials, or unauthenticated interface                                                       | `Script Kiddies`     | `AV:N`, `AC:L`; pre-built tooling; no plant-specific knowledge; opportunistic targeting or commodity compromise path                | `T0883`, `T0819`, `T0814`, `T0815`             |
-| Internet-exposed HMI, SCADA web UI, or public-facing OT asset targeted for ideological messaging, defacement, or symbolic proof-of-access             | `Hacktivist`         | Visible, high-profile target; protest or propaganda objective; short-lived campaign; no persistent access sought                    | `T0883`, `T0814`, `T0815`, `T0832`             |
-| Internet-exposed service or IT/OT boundary exploited for financial gain: ransomware staging, credential theft, extortion, or fraud                    | `Cybercriminal`      | IT-to-OT pivot; commodity or affiliate malware; stolen or phished credentials; business disruption for payment                      | `T0822`, `T0859`, `T0881`, `T0829`, `T0831`    |
-| Compromised vendor tooling, update service, or MSP remote-management channel reused for scalable extortion or ransomware deployment                   | `Cybercriminal`      | Third-party trust dependency; monetized supply-chain reuse; commodity ransomware payload; no mission-specific objective             | `T0862`, `T0881`, `T0809`                      |
-| Trusted maintenance path, local engineering workstation, removable media, direct cable or debug interface, or privileged badge access                 | `Insider Threat`     | `AV:P` or `AV:L`; trusted plant or engineering access; process familiarity; maintenance tooling or insider credentials              | `T0847`, `T0843`, `T0836`, `T1692.001`         |
-| Trojanized engineering software, signed firmware package, or tainted vendor update used for covert pre-positioning or mission-specific sabotage       | `Nation-State Actor` | Supply-chain compromise; custom or signed tooling; covert persistence objective; strategic or safety-critical target                | `T0862`, `T0873`, `T1693`, `T0879`             |
-| Bespoke multi-stage intrusion against a segmented ICS requiring custom tooling, zero-day exploits, covert lateral movement, or deep process expertise | `Nation-State Actor` | Custom tradecraft; zero-days; long-dwell access; strategic high-value target; objective is disruption, sabotage, or pre-positioning | `T0821`, `T0831`, `T0878`, `T0879`, `T0880`    |
+> [!NOTE]
+> Actor capability order from lowest to highest: `Script Kiddies` → `Hacktivist` → `Cybercriminal` → `Insider Threat` → `Nation-State Actor`.
+
+| Minimum Threat Actor | Attack Path / Scenario                                                                                                                                | Key Indicators                                                                                                                                                                                                                          |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Script Kiddies`     | Internet-exposed service with public exploit, default credentials, or unauthenticated interface                                                       | `AV:N`, `AC:L`; pre-built tooling; no plant-specific knowledge; opportunistic targeting or commodity compromise path                                                                                                                    |
+| `Hacktivist`         | Internet-exposed HMI, SCADA web UI, or public-facing OT asset targeted for ideological messaging, defacement, or symbolic proof-of-access             | `AV:N`; visible, high-profile target; protest or propaganda objective; short-lived campaign; no persistent access sought                                                                                                                |
+| `Cybercriminal`      | Internet-exposed service or IT/OT boundary exploited for financial gain: ransomware staging, credential theft, extortion, or fraud                    | IT-to-OT pivot; commodity or affiliate malware; stolen or phished credentials; business disruption for payment                                                                                                                          |
+| `Cybercriminal`      | Compromised vendor tooling, update service, or MSP remote-management channel reused for scalable extortion or ransomware deployment                   | Third-party trust dependency; monetized supply-chain reuse; commodity ransomware payload; no mission-specific objective                                                                                                                 |
+| `Insider Threat`     | Trusted maintenance path, local engineering workstation, removable media, direct cable or debug interface, or privileged badge access                 | `AV:P` or `AV:L` only when initial access is a local or physical session, not a post-exploitation pivot from prior network access; trusted plant or engineering access; process familiarity; maintenance tooling or insider credentials |
+| `Nation-State Actor` | Trojanized engineering software, signed firmware package, or tainted vendor update used for covert pre-positioning or mission-specific sabotage       | Supply-chain compromise; custom or signed tooling; covert persistence objective; strategic or safety-critical target                                                                                                                    |
+| `Nation-State Actor` | Bespoke multi-stage intrusion against a segmented ICS requiring custom tooling, zero-day exploits, covert lateral movement, or deep process expertise | Custom tradecraft; zero-days; long-dwell access; strategic high-value target; objective is disruption, sabotage, or pre-positioning                                                                                                     |
+
+> [!NOTE]
+> When supply-chain compromise is the modeled vector: choose `Cybercriminal` when the payload is commodity ransomware or the objective is financial extortion; choose `Nation-State Actor` when tooling is custom-signed or the objective is strategic pre-positioning or sabotage.
 
 ### 5.3. Template
 
@@ -752,10 +759,10 @@ Use these templates for Microsoft TMT CSV intake and review.
   > The completed security review of the raw TMT export in semicolon delimited CSV format with appended columns.
 
   ```csv
-  Id;Title;Category;Diagram;Interaction;Priority;State;Changed By;Description;Justification;Last Modified;ATT&CK ID;CWE ID;CVSS v4.0 Vector;CVSS-B v4.0 Score;CVSS v4.0 Severity;Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment
-  0;Spoofing the MCU Process;Spoofing;<Device_Name>;Debugger to MCU over JTAG;Medium;Needs Investigation;;"MCU may be spoofed by an attacker and this may lead to information disclosure by Debugger Probe. Consider using a standard authentication mechanism to identify the destination process.";"The physical JTAG maintenance path makes Insider Threat the minimum actor because physical service access and debug familiarity are required. A rogue interposer or substituted board could impersonate the MCU and capture debug traffic. Treatment is Mitigation through authenticated debug unlock and production-time debug lockout; residual risk owner remains product security.";Generated;T0843;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N;"6,7";Medium;Medium;Medium;Insider Threat;Mitigation
-  38;Data Flow MCU to CFG over Modbus RTU (RS-232) Is Potentially Interrupted;Denial Of Service;<Device_Name>;MCU to CFG over Modbus RTU (RS-232);Low;Mitigated;;"An external agent interrupts data flowing across a trust boundary in either direction.";"This RS-232 interruption affects a local maintenance session more than the primary control function. Insider Threat is the minimum actor because the attack requires direct physical or maintenance-port access. The actuator remains locally autonomous with fail-safe behavior, the residual impact of the loss of outbound availability is low. Treatment is Acceptance with monitoring.";Generated;T0814;CWE-693;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:L;"2,4";Low;Low;Low;Insider Threat;Acceptance
-  72;Elevation Using Impersonation;Elevation Of Privilege;<Device_Name>;Operator to MCU over Switches (GPIO);Low;Not Applicable;;"MCU may be able to impersonate the context of Operator in order to gain additional privilege.";"The dry-contact GPIO path has no machine-to-machine trust boundary the MCU can impersonate, Insider Threat is the minimum candidate because only local operator-side access is in scope. Treatment is Avoidance by keeping the interface free of machine-authenticated trust.";Generated;;;;;;;;Insider Threat;Avoidance
+  Id;Title;Category;Diagram;Interaction;Priority;State;Changed By;Description;Justification;Last Modified;ATT&CK ID;EMB3D TID;CWE ID;CVSS v4.0 Vector;CVSS-B v4.0 Score;CVSS v4.0 Severity;Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment
+  0;Spoofing the MCU Process;Spoofing;<Device_Name>;Debugger to MCU over JTAG;Medium;Needs Investigation;;"MCU may be spoofed by an attacker and this may lead to information disclosure by Debugger Probe. Consider using a standard authentication mechanism to identify the destination process.";"The physical JTAG maintenance path makes Insider Threat the minimum actor because physical service access and debug familiarity are required. A rogue interposer or substituted board could impersonate the MCU and capture debug traffic. Baseline mitigations include authenticated debug unlock and production-time debug lockout via fuse or OTP.; residual risk owner remains product security.";Generated;T0843;TID-115, TID-116,, TID-119;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N;"6,7";Medium;Medium;Medium;Insider Threat;Mitigation
+  38;Data Flow MCU to CFG over Modbus RTU (RS-232) Is Potentially Interrupted;Denial Of Service;<Device_Name>;MCU to CFG over Modbus RTU (RS-232);Low;Mitigated;;"An external agent interrupts data flowing across a trust boundary in either direction.";"This RS-232 interruption affects a local maintenance session more than the primary control function. Insider Threat is the minimum actor because the attack requires direct physical or maintenance-port access. Baseline mitigation includes physical port isolation and cable shielding. The actuator remains locally autonomous with fail-safe behavior; the residual impact of the loss of outbound availability is low.";Generated;T0814;TID-118;CWE-693;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:L;"2,4";Low;Low;Low;Insider Threat;Acceptance
+  72;Elevation Using Impersonation;Elevation Of Privilege;<Device_Name>;Operator to MCU over Switches (GPIO);Low;Not Applicable;;"MCU may be able to impersonate the context of Operator in order to gain additional privilege.";"The dry-contact GPIO path has no machine-to-machine trust boundary the MCU can impersonate; no EMB3D device property enables software-level privilege escalation on a passive hardware signal path. Insider Threat is the minimum candidate because only local operator-side access is in scope. Treatment is Avoidance by keeping the interface free of machine-authenticated trust.";Generated;;; ;;;;; ;Insider Threat;Avoidance
   ```
 
 ## 6. References
