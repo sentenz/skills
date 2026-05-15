@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.8.0](https://github.com/sentenz/skills/compare/v1.7.0...v1.8.0) (2026-05-15)
+
+
+### Features
+
+* integrate MITRE EMB3D into the ICS threat modeling skill ([#35](https://github.com/sentenz/skills/issues/35)) ([9dcf7d9](https://github.com/sentenz/skills/commit/9dcf7d941a23ac5c642d1ac5d443983a1b98b53c))
+
 # [1.7.0](https://github.com/sentenz/skills/compare/v1.6.6...v1.7.0) (2026-05-13)
 
 
