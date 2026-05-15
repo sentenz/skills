@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/sentenz/skills/compare/v1.8.0...v1.8.1) (2026-05-15)
+
+
+### Bug Fixes
+
+* correct typo in Threat Actor and EMB3D sections in SKILL.md ([e9da73a](https://github.com/sentenz/skills/commit/e9da73a24edfeacc84d817b21f90efeb3d0d9980))
+
 # [1.8.0](https://github.com/sentenz/skills/compare/v1.7.0...v1.8.0) (2026-05-15)
 
 
