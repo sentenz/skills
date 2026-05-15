@@ -239,6 +239,9 @@ STRIDE is the foundational threat classification scheme for understanding each t
     - [EMB3D Device Properties Workbook](./properties_list.xlsx)
       > Local snapshot of the EMB3D Device Properties list (`properties_list.xlsx`) for offline lookup of property-to-threat mappings during review.
 
+    - [EMB3D Properties Mapper Heat Map Workbook](./heat_map.xlsx)
+      > Local snapshot exported from EMB3D Properties Mapper (`heat_map.xlsx`) with all property checkboxes selected for full threat-coverage heat-map lookup.
+
     - [Threats](https://emb3d.mitre.org/threats)
       > Embedded-device threat entries identify how a threat actor can achieve a specific objective or effect on the device. Each threat entry describes the targeted technical features, the required threat actions, the resulting impact, and the associated CWE weaknesses.
 
@@ -439,6 +442,7 @@ Risk treatment defines the disposition decision after each identified risk has b
     - Use EMB3D especially for PLC, PAC, RTU, field-device, firmware, maintenance-port, removable-media, and device-identity scenarios.
     - Store the matched [EMB3D Threats](https://emb3d.mitre.org/threats) Enumeration TID(s) in the dedicated `EMB3D TID` column. Apply EMB3D [Device Properties](https://emb3d.mitre.org/properties-list/) Mapper to support the justification for the TID selection.
     - Use the local workbook [EMB3D Device Properties Workbook](./properties_list.xlsx) as the primary offline reference when mapping device properties to EMB3D TIDs.
+    - Use [EMB3D Properties Mapper Heat Map Workbook](./heat_map.xlsx) (all properties selected) as a secondary offline reference to cross-check threat coverage by category.
     - Use comma-separated values when more than one TID applies (e.g., `TID-116, TID-119`). Leave the field blank when no EMB3D threat applies to the row.
     - In `Justification`, describe the mapped device property or missing control; avoid duplicating TIDs already captured in `EMB3D TID`.
     - When the `Interaction` names a hardware or embedded-software interface (JTAG, UART, RS-232, RS-485, SPI, I²C, GPIO, USB, Modbus RTU, proprietary serial, or a firmware update path), cross-reference the MITRE EMB3D [Properties Mapper](https://emb3d.mitre.org/properties-mapper/) to identify device-property-mapped threats (TIDs) and their associated CWE IDs before finalizing the `CWE ID` assignment in step 4.
@@ -778,6 +782,7 @@ Use these templates for Microsoft TMT CSV intake and review.
 - MITRE [CWE](https://cwe.mitre.org/) page.
 - MITRE [EMB3D](https://emb3d.mitre.org/) page.
 - MITRE [EMB3D Device Properties](https://emb3d.mitre.org/properties-list/) page.
+- MITRE [EMB3D Properties Mapper](https://emb3d.mitre.org/properties-mapper/) page.
 - FIRST [CVSS v4.0 Specification](https://www.first.org/cvss/v4.0/specification-document) page.
 - FIRST [CVSS v4.0 Calculator](https://www.first.org/cvss/calculator/4.0) page.
 - BSI [Risk Prioritization](https://www.bsi.bund.de/DE/Service-Navi/Abonnements/Newsletter/Buerger-CERT-Abos/Buerger-CERT-Sicherheitshinweise/Risikostufen/risikostufen.html) page.
