@@ -8,32 +8,6 @@ description: >-
   of View to Physical Damage to Property.
 metadata:
   version: "1.6.1"
-  activation:
-    implicit: true
-    priority: 1
-    triggers:
-      - "microsoft tmt"
-      - "threat model"
-      - "threat modeling"
-      - "stride"
-      - "mitre att&ck"
-      - "emb3d"
-      - "cwe"
-      - "cvss"
-      - "likelihood"
-      - "risk treatment"
-      - "threat review"
-      - "security review"
-    match:
-      languages: ["markdown", "csv"]
-      paths:
-        - "**/*.tm7"
-        - "**/*threat-model*.csv"
-        - "**/*threat-model*.md"
-      prompt_regex: "(?i)(microsoft tmt|threat modeling|stride|mitre att&ck|cwe|cvss|likelihood|risk treatment|threat review|security review)"
-  usage:
-    load_on_prompt: true
-    autodispatch: true
 ---
 
 # Threat Modeling ICS
