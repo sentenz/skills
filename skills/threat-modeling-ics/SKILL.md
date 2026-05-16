@@ -426,7 +426,7 @@ Risk treatment defines the disposition decision after each identified risk has b
     **Action:** Populate the CVSS v4.0 Base Metrics `CVSS v4.0 Vector`, `CVSS v4.0 Severity`, and `CVSS-B v4.0 Score` together for each row, see [3.6. FIRST CVSS](#36-first-cvss).
     - All three fields must be populated together or left blank together. Do not record a severity without a vector. Do not record a vector without a score.
     - Keep raw CVSS artifacts in dedicated columns (`CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`) rather than duplicating them in `Justification`.
-    - Derive the score from the [CVSS v4.0 calculator](https://www.first.org/cvss/calculator/4.0) using the native TMT threat fields (`Title`, `Category`, `Interaction`, `Description`) and the MITRE ATT&CK technique as input.
+    - Derive the score from the [CVSS v4.0 calculator](https://www.first.org/cvss/calculator/4.0) using the native TMT threat fields (`Title`, `Category`, `Interaction`, `Description`), the MITRE ATT&CK technique, and the EMB3D device exposure as input.
     - Reference the [5.2.2. CVSS v4.0 Mapping](#522-cvss-v40-mapping) section for guidance on mapping STRIDE categories to CVSS impact metrics.
 
 6. BSI Likelihood of Exploit
@@ -456,7 +456,7 @@ Risk treatment defines the disposition decision after each identified risk has b
 
 9. TMT State
 
-    **Action:** Revise the `State` field for each row using the full analytical context: TMT threat fields, MITRE ATT&CK technique, CWE root weakness, CVSS severity, Risk Prioritization, and assigned Threat Actor.
+    **Action:** Revise the `State` field for each row using the full analytical context: TMT threat fields, MITRE ATT&CK technique, EMB3D device exposure, CWE root weakness, CVSS severity, Risk Prioritization, and assigned Threat Actor.
     - State selection guidance: Select the state decision that best fits the evidence and rationale.
       - `Not Started`: Default/export state for rows that have not yet been reviewed. Use this only to indicate genuinely unreviewed work remaining in a partially completed CSV. Once a row has been analyzed in this step, move it out of `Not Started` and assign the best-fit reviewed state below.
       - `Not Applicable`: The attack path is architecturally impossible (e.g., analog-only interface, passive sensor with no network exposure, human actor rather than a machine endpoint with no independent execution context), or the risk source has been structurally eliminated.
@@ -480,7 +480,7 @@ Risk treatment defines the disposition decision after each identified risk has b
     **Action:** Write a concise, technically precise analyst statement in the `Justification` field for each row, synthesizing all prior enrichment steps. The justification provides the evidence-based rationale that supports the assigned `State`, explains the assigned `Threat Actor`, and informs the `Risk Treatment` decision in the next step.
     - State the evidence-based rationale that supports the assigned `State`.
     - Reference the modeled protocol, interface, trust relationship, validation behavior, or compensating control that informs the decision.
-    - Reference the assigned MITRE ATT&CK technique, CWE weakness, CVSS severity, Risk Prioritization, and Threat Actor where they support the rationale. Prefer technique name and behavior phrasing over repeating raw ATT&CK IDs that are already captured in `ATT&CK ID`.
+    - Reference phrasing of assigned MITRE ATT&CK technique, EMB3D threat, CWE weakness, CVSS severity, and Threat Actor where they support the rationale.
     - State why the chosen actor is the minimum capable adversary by describing the required access path and operational knowledge.
     - When `State` is `Not Applicable`, name the specific architectural contradiction or eliminated element (e.g., passive sensor, analog signal path, human actor rather than machine endpoint, or no independent execution context).
     - When `State` is `Mitigated`, identify the applied security control, compensating measure, or design change. State the residual risk level if exposure is not fully eliminated.
