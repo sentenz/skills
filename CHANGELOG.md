@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.9.0](https://github.com/sentenz/skills/compare/v1.8.1...v1.9.0) (2026-05-16)
+
+
+### Features
+
+* **cwe:** extend CWE asset with extended descriptions and missing entries ([#40](https://github.com/sentenz/skills/issues/40)) ([2f0029c](https://github.com/sentenz/skills/commit/2f0029c2abf556ebdbc24399474d2e199bcf04f5))
+
 ## [1.8.1](https://github.com/sentenz/skills/compare/v1.8.0...v1.8.1) (2026-05-15)
 
 
