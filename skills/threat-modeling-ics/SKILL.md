@@ -7,7 +7,7 @@ description: >-
   Threat Actor assignment, Risk Treatment decisions, STRIDE to Mitigation mapping for SCADA, PLC, PAC, and HMI assets, and OT impact categories ranging from Denial
   of View to Physical Damage to Property.
 metadata:
-  version: "1.6.8"
+  version: "1.6.9"
 ---
 
 # Threat Modeling ICS
@@ -530,7 +530,19 @@ Save and integrate intermediate results after each step to ensure continuity acr
 
 13. Risk Approval
 
-<!-- TODO -->
+    **Action:** Record the approval status for every reviewed row where residual risk remains after the selected `Risk Treatment`.
+    - Treat risk approval as a decision record for residual risk, not as a second treatment category.
+    - Unless the input file already contains a dedicated `Risk Approval` review column, capture approval evidence in `Justification` and summarize unresolved approvals in the review summary rather than inventing a new output column.
+    - `Avoidance` normally requires no approval when the modeled element, interface, or attack path has been removed and no residual risk remains.
+    - `Mitigation` requires the residual-risk owner or approving stakeholder to be identified whenever controls reduce but do not eliminate the risk.
+    - `Acceptance` always requires an explicit approver because the residual risk is being retained by design or business decision.
+    - `Transfer` requires the accepting third party and the governing mechanism (contract, SLA, warranty, or insurance policy) to be identified; internal stakeholder sign-off may still be needed to approve the transfer decision.
+    - Record the approval outcome as one of: `Approved`, `Pending`, or `Rejected`.
+      - `Approved`: the approver (role or name) and approval mechanism are known.
+      - `Pending`: a treatment that requires approval has been selected, but the approver, evidence, or decision is not yet available.
+      - `Rejected`: the proposed residual-risk disposition was reviewed and not accepted; escalate to the user as an unresolved decision before finalizing the assessment.
+    - When approval is required, state in `Justification` who approved or must approve the residual risk, what scope was approved, and how the approval was captured.
+    - **Blocking Gate:** If a row uses `Acceptance` or a residual-risk `Mitigation`/`Transfer` decision but the approval status cannot be determined, mark approval as pending in `Justification` and call it out in the final review summary before completing the assessment.
 
 ### 4.3. Deliverables
 
@@ -741,11 +753,33 @@ Normalize the `Threat Actor` decision from common OT/ICS threat-path characteris
 
 #### 5.2.6. Risk Treatment Mapping
 
-<!-- TODO -->
+Use this table to normalize the `Risk Treatment` decision from the reviewed threat posture. The treatment must match the finalized `State`, the documented controls, and the remaining residual risk.
+
+| `Risk Treatment` | Use when...                                                                                     | Required evidence in `Justification`                                                                 | Approval expectation                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `Avoidance`      | The risky element, interface, function, or path is removed, disabled, or redesigned out of scope | What was removed or restructured, and why that change eliminates the threat rather than reducing it | Usually `N/A` if no residual risk remains                                            |
+| `Mitigation`     | Documented controls or compensating measures reduce likelihood or impact, but some residual risk may remain | The applied controls, the remaining residual risk, and the responsible residual-risk owner          | Required when residual risk remains; record `Approved`, `Pending`, or `Rejected`     |
+| `Acceptance`     | The row is fully reviewed and the organization intentionally retains the residual risk without new controls | The business rationale, residual-risk level, and the named approving stakeholder                    | Always required; do not use without explicit approval evidence                       |
+| `Transfer`       | A third party contractually or financially accepts responsibility for the residual risk            | The third party, governing contract/SLA/warranty/insurance reference, and any retained exposure     | Required; identify both the accepting party and any internal sign-off if applicable  |
+
+> [!NOTE]
+> Do not choose `Acceptance` or `Transfer` when the row is still `Needs Investigation` or when the treatment is being used to compensate for missing technical evidence. Resolve the evidence gap first, or leave the approval status pending and escalate it as an unresolved decision.
 
 #### 5.2.7. Risk Approval Mapping
 
-<!-- TODO -->
+Use this table to determine whether residual-risk approval must be recorded for the finalized row and how to document that decision.
+
+| Finalized row posture                                                                 | Approval status expectation | How to record it                                                                                   |
+| -------------------------------------------------------------------------------------- | --------------------------- | -------------------------------------------------------------------------------------------------- |
+| `State = Not Applicable` and the rationale eliminates the threat path                  | `N/A`                       | Explain the architectural contradiction in `Justification`; no residual-risk approval is needed   |
+| `Risk Treatment = Avoidance` and the redesign removes the exposure                     | `N/A`                       | Record the eliminated interface, trust boundary, or function; approval is typically unnecessary   |
+| `Risk Treatment = Mitigation` and controls reduce but do not eliminate residual risk   | `Approved` or `Pending`     | Name the residual-risk owner/approver and the approval mechanism, or state that approval is pending |
+| `Risk Treatment = Acceptance`                                                          | `Approved`, `Pending`, or `Rejected` | Record the approver, business rationale, and decision status; escalate `Rejected` before completion |
+| `Risk Treatment = Transfer`                                                            | `Approved` or `Pending`     | Identify the accepting third party and reference the governing agreement or policy                |
+| `State = Needs Investigation`, or evidence is insufficient to support the disposition | `Pending`                   | Do not imply approval; document the missing evidence and include the row in unresolved decisions  |
+
+> [!IMPORTANT]
+> `Risk Approval` is a traceability outcome for residual risk, not a substitute for technical analysis. Approval cannot compensate for an unsupported ATT&CK/CWE/CVSS mapping, an unresolved architecture contradiction, or a missing treatment rationale.
 
 ### 5.3. Template
 
