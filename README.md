@@ -94,6 +94,7 @@ TODO
 
 ## 4. References
 
-- [AGENTS.md](https://agents.md/) specification page.
+- [AGENTS.md](https://agents.md/) page.
+- Vercel [Skills](https://skills.sh/) page.
+- Vercel [Skills Documentation](https://skills.sh/docs/cli) page.
 - Agent Skills [Specification](https://agentskills.io/specification) page.
-- [Skills CLI](https://skills.sh/docs/cli) documentation.

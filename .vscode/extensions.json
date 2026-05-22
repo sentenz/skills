@@ -6,6 +6,7 @@
     "ms-python.vscode-pylance",
     "ms-python.black-formatter",
     "docker.docker",
+    "redhat.vscode-yaml",
     "editorconfig.editorconfig",
     "vivaxy.vscode-conventional-commits",
     "esbenp.prettier-vscode",
