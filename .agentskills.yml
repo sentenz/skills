@@ -66,13 +66,13 @@ skills:
   - name: threat-modeling-ics
     path: skills/threat-modeling-ics
     languages: [markdown, csv]
-    description: Threat modeling for OT/ICS systems using Microsoft TMT, STRIDE, MITRE ATT&CK for ICS, CWE, and CVSS v4.0
+    description: Threat modeling using STRIDE, MITRE ATT&CK, CWE, and CVSS v4.0 for OT/ICS software systems
 
   # Documentation Skills
   - name: adr
     path: skills/adr
     languages: [markdown]
-    description: Creates and maintains Architecture Decision Records (ADRs) with structured State, Context, Decision, Considered, Consequences, Implementation, and References sections
+    description: Creates and maintains Architecture Decision Records (ADRs) with structured sections
 
 # Integration settings
 integration:
