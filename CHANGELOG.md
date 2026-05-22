@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.1](https://github.com/sentenz/skills/compare/v1.9.0...v1.9.1) (2026-05-22)
+
+
+### Bug Fixes
+
+* add CVSS data source and JSON schema for version 4.0 ([#45](https://github.com/sentenz/skills/issues/45)) ([b58b399](https://github.com/sentenz/skills/commit/b58b39966758309ce6d961b79263760f563d20d1))
+
 # [1.9.0](https://github.com/sentenz/skills/compare/v1.8.1...v1.9.0) (2026-05-16)
 
 
