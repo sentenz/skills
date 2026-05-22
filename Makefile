@@ -26,8 +26,8 @@ help:
 
 ## Add sentenz/skills to the project
 skills-add:
-	skills add
-.PHONY: skills-add sendenz/skills
+	skills add sentenz/skills
+.PHONY: skills-add
 
 ## Update sentenz/skills in the project
 skills-update:
