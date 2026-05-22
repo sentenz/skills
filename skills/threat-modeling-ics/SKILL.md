@@ -62,6 +62,9 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
 - Compliance Alignment
   > Threat modeling supports the risk assessment and technical documentation expectations of frameworks such as EU CRA, ISO/IEC 27005, NIST SP 800-30, IEC 62443-3-2, and GDPR Article 25 by producing documented evidence of security due diligence, assumptions, mitigations, and residual risk.
 
+- Evidence-based Risk Assessment
+  > Threat reviews grounded in concrete system context, attack paths, and control evidence improve the consistency and defensibility of likelihood, impact, and prioritization decisions.
+
 - Risk Treatment Traceability
   > Assigning a concrete risk treatment decision (`Mitigation`, `Transfer`, `Acceptance`, or `Avoidance`) to each finalized reviewed threat produces traceable evidence that stakeholders have deliberately addressed every risk. Recording risk treatment supports regulatory obligations, stakeholder accountability, and residual risk communication.
 
