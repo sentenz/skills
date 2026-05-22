@@ -796,9 +796,6 @@ The Risk Treatment Mapping translates the `Risk Prioritization` level into a def
   | High                | Mitigation        | Avoidance, Transfer     | Acceptance is restricted to exceptional cases with CPSO approval and written justification. Avoidance is preferred when structurally feasible.                                                                                |
   | Critical            | Avoidance         | Mitigation, Transfer    | Acceptance is prohibited unless approved by Executive / Management with documented rationale. Uncontrolled residual risk is not permitted at this level.                                                                      |
 
-- Treatment Deviation Rule
-  > When the selected treatment differs from the default for the row's `Risk Prioritization` level, record the specific reason for deviation in `Justification`. Deviation is only acceptable when the evidence unambiguously supports the alternative and the required approval authority for the alternative treatment is confirmed.
-
 - Treatment Evidence Requirements
   > The following evidence types are required in `Justification` to support the selected `Risk Treatment`. This evidence must be present before recording the `Risk Approval` column.
 
