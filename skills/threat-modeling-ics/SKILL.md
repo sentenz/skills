@@ -3,11 +3,10 @@ name: threat-modeling-ics
 description: >-
   Performs end-to-end threat modeling for OT/ICS systems from Microsoft Threat Modeling Tool (TMT) threat-list exports (`*.csv`) and model files (`*.tm7`).
   Uses TMT and STRIDE for initial threat enumeration, then enriches each threat with OT/ICS context, MITRE ATT&CK for ICS mappings, MITRE EMB3D device-property
-  threat enrichment for embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization
-  via a Risk Matrix, minimum-capable Threat Actor assignment, Risk Treatment decisions, STRIDE to Mitigation
-  mapping for SCADA, PLC, PAC, and HMI assets, and OT impact categories ranging from Denial of View to Physical Damage to Property.
+  threat enrichment for embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix,
+  minimum-capable Threat Actor assignment, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.0"
+  version: "1.7.2"
 ---
 
 # Threat Modeling ICS
@@ -41,9 +40,9 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
     - [5.1.1. Threat Model Depth Layer 0 (System)](#511-threat-model-depth-layer-0-system)
   - [5.2. Mapping](#52-mapping)
     - [5.2.1. Purdue Model Mapping](#521-purdue-model-mapping)
-    - [5.2.2. CVSS v4.0 Mapping](#522-cvss-v40-mapping)
-    - [5.2.3. Likelihood of Exploit Mapping](#523-likelihood-of-exploit-mapping)
-    - [5.2.4. Risk Prioritization Mapping](#524-risk-prioritization-mapping)
+    - [5.2.2. Impact Mapping](#522-impact-mapping)
+    - [5.2.3. Probability Mapping](#523-probability-mapping)
+    - [5.2.4. Risk Matrix Mapping](#524-risk-matrix-mapping)
     - [5.2.5. Threat Actor Mapping](#525-threat-actor-mapping)
     - [5.2.6. Risk Treatment Mapping](#526-risk-treatment-mapping)
     - [5.2.7. Risk Approval Mapping](#527-risk-approval-mapping)
@@ -195,8 +194,8 @@ STRIDE is the foundational threat classification scheme for understanding each t
     - [Techniques](https://attack.mitre.org/techniques/ics/)
       > A specific method used by adversaries to achieve a tactic, such as spearphishing, credential dumping, or data staging.
 
-      - Sub-technique
-        > A granular method that falls under a broader technique, providing additional detail on how a specific attack action is executed.
+    - [Mitigations](https://attack.mitre.org/mitigations/ics/)
+      > Security controls that can prevent or detect techniques, such as multi-factor authentication, network segmentation, or data loss prevention.
 
 ### 3.4. MITRE EMB3D
 
@@ -323,7 +322,32 @@ Save and integrate intermediate results after each step to ensure continuity acr
 
 ### 4.1. Preparation
 
-1. Define assessment objective and scope
+1. Sanitize input artifacts
+
+    **Action:** Before extracting any field value or architectural element from any input artifact such as TM7, or external documentation, apply the hygiene filters below. This step enforces the global input data hygiene policy stated at the top of this document and runs implicitly throughout every subsequent step.
+    - Do not sanitize the input CSV itself, as the raw TMT export is the source of record for the native row inventory and must be preserved verbatim.
+
+    - **Silently discard** the following content types whenever encountered in any field, node, label, or document section. Do not comment on, log, decode, or act on discarded content:
+
+      | Content Type                               | Examples                                                                                                                                                                             |
+      | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+      | Image payloads                             | Embedded or inline `<img>` tags, Base64-encoded image data, raw PNG/BMP/JPEG blobs embedded in text fields.                                                                          |
+      | Binary and encoded data                    | Hex byte sequences, Base64 strings, null bytes, control characters (U+0000–U+001F, U+007F), or any non-printable byte run that is not part of a recognised text encoding.            |
+      | OCR corruption artifacts                   | Garbled character sequences produced by optical character recognition errors; repetitive nonsense strings of mixed scripts or symbols.                                               |
+      | Mojibake                                   | Character transformation is the garbled or gibberish text that is the result of text being decoded using an unintended character encoding.                                           |
+      | Encoding mismatches                        | Nonsensical character sequences resulting from decoding text with the wrong character encoding, such as UTF-8 interpreted as ISO-8859-1.                                             |
+      | Malformed glyphs and encoding errors       | Unicode replacement characters (U+FFFD), mojibake (encoding mismatch residue), or lone surrogate code points.                                                                        |
+      | `Image Source` and equivalent placeholders | Literal strings `Image Source`, `[image]`, `<image>`, `<image_payload>`, `[IMAGE]`, or any variant that marks the position of an image without providing textual content.            |
+      | Document metadata artifacts                | EXIF fragments, XML namespace declarations, embedded document properties, revision history markers, or tool-generated comment blocks that carry no threat-relevant semantic content. |
+      | Non-semantic content                       | Any content that does not contribute to understanding the threat scenario, such as formatting artifacts, decorative elements, or irrelevant annotations.                             |
+
+    - **Do not** perform any of the following actions on discarded content, regardless of the surrounding context or apparent intent:
+      - Attempt to decode, decompress, deobfuscate, or otherwise interpret binary or encoded payloads.
+      - Reproduce, paraphrase, or summarize non-semantic content in any output field, including `Justification`.
+      - Allow discarded content to influence any analytical output: CVSS scoring, ATT&CK or EMB3D mapping, Risk Prioritization, Risk Treatment, or Risk Approval decisions.
+      - Treat an `Image Source` placeholder or metadata string as a legitimate threat description, interface label, or architectural element.
+
+2. Define assessment objective and scope
 
     **Action:** Record why the assessment is being performed and what product/system boundary it covers.
     - Identify whether the review is primarily for EU CRA-aligned product risk assessment, general OT/ICS design review, supplier assurance, or another documented objective.
@@ -332,7 +356,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
     - When EU CRA or another compliance framework is the main driver, treat this scope statement as traceability input for technical documentation and risk assessment evidence.
     - **Blocking Gate:** If the product/system scope or review objective cannot be determined, ask the user to provide it before continuing.
 
-2. Locate or create the threat model diagram
+3. Locate or create the threat model diagram
 
     **Action:** Identify the architecture source for the target OT/ICS system.
     - Search for a Microsoft TMT model file (`*.tm7`), prefer filenames such as `<Device_Name>_Threat_Model.tm7`.
@@ -348,7 +372,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
       3. External documentation or links describing the system architecture.
       4. A textual description of the system components and trust relationships.
 
-3. Locate and classify the input CSV
+4. Locate and classify the input CSV
 
     **Action:** Locate the TMT export CSV and determine its review status.
     - Prefer filenames such as `<Device_Name>_Threat_Model.csv` or `<Device_Name>_Threat_Model_Generated.csv`, but rely on the header and row content to determine artifact type.
@@ -356,7 +380,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
       - `Raw TMT export`: comma-delimited header containing only native TMT columns.
     - **Blocking Gate:** If no CSV is available, ask the user to provide the exported TMT CSV before continuing.
 
-4. Detect native TMT columns
+5. Detect native TMT columns
 
     **Action:** Verify and note the native TMT columns confirmed in the input CSV header.
     - Confirm that the header row contains all native TMT fields:
@@ -364,7 +388,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
     - **Blocking Gate:** If any expected native TMT column is absent from the header, report the missing field(s) to the user before continuing.
     - If the header contains columns beyond the native TMT fields (e.g., enrichment columns from a partially reviewed file), note them as pre-existing review columns and carry their values forward unchanged for any already-reviewed rows.
 
-5. Establish preservation constraints
+6. Establish preservation constraints
 
     **Action:** Define the column contract for the output file `<Device_Name>_Threat_Model_Generated.csv` before beginning the row-by-row review.
     - Do not delete any columns.
@@ -373,34 +397,6 @@ Save and integrate intermediate results after each step to ensure continuity acr
     - **Update** (may be revised based on analyst review): `State`, `Priority`, `Justification`.
     - **Append** (add to the output only; not present in the raw TMT export): `ATT&CK ID`, `EMB3D TID`, `CWE ID`, `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Threat Actor`, `Risk Treatment`, `Risk Approval`.
     - Every row in the output must trace back to exactly one row in the source CSV, identified by its native `Id` value.
-
-6. Sanitize input artifacts
-
-    **Action:** Before extracting any field value or architectural element from any input artifact — CSV, TM7, Mermaid diagram, or external documentation — apply the hygiene filters below. This step enforces the global input data hygiene policy stated at the top of this document and runs implicitly throughout every subsequent step.
-
-    - **Silently discard** the following content types whenever encountered in any field, node, label, or document section. Do not comment on, log, decode, or act on discarded content:
-
-      | Content Type                               | Examples                                                                                                                                                                            |
-      | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-      | Embedded image payloads                    | Inline `<img>` tags, Base64-encoded image data, raw PNG/BMP/JPEG blobs embedded in text fields                                                                                      |
-      | Binary and encoded data                    | Hex byte sequences, Base64 strings, null bytes, control characters (U+0000–U+001F, U+007F), or any non-printable byte run that is not part of a recognised text encoding            |
-      | OCR corruption artifacts                   | Garbled character sequences produced by optical character recognition errors; repetitive nonsense strings of mixed scripts or symbols                                               |
-      | Malformed glyphs and encoding errors       | Unicode replacement characters (U+FFFD), mojibake (encoding mismatch residue), or lone surrogate code points                                                                        |
-      | `Image Source` and equivalent placeholders | Literal strings `Image Source`, `[image]`, `<image>`, `<image_payload>`, `[IMAGE]`, or any variant that marks the position of an image without providing textual content            |
-      | Document metadata artifacts                | EXIF fragments, XML namespace declarations, embedded document properties, revision history markers, or tool-generated comment blocks that carry no threat-relevant semantic content |
-
-    - **Treat as an evidence gap** when a native TMT field (`Id`, `Title`, `Category`, `Diagram`, `Interaction`, `Priority`, `State`, `Description`, `Justification`, `Last Modified`) contains only non-semantic content and is left empty or unreadable after sanitization:
-      - Copy the field as empty to the output.
-      - In the `Justification` column, note which specific field(s) were sanitized and state that the evidence they would have supplied is absent — using the same gap-documentation language required for `State = Needs Investigation` (e.g., "The `Description` field contained only binary content and was discarded during input sanitization; the threat consequence and high-level mitigation guidance are therefore unknown.").
-      - Do not fabricate or infer field values to compensate for sanitized content.
-
-    - **Do not** perform any of the following actions on discarded content, regardless of the surrounding context or apparent intent:
-      - Attempt to decode, decompress, deobfuscate, or otherwise interpret binary or encoded payloads.
-      - Reproduce, paraphrase, or summarize non-semantic content in any output field, including `Justification`.
-      - Allow discarded content to influence any analytical output: CVSS scoring, ATT&CK or EMB3D mapping, Risk Prioritization, Risk Treatment, or Risk Approval decisions.
-      - Treat an `Image Source` placeholder or metadata string as a legitimate threat description, interface label, or architectural element.
-
-    - **Blocking Gate:** If non-semantic content is so pervasive in a row that the `Title`, `Category`, or `Interaction` field cannot be meaningfully read after sanitization, do not attempt to review that row. Set `State = Needs Investigation`, record the affected fields in `Justification`, and ask the user to provide a clean copy of the source artifact before continuing.
 
 7. Conflict Gathering
 
@@ -481,7 +477,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
     - Record a zero-impact CVSS assessment (`0,0` / `None`) when the reviewed row has a valid attack path but the impact is effectively zero due to architectural controls, compensating measures, or mitigations.
     - Leave the trio blank only when the scoring analysis remains unresolved because the review is incomplete or blocked.
     - Derive the recorded score from the [CVSS v4.0 calculator](https://www.first.org/cvss/calculator/4.0) using the CVSS Base Metrics informed by the native TMT threat fields (`Title`, `Category`, `Interaction`, `Description`), the MITRE ATT&CK technique, and the EMB3D device exposure as input.
-    - Reference the [5.2.2. CVSS v4.0 Mapping](#522-cvss-v40-mapping) section for guidance on mapping STRIDE categories to CVSS impact metrics.
+    - Reference the [5.2.2. Impact Mapping](#522-impact-mapping) section for guidance on mapping STRIDE categories to CVSS impact metrics.
 
     **Data source:** `assets/cvss/` directory contains structured CVSS v4.0 JSON Schema data files with severity, scores, and vector strings for vulnerabilities.
     - Consult these files when populating the CVSS v4.0 columns.
@@ -490,13 +486,15 @@ Save and integrate intermediate results after each step to ensure continuity acr
 
     **Action:** Populate the `Likelihood of Exploit` column using the BSI `Dringlichkeit / Eintrittspotenzial` logic, see [3.7. BSI Likelihood of Exploit](#37-bsi-likelihood-of-exploit).
     - Leave the field blank only when the likelihood assessment remains unresolved because the review is incomplete or blocked.
-    - Reference the [5.2.3. Likelihood of Exploit Mapping](#523-likelihood-of-exploit-mapping) section for guidance on mapping CVSS metrics and TMT statements to BSI likelihood categories.
+    - Do not record `N/A` for finalized reviewed rows. Zero-impact outcomes (`CVSS-B v4.0 Score = 0,0`, `CVSS v4.0 Severity = None`) still require a mapped likelihood value.
+    - Reference the [5.2.3. Probability Mapping](#523-probability-mapping) section for guidance on mapping CVSS metrics and TMT statements to BSI likelihood categories.
 
 7. Risk Prioritization
 
     **Action:** Populate the `Risk Prioritization` column using the combined information from `CVSS v4.0 Severity` and `Likelihood of Exploit` for each row.
     - Leave the field blank only when either `CVSS v4.0 Severity` or `Likelihood of Exploit` remains unresolved because the review is incomplete or blocked.
-    - Reference the [5.2.4. Risk Prioritization Mapping](#524-risk-prioritization-mapping) section for guidance on combining severity and likelihood into prioritization category.
+    - Do not record `N/A` for finalized reviewed rows. When `CVSS v4.0 Severity = None`, still evaluate the risk matrix using the derived likelihood value.
+    - Reference the [5.2.4. Risk Matrix Mapping](#524-risk-matrix-mapping) section for guidance on combining the impact and probability assessments into a final risk prioritization category.
 
 8. Threat Actor
 
@@ -541,7 +539,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
     - Reference the *behavior or name* of the assigned MITRE ATT&CK technique, EMB3D threat, CWE weakness, CVSS severity, and Threat Actor where they support the rationale.
     - **Do NOT repeat technique/threat/weakness IDs** (e.g., `T0*`, `TID-*`, `CWE-*`) in the `Justification` column, those identifiers belong exclusively in their dedicated columns (`ATT&CK ID`, `EMB3D TID`, `CWE ID`).
     - State why the chosen actor is the minimum capable adversary by describing the required access path and operational knowledge.
-    - When a reviewed row intentionally uses `N/A` in an appended review column, or a zero-impact CVSS assessment (`0,0` / `None`), state the architectural or evidentiary reason once in `Justification` rather than leaving the omission implicit.
+    - When a reviewed row intentionally uses `N/A` in an appended identifier column that has no applicable mapping (for example `ATT&CK ID`, `EMB3D TID`, or `CWE ID`), or leaves a review column blank because the review is incomplete or blocked, state the architectural or evidentiary reason once in `Justification` rather than leaving the omission implicit.
     - When `State` is `Not Applicable`, name the specific architectural contradiction or eliminated element (e.g., passive sensor, analog signal path, human actor rather than machine endpoint, or no independent execution context).
     - When `State` is `Mitigated`, identify the applied security control, compensating measure, or design change. State the residual risk level if exposure is not fully eliminated.
     - When `State` is `Needs Investigation`, state the most important evidence gap or assumption that must be resolved before a decision can be made.
@@ -554,10 +552,10 @@ Save and integrate intermediate results after each step to ensure continuity acr
 12. Risk Treatment
 
     **Action:** Populate the `Risk Treatment` column by assigning a risk treatment decision to each row based on the derived `Risk Prioritization`, see [Risk Treatment](#38-risk-treatment).
-    - Leave the field blank only when the treatment decision remains unresolved because the review is incomplete or blocked.
     - Do not use `Acceptance` or `Transfer` to work around missing technical evidence.
     - Reference the [5.2.6. Risk Treatment Mapping](#526-risk-treatment-mapping) section for selecting risk treatment based on mandatory constraints for each `Risk Prioritization` level.
     - Verify that `Justification` contains the minimum evidence for the selected treatment before proceeding to next step.
+    - Leave the field blank only when the treatment decision remains unresolved because the review is incomplete or blocked.
 
 13. Risk Approval
 
@@ -666,7 +664,9 @@ Use this table to identify the Purdue zone of each asset from `Interaction` or `
 | Level 1      | Control     | PLC / PAC                                  | Siemens S7, Allen-Bradley ControlLogix, Schneider Modicon         | Tampering, Denial of Service, Elevation of Privilege                                   |
 | Level 0      | Field       | Sensors / Actuators / RTUs / Field Devices | Transmitters, positioners, motor drives, RTUs                     | Tampering, Denial of Service                                                           |
 
-#### 5.2.2. CVSS v4.0 Mapping
+#### 5.2.2. Impact Mapping
+
+Categorize the impact of the STRIDE categories using CVSS v4.0 Impact Metrics.
 
 - Exploitability Metrics
   > Select the appropriate attack vector based on the physical and logical access requirements of the modeled interface.
@@ -706,10 +706,11 @@ Use this table to identify the Purdue zone of each asset from `Interaction` or `
 
   - `State = Not Applicable`: the attack path is impossible or structurally eliminated; pair this with `Risk Treatment = Avoidance`.
   - `State = Mitigated`: documented controls reduce the remaining impact to zero; pair this with `Risk Treatment = Mitigation` and explain the control in `Justification`.
+  - Zero-impact does not make `Likelihood of Exploit` or `Risk Prioritization` inapplicable. For finalized reviewed rows, populate both columns from the mapping tables. When `State = Not Applicable`, treat the vulnerability state as `Theoretical` unless stronger exploit-maturity evidence exists, then derive likelihood from the CVSS exploitability metrics and derive prioritization from the `None` severity row in the risk matrix.
 
-#### 5.2.3. Likelihood of Exploit Mapping
+#### 5.2.3. Probability Mapping
 
-The BSI Likelihood of Exploit categorizes the probability of a threat being successfully exploited. It considers both the technical feasibility and the availability of exploit techniques.
+Categorize the likelihood of exploit using the BSI `Dringlichkeit / Eintrittspotenzial` logic, which combines the exploitation method and vulnerability state to determine the overall likelihood category.
 
 - Exploitation Method
   > Determine the exploitation method (columns) based on the modeled attack scenario and CVSS Exploitability Metrics.
@@ -742,21 +743,20 @@ The BSI Likelihood of Exploit categorizes the probability of a threat being succ
   | Active (Aktiv)                             | Medium (mittel)    | High (hoch)             | High (hoch)                     |
   | Exploit Published (Exploit Veröffentlicht) | Medium (mittel)    | High (hoch)             | Critical (sehr hoch)            |
 
-#### 5.2.4. Risk Prioritization Mapping
+#### 5.2.4. Risk Matrix Mapping
 
-- Risk Matrix
-  > The matrix provides a mapping of severity and likelihood to a risk prioritization category. Use this as a guide to assign the appropriate prioritization level based on the combined assessment of severity and likelihood.
+The risk matrix provides a mapping of impact severity and likelihood to a risk prioritization category. Use this as a guide to assign the appropriate prioritization level based on the combined assessment of impact severity and likelihood.
 
   > [!NOTE]
-  > Combine information from `BSI Likelihood of Exploit` (rows) and `CVSS v4.0 Severity` (columns) to determine a risk prioritization level for each threat.
+  > Combine information from `BSI Likelihood of Exploit` (Probability) and `CVSS v4.0 Severity` (Impact) to determine a risk prioritization level for each threat.
 
-  | Likelihood \ Severity | None   | Low    | Medium | High     | Critical |
-  | --------------------- | ------ | ------ | ------ | -------- | -------- |
-  | Info                  | Info   | Info   | Low    | Low      | Medium   |
-  | Low                   | Info   | Low    | Low    | Medium   | High     |
-  | Medium                | Low    | Low    | Medium | High     | High     |
-  | High                  | Low    | Medium | High   | High     | Critical |
-  | Critical              | Medium | High   | High   | Critical | Critical |
+  | Probability \ Impact | None   | Low    | Medium | High     | Critical |
+  | -------------------- | ------ | ------ | ------ | -------- | -------- |
+  | Info                 | Info   | Info   | Low    | Low      | Medium   |
+  | Low                  | Info   | Low    | Low    | Medium   | High     |
+  | Medium               | Low    | Low    | Medium | High     | High     |
+  | High                 | Low    | Medium | High   | High     | Critical |
+  | Critical             | Medium | High   | High   | Critical | Critical |
 
 #### 5.2.5. Threat Actor Mapping
 
@@ -793,7 +793,7 @@ The Risk Treatment Mapping translates the `Risk Prioritization` level into a def
   | Info                | Avoidance         | Acceptance              | Attack path is architecturally impossible, structurally eliminated, or no longer present in the assessed design. Risk is negligible. No security control investment is warranted.                                             |
   | Low                 | Acceptance        | Avoidance, Mitigation   | Low-cost compensating controls are encouraged. Transfer is not warranted at this level. Risk remains intentionally retained without additional controls.                                                                      |
   | Medium              | Mitigation        | Acceptance, Transfer    | Controls must address the root weakness. Controls or compensating measures reduce the risk to an acceptable residual level. Transfer requires named SLA or policy. Consequence ownership is formally shifted to a third party |
-  | High                | Mitigation        | Avoidance, Transfer     | Acceptance is restricted to exceptional cases with System Owner / CISO approval and written justification. Avoidance is preferred when structurally feasible.                                                                 |
+  | High                | Mitigation        | Avoidance, Transfer     | Acceptance is restricted to exceptional cases with CPSO approval and written justification. Avoidance is preferred when structurally feasible.                                                                                |
   | Critical            | Avoidance         | Mitigation, Transfer    | Acceptance is prohibited unless approved by Executive / Management with documented rationale. Uncontrolled residual risk is not permitted at this level.                                                                      |
 
 - Treatment Deviation Rule
@@ -816,30 +816,24 @@ The minimum required approval authority is determined by combining the `Risk Pri
 - Risk Approval
   > Select the cell at the intersection of the `Risk Prioritization` (rows) and `Risk Treatment` (columns) to identify the minimum required approval authority. Record the role label directly in the `Risk Approval` column.
 
-  | Risk / Treatment | Avoidance    | Mitigation             | Acceptance             | Transfer               |
-  | ---------------- | ------------ | ---------------------- | ---------------------- | ---------------------- |
-  | Info             | Not Required | Engineering Lead       | Engineering Lead       | Product Security       |
-  | Low              | Not Required | Engineering Lead       | Engineering Lead       | Product Security       |
-  | Medium           | Not Required | Product Security       | Product Security       | Product Security       |
-  | High             | Not Required | System Owner / CISO    | System Owner / CISO    | System Owner / CISO    |
-  | Critical         | Not Required | Executive / Management | Executive / Management | Executive / Management |
+  | Prioritization / Treatment | Avoidance    | Mitigation       | Acceptance       | Transfer         |
+  | -------------------------- | ------------ | ---------------- | ---------------- | ---------------- |
+  | Info                       | Not Required | Lead Security    | Lead Security    | Lead Security    |
+  | Low                        | Not Required | Lead Security    | Lead Security    | Lead Security    |
+  | Medium                     | Not Required | Product Security | Product Security | Product Security |
+  | High                       | Not Required | CPSO             | CPSO             | CPSO             |
+  | Critical                   | Not Required | Executive        | Executive        | Executive        |
 
 - Approval Authority Roles
   > Define the following stakeholder roles for risk approval.
 
-  | Role Label             | Typical Title or Function                                                                        |
-  | ---------------------- | ------------------------------------------------------------------------------------------------ |
-  | Not Required           | Risk structurally eliminated, no residual risk remains.                                          |
-  | Engineering Lead       | Technical lead, security engineer, or equivalent responsible for the design area.                |
-  | Product Security       | Product security officer, security architect, or equivalent with cross-functional authority.     |
-  | System Owner / CISO    | System owner, CISO, or equivalent with organizational risk management authority.                 |
-  | Executive / Management | C-level executive, risk committee, or board-level function with final risk acceptance authority. |
-
-- Approval Evidence Prerequisite
-  > Before recording the `Risk Approval` column, confirm that the minimum treatment evidence listed in `Treatment Evidence Requirements` under Section 5.2.6 is present in `Justification`.
-
-- Escalation Rule
-  > When any row's `Risk Prioritization` or `Risk Treatment` changes during the review cycle (e.g., a re-scoped CVSS score raises a `Medium` finding to `High`), re-evaluate the required approval authority and update `Risk Approval` accordingly. A previously `Approved` row whose risk level has increased must revert to `Pending Approval` until the higher-authority stakeholder formally confirms the revised treatment decision.
+  | Role Label       | Typical Title or Function                                                                        |
+  | ---------------- | ------------------------------------------------------------------------------------------------ |
+  | Not Required     | Risk structurally eliminated, no residual risk remains.                                          |
+  | Lead Security    | Technical lead, security engineer, or equivalent responsible for the design area.                |
+  | Product Security | Product security officer, security architect, or equivalent with cross-functional authority.     |
+  | CPSO             | CPSO, or equivalent with organizational risk management authority.                               |
+  | Executive        | C-level executive, risk committee, or board-level function with final risk acceptance authority. |
 
 ### 5.3. Template
 
@@ -865,10 +859,10 @@ Use these templates for Microsoft TMT CSV intake and review.
 
   ```csv
   Id;Title;Category;Diagram;Interaction;Priority;State;Changed By;Description;Justification;Last Modified;ATT&CK ID;EMB3D TID;CWE ID;CVSS v4.0 Vector;CVSS-B v4.0 Score;CVSS v4.0 Severity;Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment;Risk Approval
-  0;Spoofing the MCU Process;Spoofing;<Device_Name>;Debugger to MCU over JTAG;Low;Not Applicable;;MCU may be spoofed by an attacker and this may lead to information disclosure by Debugger Probe. Consider using a standard authentication mechanism to identify the destination process.;"The MCU firmware is the target of the JTAG debug session, not a process with an identity to spoof. JTAG provides direct hardware-level access to the MCU; there is no network identity or authentication protocol to spoof. The actual risk is unauthorized JTAG access, which is covered by other JTAG threats. Insider Threat is the minimum candidate considered.";Generated;T0843;TID-116, TID-119;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N;"0,0";None;N/A;N/A;Insider Threat;Avoidance;Not Required
-  11;Spoofing the RS-485 Interface Process;Spoofing;<Device_Name>;PLC to RS-485 (Modbus RTU);Medium;Needs Investigation;;RS-485 Interface may be spoofed by an attacker and this may lead to information disclosure by PLC. Consider using a standard authentication mechanism to identify the destination process.;Modbus RTU on RS-485 has no built-in authentication mechanism. An attacker on the same RS-485 bus segment could potentially inject spoofed Modbus frames. The minimum actor is Cybercriminal because the attack requires OT protocol familiarity but no plant-specific knowledge. However, whether the RS-485 module is installed (it is optional per the manual) and whether the bus is physically accessible in the deployed environment are unknown. Evidence gap: confirm whether the RS-485 module is present in the assessed configuration and whether the bus termination provides any physical access barrier. Treatment and approval remain unresolved until the interface is confirmed in scope.;Generated;T0802;TID-118;CWE-287;CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N;"4,3";Medium;Medium;Medium;Cybercriminal;;
-  38;Data Flow MCU to CFG over Modbus RTU (RS-232) Is Potentially Interrupted;Denial Of Service;<Device_Name>;MCU to CFG over Modbus RTU (RS-232);Low;Mitigated;;"An external agent interrupts data flowing across a trust boundary in either direction.";"This RS-232 interruption affects a local maintenance session more than the primary control function. Insider Threat is the minimum actor because the attack requires direct physical or maintenance-port access. Baseline mitigation includes physical port isolation and cable shielding. The actuator remains locally autonomous with fail-safe behavior; residual risk remains Low after these controls, and closure follows design-review sign-off.";Generated;T0814;TID-118;CWE-693;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:L;"2,4";Low;Low;Low;Insider Threat;Mitigation;Engineering Lead
-  72;Elevation Using Impersonation;Elevation Of Privilege;<Device_Name>;Operator to MCU over Switches (GPIO);Low;Not Applicable;;"MCU may be able to impersonate the context of Operator in order to gain additional privilege.";"The dry-contact GPIO path has no machine-to-machine trust boundary the MCU can impersonate; no EMB3D device property enables software-level privilege escalation on a passive hardware signal path. Insider Threat is the minimum candidate because only local operator-side access is in scope. Treatment is Avoidance by keeping the interface free of machine-authenticated trust.";Generated;N/A;N/A;N/A;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N;"0,0";None;N/A;N/A;Insider Threat;Avoidance;Not Required
+  0;Spoofing the MCU Process;Spoofing;<Device_Name>;Debugger to MCU over JTAG;Low;Not Applicable;;MCU may be spoofed by an attacker and this may lead to information disclosure by Debugger Probe. Consider using a standard authentication mechanism to identify the destination process.;"The MCU firmware is the target of the JTAG debug session, not a process with an identity to spoof. JTAG provides direct hardware-level access to the MCU; there is no network identity or authentication protocol to spoof. The actual risk is unauthorized JTAG access, which is covered by other JTAG threats. Insider Threat is the minimum candidate considered.";Generated;T0843;TID-116, TID-119;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N;"0,0";None;Info;Info;Insider Threat;Avoidance;Not Required
+  11;Spoofing the RS-485 Interface Process;Spoofing;<Device_Name>;PLC to RS-485 (Modbus RTU);Medium;Needs Investigation;;RS-485 Interface may be spoofed by an attacker and this may lead to information disclosure by PLC. Consider using a standard authentication mechanism to identify the destination process.;Modbus RTU on RS-485 has no built-in authentication mechanism. An attacker on the same RS-485 bus segment could potentially inject spoofed Modbus frames. The minimum actor is Cybercriminal because the attack requires OT protocol familiarity but no plant-specific knowledge. However, whether the RS-485 module is installed (it is optional per the manual) and whether the bus is physically accessible in the deployed environment are unknown. Evidence gap: confirm whether the RS-485 module is present in the assessed configuration and whether the bus termination provides any physical access barrier. Treatment and approval remain unresolved until the interface is confirmed in scope.;Generated;T0802;TID-118;CWE-287;CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N;"4,3";Medium;Medium;Medium;Cybercriminal;Mitigation;Product Security
+  38;Data Flow MCU to CFG over Modbus RTU (RS-232) Is Potentially Interrupted;Denial Of Service;<Device_Name>;MCU to CFG over Modbus RTU (RS-232);Low;Mitigated;;"An external agent interrupts data flowing across a trust boundary in either direction.";"This RS-232 interruption affects a local maintenance session more than the primary control function. Insider Threat is the minimum actor because the attack requires direct physical or maintenance-port access. Baseline mitigation includes physical port isolation and cable shielding. The actuator remains locally autonomous with fail-safe behavior; residual risk remains Low after these controls, and closure follows design-review sign-off.";Generated;T0814;TID-118;CWE-693;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:L;"2,4";Low;Low;Low;Insider Threat;Mitigation;Lead Security
+  72;Elevation Using Impersonation;Elevation Of Privilege;<Device_Name>;Operator to MCU over Switches (GPIO);Low;Not Applicable;;"MCU may be able to impersonate the context of Operator in order to gain additional privilege.";"The dry-contact GPIO path has no machine-to-machine trust boundary the MCU can impersonate; no EMB3D device property enables software-level privilege escalation on a passive hardware signal path. Insider Threat is the minimum candidate because only local operator-side access is in scope. Treatment is Avoidance by keeping the interface free of machine-authenticated trust.";Generated;N/A;N/A;N/A;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N;"0,0";None;Info;Info;Insider Threat;Avoidance;Not Required
   ```
 
 ## 6. References
