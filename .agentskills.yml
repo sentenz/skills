@@ -74,6 +74,12 @@ skills:
     languages: [markdown]
     description: Creates and maintains Architecture Decision Records (ADRs) with structured sections
 
+  # API Automation Skills
+  - name: x-twitter-scraper
+    path: skills/x-twitter-scraper
+    languages: [bash, typescript, javascript, python, go, markdown]
+    description: Uses the Xquik REST API for X data retrieval, media download, monitors, and confirmation-gated posting workflows
+
 # Integration settings
 integration:
   cli_version: ">=1.0.0"

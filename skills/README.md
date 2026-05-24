@@ -7,6 +7,7 @@ Agent skills are modular capabilities that AI agents can utilize to perform spec
   - [1.2. Go Skills](#12-go-skills)
   - [1.3. Threat Modeling Skills](#13-threat-modeling-skills)
   - [1.4. Documentation Skills](#14-documentation-skills)
+  - [1.5. API Automation Skills](#15-api-automation-skills)
 - [2. References](#2-references)
 
 ## 1. Agent Skills
@@ -53,6 +54,11 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 
 - [Architecture Decision Records (ADR)](adr/SKILL.md)
   > Creates and maintains Architecture Decision Records following a structured format with State, Context, Decision, Considered, Consequences, Implementation, and References sections.
+
+### 1.5. API Automation Skills
+
+- [X/Twitter Automation](x-twitter-scraper/SKILL.md)
+  > Uses the Xquik REST API for X data retrieval, media download, monitors, and confirmation-gated posting workflows.
 
 ## 2. References
 

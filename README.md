@@ -8,6 +8,7 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
   - [1.1. Prerequisites](#11-prerequisites)
   - [1.2. Installation](#12-installation)
   - [1.3. Usage](#13-usage)
+  - [1.4. Available Skills](#14-available-skills)
 - [2. Contribute](#2-contribute)
 - [3. Troubleshoot](#3-troubleshoot)
   - [3.1. TODO](#31-todo)
@@ -60,6 +61,11 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
   # Validate skill definitions
   skills validate
   ```
+
+### 1.4. Available Skills
+
+- [X/Twitter Automation](skills/x-twitter-scraper/SKILL.md)
+  > Use the Xquik REST API for X data, media, monitors, and confirmation-gated posting workflows.
 
 ## 2. Contribute
 
