@@ -8,6 +8,7 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
   - [1.1. Prerequisites](#11-prerequisites)
   - [1.2. Installation](#12-installation)
   - [1.3. Usage](#13-usage)
+  - [1.4. Available Skills](#14-available-skills)
 - [2. Contribute](#2-contribute)
 - [3. Troubleshoot](#3-troubleshoot)
   - [3.1. TODO](#31-todo)
@@ -60,6 +61,11 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
   # Validate skill definitions
   skills validate
   ```
+
+### 1.4. Available Skills
+
+- [X/Twitter GetXAPI](skills/x-twitter-getxapi/SKILL.md)
+  > Use the GetXAPI REST surface for X/Twitter tweet search, user lookup, profile tweets, replies, and media reads.
 
 ## 2. Contribute
 

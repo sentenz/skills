@@ -74,6 +74,12 @@ skills:
     languages: [markdown]
     description: Creates and maintains Architecture Decision Records (ADRs) with structured sections
 
+  # API Automation Skills
+  - name: x-twitter-getxapi
+    path: skills/x-twitter-getxapi
+    languages: [bash, typescript, javascript, python, go, markdown]
+    description: Uses the GetXAPI REST surface for X/Twitter tweet search, user lookup, profile tweets, replies, and media reads
+
 # Integration settings
 integration:
   cli_version: ">=1.0.0"
