@@ -9,9 +9,7 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
   - [1.2. Installation](#12-installation)
   - [1.3. Usage](#13-usage)
 - [2. Contribute](#2-contribute)
-- [3. Troubleshoot](#3-troubleshoot)
-  - [3.1. TODO](#31-todo)
-- [4. References](#4-references)
+- [3. References](#3-references)
 
 ## 1. Details
 
@@ -65,36 +63,9 @@ Available skills can be activated by agents based on defined triggers and contex
 
 [CONTRIBUTING.md](CONTRIBUTING.md) provides guidelines and instructions for contributing to the project.
 
-- [Getting Started](CONTRIBUTING.md#1-getting-started)
-  > Familiarize yourself with the Agent Skills Specification and existing skills before contributing.
+## 3. References
 
-- [Adding a New Skill](CONTRIBUTING.md#2-adding-a-new-skill)
-  > Step-by-step instructions for creating and submitting a new skill to the catalog.
-
-- [Skill Structure](CONTRIBUTING.md#3-skill-structure)
-  > Template and format for `SKILL.md` files including metadata frontmatter and documentation sections.
-
-- [Metadata Guidelines](CONTRIBUTING.md#4-metadata-guidelines)
-  > Guidelines for versioning, activation triggers, language/path matching, and usage configuration.
-
-- [Testing Your Skill](CONTRIBUTING.md#5-testing-your-skill)
-  > Validation steps to verify skill frontmatter, links, activation triggers, and real-world behavior.
-
-- [Submitting Your Changes](CONTRIBUTING.md#6-submitting-your-changes)
-  > Instructions for forking, branching, committing, and opening a pull request.
-
-- [Guidelines for Good Skills](CONTRIBUTING.md#7-guidelines-for-good-skills)
-  > Best practices for writing focused, well-documented, and maintainable skills.
-
-## 3. Troubleshoot
-
-### 3.1. TODO
-
-TODO
-
-## 4. References
-
-- [AGENTS.md](https://agents.md/) page.
+- [AGENTS.md](https://agents.md/) specification.
 - Vercel [Skills](https://skills.sh/) page.
-- Vercel [Skills Documentation](https://skills.sh/docs/cli) page.
-- Agent Skills [Specification](https://agentskills.io/specification) page.
+- Vercel [Skills](https://skills.sh/docs/cli) documentation.
+- Agent [Skills](https://agentskills.io/specification) specification.
