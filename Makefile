@@ -24,12 +24,17 @@ help:
 
 # ── Skills Manager ───────────────────────────────────────────────────────────────────────────────
 
-## Add sentenz/skills to the project
+## Add a skill from the skill registry repository
 skills-add:
 	skills add sentenz/skills
 .PHONY: skills-add
 
-## Update sentenz/skills in the project
+## Update skills from the skill registry repository
 skills-update:
 	skills update sentenz/skills
 .PHONY: skills-update
+
+## Restore from skills-lock.json
+skills-restore:
+	skills experimental_install
+.PHONY: skills-restore

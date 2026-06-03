@@ -9,7 +9,9 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
   - [1.2. Installation](#12-installation)
   - [1.3. Usage](#13-usage)
 - [2. Contribute](#2-contribute)
-- [3. References](#3-references)
+- [3. Troubleshoot](#3-troubleshoot)
+  - [3.1. Skill Invocation](#31-skill-invocation)
+- [4. References](#4-references)
 
 ## 1. Details
 
@@ -27,7 +29,7 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
   > CLI tool for managing AI agent skills in development projects.
 
   ```bash
-  npm install -g skills
+  sudo npm install -g skills
   ```
 
 ### 1.2. Installation
@@ -36,11 +38,11 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
   > Add skills to a project using Vercel [Skills](https://skills.sh/) CLI.
 
   ```bash
-  # Initialize skills in your project
-  skills init
-
-  # Add a specific skill
+  # Add a skill from the skill registry repository
   skills add sentenz/skills
+
+  # Restore from skills-lock.json
+  skills experimental_install
   ```
 
 ### 1.3. Usage
@@ -63,7 +65,27 @@ Available skills can be activated by agents based on defined triggers and contex
 
 [CONTRIBUTING.md](CONTRIBUTING.md) provides guidelines and instructions for contributing to the project.
 
-## 3. References
+## 3. Troubleshoot
+
+### 3.1. Skill Invocation
+
+Instructions for troubleshooting skill invocation issues, including checking trigger conditions and ensuring skill compatibility.
+
+- Implicit Invocation
+  > Ensure that the agent's context and cues align with the skill's defined triggers for implicit invocation.
+
+  ```plaintext
+  .agents/skills/<skill-name>/SKILL.md
+  ```
+
+- Explicit Invocation
+  > Verify that the correct command or API call is used to explicitly invoke the skill, and that the skill is properly registered in the agent's configuration.
+
+  ```bash
+  <agent> .agents/skills/<skill-name>/SKILL.md <task-description>
+  ```
+
+## 4. References
 
 - [AGENTS.md](https://agents.md/) specification.
 - Vercel [Skills](https://skills.sh/) page.
