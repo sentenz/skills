@@ -33,7 +33,7 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
 ### 1.2. Installation
 
 - Install
-  > Add skills to a project using the Skills CLI.
+  > Add skills to a project using Vercel [Skills](https://skills.sh/) CLI.
 
   ```bash
   # Initialize skills in your project
