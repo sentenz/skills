@@ -47,19 +47,19 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
 
 ### 1.3. Usage
 
-- Manage
-  > List, update, and validate skills in your project.
+Available skills can be activated by agents based on defined triggers and contextual cues, enabling AI coding assistants to invoke relevant skills for tasks.
 
-  ```bash
-  # List available skills
-  skills list
+- [C++ Skills](skills/README.md#11-c-skills)
+  > C++ unit testing, mock testing, fuzz testing, benchmark testing, and API documentation skills.
 
-  # Update skills from the catalog
-  skills update
+- [Go Skills](skills/README.md#12-go-skills)
+  > Go unit testing, fuzz testing, benchmark testing, and API documentation skills.
 
-  # Validate skill definitions
-  skills validate
-  ```
+- [Threat Modeling Skills](skills/README.md#13-threat-modeling-skills)
+  > Threat modeling for OT/ICS systems.
+
+- [Documentation Skills](skills/README.md#14-documentation-skills)
+  > Architecture Decision Records (ADR) creation and maintenance skills.
 
 ## 2. Contribute
 
