@@ -481,7 +481,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
     - Record a zero-impact CVSS assessment (`0,0` / `None`) when the reviewed row has a valid attack path but the impact is effectively zero due to architectural controls, compensating measures, or mitigations.
     - Leave the trio blank only when the scoring analysis remains unresolved because the review is incomplete or blocked.
     - Derive the recorded score from the [CVSS v4.0 calculator](https://www.first.org/cvss/calculator/4.0) using the CVSS Base Metrics informed by the native TMT threat fields (`Title`, `Category`, `Interaction`, `Description`), the MITRE ATT&CK technique, and the EMB3D device exposure as input.
-    - Reference the [5.2.2. Impact Mapping](#522-impact-mapping) section for guidance on mapping STRIDE categories to CVSS impact metrics.
+    - Reference the [5.2.3. Impact Mapping](#523-impact-mapping) section for guidance on mapping STRIDE categories to CVSS impact metrics.
 
     **Data source:** `assets/cvss/` directory contains the CVSS v4.0 JSON Schema for validating recorded vector, score, and severity fields.
     - Consult this schema to validate CVSS v4.0 column values. Derive scoring from the CVSS calculator and specification, not from this schema file.
@@ -491,14 +491,14 @@ Save and integrate intermediate results after each step to ensure continuity acr
     **Action:** Populate the `Likelihood of Exploit` column using the BSI `Dringlichkeit / Eintrittspotenzial` logic, see [3.7. BSI Likelihood of Exploit](#37-bsi-likelihood-of-exploit).
     - Leave the field blank only when the likelihood assessment remains unresolved because the review is incomplete or blocked.
     - Do not record `N/A` for finalized reviewed rows. Zero-impact outcomes (`CVSS-B v4.0 Score = 0,0`, `CVSS v4.0 Severity = None`) still require a mapped likelihood value.
-    - Reference the [5.2.3. Probability Mapping](#523-probability-mapping) section for guidance on mapping CVSS metrics and TMT statements to BSI likelihood categories.
+    - Reference the [5.2.4. Probability Mapping](#524-probability-mapping) section for guidance on mapping CVSS metrics and TMT statements to BSI likelihood categories.
 
 7. Risk Prioritization
 
     **Action:** Populate the `Risk Prioritization` column using the combined information from `CVSS v4.0 Severity` and `Likelihood of Exploit` for each row.
     - Leave the field blank only when either `CVSS v4.0 Severity` or `Likelihood of Exploit` remains unresolved because the review is incomplete or blocked.
     - Do not record `N/A` for finalized reviewed rows. When `CVSS v4.0 Severity = None`, still evaluate the risk matrix using the derived likelihood value.
-    - Reference the [5.2.4. Risk Matrix Mapping](#524-risk-matrix-mapping) section for guidance on combining the impact and probability assessments into a final risk prioritization category.
+    - Reference the [5.2.5. Risk Matrix Mapping](#525-risk-matrix-mapping) section for guidance on combining the impact and probability assessments into a final risk prioritization category.
 
 8. Threat Actor
 
@@ -512,7 +512,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
       - **Operational Knowledge:** generic IT tradecraft, OT protocol familiarity, process-specific engineering knowledge, or privileged insider context.
     - Escalate to a more capable actor only when the attack path cannot reasonably succeed with a less capable one.
     - Do not assign multiple actors in one row. If several actors could plausibly perform the attack, record the minimum actor that can realistically achieve the described effect.
-    - Reference the [5.2.5. Threat Actor Mapping](#525-threat-actor-mapping) section for common actor selections from attack-path characteristics.
+    - Reference the [5.2.6. Threat Actor Mapping](#526-threat-actor-mapping) section for common actor selections from attack-path characteristics.
 
 9. TMT State
 
@@ -558,14 +558,14 @@ Save and integrate intermediate results after each step to ensure continuity acr
 
     **Action:** Populate the `Risk Treatment` column by assigning a risk treatment decision to each row based on the derived `Risk Prioritization`, see [Risk Treatment](#38-risk-treatment).
     - Do not use `Acceptance` or `Transfer` to work around missing technical evidence.
-    - Reference the [5.2.6. Risk Treatment Mapping](#526-risk-treatment-mapping) section for selecting risk treatment based on mandatory constraints for each `Risk Prioritization` level.
+    - Reference the [5.2.7. Risk Treatment Mapping](#527-risk-treatment-mapping) section for selecting risk treatment based on mandatory constraints for each `Risk Prioritization` level.
     - Verify that `Justification` contains the minimum evidence for the selected treatment before proceeding to next step.
     - Leave the field blank only when the treatment decision remains unresolved because the review is incomplete or blocked.
 
 13. Risk Approval
 
     **Action:** Populate the `Risk Approval` column by recording the minimum required approval authority role for each row.
-    - Derive the required approval authority using the [5.2.7. Risk Approval Mapping](#527-risk-approval-mapping) table.
+    - Derive the required approval authority using the [5.2.8. Risk Approval Mapping](#528-risk-approval-mapping) table.
     - Record exactly one of the standardized role labels.
     - Leave the field blank only when the approval assessment remains unresolved because the review itself is incomplete or blocked.
 
