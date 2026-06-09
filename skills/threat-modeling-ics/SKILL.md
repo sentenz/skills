@@ -38,8 +38,19 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
 - [5. Example](#5-example)
   - [5.1. Diagram](#51-diagram)
     - [5.1.1. Depth Layers](#511-depth-layers)
-    - [5.3.2. Generated TMT CSV Template](#532-generated-tmt-csv-template)
-- [6. References](#6-references)
+  - [5.2. Mapping](#52-mapping)
+    - [5.2.1. Diagram Depth Layers](#521-diagram-depth-layers)
+    - [5.2.2. Purdue Model Mapping](#522-purdue-model-mapping)
+    - [5.2.3. Impact Mapping](#523-impact-mapping)
+    - [5.2.4. Probability Mapping](#524-probability-mapping)
+    - [5.2.5. Risk Matrix Mapping](#525-risk-matrix-mapping)
+    - [5.2.6. Threat Actor Mapping](#526-threat-actor-mapping)
+    - [5.2.7. Risk Treatment Mapping](#527-risk-treatment-mapping)
+    - [5.2.8. Risk Approval Mapping](#528-risk-approval-mapping)
+- [6. Template](#6-template)
+  - [6.1. Raw TMT Export CSV Template](#61-raw-tmt-export-csv-template)
+  - [6.2. Generated TMT CSV Template](#62-generated-tmt-csv-template)
+- [7. References](#7-references)
 
 ## 1. Benefits
 
@@ -609,27 +620,27 @@ Save and integrate intermediate results after each step to ensure continuity acr
 
   ```mermaid
   flowchart TD
-    classDef deviceBoundary stroke:#ff0000,stroke-width:2px;
+      classDef deviceBoundary stroke:#ff0000,stroke-width:2px;
 
-    %% External Trust Boundary
-    subgraph External_Boundary [External Boundary]
-        PLC[PLC]
-        USER[Operator]
-        DEBUGGER[Debugger Probe]
-    end
+      %% External Trust Boundary
+      subgraph External_Boundary [External Boundary]
+          PLC[PLC]
+          USER[Operator]
+          DEBUGGER[Debugger Probe]
+      end
 
-    %% Device Boundary
-    subgraph Device_Boundary [Trust Boundary]
-        DEVICE((Device Node))
-    end
+      %% Device Boundary
+      subgraph Device_Boundary [Trust Boundary]
+          DEVICE((Device Node))
+      end
 
-    %% Data Flows
-    DEBUGGER <--> |"JTAG"| DEVICE
-    USER --> |"Pushbuttons / LCD"| DEVICE
-    PLC <--> |"Modbus RTU (RS-485)"| DEVICE
+      %% Data Flows
+      DEBUGGER <--> |"JTAG"| DEVICE
+      USER --> |"Pushbuttons / LCD"| DEVICE
+      PLC <--> |"Modbus RTU (RS-485)"| DEVICE
 
-    class Device_Boundary deviceBoundary;
-    ```
+      class Device_Boundary deviceBoundary;
+  ```
 
 ### 5.2. Mapping
 
@@ -678,7 +689,7 @@ Categorize the impact of the STRIDE categories using CVSS v4.0 Impact Metrics.
   | Repudiation            | VI                    | VC                      | Medium-Low  | CVSS has no explicit non-repudiation or auditability metric. Repudiation is therefore best represented through integrity harm to logs, records, and transaction evidence, with occasional secondary confidentiality implications.                                                                                                                                                                       |
   | Information Disclosure | VC                    | VI                      | High        | Unauthorized exposure of information is directly a confidentiality impact. Integrity is only indirect or downstream.                                                                                                                                                                                                                                                                                    |
   | Denial of Service      | VA                    | VI                      | High        | Service degradation or outage is directly an availability impact. Integrity may be secondarily affected where incomplete processing or inconsistent state results.                                                                                                                                                                                                                                      |
-  | Elevation of Privilege | VI                    | VC, VA                  | Medium-High | Privilege gain commonly enables unauthorized modification and unauthorized access, making integrity and confidentiality primary. Availability is often a secondary consequence when elevated rights permit shutdown, deletion, or resource exhaustion. The primary impact depends on the privileges gained: <br>• _Read_ access → `VC`<br>• _Write_ access → `VI`<br>• _Admin/Execution_ access → `VA`. |
+  | Elevation of Privilege | VI                    | VC, VA                  | Medium-High | Privilege gain commonly enables unauthorized modification and unauthorized access, making integrity and confidentiality primary. Availability is often a secondary consequence when elevated rights permit shutdown, deletion, or resource exhaustion. The primary impact depends on the privileges gained: <br>• *Read* access → `VC`<br>• *Write* access → `VI`<br>• *Admin/Execution* access → `VA`. |
 
 - Subsequent System Impact Metrics for OT/ICS
   > In OT/ICS environments, compromising one component often affects downstream systems. Use SC/SI/SA to capture cascading effects on the physical process, safety systems, or connected devices. Metric abbreviations: `SC` = Subsequent System Confidentiality Impact, `SI` = Subsequent System Integrity Impact, `SA` = Subsequent System Availability Impact. Values: `N` = None, `H` = High.
@@ -822,11 +833,11 @@ The minimum required approval authority is determined by combining the `Risk Pri
   | CPSO             | CPSO, or equivalent with organizational risk management authority.                               |
   | Executive        | C-level executive, risk committee, or board-level function with final risk acceptance authority. |
 
-### 5.3. Template
+## 6. Template
 
 Use these templates for Microsoft TMT CSV intake and review.
 
-#### 5.3.1. Raw TMT Export CSV Template
+### 6.1. Raw TMT Export CSV Template
 
 - `<Device_Name>_Threat_Model.csv`
   > The raw export from Microsoft TMT in comma delimited CSV format.
@@ -839,7 +850,7 @@ Use these templates for Microsoft TMT CSV intake and review.
   72,Elevation Using Impersonation,Elevation Of Privilege,<Device_Name>,Operator to MCU over Switches (GPIO),High,Not Started,,MCU may be able to impersonate the context of Operator in order to gain additional privilege.,,Generated
   ```
 
-#### 5.3.2. Generated TMT CSV Template
+### 6.2. Generated TMT CSV Template
 
 - `<Device_Name>_Threat_Model_Generated.csv`
   > The completed security review of the raw TMT export in semicolon delimited CSV format with appended columns.
@@ -852,7 +863,7 @@ Use these templates for Microsoft TMT CSV intake and review.
   72;Elevation Using Impersonation;Elevation Of Privilege;<Device_Name>;Operator to MCU over Switches (GPIO);Low;Not Applicable;;"MCU may be able to impersonate the context of Operator in order to gain additional privilege.";"The dry-contact GPIO path has no machine-to-machine trust boundary the MCU can impersonate and no device property enables software privilege escalation on the passive signal path. Threat Actor: classification is that only local operator-side interaction could influence the interface, which maps to Insider Threat as the minimum actor under constraints access. Treatment and Approval: treatment remains Avoidance by keeping the interface free of machine-authenticated trust assumptions.";Generated;N/A;N/A;N/A;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N;"0,0";None;Info;Info;Insider Threat;Avoidance;Not Required
   ```
 
-## 6. References
+## 7. References
 
 - Microsoft [Threat Modeling Tool](https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool) documentation.
 - Microsoft [Threat Modeling Fundamentals](https://learn.microsoft.com/en-us/training/paths/tm-threat-modeling-fundamentals/) training.
