@@ -6,7 +6,7 @@ description: >-
   threat enrichment for embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix,
   minimum-capable Threat Actor assignment, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.2"
+  version: "1.7.3"
 ---
 
 # Threat Modeling ICS
@@ -37,17 +37,7 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
   - [4.3. Deliverables](#43-deliverables)
 - [5. Example](#5-example)
   - [5.1. Diagram](#51-diagram)
-    - [5.1.1. Threat Model Depth Layer 0 (System)](#511-threat-model-depth-layer-0-system)
-  - [5.2. Mapping](#52-mapping)
-    - [5.2.1. Purdue Model Mapping](#521-purdue-model-mapping)
-    - [5.2.2. Impact Mapping](#522-impact-mapping)
-    - [5.2.3. Probability Mapping](#523-probability-mapping)
-    - [5.2.4. Risk Matrix Mapping](#524-risk-matrix-mapping)
-    - [5.2.5. Threat Actor Mapping](#525-threat-actor-mapping)
-    - [5.2.6. Risk Treatment Mapping](#526-risk-treatment-mapping)
-    - [5.2.7. Risk Approval Mapping](#527-risk-approval-mapping)
-  - [5.3. Template](#53-template)
-    - [5.3.1. Raw TMT Export CSV Template](#531-raw-tmt-export-csv-template)
+    - [5.1.1. Depth Layers](#511-depth-layers)
     - [5.3.2. Generated TMT CSV Template](#532-generated-tmt-csv-template)
 - [6. References](#6-references)
 
@@ -104,13 +94,13 @@ The Purdue Model (ISA-95 / IEC 62264) partitions an industrial automation enviro
 
 Threat actors are individuals, groups, or organizations with the motivation and capability to carry out attacks against systems, data, or infrastructure.
 
-| #   | Threat Actor        | Skill Level | Resources | Persistence | Detection Difficulty | Primary Motivation                                      | Common Targets                                                            | Typical TTPs                                                                               |
-| --- | ------------------- | ----------- | --------- | ----------- | -------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| 1   | Nation-State Actor  | Very High   | Very High | Very High   | Very High            | Espionage, Geopolitical Dominance, Strategic Objectives | Government, Defense, Critical Infrastructure, Research, Financial Systems | Zero-days, Supply Chain Attacks, Living-off-the-Land (LOTL), Lateral Movement, SIGINT      |
-| 2   | Insider Threat      | Low–High    | Low–High  | Low–High    | Very High            | Greed, Grievance, Coercion, or Negligence / Human Error | Employer's Sensitive Systems & Data                                       | Data Exfiltration, Sabotage, Privilege Abuse, Misconfiguration, Unauthorized Data Transfer |
-| 3   | Cybercriminal       | Low–High    | Low–High  | Low–High    | Low–High             | Financial Gain                                          | Individuals, SMBs, Enterprises, Banks, Healthcare                         | Ransomware-as-a-Service, Phishing, BEC, Carding, Credential Theft, Identity Fraud          |
-| 4   | Hacktivist          | Low–Medium  | Low       | Low–Medium  | Low–Medium           | Political, Social, or Ideological Cause                 | Governments, Corporations, Media Outlets                                  | DDoS, Website Defacement, Doxing, Data Leaks                                               |
-| 5   | Thrill Seeker       | Low–Medium  | Low       | Low         | Low                  | Curiosity, Notoriety, Thrill, or Mischief               | Random / Opportunistic Systems                                            | Pre-built Exploit Kits, DDoS-for-Hire, Unauthorized Vulnerability Discovery, Defacement    |
+| #   | Threat Actor       | Skill Level | Resources | Persistence | Detection Difficulty | Primary Motivation                                      | Common Targets                                                            | Typical TTPs                                                                               |
+| --- | ------------------ | ----------- | --------- | ----------- | -------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 1   | Nation-State Actor | Very High   | Very High | Very High   | Very High            | Espionage, Geopolitical Dominance, Strategic Objectives | Government, Defense, Critical Infrastructure, Research, Financial Systems | Zero-days, Supply Chain Attacks, Living-off-the-Land (LOTL), Lateral Movement, SIGINT      |
+| 2   | Insider Threat     | Low–High    | Low–High  | Low–High    | Very High            | Greed, Grievance, Coercion, or Negligence / Human Error | Employer's Sensitive Systems & Data                                       | Data Exfiltration, Sabotage, Privilege Abuse, Misconfiguration, Unauthorized Data Transfer |
+| 3   | Cybercriminal      | Low–High    | Low–High  | Low–High    | Low–High             | Financial Gain                                          | Individuals, SMBs, Enterprises, Banks, Healthcare                         | Ransomware-as-a-Service, Phishing, BEC, Carding, Credential Theft, Identity Fraud          |
+| 4   | Hacktivist         | Low–Medium  | Low       | Low–Medium  | Low–Medium           | Political, Social, or Ideological Cause                 | Governments, Corporations, Media Outlets                                  | DDoS, Website Defacement, Doxing, Data Leaks                                               |
+| 5   | Thrill Seeker      | Low–Medium  | Low       | Low         | Low                  | Curiosity, Notoriety, Thrill, or Mischief               | Random / Opportunistic Systems                                            | Pre-built Exploit Kits, DDoS-for-Hire, Unauthorized Vulnerability Discovery, Defacement    |
 
 - Nation-State Actor
   > State-sponsored actors conduct long-duration, multi-stage campaigns targeting critical infrastructure for geopolitical objectives: espionage, pre-positioning for disruption, or physical sabotage. They invest significant resources in custom tooling, zero-day exploits, and supply-chain compromise to penetrate defense-in-depth architectures and reach Level 0 field devices.
@@ -205,7 +195,7 @@ STRIDE is the foundational threat classification scheme for understanding each t
 [MITRE EMB3D (Embedded Device Threat Model)](https://emb3d.mitre.org/) is a MITRE-developed knowledge base of cyber threats and associated mitigations for embedded devices found in critical infrastructure, IoT, automotive, healthcare, and manufacturing environments. EMB3D aligns with MITRE ATT&CK, CWE, and CVE to provide a property-based threat model that maps device features to specific threats and recommends mitigations tiered by implementation maturity.
 
 > [!NOTE]
-> Use EMB3D when the modeled asset is, contains, or depends on an embedded device: PLC, PAC, RTU, SIS controller, HMI appliance, gateway, industrial edge node, drive, intelligent sensor, actuator, or embedded communication module. Do not use EMB3D as a substitute for ATT&CK for ICS; use both layers when evidence supports both.
+> Use EMB3D when the modeled asset is, contains, or depends on an embedded device: PLC, PAC, RTU, SIS controller, HMI appliance, gateway, industrial edge node, drive, intelligent sensor, actuator, or embedded communication module. Do not use EMB3D as a substitute for ATT&CK for ICS, use both layers when evidence supports both.
 
 1. Domains and Categories
 
@@ -336,7 +326,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
       | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
       | Image payloads                             | Embedded or inline `<img>` tags, Base64-encoded image data, raw PNG/BMP/JPEG blobs embedded in text fields.                                                                          |
       | Binary and encoded data                    | Hex byte sequences, Base64 strings, null bytes, control characters (U+0000–U+001F, U+007F), or any non-printable byte run that is not part of a recognised text encoding.            |
-      | OCR corruption artifacts                   | Garbled character sequences produced by optical character recognition errors; repetitive nonsense strings of mixed scripts or symbols.                                               |
+      | OCR corruption artifacts                   | Garbled character sequences produced by optical character recognition errors. Repetitive nonsense strings of mixed scripts or symbols.                                               |
       | Mojibake                                   | Character transformation is the garbled or gibberish text that is the result of text being decoded using an unintended character encoding.                                           |
       | Encoding mismatches                        | Nonsensical character sequences resulting from decoding text with the wrong character encoding, such as UTF-8 interpreted as ISO-8859-1.                                             |
       | Malformed glyphs and encoding errors       | Unicode replacement characters (U+FFFD), mojibake (encoding mismatch residue), or lone surrogate code points.                                                                        |
@@ -365,9 +355,9 @@ Save and integrate intermediate results after each step to ensure continuity acr
     - Search for a Microsoft TMT model file (`*.tm7`), prefer filenames such as `<Device_Name>_Threat_Model.tm7`.
     - If found, extract architecture elements, trust boundaries, data flows, and interfaces.
     - If no Microsoft TMT model file is found, search for a Mermaid diagram file (`*.md`) and extract the same evidence.
-    - If the source is a TM7 file, normalize display labels only (expand unexplained abbreviations, remove leading/trailing whitespace); do not rename components, alter trust boundaries, reorder data flows, or change interface labels.
+    - If the source is a TM7 file, normalize display labels only (expand unexplained abbreviations, remove leading/trailing whitespace). Do not rename components, alter trust boundaries, reorder data flows, or change interface labels.
     - If no diagram exists, draft one from the architecture source provided by the user, save it as `<Device_Name>_Threat_Model.md`, and mark it as a draft pending user confirmation.
-    - Use the CSV to preserve the modeled row inventory; use the diagram and external documentation to verify whether each modeled interface, trust boundary, or attack path is real and how it should be interpreted.
+    - Use the CSV to preserve the modeled row inventory. Use the diagram and external documentation to verify whether each modeled interface, trust boundary, or attack path is real and how it should be interpreted.
     - **Blocking Gate:** If the TM7 model or external documentation materially contradicts the CSV about whether an interface, trust boundary, or threat path exists, record the conflict and ask the user whether to review the row as-modeled, as-documented, or as a documented discrepancy before continuing.
     - **Blocking Gate:** If no architecture source is available, ask the user to provide one before continuing, in order of preference:
       1. A Microsoft TMT model file path (`*.tm7`).
@@ -398,7 +388,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
     - Do not edit the original `<Device_Name>_Threat_Model.csv` file — treat it as immutable evidence.
     - **Preserve** (copy verbatim from source to output, never modify, even if the source value appears to contain a typo or formatting difference): `Id`, `Title`, `Category`, `Diagram`, `Interaction`, `Changed By`, `Description`, `Last Modified`.
     - **Update** (may be revised based on analyst review): `State`, `Priority`, `Justification`.
-    - **Append** (add to the output only; not present in the raw TMT export): `ATT&CK ID`, `EMB3D TID`, `CWE ID`, `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Threat Actor`, `Risk Treatment`, `Risk Approval`.
+    - **Append** (add to the output only, not present in the raw TMT export): `ATT&CK ID`, `EMB3D TID`, `CWE ID`, `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Threat Actor`, `Risk Treatment`, `Risk Approval`.
     - Every row in the output must trace back to exactly one row in the source CSV, identified by its native `Id` value.
 
 7. Conflict Gathering
@@ -437,7 +427,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
     **Action:** Populate the `ATT&CK ID` field for each row when a concrete ATT&CK for ICS technique can be supported by the TMT threat fields, see [MITRE ATT&CK](#33-mitre-attck).
     - Record the most relevant MITRE ATT&CK Techniques IDs for ICS.
     - Store MITRE technique IDs in the dedicated `ATT&CK ID` column.
-    - In `Justification`, describe the specific technique behavior that supports the mapping; avoid duplicating technique IDs already captured in `ATT&CK ID`.
+    - In `Justification`, describe the specific technique behavior that supports the mapping. Avoid duplicating technique IDs already captured in `ATT&CK ID`.
     - Record `N/A` when no ICS-specific ATT&CK technique applies to the finalized reviewed row.
     - Leave the field blank only when the ATT&CK mapping remains unresolved because the review is incomplete or blocked.
 
@@ -452,7 +442,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
     - Use comma-separated values when more than one TID applies (e.g., `TID-116, TID-119`).
     - Record `N/A` when the reviewed row has no applicable EMB3D threat mapping.
     - Leave the field blank only when the mapping remains unresolved because the review is incomplete or blocked.
-    - In `Justification`, describe the mapped device property or missing control; avoid duplicating TIDs already captured in `EMB3D TID`.
+    - In `Justification`, describe the mapped device property or missing control. Avoid duplicating TIDs already captured in `EMB3D TID`.
     - When the `Interaction` names a hardware or embedded-software interface (JTAG, UART, RS-232, RS-485, SPI, I²C, GPIO, USB, Modbus RTU, proprietary serial, or a firmware update path), cross-reference the MITRE EMB3D [Properties Mapper](https://emb3d.mitre.org/properties-mapper/) to identify device-property-mapped threats (TIDs) and their associated CWE IDs before finalizing the `CWE ID` assignment in step 4.
 
     **Data source:** `assets/emb3d/` directory contains structured MITRE EMB3D data files with threat IDs, descriptions, associated device properties, and mitigations.
@@ -483,7 +473,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
     - Reference the [5.2.2. Impact Mapping](#522-impact-mapping) section for guidance on mapping STRIDE categories to CVSS impact metrics.
 
     **Data source:** `assets/cvss/` directory contains the CVSS v4.0 JSON Schema for validating recorded vector, score, and severity fields.
-    - Consult this schema to validate CVSS v4.0 column values; derive scoring from the CVSS calculator and specification, not from this schema file.
+    - Consult this schema to validate CVSS v4.0 column values. Derive scoring from the CVSS calculator and specification, not from this schema file.
 
 6. BSI Likelihood of Exploit
 
@@ -538,6 +528,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
 
     **Action:** Write a concise, technically precise analyst statement in the `Justification` field for each row, synthesizing all prior enrichment steps. The justification provides the evidence-based rationale that supports the assigned `State`, explains the assigned `Threat Actor`, and informs the `Risk Treatment` decision in the next step.
     - State the evidence-based rationale that supports the assigned `State`.
+    - Avoid delimeter characters (semicolons) in the justification text, as the output CSV is semicolon-delimited. Enclose the entire justification in double quotes `"<Justification>"` to preserve the integrity of the CSV format.
     - Reference the modeled protocol, interface, trust relationship, validation behavior, or compensating control that informs the decision.
     - Reference the *behavior or name* of the assigned MITRE ATT&CK technique, EMB3D threat, CWE weakness, CVSS severity, and Threat Actor where they support the rationale.
     - **Do NOT repeat technique/threat/weakness IDs** (e.g., `T0*`, `TID-*`, `CWE-*`) in the `Justification` column, those identifiers belong exclusively in their dedicated columns (`ATT&CK ID`, `EMB3D TID`, `CWE ID`).
@@ -573,7 +564,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
 
     **Action:** Validate the analyst decisions, then write the complete enriched dataset to the output file `<Device_Name>_Threat_Model_Generated.csv`.
     - Generate a semicolon delimited output CSV format.
-    - Any field containing the delimiter character (semicolon) or line breaks must be enclosed in double quotes per CSV conventions.
+    - Ensure the `Description` and `Justification` fields are fully enclosed in double quotes `"..."` to preserve the integrity of the CSV format, as these fields may contain semicolons or other special delimiter characters.
     - Verify each output row against its source row to confirm no enrichment values were dropped or overwritten.
     - Retain native TMT columns in their source order and append the review columns in the order defined in section [4.1. Preparation](#41-preparation).
     - Verify that all native TMT columns are present and unmodified in the output before saving.
@@ -611,51 +602,47 @@ Save and integrate intermediate results after each step to ensure continuity acr
 
 ### 5.1. Diagram
 
-#### 5.1.1. Threat Model Depth Layer 0 (System)
+#### 5.1.1. Depth Layers
 
-- `<Device_Name>_Threat_Model.md`
-  > A depth layer 0 (system) architecture diagram showing major zones, trust boundaries, and data flows.
-
-  > [!IMPORTANT]
-  > Be precise in technical labeling of components, interfaces, and data flows to support accurate threat review and mapping.
+- Layer 0: System Level
+  > The embedded device is treated as a single system element within its wider operational technology (OT) network context. The diagram shows the device major interfaces, trust boundaries, and data flows with external entities.
 
   ```mermaid
   flowchart TD
-    %% Layer 0 (System) - External Entities
-    subgraph External_Entities [External Entities]
-        PLC((PLC))
-        USER((Operator))
-        DEBUGGER((Debugger))
+    classDef deviceBoundary stroke:#ff0000,stroke-width:2px;
+
+    %% External Trust Boundary
+    subgraph External_Boundary [External Boundary]
+        PLC[PLC]
+        USER[Operator]
+        DEBUGGER[Debugger Probe]
     end
 
-    %% Layer 0 (System) - Engineering Workstation
-    subgraph Management_Zone [Engineering Workstation]
-        CFG[Configurator Software]
-        DB[(Device Modules)]
-    end
-
-    %% Layer 0 (System) - Device Trust Boundary
-    subgraph Device_Boundary [Trust Boundary `Device Name`]
-        DEVICE[Positioner / Actuator]
-    end
-
-    %% Layer 0 (System) - Physical Process
-    subgraph Physical_Process [Physical Environment]
-        VALVE[Control Valve]
+    %% Device Boundary
+    subgraph Device_Boundary [Trust Boundary]
+        DEVICE((Device Node))
     end
 
     %% Data Flows
-    USER --> CFG
-    CFG <--> |"Proprietary (RS-232)"| DEVICE
-    PLC <--> |"Modbus RTU (RS-485)"| DEVICE
     DEBUGGER <--> |"JTAG"| DEVICE
-    USER --> DEVICE
-    DEVICE --- VALVE
-  ```
+    USER --> |"Pushbuttons / LCD"| DEVICE
+    PLC <--> |"Modbus RTU (RS-485)"| DEVICE
+
+    class Device_Boundary deviceBoundary;
+    ```
 
 ### 5.2. Mapping
 
-#### 5.2.1. Purdue Model Mapping
+#### 5.2.1. Diagram Depth Layers
+
+| Depth Layer | Title       | Components                                                            | Description                                                                                                                                                                          |
+| ----------- | ----------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Layer 0     | System      | PLC, UPS, Debugger Probe, USB                                         | Outside Boundary: High-level device view as a system element operating within its wider operational technology (OT) network context.                                                 |
+| Layer 1     | Process     | Motor & Gear, Sensors, LEDs, Torque Switch, Mechanical Limit Contacts | Inside Boundary: The main physical and structural boundary of the embedded device. Focuses on the core hardware modules, structural inputs/outputs.                                  |
+| Layer 2     | Subprocess  | MCU, JTAG/SWD, GPIO, RJ-12, RS-485, RS-232                            | Inside Boundary: Component subparts of internal hardware architecture such as peripheral interfaces routing internal data.                                                           |
+| Layer 3     | Lower-Level | EEPROM, Flash, Bootloader Entry, Firmware Update                      | Inside Boundary: Critical hardware details in the lowest level of abstraction. Focuses on register-level data storage, memory configurations, and fail-safe physical hardware lines. |
+
+#### 5.2.2. Purdue Model Mapping
 
 Use this table to identify the Purdue zone of each asset from `Interaction` or `Diagram`, and to validate that the modeled threat surface is consistent with the zone's prevalent STRIDE categories. Do not use this table to override the `Category` values assigned by TMT.
 
@@ -667,7 +654,7 @@ Use this table to identify the Purdue zone of each asset from `Interaction` or `
 | Level 1      | Control     | PLC / PAC                                  | Siemens S7, Allen-Bradley ControlLogix, Schneider Modicon         | Tampering, Denial of Service, Elevation of Privilege                                   |
 | Level 0      | Field       | Sensors / Actuators / RTUs / Field Devices | Transmitters, positioners, motor drives, RTUs                     | Tampering, Denial of Service                                                           |
 
-#### 5.2.2. Impact Mapping
+#### 5.2.3. Impact Mapping
 
 Categorize the impact of the STRIDE categories using CVSS v4.0 Impact Metrics.
 
@@ -707,11 +694,11 @@ Categorize the impact of the STRIDE categories using CVSS v4.0 Impact Metrics.
 - Zero-Impact Assessment
   > Use a zero-impact CVSS outcome when the finalized reviewed scenario leaves no modeled impact.
 
-  - `State = Not Applicable`: the attack path is impossible or structurally eliminated; pair this with `Risk Treatment = Avoidance`.
-  - `State = Mitigated`: documented controls reduce the remaining impact to zero; pair this with `Risk Treatment = Mitigation` and explain the control in `Justification`.
+  - `State = Not Applicable`: the attack path is impossible or structurally eliminated, pair this with `Risk Treatment = Avoidance`.
+  - `State = Mitigated`: documented controls reduce the remaining impact to zero, pair this with `Risk Treatment = Mitigation` and explain the control in `Justification`.
   - Zero-impact does not make `Likelihood of Exploit` or `Risk Prioritization` inapplicable. For finalized reviewed rows, populate both columns from the mapping tables. When `State = Not Applicable`, treat the vulnerability state as `Theoretical` unless stronger exploit-maturity evidence exists, then derive likelihood from the CVSS exploitability metrics and derive prioritization from the `None` severity row in the risk matrix.
 
-#### 5.2.3. Probability Mapping
+#### 5.2.4. Probability Mapping
 
 Categorize the likelihood of exploit using the BSI `Dringlichkeit / Eintrittspotenzial` logic, which combines the exploitation method and vulnerability state to determine the overall likelihood category.
 
@@ -732,7 +719,7 @@ Categorize the likelihood of exploit using the BSI `Dringlichkeit / Eintrittspot
 
   | State                                      | CVSS Threat Metrics | Description                                                                                                                                                            |
   | ------------------------------------------ | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-  | Theoretical (Theoretisch)                  | `E:U`               | No known exploit; attack is conceptually possible but unverified.                                                                                                      |
+  | Theoretical (Theoretisch)                  | `E:U`               | No known exploit. Attack is conceptually possible but unverified.                                                                                                      |
   | Exploitable (Ausnutzbar)                   | `E:P`               | Proof-of-concept exists or the technique is documented and reproducible.                                                                                               |
   | Active (Aktiv)                             | `E:A`               | Active exploitation observed in the wild or in targeted campaigns.                                                                                                     |
   | Exploit Published (Exploit Veröffentlicht) | `E:A`               | Public exploit code or tooling is freely available. Prefer Exploit Published over Active when a public exploit tool or module is directly usable without modification. |
@@ -746,7 +733,7 @@ Categorize the likelihood of exploit using the BSI `Dringlichkeit / Eintrittspot
   | Active (Aktiv)                             | Medium (mittel)    | High (hoch)             | High (hoch)                     |
   | Exploit Published (Exploit Veröffentlicht) | Medium (mittel)    | High (hoch)             | Critical (sehr hoch)            |
 
-#### 5.2.4. Risk Matrix Mapping
+#### 5.2.5. Risk Matrix Mapping
 
 The risk matrix provides a mapping of impact severity and likelihood to a risk prioritization category. Use this as a guide to assign the appropriate prioritization level based on the combined assessment of impact severity and likelihood.
 
@@ -761,27 +748,27 @@ The risk matrix provides a mapping of impact severity and likelihood to a risk p
   | High                 | Low    | Medium | High   | High     | Critical |
   | Critical             | Medium | High   | High   | Critical | Critical |
 
-#### 5.2.5. Threat Actor Mapping
+#### 5.2.6. Threat Actor Mapping
 
 Normalize the `Threat Actor` decision from common OT/ICS threat-path characteristics. Always pick the minimum actor that satisfies the required access, capability, and process knowledge, and only reassess upward when the modeled path requires capabilities beyond the currently selected label.
 
 > [!NOTE]
 > Actor capability order from lowest to highest: `Thrill Seeker` → `Hacktivist` → `Cybercriminal` → `Insider Threat` → `Nation-State Actor`.
 
-| Minimum Threat Actor | Attack Path / Scenario                                                                                                                                | Key Indicators                                                                                                                                                                                                                          |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Thrill Seeker`      | Internet-exposed service with public exploit, default credentials, or unauthenticated interface                                                       | `AV:N`, `AC:L`; pre-built tooling; no plant-specific knowledge; opportunistic targeting or commodity compromise path                                                                                                                    |
-| `Hacktivist`         | Internet-exposed HMI, SCADA web UI, or public-facing OT asset targeted for ideological messaging, defacement, or symbolic proof-of-access             | `AV:N`; visible, high-profile target; protest or propaganda objective; short-lived campaign; no persistent access sought                                                                                                                |
-| `Cybercriminal`      | Internet-exposed service or IT/OT boundary exploited for financial gain: ransomware staging, credential theft, extortion, or fraud                    | IT-to-OT pivot; commodity or affiliate malware; stolen or phished credentials; business disruption for payment                                                                                                                          |
-| `Cybercriminal`      | Compromised vendor tooling, update service, or MSP remote-management channel reused for scalable extortion or ransomware deployment                   | Third-party trust dependency; monetized supply-chain reuse; commodity ransomware payload; no mission-specific objective                                                                                                                 |
-| `Insider Threat`     | Trusted maintenance path, local engineering workstation, removable media, direct cable or debug interface, or privileged badge access                 | `AV:P` or `AV:L` only when initial access is a local or physical session, not a post-exploitation pivot from prior network access; trusted plant or engineering access; process familiarity; maintenance tooling or insider credentials |
-| `Nation-State Actor` | Trojanized engineering software, signed firmware package, or tainted vendor update used for covert pre-positioning or mission-specific sabotage       | Supply-chain compromise; custom or signed tooling; covert persistence objective; strategic or safety-critical target                                                                                                                    |
-| `Nation-State Actor` | Bespoke multi-stage intrusion against a segmented ICS requiring custom tooling, zero-day exploits, covert lateral movement, or deep process expertise | Custom tradecraft; zero-days; long-dwell access; strategic high-value target; objective is disruption, sabotage, or pre-positioning                                                                                                    |
+| Minimum Threat Actor | Attack Path / Scenario                                                                                                                                 | Key Indicators                                                                                                                                                                                                                            |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Thrill Seeker`      | Internet-exposed service with public exploit, default credentials, or unauthenticated interface.                                                       | `AV:N`, `AC:L`: pre-built tooling, no plant-specific knowledge, opportunistic targeting or commodity compromise path.                                                                                                                     |
+| `Hacktivist`         | Internet-exposed HMI, SCADA web UI, or public-facing OT asset targeted for ideological messaging, defacement, or symbolic proof-of-access.             | `AV:N`: visible, high-profile target, protest or propaganda objective, short-lived campaign, no persistent access sought.                                                                                                                 |
+| `Cybercriminal`      | Internet-exposed service or IT/OT boundary exploited for financial gain: ransomware staging, credential theft, extortion, or fraud.                    | IT-to-OT Pivot: commodity or affiliate malware, stolen or phished credentials, business disruption for payment.                                                                                                                           |
+| `Cybercriminal`      | Compromised vendor tooling, update service, or MSP remote-management channel reused for scalable extortion or ransomware deployment.                   | Third-party Trust Dependency: monetized supply-chain reuse, commodity ransomware payload, no mission-specific objective.                                                                                                                  |
+| `Insider Threat`     | Trusted maintenance path, local engineering workstation, removable media, direct cable or debug interface, or privileged badge access.                 | `AV:P` or `AV:L`: only when initial access is a local or physical session, not a post-exploitation pivot from prior network access, trusted plant or engineering access, process familiarity, maintenance tooling or insider credentials. |
+| `Nation-State Actor` | Trojanized engineering software, signed firmware package, or tainted vendor update used for covert pre-positioning or mission-specific sabotage.       | Supply-chain Compromise: custom or signed tooling, covert persistence objective, strategic or safety-critical target.                                                                                                                     |
+| `Nation-State Actor` | Bespoke multi-stage intrusion against a segmented ICS requiring custom tooling, zero-day exploits, covert lateral movement, or deep process expertise. | Custom Tradecraft: zero-days, long-dwell access, strategic high-value target, objective is disruption, sabotage, or pre-positioning.                                                                                                      |
 
 > [!NOTE]
-> When supply-chain compromise is the modeled vector: choose `Cybercriminal` when the payload is commodity ransomware or the objective is financial extortion; choose `Nation-State Actor` when tooling is custom-signed or the objective is strategic pre-positioning or sabotage.
+> When supply-chain compromise is the modeled vector: choose `Cybercriminal` when the payload is commodity ransomware or the objective is financial extortion, choose `Nation-State Actor` when tooling is custom-signed or the objective is strategic pre-positioning or sabotage.
 
-#### 5.2.6. Risk Treatment Mapping
+#### 5.2.7. Risk Treatment Mapping
 
 The Risk Treatment Mapping translates the `Risk Prioritization` level into a default treatment decision and defines which alternative treatments are acceptable and under what conditions. It is the bridge between the technical risk score and the governance disposition recorded in the `Risk Treatment` column.
 
@@ -804,12 +791,12 @@ The Risk Treatment Mapping translates the `Risk Prioritization` level into a def
 
   | Risk Treatment | Minimum Evidence in `Justification`                                                                                                |
   | -------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-  | Avoidance      | Architectural record or documented design decision confirming the risk source has been eliminated; no stakeholder sign-off needed. |
+  | Avoidance      | Architectural record or documented design decision confirming the risk source has been eliminated. No stakeholder sign-off needed. |
   | Mitigation     | The residual risk level after controls are applied, and the approval mechanism.                                                    |
   | Acceptance     | Written business rationale for retention, and the acceptance mechanism.                                                            |
   | Transfer       | Named third party, the specific contract, SLA, warranty, or insurance policy reference, and its explicit risk scope.               |
 
-#### 5.2.7. Risk Approval Mapping
+#### 5.2.8. Risk Approval Mapping
 
 The minimum required approval authority is determined by combining the `Risk Prioritization` level with the `Risk Treatment` decision. The `Risk Approval` column records the required **approver role label**. Consult this section to look up the required authority and record the corresponding role label in the column.
 
@@ -859,10 +846,10 @@ Use these templates for Microsoft TMT CSV intake and review.
 
   ```csv
   Id;Title;Category;Diagram;Interaction;Priority;State;Changed By;Description;Justification;Last Modified;ATT&CK ID;EMB3D TID;CWE ID;CVSS v4.0 Vector;CVSS-B v4.0 Score;CVSS v4.0 Severity;Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment;Risk Approval
-  0;Spoofing the MCU Process;Spoofing;<Device_Name>;Debugger to MCU over JTAG;Low;Not Applicable;;MCU may be spoofed by an attacker and this may lead to information disclosure by Debugger Probe. Consider using a standard authentication mechanism to identify the destination process.;"The MCU firmware is the target of the JTAG debug session, not a process with an identity to spoof. Evidence for Threat Actor classification is physical debug-port dependency, requirement for direct maintenance access, and absence of any remote network precondition. That profile matches Insider Threat as the minimum actor because trusted local access is required.";Generated;T0843;TID-116, TID-119;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N;"0,0";None;Info;Info;Insider Threat;Avoidance;Not Required
-  11;Spoofing the RS-485 Interface Process;Spoofing;<Device_Name>;PLC to RS-485 (Modbus RTU);Medium;Needs Investigation;;RS-485 Interface may be spoofed by an attacker and this may lead to information disclosure by PLC. Consider using a standard authentication mechanism to identify the destination process.;Modbus RTU on RS-485 has no built-in authentication mechanism and spoofing is feasible from the same bus segment. Evidence for Threat Actor classification is protocol-level OT knowledge requirement with no need for plant-specific sabotage tradecraft, which maps to Cybercriminal as the minimum actor. Whether the RS-485 module is installed and physically reachable is still unknown, so treatment and approval remain unresolved until deployment evidence confirms scope.;Generated;T0802;TID-118;CWE-287;CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N;"4,3";Medium;Medium;Medium;Cybercriminal;Mitigation;Product Security
-  38;Data Flow MCU to CFG over Modbus RTU (RS-232) Is Potentially Interrupted;Denial Of Service;<Device_Name>;MCU to CFG over Modbus RTU (RS-232);Low;Mitigated;;"An external agent interrupts data flowing across a trust boundary in either direction.";"This RS-232 interruption affects a local maintenance session more than the primary control function. Evidence for Threat Actor classification is direct cable proximity, maintenance-port handling, and local physical access constraints, which makes Insider Threat the minimum actor. Baseline mitigation includes physical port isolation and cable shielding, and residual risk remains Low with closure via design-review sign-off.";Generated;T0814;TID-118;CWE-693;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:L;"2,4";Low;Low;Low;Insider Threat;Mitigation;Lead Security
-  72;Elevation Using Impersonation;Elevation Of Privilege;<Device_Name>;Operator to MCU over Switches (GPIO);Low;Not Applicable;;"MCU may be able to impersonate the context of Operator in order to gain additional privilege.";"The dry-contact GPIO path has no machine-to-machine trust boundary the MCU can impersonate and no device property enables software privilege escalation on this passive signal path. Evidence for Threat Actor classification is that only local operator-side interaction could influence the interface, which maps to Insider Threat as the minimum actor under constraints access. Treatment remains Avoidance by keeping the interface free of machine-authenticated trust assumptions.";Generated;N/A;N/A;N/A;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N;"0,0";None;Info;Info;Insider Threat;Avoidance;Not Required
+  0;Spoofing the MCU Process;Spoofing;<Device_Name>;Debugger to MCU over JTAG;Low;Not Applicable;;"MCU may be spoofed by an attacker and this may lead to information disclosure by Debugger Probe. Consider using a standard authentication mechanism to identify the destination process.";"The MCU firmware is the target of the JTAG debug session, not a process with an identity to spoof. JTAG provides direct hardware-level access to the MCU, there is no network identity or authentication protocol to spoof. The actual risk is unauthorized JTAG access, which is covered by other JTAG threats.";Generated;T0843;TID-116, TID-119;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N;"0,0";None;Info;Info;Insider Threat;Avoidance;Not Required
+  11;Spoofing the RS-485 Interface Process;Spoofing;<Device_Name>;PLC to RS-485 (Modbus RTU);Medium;Needs Investigation;;"RS-485 Interface may be spoofed by an attacker and this may lead to information disclosure by PLC. Consider using a standard authentication mechanism to identify the destination process.";"Modbus RTU on RS-485 has no built-in authentication mechanism. An attacker on the same RS-485 bus segment could potentially inject spoofed Modbus frames. Threat Actor: classification is protocol-level OT knowledge requirement with no need for plant-specific sabotage tradecraft, which maps to Cybercriminal as the minimum actor. Evidence Gap: confirm whether the RS-485 module is present in the assessed configuration and whether the bus termination provides any physical access barrier. Treatment and Approval: whether the RS-485 module is installed and physically reachable is still unknown, so treatment and approval remain unresolved until deployment evidence confirms scope.";Generated;T0802;TID-118;CWE-287;CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N;"4,3";Medium;Medium;Medium;Cybercriminal;Mitigation;Product Security
+  38;Data Flow MCU to CFG over Modbus RTU (RS-232) Is Potentially Interrupted;Denial Of Service;<Device_Name>;MCU to CFG over Modbus RTU (RS-232);Low;Mitigated;;"An external agent interrupts data flowing across a trust boundary in either direction.";"This RS-232 interruption affects a local maintenance session more than the primary control function. Threat Actor: classification is direct cable proximity, maintenance-port handling, and local physical access constraints, which makes Insider Threat the minimum actor. Mitigation: baseline mitigation includes physical port isolation and cable shielding. Residual Risk: remains Low with closure via design-review sign-off.";Generated;T0814;TID-118;CWE-693;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:L;"2,4";Low;Low;Low;Insider Threat;Mitigation;Lead Security
+  72;Elevation Using Impersonation;Elevation Of Privilege;<Device_Name>;Operator to MCU over Switches (GPIO);Low;Not Applicable;;"MCU may be able to impersonate the context of Operator in order to gain additional privilege.";"The dry-contact GPIO path has no machine-to-machine trust boundary the MCU can impersonate and no device property enables software privilege escalation on the passive signal path. Threat Actor: classification is that only local operator-side interaction could influence the interface, which maps to Insider Threat as the minimum actor under constraints access. Treatment and Approval: treatment remains Avoidance by keeping the interface free of machine-authenticated trust assumptions.";Generated;N/A;N/A;N/A;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N;"0,0";None;Info;Info;Insider Threat;Avoidance;Not Required
   ```
 
 ## 6. References
