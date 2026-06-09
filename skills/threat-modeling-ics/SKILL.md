@@ -574,7 +574,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
 1. Generate CSV
 
     **Action:** Validate the analyst decisions, then write the complete enriched dataset to the output file `<Device_Name>_Threat_Model_Generated.csv`.
-    - Generate a semicolon delimited output CSV format.
+    - Separate the CSV fields using the semicolon delimited format instead of the comma delimiter.
     - Ensure the `Description` and `Justification` fields are fully enclosed in double quotes `"..."` to preserve the integrity of the CSV format, as these fields may contain semicolons or other special delimiter characters.
     - Verify each output row against its source row to confirm no enrichment values were dropped or overwritten.
     - Retain native TMT columns in their source order and append the review columns in the order defined in section [4.1. Preparation](#41-preparation).
@@ -777,7 +777,7 @@ Normalize the `Threat Actor` decision from common OT/ICS threat-path characteris
 | `Nation-State Actor` | Bespoke multi-stage intrusion against a segmented ICS requiring custom tooling, zero-day exploits, covert lateral movement, or deep process expertise. | Custom Tradecraft: zero-days, long-dwell access, strategic high-value target, objective is disruption, sabotage, or pre-positioning.                                                                                                      |
 
 > [!NOTE]
-> When supply-chain compromise is the modeled vector: choose `Cybercriminal` when the payload is commodity ransomware or the objective is financial extortion, choose `Nation-State Actor` when tooling is custom-signed or the objective is strategic pre-positioning or sabotage.
+> When supply-chain compromise is the modeled vector: choose `Cybercriminal` when the payload is commodity ransomware or the objective is financial extortion. Choose `Nation-State Actor` when tooling is custom-signed or the objective is strategic pre-positioning or sabotage.
 
 #### 5.2.7. Risk Treatment Mapping
 
