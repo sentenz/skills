@@ -539,7 +539,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
 
     **Action:** Write a concise, technically precise analyst statement in the `Justification` field for each row, synthesizing all prior enrichment steps. The justification provides the evidence-based rationale that supports the assigned `State`, explains the assigned `Threat Actor`, and informs the `Risk Treatment` decision in the next step.
     - State the evidence-based rationale that supports the assigned `State`.
-    - Avoid delimeter characters (semicolons) in the justification text, as the output CSV is semicolon-delimited. Enclose the entire justification in double quotes `"<Justification>"` to preserve the integrity of the CSV format.
+    - Avoid delimiter characters (semicolons) in the justification text, as the output CSV is semicolon-delimited. Enclose the entire justification in double quotes `"<Justification>"` to preserve the integrity of the CSV format.
     - Reference the modeled protocol, interface, trust relationship, validation behavior, or compensating control that informs the decision.
     - Reference the *behavior or name* of the assigned MITRE ATT&CK technique, EMB3D threat, CWE weakness, CVSS severity, and Threat Actor where they support the rationale.
     - **Do NOT repeat technique/threat/weakness IDs** (e.g., `T0*`, `TID-*`, `CWE-*`) in the `Justification` column, those identifiers belong exclusively in their dedicated columns (`ATT&CK ID`, `EMB3D TID`, `CWE ID`).
