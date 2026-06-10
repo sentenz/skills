@@ -6,7 +6,7 @@ description: >-
   threat enrichment for embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix,
   minimum-capable Threat Actor assignment, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.3"
+  version: "1.7.4"
 ---
 
 # Threat Modeling ICS
@@ -646,12 +646,12 @@ Save and integrate intermediate results after each step to ensure continuity acr
 
 #### 5.2.1. Diagram Depth Layers
 
-| Depth Layer | Title       | Components                                                                                        | Description                                                                                                                                                                                                                                                                    |
-| :---------- | :---------- | :------------------------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Layer 0     | System      | PLC, UPS, Debugger Probe, USB                                                                     | Starting point for the entire system. Shows the embedded device as a single black box exchanging data with external entities. Establishes the overall context and trust boundary.                                                                                              |
-| Layer 1     | Process     | Motor & Gear, LEDs, Torque Switch, Mechanical Limit Contacts, Sensors, RS-232, RS-485, RJ-12, MCU | Decomposition of the device into its major functional blocks and board‑level interfaces. Used to identify threats on the attack surface of all communication ports and physical I/O.                                                                                           |
-| Layer 2     | Subprocess  | Secure Firmware Update, Bootloader, Secure Boot, JTAG/SWD, Flash, EEPROM                          | Detailed breakdown of critical sub‑processes inside the MCU. Focuses on boot integrity, secure updates, debug access, and non‑volatile memory, essential for analysing highly sensitive firmware and data protection.                                                          |
-| Layer 3     | Lower‑Level | GPIO, UART, SPI, I2C                                                                              | Minute, hardware‑level detail. Models on‑chip peripherals, internal buses, and gate‑level Integrated Circuits (ICs) internals. Used only for the most critical, kernel‑level systems where micro‑architectural threats (e.g., side‑channel, fault injection) must be analysed. |
+| Depth Layer | Title       | Components                                                               | Description                                                                                                                                                                                                                                                                    |
+| :---------- | :---------- | :----------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Layer 0     | System      | PLC, UPS, Debugger Probe, USB, HMI                                       | Starting point for the entire system. Shows the embedded device as a single black box exchanging data with external entities. Establishes the overall context and trust boundary.                                                                                              |
+| Layer 1     | Process     | MCU, Actuators, Sensors, RS-232, RS-485, RJ-12                           | Decomposition of the device into its major functional blocks and board‑level interfaces. Used to identify threats on the attack surface of all communication ports and physical I/O.                                                                                           |
+| Layer 2     | Subprocess  | Secure Firmware Update, Bootloader, Secure Boot, JTAG/SWD, Flash, EEPROM | Detailed breakdown of critical sub‑processes, e.g. inside the MCU. Focuses on boot integrity, secure updates, debug access, and non‑volatile memory, essential for analysing highly sensitive firmware and data protection.                                                    |
+| Layer 3     | Lower‑Level | GPIO, UART, SPI, I2C                                                     | Minute, hardware‑level detail. Models on‑chip peripherals, internal buses, and gate‑level Integrated Circuits (ICs) internals. Used only for the most critical, kernel‑level systems where micro‑architectural threats (e.g., side‑channel, fault injection) must be analysed. |
 
 #### 5.2.2. Purdue Model Mapping
 
