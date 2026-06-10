@@ -615,7 +615,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
 
 #### 5.1.1. Depth Layers
 
-- Layer 0: System Level
+- Layer 0 (System)
   > The embedded device is treated as a single system element within its wider operational technology (OT) network context. The diagram shows the device major interfaces, trust boundaries, and data flows with external entities.
 
   ```mermaid
