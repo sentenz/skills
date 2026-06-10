@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.2](https://github.com/sentenz/skills/compare/v1.9.1...v1.9.2) (2026-06-10)
+
+
+### Bug Fixes
+
+* add threat layers mapping sections for clarity ([#52](https://github.com/sentenz/skills/issues/52)) ([aeac17d](https://github.com/sentenz/skills/commit/aeac17dd7c52ad877072b3d6012a9fa452e0bc35))
+
 ## [1.9.1](https://github.com/sentenz/skills/compare/v1.9.0...v1.9.1) (2026-05-22)
 
 
