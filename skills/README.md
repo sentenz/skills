@@ -5,8 +5,9 @@ Agent skills are modular capabilities that AI agents can utilize to perform spec
 - [1. Agent Skills](#1-agent-skills)
   - [1.1. C++ Skills](#11-c-skills)
   - [1.2. Go Skills](#12-go-skills)
-  - [1.3. Threat Modeling Skills](#13-threat-modeling-skills)
-  - [1.4. Documentation Skills](#14-documentation-skills)
+  - [1.3. Terraform Skills](#13-terraform-skills)
+  - [1.4. Threat Modeling Skills](#14-threat-modeling-skills)
+  - [1.5. Documentation Skills](#15-documentation-skills)
 - [2. References](#2-references)
 
 ## 1. Agent Skills
@@ -44,12 +45,17 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 - [Go API Documentation](go-api-documentation/SKILL.md)
   > API documentation creation using godoc conventions and best practices for Go projects.
 
-### 1.3. Threat Modeling Skills
+### 1.3. Terraform Skills
+
+- [Terraform Skill](../.agents/skills/terraform-skill/SKILL.md)
+  > External Terraform and OpenTofu guidance for module design, testing, CI/CD, security, compliance, and state management.
+
+### 1.4. Threat Modeling Skills
 
 - [Threat Modeling ICS](threat-modeling-ics/SKILL.md)
   > Threat modeling for OT/ICS systems using Microsoft TMT, STRIDE, MITRE ATT&CK for ICS, CWE, and CVSS v4.0.
 
-### 1.4. Documentation Skills
+### 1.5. Documentation Skills
 
 - [Architecture Decision Records (ADR)](adr/SKILL.md)
   > Creates and maintains Architecture Decision Records following a structured format with State, Context, Decision, Considered, Consequences, Implementation, and References sections.

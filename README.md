@@ -55,10 +55,13 @@ Available skills can be activated by agents based on defined triggers and contex
 - [Go Skills](skills/README.md#12-go-skills)
   > Go unit testing, fuzz testing, benchmark testing, and API documentation skills.
 
-- [Threat Modeling Skills](skills/README.md#13-threat-modeling-skills)
+- [Terraform Skills](skills/README.md#13-terraform-skills)
+  > Terraform and OpenTofu module design, testing, CI/CD, security, compliance, and state management skills.
+
+- [Threat Modeling Skills](skills/README.md#14-threat-modeling-skills)
   > Threat modeling for OT/ICS systems.
 
-- [Documentation Skills](skills/README.md#14-documentation-skills)
+- [Documentation Skills](skills/README.md#15-documentation-skills)
   > Architecture Decision Records (ADR) creation and maintenance skills.
 
 ## 2. Contribute
