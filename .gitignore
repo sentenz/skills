@@ -4,6 +4,7 @@
 logs/
 build/
 public/
+.agents/
 
 ### VisualStudioCode ###
 .vscode/*
