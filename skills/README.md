@@ -47,7 +47,7 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 
 ### 1.3. Terraform Skills
 
-- [Terraform Skill](terraform-skill/SKILL.md)
+- [Terraform Skill](../.agents/skills/terraform-skill/SKILL.md)
   > External Terraform and OpenTofu guidance for module design, testing, CI/CD, security, compliance, and state management.
 
 ### 1.4. Threat Modeling Skills

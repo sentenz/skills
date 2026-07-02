@@ -171,7 +171,7 @@ Available skills:
 - [C++ API Documentation](skills/cpp-api-documentation/SKILL.md)
   > Generates and maintains API documentation.
 
-- [Terraform Skill](skills/terraform-skill/SKILL.md)
+- [Terraform Skill](.agents/skills/terraform-skill/SKILL.md)
   > Guides Terraform/OpenTofu module design, testing, CI/CD, security, compliance, and state management with version-aware guardrails.
 
 - [Threat Modeling ICS](skills/threat-modeling-ics/SKILL.md)
