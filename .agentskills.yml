@@ -64,7 +64,7 @@ skills:
 
   # Terraform Skills
   - name: terraform-skill
-    path: .agents/skills/terraform-skill
+    path: skills/terraform-skill
     languages: [terraform, opentofu, hcl]
     description: Terraform and OpenTofu module, testing, CI/CD, security, compliance, and state management guidance
 
