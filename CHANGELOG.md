@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.10.0](https://github.com/sentenz/skills/compare/v1.9.2...v1.10.0) (2026-07-02)
+
+
+### Features
+
+* add external Terraform skill ([#56](https://github.com/sentenz/skills/issues/56)) ([91de5d1](https://github.com/sentenz/skills/commit/91de5d13efd93f87f3f15ed1701fef05c5193da2)), closes [#55](https://github.com/sentenz/skills/issues/55)
+
 ## [1.9.2](https://github.com/sentenz/skills/compare/v1.9.1...v1.9.2) (2026-06-10)
 
 
