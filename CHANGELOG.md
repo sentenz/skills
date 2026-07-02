@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.1](https://github.com/sentenz/skills/compare/v1.10.0...v1.10.1) (2026-07-02)
+
+
+### Bug Fixes
+
+* detailed guide on testing frameworks for Terraform/OpenTofu ([65e47db](https://github.com/sentenz/skills/commit/65e47dbc6a871951478c4d49e1db077be2575a10))
+
 # [1.10.0](https://github.com/sentenz/skills/compare/v1.9.2...v1.10.0) (2026-07-02)
 
 
