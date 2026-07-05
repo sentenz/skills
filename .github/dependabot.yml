@@ -27,3 +27,29 @@ updates:
       github-actions-major:
         update-types:
           - major
+
+  - package-ecosystem: devcontainers
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "03:00"
+    labels:
+      - dependencies
+      - devcontainers
+    commit-message:
+      prefix: chore
+      include: scope
+    open-pull-requests-limit: 10
+
+    # Group updates by semantic version type
+    groups:
+      devcontainers-patch:
+        update-types:
+          - patch
+      devcontainers-minor:
+        update-types:
+          - minor
+      devcontainers-major:
+        update-types:
+          - major
