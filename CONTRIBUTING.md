@@ -1,194 +1,542 @@
-# Contributing to Skills
+# Contributing
 
-Thank you for your interest in contributing to the Agent Skills repository! This guide will help you add new skills or improve existing ones.
+Contribution guidelines and project management tools.
 
-- [1. Getting Started](#1-getting-started)
-- [2. Adding a New Skill](#2-adding-a-new-skill)
-- [3. Skill Structure](#3-skill-structure)
-- [4. Metadata Guidelines](#4-metadata-guidelines)
-  - [4.1. Version](#41-version)
-  - [4.2. Activation](#42-activation)
-  - [4.3. Usage](#43-usage)
-- [5. Testing Your Skill](#5-testing-your-skill)
-- [6. Submitting Your Changes](#6-submitting-your-changes)
-- [7. Guidelines for Good Skills](#7-guidelines-for-good-skills)
+- [1. AI Agents](#1-ai-agents)
+- [2. Skills Manager](#2-skills-manager)
+  - [2.1. Skills CLI](#21-skills-cli)
+- [3. Task Runner](#3-task-runner)
+  - [3.1. Make](#31-make)
+- [4. Bootstrap](#4-bootstrap)
+  - [4.1. Scripts](#41-scripts)
+- [5. Git Hooks Manager](#5-git-hooks-manager)
+  - [5.1. Lefthook](#51-lefthook)
+- [6. Dev Containers](#6-dev-containers)
+- [7. Release Manager](#7-release-manager)
+  - [7.1. Semantic-Release](#71-semantic-release)
+- [8. Update Manager](#8-update-manager)
+  - [8.1. Renovate](#81-renovate)
+  - [8.2. Dependabot](#82-dependabot)
+- [9. Secrets Manager](#9-secrets-manager)
+  - [9.1. SOPS](#91-sops)
+- [10. Container Manager](#10-container-manager)
+  - [10.1. Docker](#101-docker)
+- [11. Policy Manager](#11-policy-manager)
+  - [11.1. Conftest](#111-conftest)
+- [12. SAST Manager](#12-sast-manager)
+  - [12.1. Gitleaks](#121-gitleaks)
+  - [12.2. TruffleHog](#122-trufflehog)
+  - [12.3. Semgrep](#123-semgrep)
+- [13. Supply Chain Manager](#13-supply-chain-manager)
+  - [13.1. Trivy](#131-trivy)
+- [14. Documentation Generators](#14-documentation-generators)
+  - [14.1. Doxygen](#141-doxygen)
+  - [14.2. MkDocs](#142-mkdocs)
 
-## 1. Getting Started
+## 1. AI Agents
 
-Before contributing, familiarize yourself with:
+AI Agents are automated tools that assist in various development tasks such as code generation, testing, and documentation.
 
-- [Agent Skills Specification](https://agentskills.io/specification)
-- Existing skills in [skills/](skills/)
-- The [README.md](README.md) for repository structure
+1. Insights and Details
 
-## 2. Adding a New Skill
+    - [AGENTS.md](AGENTS.md)
+      > Instructions for AI coding agents working with the project.
 
-To add a new skill:
+    - [.agents/skills/](.agents/skills/)
+      > Directory containing AI agent skill definitions and configurations.
 
-1. **Create a directory** for your skill in `skills/`:
+2. Usage and Instructions
 
-   ```bash
-   mkdir -p skills/your-skill-name
-   ```
+    - Implicit Invocation
+      > AI Agents can be implicitly invoked based on file paths, programming languages, or specific keywords in user prompts.
 
-2. **Create a SKILL.md file** in your skill directory:
+      ```plaintext
+      .agents/skills/<skill-name>/SKILL.md
+      ```
 
-   ```bash
-   touch skills/your-skill-name/SKILL.md
-   ```
+    - Explicit Invocation
+      > AI Agents can be explicitly invoked by specifying the skill name in user prompts.
 
-3. **Follow the skill template structure** (see below)
+      ```plaintext
+      @agent <skill-name> <task-description>
+      ```
 
-4. **Update the skills README** at `skills/README.md` to include your new skill
+## 2. Skills Manager
 
-5. **Update the main README.md** to list your skill in the catalog
+### 2.1. Skills CLI
 
-## 3. Skill Structure
+[Skills CLI](https://skills.sh/) is a command-line tool for managing AI agent skills in development projects.
 
-Each `SKILL.md` file should follow this structure:
+1. Insights and Details
 
-```markdown
----
-name: skill-name
-description: Brief description of what this skill does and when to use it.
-metadata:
-  version: "1.0.0"
-  activation:
-    implicit: true
-    priority: 1
-    triggers:
-      - "trigger phrase 1"
-      - "trigger phrase 2"
-    match:
-      languages: ["language1", "language2"]
-      paths: ["path/pattern/**/*.ext"]
-      prompt_regex: "(?i)(regex|pattern)"
-  usage:
-    load_on_prompt: true
-    autodispatch: true
----
+    - [Sentenz Skills](https://github.com/sentenz/skills)
+      > Reusable AI agent skills for various development tasks.
 
-# Skill Name
+    - [skills-lock.json](skills-lock.json)
+      > Lock file for managing skill dependencies and versions.
 
-Brief description of the skill's purpose.
+2. Usage and Instructions
 
-## Table of Contents
+    - Tasks
 
-- [1. Benefits](#1-benefits)
-- [2. Principles](#2-principles)
-- [3. Patterns](#3-patterns)
-- [4. Workflow](#4-workflow)
-- [5. Style Guide](#5-style-guide)
-- [6. Template](#6-template)
-- [7. References](#7-references)
+      ```bash
+      make skills-add
+      ```
 
-## 1. Benefits
+      ```bash
+      make skills-update
+      ```
 
-List the key benefits of using this skill.
+## 3. Task Runner
 
-## 2. Principles
+### 3.1. Make
 
-Core principles that guide the use of this skill.
+[Make](https://www.gnu.org/software/make/) is a automation tool that defines and manages tasks to streamline development workflows.
 
-## 3. Patterns
+1. Insights and Details
 
-Common patterns and best practices.
+    - [Makefile](Makefile)
+      > Makefile defining tasks for building, testing, and managing the project.
 
-## 4. Workflow
+2. Usage and Instructions
 
-Step-by-step workflow for applying this skill.
+    - Tasks
 
-## 5. Style Guide
+      ```bash
+      make help
+      ```
 
-Style conventions and guidelines.
+      > [!NOTE]
+      > - Each task description must begin with `##` to be included in the task list.
 
-## 6. Template
+      ```plaintext
+      $ make help
 
-Provide templates and code examples.
+      Tasks
+              A collection of tasks used in the current project.
 
-## 7. References
+      Usage
+              make <task>
 
-Links to relevant documentation and resources.
-```
+              bootstrap         Initialize a software development workspace with requisites
+              setup             Install and configure all dependencies essential for development
+              teardown          Remove development artifacts and restore the host to its pre-setup state
+      ```
 
-## 4. Metadata Guidelines
+## 4. Bootstrap
 
-### 4.1. Version
+### 4.1. Scripts
 
-Use semantic versioning (MAJOR.MINOR.PATCH):
+1. Insights and Details
 
-- **MAJOR**: Breaking changes to the skill structure or behavior
-- **MINOR**: New features or significant improvements
-- **PATCH**: Bug fixes or minor improvements
+    - [scripts/](scripts/README.md)
+      > Provides scripts to bootstrap, setup, and teardown a software development workspace with requisites.
 
-### 4.2. Activation
+2. Usage and Instructions
 
-- **implicit**: Set to `true` for skills that should activate automatically
-- **priority**: Higher numbers = higher priority (1-10 scale)
-- **triggers**: Key phrases that should activate this skill
-- **match.languages**: Programming languages this skill applies to
-- **match.paths**: File path patterns where this skill is relevant
-- **match.prompt_regex**: Regular expression for matching user prompts
+    - Tasks
 
-### 4.3. Usage
+      ```bash
+      make bootstrap
+      ```
 
-- **load_on_prompt**: Whether to load skill immediately when activated
-- **autodispatch**: Whether to automatically apply the skill
+      ```bash
+      make setup
+      ```
 
-## 5. Testing Your Skill
+      ```bash
+      make teardown
+      ```
 
-Before submitting:
+## 5. Git Hooks Manager
 
-1. **Validate the YAML frontmatter** is properly formatted
-2. **Check that all links** in the skill documentation work
-3. **Test the skill** in a real project context if possible
-4. **Verify activation triggers** are appropriate and not too broad
-5. **Ensure language/path patterns** are accurate
+### 5.1. Lefthook
 
-You can use the skills CLI to validate:
+[Lefthook](https://lefthook.dev/) is a fast, language-agnostic Git hooks manager that uses a single `lefthook.yml` configuration file to define hooks for automating tasks during the Git workflow.
 
-```bash
-# Install skills CLI (if available)
-npm install -g @agentskills/cli
+1. Insights and Details
 
-# Validate your skill
-skills validate skills/your-skill-name/SKILL.md
-```
+    - [lefthook.yml](lefthook.yml)
+      > Configuration file for Lefthook specifying Git hooks and associated commands.
 
-## 6. Submitting Your Changes
+2. Usage and Instructions
 
-1. **Fork the repository**
-2. **Create a feature branch**:
+    - Tasks
 
-   ```bash
-   git checkout -b feature/add-your-skill-name
-   ```
+      ```bash
+      make githooks-lefthook-initialize
+      ```
 
-3. **Make your changes** following the guidelines above
-4. **Commit with descriptive messages**:
+      ```bash
+      make githooks-lefthook-deinitialize
+      ```
 
-   ```bash
-   git commit -m "Add skill for [skill name]"
-   ```
+## 6. Dev Containers
 
-5. **Push to your fork**:
+1. Insights and Details
 
-   ```bash
-   git push origin feature/add-your-skill-name
-   ```
+    - [.devcontainer/](.devcontainer/README.md)
+      > Provides Dev Containers as a consistent development environment using Docker containers.
 
-6. **Open a Pull Request** with:
-   - Clear description of the skill
-   - Use cases and examples
-   - Any dependencies or prerequisites
+2. Usage and Instructions
 
-## 7. Guidelines for Good Skills
+    - Tasks
 
-- **Specific and Focused**: Each skill should address a specific task or domain
-- **Well-Documented**: Provide clear instructions, templates, and examples
-- **Practical**: Include real-world patterns and best practices
-- **Language-Specific**: Target specific programming languages or frameworks when appropriate
-- **Maintainable**: Use clear structure and organization that's easy to update
-- **Tested**: Verify the skill works as expected in real scenarios
+      ```bash
+      make devcontainer-go
+      make devcontainer-cpp
+      make devcontainer-python
+      ```
 
-Thank you for contributing to making AI coding agents more capable and effective!
+## 7. Release Manager
+
+### 7.1. Semantic-Release
+
+[Semantic-Release](https://github.com/semantic-release/semantic-release) automates the release process by analyzing commit messages to determine the next version number, generating changelog and release notes, and publishing the release.
+
+1. Insights and Details
+
+    - [.releaserc.json](.releaserc.json)
+      > Configuration file for Semantic-Release specifying release rules and plugins.
+
+2. Usage and Instructions
+
+    - CI/CD
+
+      ```yaml
+      uses: sentenz/actions/semantic-release@latest
+      ```
+
+## 8. Update Manager
+
+### 8.1. Renovate
+
+[Renovate](https://github.com/renovatebot/renovate) automates dependency updates by creating merge requests for outdated dependencies, libraries and packages.
+
+1. Insights and Details
+
+    - [renovate.json](renovate.json)
+      > Configuration file for Renovate specifying update rules and schedules.
+
+2. Usage and Instructions
+
+    - CI/CD
+
+      ```yaml
+      uses: sentenz/actions/renovate@latest
+      ```
+
+### 8.2. Dependabot
+
+[Dependabot](https://github.com/dependabot/dependabot-core) automates dependency updates by creating pull requests for outdated dependencies, libraries and packages.
+
+1. Insights and Details
+
+    - [.github/dependabot.yml](.github/dependabot.yml)
+      > Configuration file for Dependabot specifying update rules and schedules.
+
+## 9. Secrets Manager
+
+### 9.1. SOPS
+
+[SOPS (Secrets OPerationS)](https://github.com/getsops/sops) is a tool for managing and encrypting sensitive data such as passwords, API keys, and other secrets.
+
+1. Insights and Details
+
+    - [.sops.yaml](.sops.yaml)
+      > Configuration file for SOPS specifying encryption rules and key management.
+
+2. Usage and Instructions
+
+    - GPG Key Pair Generation
+
+      - Tasks
+        > Generate a new key pair to be used with SOPS.
+
+        > [!NOTE]
+        > Customize the UID by providing the `SECRETS_SOPS_UID` variable. Default UID is `sops-<repo>`.
+
+        ```bash
+        make secrets-gpg-generate SECRETS_SOPS_UID=<uid>
+        ```
+
+    - GPG Public Key Fingerprint
+
+      - Tasks
+        > Print the  GPG Public Key fingerprint associated with a given UID.
+
+        ```bash
+        make secrets-gpg-show SECRETS_SOPS_UID=<uid>
+        ```
+
+      - [.sops.yaml](.sops.yaml)
+        > The GPG UID is required for populating in `.sops.yaml`.
+
+        ```yaml
+        creation_rules:
+          - pgp: "<fingerprint>" # <uid>
+        ```
+
+    - SOPS Encrypt/Decrypt
+
+      - Tasks
+        > Encrypt/decrypt one or more files in place using SOPS.
+
+        ```bash
+        make secrets-sops-encrypt <files>
+        ```
+
+        ```bash
+        make secrets-sops-decrypt <files>
+        ```
+
+## 10. Container Manager
+
+### 10.1. Docker
+
+[Docker](https://github.com/docker) containerization tool to run applications in isolated container environments and execute container-based tasks.
+
+1. Insights and Details
+
+    - [Dockerfile](Dockerfile)
+      > Dockerfile defining the container image for the project.
+
+2. Usage and Instructions
+
+    - CI/CD
+
+      ```yaml
+      uses: sentenz/actions/container@latest
+      ```
+
+    - Tasks
+
+      ```bash
+      make container-docker-build
+      ```
+
+      ```bash
+      make container-docker-run
+      ```
+
+## 11. Policy Manager
+
+### 11.1. Conftest
+
+[Conftest](https://www.conftest.dev/) is a **Policy as Code (PaC)** tool to streamline policy management for improved development, security and audit capability.
+
+1. Insights and Details
+
+    - [conftest.toml](conftest.toml)
+      > Configuration file for Conftest specifying policy paths and output formats.
+
+    - [tests/policy/](tests/policy/)
+      > Directory contains Rego policies for Conftest to enforce best practices and compliance standards.
+
+2. Usage and Instructions
+
+    - CI/CD
+
+      ```yaml
+      uses: sentenz/actions/regal@latest
+      ```
+
+      ```yaml
+      uses: sentenz/actions/conftest@latest
+      ```
+
+    - Tasks
+
+      ```bash
+      make policy-regal-lint <filepath>
+      ```
+
+      ```bash
+      make policy-conftest-test <filepath>
+      ```
+
+## 12. SAST Manager
+
+SAST (Static Application Security Testing) tools for identifying security vulnerabilities and issues in source code, container images, and artifacts.
+
+### 12.1. Gitleaks
+
+[Gitleaks](https://github.com/gitleaks/gitleaks) is a SAST tool for detecting hardcoded secrets such as passwords, API keys, and tokens in git repositories and staged changes.
+
+1. Insights and Details
+
+    - [lefthook.yml](lefthook.yml)
+      > Pre-commit hook runs `sast-gitleaks-protect` to scan staged changes before every commit.
+
+2. Usage and Instructions
+
+    - CI/CD
+
+      ```yaml
+      - component: sentenz/actions/gitleaks@latest
+      ```
+
+    - Tasks
+
+      ```bash
+      make sast-gitleaks-detect
+      ```
+
+      ```bash
+      make sast-gitleaks-protect
+      ```
+
+### 12.2. TruffleHog
+
+[TruffleHog](https://github.com/trufflesecurity/trufflehog) is a secret-scanning tool for detecting verified, unverified, and unknown credentials in filesystems and git repositories.
+
+1. Insights and Details
+
+    - [.github/workflows/trufflehog.yml](.github/workflows/trufflehog.yml)
+      > Workflow definition for TruffleHog-based secret scanning in CI.
+
+2. Usage and Instructions
+
+    - CI/CD
+
+      ```yaml
+      uses: trufflesecurity/trufflehog@latest
+      ```
+
+    - Tasks
+
+      ```bash
+      make sast-trufflehog-fs
+      ```
+
+      ```bash
+      make sast-trufflehog-git
+      ```
+
+### 12.3. Semgrep
+
+[Semgrep](https://github.com/semgrep/semgrep) is a static analysis tool for detecting code security issues and enforcing secure coding patterns across source files.
+
+1. Insights and Details
+
+    - [.github/workflows/semgrep.yml](.github/workflows/semgrep.yml)
+      > Workflow definition for Semgrep-based static analysis in CI.
+
+    - [lefthook.yml](lefthook.yml)
+      > Pre-commit hook runs `sast-semgrep-scan` against staged files before every commit when Docker is available.
+
+2. Usage and Instructions
+
+    - CI/CD
+
+      ```yaml
+      uses: sentenz/actions/semgrep@latest
+      ```
+
+    - Tasks
+
+      ```bash
+      make sast-semgrep-scan
+      ```
+
+## 13. Supply Chain Manager
+
+Software Supply Chain Security for identifying vulnerabilities in dependencies by scanning SBOMs, container images, and filesystems.
+
+### 13.1. Trivy
+
+[Trivy](https://github.com/aquasecurity/trivy) is a comprehensive security scanner for vulnerabilities, misconfigurations, and compliance issues in container images, filesystems, and source code.
+
+1. Insights and Details
+
+    - [trivy.yaml](trivy.yaml)
+      > Configuration file for Trivy specifying scan settings and options.
+
+    - [.trivyignore](.trivyignore)
+      > File specifying vulnerabilities to ignore during Trivy scans.
+
+2. Usage and Instructions
+
+    - CI/CD
+
+      ```yaml
+      uses: sentenz/actions/trivy@latest
+      ```
+
+    - Tasks
+
+      ```bash
+      make sast-trivy-fs <path>
+      ```
+
+      ```bash
+      make sast-trivy-sbom-cyclonedx-fs <path>
+      ```
+
+      ```bash
+      make sast-trivy-sbom-scan <sbom_path>
+      ```
+
+      ```bash
+      make sast-trivy-sbom-license <sbom_path>
+      ```
+
+## 14. Documentation Generators
+
+### 14.1. Doxygen
+
+[Doxygen](https://www.doxygen.nl/) is an **API Documentation Generator** for C++, C programming languages, used to create software reference documentation from annotated source code.
+
+1. Insights and Details
+
+    - [Doxyfile](Doxyfile)
+      > Configuration file for Doxygen specifying documentation generation settings.
+
+2. Usage and Instructions
+
+    - CI/CD
+
+      ```yaml
+      uses: sentenz/actions/doxygen@latest
+      ```
+
+    - Tasks
+
+      ```bash
+      make pages-doxygen-build
+      ```
+
+      ```bash
+      make pages-doxygen-serve
+      ```
+
+### 14.2. MkDocs
+
+[MkDocs](https://www.mkdocs.org/) is a Static Site Generator (SSG) designed for building project documentation using Markdown files.
+
+1. Insights and Details
+
+    - [mkdocs.yml](mkdocs.yml)
+      > Configuration file for MkDocs specifying site settings, theme, plugins, and markdown extensions.
+
+2. Usage and Instructions
+
+    - CI/CD
+
+      ```yaml
+      uses: sentenz/actions/mkdocs@latest
+      ```
+
+    - Tasks
+
+      ```bash
+      make pages-mkdocs-setup
+      ```
+
+      ```bash
+      make pages-mkdocs-build
+      ```
+
+      ```bash
+      make pages-mkdocs-serve
+      ```
