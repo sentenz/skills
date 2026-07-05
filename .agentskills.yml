@@ -63,8 +63,8 @@ skills:
     description: API documentation creation using godoc conventions
 
   # Terraform Skills
-  - name: terraform-skill
-    path: skills/terraform-skill
+  - name: terraform
+    path: skills/terraform
     languages: [terraform, opentofu, hcl]
     description: Terraform and OpenTofu module, testing, CI/CD, security, compliance, and state management guidance
 
