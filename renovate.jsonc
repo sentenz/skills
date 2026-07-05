@@ -1,0 +1,159 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "rebaseWhen": "auto",
+  "minimumReleaseAge": "1 day",
+  "dependencyDashboard": false,
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 0,
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/bower_components/**",
+    "**/charts/**",
+    "test/**",
+    "tests/**"
+  ],
+  "nuget": {
+    "ignorePaths": [
+      "tests/**",
+      "**/tests/**"
+    ]
+  },
+  "labels": [
+    "dependencies"
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": [
+      "security"
+    ],
+    "automerge": false
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update container image references in GitHub Actions files",
+      "managerFilePatterns": [
+        "**/action.ya?ml$"
+      ],
+      "matchStrings": [
+        "(?<depName>(?:(?:[A-Za-z0-9.-]+(?::[0-9]+)?/)?[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*)):(?<currentValue>[^@\\s\"']+)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?"
+      ],
+      "autoReplaceStringTemplate": "{{{depName}}}:{{{newValue}}}{{#if newDigest}}@{{{newDigest}}}{{else}}{{#if currentDigest}}@{{{currentDigest}}}{{/if}}{{/if}}",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "Update container image references in Makefiles",
+      "managerFilePatterns": [
+        "**/[Mm]akefile",
+        "**/GNUMakefile",
+        "**/*.mk"
+      ],
+      "matchStrings": [
+        "(?<depName>(?:(?:docker\\.io|ghcr\\.io|quay\\.io|gcr\\.io|mcr\\.microsoft\\.com|registry\\.gitlab\\.com|cgr\\.dev|oci\\.io)/)?[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)+):(?<currentValue>[^@\\s]+)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?"
+      ],
+      "autoReplaceStringTemplate": "{{depName}}:{{newValue}}{{#if newDigest}}@{{newDigest}}{{else}}{{#if currentDigest}}@{{currentDigest}}{{/if}}{{/if}}",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Introduces breaking changes or requires code adjustments due to changes in public APIs.",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "groupName": "major versions",
+      "groupSlug": "major-versions",
+      "automerge": false
+    },
+    {
+      "description": "Introduces backward-compatible functionality improvements and feature additions.",
+      "matchUpdateTypes": [
+        "minor"
+      ],
+      "groupName": "minor versions",
+      "groupSlug": "minor-versions",
+      "automerge": false
+    },
+    {
+      "description": "Introduces backward-compatible bug fixes and small corrections.",
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "groupName": "patch versions",
+      "groupSlug": "patch-versions",
+      "automerge": false
+    },
+    {
+      "description": "Container image digest bumps across Dockerfiles and Containerfiles.",
+      "matchManagers": [
+        "dockerfile",
+        "containerfile"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch",
+        "digest"
+      ],
+      "groupName": "container digests",
+      "groupSlug": "container-digests",
+      "automerge": false
+    },
+    {
+      "description": "Container image tag and digest updates in Makefiles.",
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchFileNames": [
+        "**/[Mm]akefile",
+        "**/GNUMakefile",
+        "**/*.mk"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch",
+        "digest"
+      ],
+      "groupName": "makefile container images",
+      "groupSlug": "makefile-container-images",
+      "automerge": false
+    },
+    {
+      "description": "Container image tag and digest updates in GitHub Actions files.",
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchFileNames": [
+        "**/action.ya?ml"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch",
+        "digest"
+      ],
+      "groupName": "github actions container images",
+      "groupSlug": "github-actions-container-images",
+      "automerge": false,
+      "semanticCommits": "enabled",
+      "semanticCommitType": "fix",
+      "semanticCommitScope": "actions"
+    }
+  ]
+}

@@ -2,9 +2,16 @@
 
 ### Miscellaneous ###
 logs/
+*.log
 build/
 public/
-.agents/
+
+# Ignore dotenv files (unencrypted), allow encrypted files with .enc
+.env
+.env.*
+!.env.enc
+!.env.*.enc
+
 
 ### VisualStudioCode ###
 .vscode/*
