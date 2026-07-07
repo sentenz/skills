@@ -24,16 +24,22 @@ help:
 
 # ── Setup & Teardown ─────────────────────────────────────────────────────────────────────────────
 
+# NOTE May require elevated privileges (`sudo`) to install dependencies on the host system.
+#
 ## Initialize a software development workspace with requisites
 bootstrap:
 	apt update && apt install -y nodejs
 .PHONY: bootstrap
 
+# NOTE May require elevated privileges (`sudo`) to install dependencies on the host system.
+#
 ## Install and configure all dependencies essential for development
 setup:
 	npm install -g skills
 .PHONY: setup
 
+# NOTE May require elevated privileges (`sudo`) to remove dependencies from the host system.
+#
 ## Remove development artifacts and restore the host to its pre-setup state
 teardown:
 	npm uninstall -g skills
