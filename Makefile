@@ -1,7 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
-ifneq (,$(wildcard .env))
-	include .env
+# Load Dotenv Files
+
+DOTENV_FILES := $(filter-out %.enc,$(wildcard .env .env.*))
+ifneq ($(strip $(DOTENV_FILES)),)
+	include $(DOTENV_FILES)
 	export
 endif
 
@@ -524,7 +527,6 @@ sast-cosign-verify:
 
 	docker run --rm -v "${HOME}/.docker/config.json:/root/.docker/config.json" -v "${PWD}:/workspace" -w /workspace "$(SAST_IMAGE_COSIGN)" verify-attestation --key cosign.pub --type cyclonedx "$(filter-out $@,$(MAKECMDGOALS))" > logs/sbom/sbom.cdx.intoto.jsonl 2> logs/sast/cosign-verify.log
 .PHONY: sast-cosign-verify
-
 
 # ── Static Site Generator (SSG) ─────────────────────────────────────────────────────────────────
 
