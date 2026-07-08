@@ -576,7 +576,7 @@ Save and integrate intermediate results after each step to ensure continuity acr
 
     **Action:** Validate the analyst decisions, then write the complete enriched dataset to the output file `<Device_Name>_Threat_Model_Generated.csv`.
     - Separate the CSV fields using the semicolon delimited format instead of the comma delimiter.
-    - Ensure the `Description` and `Justification` fields are fully enclosed in double quotes `"..."` to preserve the integrity of the CSV format, as these fields may contain semicolons or other special delimiter characters.
+    - Ensure the `Description` and `Justification` fields are fully enclosed in double quotes (`"<plaintext>"`) to preserve the integrity of the CSV format, as these fields may contain semicolons or other special delimiter characters.
     - Verify each output row against its source row to confirm no enrichment values were dropped or overwritten.
     - Retain native TMT columns in their source order and append the review columns in the order defined in section [4.1. Preparation](#41-preparation).
     - Verify that all native TMT columns are present and unmodified in the output before saving.
