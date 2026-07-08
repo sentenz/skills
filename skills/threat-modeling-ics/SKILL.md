@@ -613,7 +613,7 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 Use these templates for Microsoft TMT CSV intake and review.
 
 > [!NOTE]
-> The examples below are generalized, vendor-neutral patterns. Replace bracketed placeholders with product-specific values and validate all mappings against section [4.7. Risk Treatment Mapping](#47-risk-treatment-mapping) before reuse.
+> The examples below are generalized, vendor-neutral patterns. Replace bracketed placeholders with product-specific values and validate all mappings against section [4.7. Risk Treatment Mapping](#47-risk-treatment-mapping) before reuse. Keep the skill body minimal; place full multi-row examples in separate example artifacts when needed.
 
 ### 5.1. Raw TMT Export CSV Template
 
