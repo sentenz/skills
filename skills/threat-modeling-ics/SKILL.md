@@ -6,7 +6,7 @@ description: >-
   threat enrichment for embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix,
   minimum-capable Threat Actor assignment, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.7"
+  version: "1.7.8"
 ---
 
 # Threat Modeling ICS
@@ -14,7 +14,7 @@ metadata:
 Instructions for AI security agents reviewing Microsoft Threat Modeling Tool threat-list exports.
 
 > [!NOTE]
-> Treat the Microsoft TMT CSV as the primary artifact and as the source of record for the native threat-row inventory. Use the Microsoft TMT model (`*.tm7`), Mermaid diagrams, and external documentation as architecture evidence for trust boundaries, interfaces, attack paths, and control coverage. If those sources materially conflict about whether an interface, trust boundary, or attack path exists, document the discrepancy and ask the user how to proceed before continuing. Do not silently choose one source as globally authoritative.
+> Treat the Microsoft TMT CSV as the primary artifact and as the source of record for the native threat-row inventory. Use the Microsoft TMT model (`*.tm7`), Mermaid diagrams, and external documentation as architecture evidence for trust boundaries, interfaces, attack paths, and control coverage. If those sources materially conflict about whether an interface, trust boundary, or attack path exists, document the discrepancy and ask the user how to proceed before continuing. Do not silently choose one source as globally authoritative. Apply this policy wherever later workflow steps reference source-of-record handling, conflict handling, or artifact precedence.
 
 - [1. Benefits](#1-benefits)
 - [2. Principles](#2-principles)
@@ -130,19 +130,7 @@ Threat actors are individuals, groups, or organizations with the motivation and 
 
 ### 2.4. Diagram Depth Layers
 
-Use Microsoft [diagram depth layers](https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/1b-depth-layers) when creating or validating the threat model diagram.
-
-- Layer 0 (`System`)
-  > System layer for high-level architecture and trust boundaries between major zones or subsystems.
-
-- Layer 1 (`Process`)
-  > Process layer for process-level data flows in each major part.
-
-- Layer 2 (`Subprocess`)
-  > Subprocess layer for critical system subparts.
-
-- Layer 3 (`Lower-Level`)
-  > Lower-Level layer for highly critical or firmware-level and driver-level detail.
+Use Microsoft [diagram depth layers](https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/1b-depth-layers) when creating or validating the threat model diagram. Use section [5.2.1. Diagram Depth Layers](#521-diagram-depth-layers) as the canonical layer definition and ICS example set.
 
 ## 3. Frameworks
 
@@ -152,9 +140,6 @@ Microsoft Threat Modeling Tool (TMT) is a tool for identifying and categorizing 
 
 - STRIDE-based Threat Enumeration
   > TMT generates an initial list of threats based on the STRIDE categories, which provides a structured starting point for the review process.
-
-- Source of Record
-  > The exported TMT CSV is the working dataset and the source of record for the native row set.
 
 ### 3.2. STRIDE
 
@@ -266,7 +251,7 @@ STRIDE is the foundational threat classification scheme for understanding each t
   > Record the CVSS v4.0 vector string (e.g., `CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:H/VA:L/SC:N/SI:N/SA:N`) when a base score is recorded.
 
 - Base Severity vs. Residual Risk
-  > Do not reduce `CVSS-B v4.0 Score` solely because compensating controls, restricted deployment assumptions, operator procedures, contractual controls, or residual-risk acceptance reduce business exposure. Capture those facts in `Justification`, `Risk Prioritization`, `Risk Treatment`, and `Risk Approval`. Use `0,0` / `None` only when the reviewed threat has no valid modeled impact because the attack path is architecturally impossible, structurally eliminated, or otherwise not a real vulnerability in the assessed design.
+  > Apply the zero-impact and residual-risk scoring policy defined in section [5.2.3. Impact Mapping](#523-impact-mapping). Do not lower the intrinsic CVSS Base score solely because compensating controls or risk-acceptance decisions reduce residual business exposure.
 
 ### 3.7. BSI Likelihood of Exploit
 
@@ -306,7 +291,7 @@ STRIDE is the foundational threat classification scheme for understanding each t
 Risk treatment defines the disposition decision after each identified risk has been prioritized based on severity and likelihood evaluation.
 
 > [!NOTE]
-> Aligned with ISO 31000 and IEC 62443-3-2, every threat row that reaches a finalized reviewed disposition must be assigned a treatment option that is traceable to the risk prioritization evidence.
+> Aligned with ISO 31000 and IEC 62443-3-2, every threat row that reaches a finalized reviewed disposition must be assigned a treatment option that is traceable to the risk prioritization evidence. Use section [5.2.7. Risk Treatment Mapping](#527-risk-treatment-mapping) as the canonical treatment-selection policy.
 
 - Risk Avoidance
   > Remove or restructure the system element, function, interface, or data flow that introduces the risk so the threat is no longer applicable. Risk avoidance eliminates the risk at its source.
@@ -337,6 +322,12 @@ Select the execution mode before starting the review.
 | Strict         | The assessment is interactive or compliance-oriented and user clarification is available. | Stop at blocking gates and request the missing decision or evidence. | Leave unresolved review fields blank until the gate is resolved. |
 | Best-effort    | The user explicitly requests unattended analysis, draft output, or partial completion. | Continue only when the unresolved item can be isolated and documented. | Leave unsupported mappings, scores, treatment, and approval blank, then record the evidence gap in `Justification` and the summary. |
 | Batch          | Large CSV review requires completion of all rows before discussion. | Mark affected rows `Needs Investigation` and continue with the next row. | Do not infer missing framework IDs, CVSS values, treatment decisions, or approvals. |
+
+Apply these unresolved-field semantics consistently across all review steps.
+
+- `N/A` means the finalized reviewed row has no applicable framework identifier or mapping for that column.
+- A blank review field means the field remains unresolved because the review is incomplete, blocked, or intentionally carried forward from an unreviewed row.
+- Finalized reviewed rows require populated governance fields unless the compatibility rules in section [5.2.7. Risk Treatment Mapping](#527-risk-treatment-mapping) require the field to remain blank.
 
 ### 4.1. Preparation
 
@@ -384,8 +375,8 @@ Select the execution mode before starting the review.
     - If no Microsoft TMT model file is found, search for a Mermaid diagram file (`*.md`) and extract the same evidence.
     - If the source is a TM7 file, normalize display labels only (expand unexplained abbreviations, remove leading/trailing whitespace). Do not rename components, alter trust boundaries, reorder data flows, or change interface labels.
     - If no diagram exists, draft one from the architecture source provided by the user, save it as `<Device_Name>_Threat_Model.md`, and mark it as a draft pending user confirmation.
-    - Use the CSV to preserve the modeled row inventory. Use the diagram and external documentation to verify whether each modeled interface, trust boundary, or attack path is real and how it should be interpreted.
-    - **Blocking Gate:** If the TM7 model or external documentation materially contradicts the CSV about whether an interface, trust boundary, or threat path exists, record the conflict and ask the user whether to review the row as-modeled, as-documented, or as a documented discrepancy before continuing.
+    - Use the CSV to preserve the modeled row inventory. Use the diagram and external documentation to interpret trust boundaries, interfaces, and attack paths under the source and conflict policy stated at the top of this document.
+    - **Blocking Gate:** If the TM7 model or external documentation materially contradicts the CSV about whether an interface, trust boundary, or threat path exists, apply the source and conflict policy before continuing.
     - **Blocking Gate:** If no architecture source is available, ask the user to provide one before continuing, in order of preference:
       1. A Microsoft TMT model file path (`*.tm7`).
       2. A Mermaid diagram file path (`*.md`).
@@ -420,11 +411,10 @@ Select the execution mode before starting the review.
 
 7. Conflict Gathering
 
-    **Action:** Before beginning the review, gather any known conflicts or discrepancies in the architecture evidence that may impact how specific rows are interpreted.
-    - Incorporate contents from additional sources as supplementary architectural, operational, and control evidence. Use this material to validate assumptions, identify missing trust boundaries, assess control coverage, and detect inconsistencies between the documented architecture and the existing threat model.
-    - For example, if the TM7 model shows interface, trust boundary, or attack path data flow between two components but the diagram and external documentation do not, record this conflict as a known discrepancy.
-    - When a conflict is encountered during the row-by-row review, refer back to this list of known discrepancies to determine whether to review the row as-modeled, as-documented, or as a documented discrepancy.
-    - **Blocking Gate:** If the architecture evidence contains material conflicts that impact how specific rows should be reviewed, ask the user to clarify how to review those rows before continuing.
+    **Action:** Before beginning the review, gather known discrepancies in architecture evidence that may affect row interpretation.
+    - Incorporate additional sources only as supplementary architectural, operational, and control evidence.
+    - Record conflicts between the documented architecture and the existing threat model, then apply the source and conflict policy stated at the top of this document during row-by-row review.
+    - **Blocking Gate:** If architecture evidence contains material conflicts that affect how specific rows should be reviewed, ask the user to clarify whether to review those rows as-modeled, as-documented, or as documented discrepancies before continuing.
 
 ### 4.2. Review
 
@@ -493,16 +483,12 @@ Select the execution mode before starting the review.
     **Data source:** [assets/cwe/](assets/cwe/) directory contains JSON data files derived from the [MITRE CWE JSON API](assets/cwe/cwe.json), used to look up weakness IDs, names, extended descriptions, and mitigation guidance.
     - Load the relevant file to confirm the CWE definition and associated mitigation guidance before recording the identifier.
 
-    > [!NOTE]
-    > Prefer the most specific CWE that fits the described weakness. When the root weakness is identifiable from the TMT threat fields (`Title`, `Category`, `Interaction`, `Description`), load the relevant [assets/cwe/](assets/cwe/) file to confirm the CWE definition and associated mitigation guidance before recording the identifier.
-
 5. FIRST CVSS v4.0
 
     **Action:** Populate the CVSS v4.0 Base Metrics `CVSS v4.0 Vector`, `CVSS v4.0 Severity`, and `CVSS-B v4.0 Score` together for each row, see [3.6. FIRST CVSS](#36-first-cvss).
     - All three fields must be populated together. Do NOT record a severity without a vector. Do NOT record a vector without a score.
     - Record `CVSS-B v4.0 Score` with exactly one decimal digit and comma as decimal separator, e.g., `0,0`, `2,4`, `5,2`, `7,0`, or `10,0`.
-    - Record a zero-impact CVSS assessment (`0,0` / `None`) only when the reviewed row has no valid modeled impact because the attack path is architecturally impossible, structurally eliminated, or not a real vulnerability in the assessed design.
-    - Do not reduce the `CVSS-B v4.0 Score` solely because compensating controls, environmental assumptions, or residual-risk acceptance reduce the operational risk.
+    - Apply the zero-impact and residual-risk scoring policy in section [5.2.3. Impact Mapping](#523-impact-mapping).
     - Leave the trio blank only when the scoring analysis remains unresolved because the review is incomplete or blocked.
     - Derive the recorded score from the [CVSS v4.0 calculator](https://www.first.org/cvss/calculator/4.0) using the CVSS Base Metrics informed by the native TMT threat fields (`Title`, `Category`, `Interaction`, `Description`), the MITRE ATT&CK technique, and the EMB3D device exposure as input.
     - Reference the [5.2.3. Impact Mapping](#523-impact-mapping) section for guidance on mapping STRIDE categories to CVSS impact metrics.
@@ -530,12 +516,7 @@ Select the execution mode before starting the review.
     **Action:** Populate the `Threat Actor` column by assigning the minimum capable `Threat Actor` for each row using the standardized labels from [Threat Actors](#23-threat-actors).
     - Use exactly one standardized `Threat Actor` label per reviewed CSV row.
     - Record the minimum required actor, not the most severe or most newsworthy actor.
-    - Base the decision on the modeled attack path, required access, exploit maturity, and the amount of OT-specific knowledge required.
-    - Evaluate the assignment against all three selection criteria together:
-      - **Capability:** tooling maturity, exploit sophistication, and ability to chain multiple steps.
-      - **Access Path:** internet-reachable, adjacent industrial network, local workstation, maintenance path, or physical access requirement.
-      - **Operational Knowledge:** generic IT tradecraft, OT protocol familiarity, process-specific engineering knowledge, or privileged insider context.
-    - Escalate to a more capable actor only when the attack path cannot reasonably succeed with a less capable one.
+    - Base the decision on access path, capability, and operational knowledge.
     - Do not assign multiple actors in one row. If several actors could plausibly perform the attack, record the minimum actor that can realistically achieve the described effect.
     - Reference the [5.2.6. Threat Actor Mapping](#526-threat-actor-mapping) section for common actor selections from attack-path characteristics.
 
@@ -585,10 +566,9 @@ Select the execution mode before starting the review.
 12. Risk Treatment
 
     **Action:** Populate the `Risk Treatment` column by assigning a risk treatment decision to each row based on the derived `Risk Prioritization`, see [Risk Treatment](#38-risk-treatment).
+    - Select the treatment using the default decisions, acceptable alternatives, mandatory constraints, and compatibility rules in section [5.2.7. Risk Treatment Mapping](#527-risk-treatment-mapping).
     - Do not use `Acceptance` or `Transfer` to work around missing technical evidence.
-    - Reference the [5.2.7. Risk Treatment Mapping](#527-risk-treatment-mapping) section for selecting risk treatment based on mandatory constraints for each `Risk Prioritization` level.
     - Verify that `Justification` contains the minimum evidence for the selected treatment before proceeding to next step.
-    - Verify the `State` / `Risk Treatment` combination against the compatibility rules in section [5.2.7. Risk Treatment Mapping](#527-risk-treatment-mapping).
     - Leave the field blank only when the treatment decision remains unresolved because the review is incomplete or blocked.
 
 13. Risk Approval
