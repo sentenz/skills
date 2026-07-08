@@ -484,7 +484,8 @@ Save and integrate intermediate results after each step to ensure continuity acr
     - Reference the [5.2.3. Impact Mapping](#523-impact-mapping) section for guidance on mapping STRIDE categories to CVSS impact metrics.
 
     **Data source:** [assets/cvss/](assets/cvss/) directory contains the CVSS v4.0 [JSON Schema](assets/cvss/cvss-v4.0.json) for validating recorded vector string format and metric enumerations.
-    - Use this schema to validate that the vector string, score, and severity fields are well-formed before recording them. Do NOT derive scoring from this schema file, the `CVSS-B v4.0 Score` column is computed using the [CVSS v4.0 calculator](https://www.first.org/cvss/calculator/4.0).
+    - Use this schema to validate that the vector string, score, and severity fields are well-formed before recording  the `CVSS v4.0` columns.
+    - Do NOT derive scoring from this schema file, the `CVSS-B v4.0 Score` column is computed using the [CVSS v4.0 calculator](https://www.first.org/cvss/calculator/4.0).
 
 6. BSI Likelihood of Exploit
 
