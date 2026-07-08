@@ -15,7 +15,7 @@
   > MITRE EMB3D JSON data files derived from the [EMB3D knowledge base](https://github.com/mitre/emb3d/tree/main/_data). Contains threat IDs, device properties, threat actions, and mitigation levels. **Used to look up** threat details when populating the `EMB3D TID` column.
 
 - [cvss/](cvss/)
-  > CVSS v4.0 [JSON Schema](https://www.first.org/cvss/cvss-v4.0.json) for validating vector string format and metric enumerations. **Used to validate** that recorded vector, score, and severity fields are well-formed.
+  > CVSS v4.0 [JSON Schema](https://www.first.org/cvss/cvss-v4.0.json) for validating vector string format and metric enumerations. **Used to validate** that recorded vector, score, and severity fields are well-formed when populating the `CVSS v4.0` columns.
   
   > [!NOTE]
   > Does NOT contain scoring data, scores are computed using the [CVSS v4.0 calculator](https://www.first.org/cvss/calculator/4.0).
