@@ -10,6 +10,8 @@
   "dependencyDashboard": true,
   "prHourlyLimit": 0,
   "prConcurrentLimit": 0,
+  "commitBody": null,
+  "commitBodyTable": false,
   "ignorePaths": [
     "**/node_modules/**",
     "**/bower_components/**",
