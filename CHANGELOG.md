@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.10.2](https://github.com/sentenz/skills/compare/v1.10.1...v1.10.2) (2026-07-08)
+
+
+### Bug Fixes
+
+* enhance threat modeling details and clarifying CVSS scoring methodology ([2531fb5](https://github.com/sentenz/skills/commit/2531fb57401b1d1c7927af8107728324f1b978b7))
+
+
+### Reverts
+
+* undo minor changes in SKILL.md ([bdf87f6](https://github.com/sentenz/skills/commit/bdf87f6f8c346776205706e29b8ae6851abb68f6))
+
 ## [1.10.1](https://github.com/sentenz/skills/compare/v1.10.0...v1.10.1) (2026-07-02)
 
 
