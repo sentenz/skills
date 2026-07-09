@@ -6,7 +6,7 @@ description: >-
   threat enrichment for embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix,
   minimum-capable Threat Actor assignment, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.10"
+  version: "1.7.8"
 ---
 
 # Threat Modeling ICS
@@ -155,26 +155,19 @@ STRIDE is the foundational threat classification scheme for understanding each t
 
 ### 3.3. MITRE ATT&CK
 
-[MITRE ATT&CK (Adversarial Tactics, Techniques, and Common Knowledge)](https://attack.mitre.org/) provides the technique taxonomy for threat enrichment.
+[MITRE ATT&CK (Adversarial Tactics, Techniques, and Common Knowledge)](https://attack.mitre.org/) for ICS (Industrial Control Systems) provides the technique taxonomy for threat enrichment.
 
-1. Domains and Categories
+- [Matrix](https://attack.mitre.org/matrices/ics/)
+  > A tabular representation of tactics (columns) and techniques (rows) that allows users to explore how specific techniques are used to achieve tactical objectives.
 
-    - ICS
-      > Covers tactics and techniques targeting industrial control systems (ICS) and operational technology (OT) environments.
+- [Tactics](https://attack.mitre.org/tactics/ics/)
+  > The adversary's tactical goal or objective, such as initial access, persistence, or exfiltration.
 
-2. Concepts and Components
+- [Techniques](https://attack.mitre.org/techniques/ics/)
+  > A specific method used by adversaries to achieve a tactic, such as spearphishing, credential dumping, or data staging.
 
-    - [Matrix](https://attack.mitre.org/matrices/ics/)
-      > A tabular representation of tactics (columns) and techniques (rows) that allows users to explore how specific techniques are used to achieve tactical objectives.
-
-    - [Tactics](https://attack.mitre.org/tactics/ics/)
-      > The adversary's tactical goal or objective, such as initial access, persistence, or exfiltration.
-
-    - [Techniques](https://attack.mitre.org/techniques/ics/)
-      > A specific method used by adversaries to achieve a tactic, such as spearphishing, credential dumping, or data staging.
-
-    - [Mitigations](https://attack.mitre.org/mitigations/ics/)
-      > Security controls that can prevent or detect techniques, such as multi-factor authentication, network segmentation, or data loss prevention.
+- [Mitigations](https://attack.mitre.org/mitigations/ics/)
+  > Security controls that can prevent or detect techniques, such as multi-factor authentication, network segmentation, or data loss prevention.
 
 ### 3.4. MITRE EMB3D
 
@@ -183,42 +176,14 @@ STRIDE is the foundational threat classification scheme for understanding each t
 > [!NOTE]
 > Use EMB3D when the modeled asset is, contains, or depends on an embedded device: PLC, PAC, RTU, SIS controller, HMI appliance, gateway, industrial edge node, drive, intelligent sensor, actuator, or embedded communication module. Do not use EMB3D as a substitute for ATT&CK for ICS. Use both layers when evidence supports both.
 
-1. Domains and Categories
+- [Device Properties](https://emb3d.mitre.org/properties-list/)
+  > Describe the hardware and software features of a device, including physical hardware, network services and protocols, software, and firmware. Each property is mapped to a set of threats, enabling enumeration of threat exposure based on known device features.
 
-    - Embedded Devices
-      > Covers a wide range of embedded systems, including IoT devices, industrial control systems, automotive electronics, medical devices, and consumer electronics.
+- [Threats](https://emb3d.mitre.org/threats)
+  > Embedded-device threat entries identify how a threat actor can achieve a specific objective or effect on the device. Each threat entry describes the targeted technical features, the required threat actions, the resulting impact, and the associated CWE weaknesses.
 
-2. Concepts and Components
-
-    - [Device Properties](https://emb3d.mitre.org/properties-list/)
-      > Describe the hardware and software features of a device, including physical hardware, network services and protocols, software, and firmware. Each property is mapped to a set of threats, enabling enumeration of threat exposure based on known device features.
-
-    - [Threats](https://emb3d.mitre.org/threats)
-      > Embedded-device threat entries identify how a threat actor can achieve a specific objective or effect on the device. Each threat entry describes the targeted technical features, the required threat actions, the resulting impact, and the associated CWE weaknesses.
-
-      - [Hardware](https://emb3d.mitre.org/threats/hardware)
-        > Threats targeting physical hardware components such as processors, memory, and interfaces.
-
-      - [System Software](https://emb3d.mitre.org/threats/system-software)
-        > Threats targeting operating systems, firmware, and bootloaders.
-
-      - [Application Software](https://emb3d.mitre.org/threats/application-software)
-        > Threats targeting application-layer software running on the device.
-
-      - [Networking](https://emb3d.mitre.org/threats/networking)
-        > Threats targeting network services, protocols, and communication interfaces of the device.
-
-    - [Mitigations](https://emb3d.mitre.org/mitigations)
-      > Security mechanisms for each threat, categorized by implementation maturity level. Mitigations are intended for device vendors to implement at design time and for asset owners to evaluate during device acquisition.
-
-      - [Foundational](https://emb3d.mitre.org/mitigations/foundational)
-        > Baseline controls applicable to all devices, addressing the most common embedded device threats.
-
-      - [Intermediate](https://emb3d.mitre.org/mitigations/intermediate)
-        > Enhanced controls addressing more complex threats, potentially requiring moderate design changes or additional device resources.
-
-      - [Leading](https://emb3d.mitre.org/mitigations/leading)
-        > Advanced controls targeting sophisticated threats, potentially requiring significant design changes or emerging security technologies.
+- [Mitigations](https://emb3d.mitre.org/mitigations)
+  > Security mechanisms for each threat, categorized by implementation maturity level (Foundational, Intermediate, Leading). Mitigations are intended for device vendors to implement at design time and for asset owners to evaluate during device acquisition.
 
 ### 3.5. MITRE CWE
 
@@ -458,7 +423,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Base Severity vs. Residual Risk
       > Apply the zero-impact and residual-risk scoring policy defined in section [5.2.3. Impact Mapping](#523-impact-mapping). Do not lower the intrinsic CVSS Base score solely because compensating controls or risk-acceptance decisions reduce residual business exposure.
 
-    **Data source:** Use [assets/cvss/](assets/cvss/) CVSS v4.0 [JSON Schema](assets/cvss/cvss-v4.0.json) to validate vector format and metric enumerations. Do not derive the score from the schema.
+    **Data Source:** Use [assets/cvss/](assets/cvss/) CVSS v4.0 [JSON Schema](assets/cvss/cvss-v4.0.json) to validate vector format and metric enumerations. Do not derive the score from the schema.
 
 6. BSI Likelihood of Exploit
 
