@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.10"
+  version: "1.7.9"
 ---
 
 # Threat Modeling ICS
@@ -62,22 +62,22 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
 ## 1. Benefits
 
 - Proactive Defense
-  > Threat modeling enables teams to identify and mitigate security risks early in the design phase, reducing the likelihood of vulnerabilities being introduced during development.
+  > Threat modeling identifies security risks early in the design and development lifecycle, addressing weaknesses before they are implemented in the system.
 
-- Residual Risk
-  > The remaining risk after mitigations are applied. This risk must be explicitly documented and either accepted by stakeholders or further mitigated.
+- Residual Risk Visibility
+  > Threat modeling makes the risk remaining after controls are applied explicit. Residual risk must be documented, assigned to an accountable owner, and either accepted or reduced through additional treatment.
 
 - Compliance Alignment
-  > Threat modeling supports the risk assessment and technical documentation expectations of frameworks such as EU CRA, ISO/IEC 27005, NIST SP 800-30, IEC 62443-3-2, and GDPR Article 25 by producing documented evidence of security due diligence, assumptions, mitigations, and residual risk.
+  > Threat modeling supports the risk-assessment and technical-documentation expectations of frameworks and regulations such as the EU Cyber Resilience Act (CRA), ISO/IEC 27005, NIST SP 800-30 and IEC 62443-3-2 by documenting assumptions, identified threats, applied controls, treatment decisions, and residual risk.
 
-- Evidence-based Risk Assessment
-  > Threat reviews grounded in concrete system context, attack paths, and control evidence improve the consistency and defensibility of likelihood, impact, and prioritization decisions.
+- Evidence-Based Risk Assessment
+  > Assessments grounded in system architecture, concrete attack paths, asset characteristics, and verified control evidence improve the consistency, reproducibility, and defensibility of likelihood, impact, and prioritization decisions.
 
 - Risk Treatment Traceability
-  > Assigning a concrete risk treatment decision (`Mitigation`, `Transfer`, `Acceptance`, or `Avoidance`) to each finalized reviewed threat produces traceable evidence that stakeholders have deliberately addressed every risk. Recording risk treatment supports regulatory obligations, stakeholder accountability, and residual risk communication.
+  > Assigning a documented treatment decision to each finalized threat creates a traceable record of how the risk has been addressed. Risk Treatment supports stakeholder accountability, governance review, approval tracking, and residual-risk communication.
 
-- Tactics, Techniques, and Procedures (TTPs)
-  > Modeling realistic attack scenarios based on known adversary TTPs utilizing frameworks such as MITRE ATT&CK ensures that mitigations are effective against actual threats rather than hypothetical ones.
+- Adversary-Informed Analysis
+  > Mapping realistic attack scenarios to known adversary Tactics, Techniques, and Procedures (TTPs), including MITRE ATT&CK for ICS, helps ensure that proposed controls address credible attack behavior rather than purely hypothetical threats.
 
 ## 2. Principles
 
@@ -587,7 +587,7 @@ Categorize impact using CVSS v4.0 Base Metrics. Keep CVSS Base scoring intrinsic
 
   - `State = Not Applicable`: the attack path is impossible or structurally eliminated. Pair with `Risk Treatment = Avoidance`.
   - `State = Mitigated`: do not reduce the CVSS Base score to zero solely because controls reduce residual exposure.
-  - Zero-impact does not make `Likelihood of Exploit` or ` Risk Prioritization` inapplicable. For finalized reviewed rows, populate these columns from the mapping tables.
+  - Zero-impact does not make `Likelihood of Exploit` or `Risk Prioritization` inapplicable. For finalized reviewed rows, populate these columns from the mapping tables.
   - When `State = Not Applicable`, treat vulnerability state as `Theoretical` unless stronger exploit-maturity evidence exists, then derive likelihood from CVSS exploitability metrics and inherent prioritization from the `None` severity row in the risk matrix.
 
 ##### 5.2.3.1. Exploitability Metrics
