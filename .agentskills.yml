@@ -62,6 +62,12 @@ skills:
     languages: [go, golang]
     description: API documentation creation using godoc conventions
 
+  # CI/CD Skills
+  - name: github-actions
+    path: skills/github-actions
+    languages: [yaml, yml, shell, powershell]
+    description: GitHub Actions workflow design, security hardening, reuse, validation, and troubleshooting
+
   # Terraform Skills
   - name: terraform
     path: skills/terraform
