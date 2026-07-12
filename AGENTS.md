@@ -171,6 +171,9 @@ Available skills:
 - [C++ API Documentation](skills/cpp-api-documentation/SKILL.md)
   > Generates and maintains API documentation.
 
+- [GitHub Actions](skills/github-actions/SKILL.md)
+  > Designs, reviews, secures, and troubleshoots GitHub Actions workflows, reusable workflows, composite actions, credentials, runners, artifacts, and deployments.
+
 - [Terraform](skills/terraform/SKILL.md)
   > Guides Terraform/OpenTofu module design, testing, CI/CD, security, compliance, and state management with version-aware guardrails.
 
