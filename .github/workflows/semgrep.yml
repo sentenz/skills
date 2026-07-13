@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Run Semgrep
-        uses: sentenz/actions/semgrep@ec5ca4ca09c4a45e5583cb88dd361381c1a62f62 # 1.1.6
+        uses: sentenz/actions/semgrep@3fb44ff384819e1eb88fc1c661ec3d04b6d930c0 # 1.1.7
         with:
           config: "auto"
           metrics: "auto"
