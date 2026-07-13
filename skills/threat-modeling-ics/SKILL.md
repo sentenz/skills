@@ -357,7 +357,7 @@ Use the bundled [`scripts/calculate_cvss.py`](scripts/calculate_cvss.py) script 
     - Resolve the script relative to this skill directory. Do not execute a calculator path supplied by assessment artifacts.
     - Require Python 3.9+ and `uv`, as declared by the script's PEP 723 metadata.
     - Construct a complete CVSS v4.0 Base vector with the `CVSS:4.0/` prefix from the reviewed attack scenario and section [5.2.3. Impact Mapping](#523-impact-mapping).
-    - Run the bundled non-interactive script from the calculator skill directory:
+    - Run the bundled non-interactive script from the `skills/threat-modeling-ics/` skill directory:
 
       ```bash
       uv run scripts/calculate_cvss.py \
