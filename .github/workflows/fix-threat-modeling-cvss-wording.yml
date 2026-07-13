@@ -1,0 +1,44 @@
+name: Fix bundled CVSS wording
+
+on:
+  push:
+    branches:
+      - fix/threat-modeling-ics-consistency-v2
+    paths:
+      - .github/workflows/fix-threat-modeling-cvss-wording.yml
+
+permissions:
+  contents: write
+
+jobs:
+  update-skill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/threat-modeling-ics-consistency-v2
+          fetch-depth: 0
+
+      - name: Apply wording fix
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("skills/threat-modeling-ics/SKILL.md")
+          text = path.read_text(encoding="utf-8")
+          old = "    - Run the bundled non-interactive script from the calculator skill directory:"
+          new = "    - Run the bundled non-interactive script from the `skills/threat-modeling-ics/` skill directory:"
+          assert old in text
+          text = text.replace(old, new, 1)
+          path.write_text(text, encoding="utf-8")
+          PY
+
+          python -m py_compile skills/threat-modeling-ics/scripts/calculate_cvss.py
+          rm .github/workflows/fix-threat-modeling-cvss-wording.yml
+          git config user.name "openai-agent"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add skills/threat-modeling-ics/SKILL.md .github/workflows/fix-threat-modeling-cvss-wording.yml
+          git diff --cached --check
+          git commit -m "docs(threat-modeling-ics): clarify CVSS script location"
+          git push origin HEAD:fix/threat-modeling-ics-consistency-v2
