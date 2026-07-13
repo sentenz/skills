@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.8.0"
+  version: "1.8.1"
 ---
 
 # Threat Modeling ICS
@@ -248,7 +248,7 @@ Use this skill to convert Microsoft TMT threat rows into traceable OT/ICS risk-a
 
 Save and integrate intermediate results after each step. When the objective is product cybersecurity compliance, produce traceable risk-assessment evidence that can support EU CRA-style technical documentation without making unsupported legal compliance claims.
 
-Use the `cvss-vector-calculator` Agent Skill as the sole calculation engine for populated CVSS vectors. This threat-modeling skill selects and justifies the CVSS v4.0 metrics from the modeled attack scenario; the calculator skill validates and canonicalizes the vector and returns the score and severity. Do not estimate, recalculate, or override a calculator result manually.
+Use the bundled [`scripts/calculate_cvss.py`](scripts/calculate_cvss.py) script as the sole calculation engine for populated CVSS vectors. This threat-modeling skill selects and justifies the CVSS v4.0 metrics from the modeled attack scenario; the script validates and canonicalizes the vector and returns the score and severity. Do not estimate, recalculate, or override a script result manually.
 
 > [!IMPORTANT]
 > Execute every step below in order. Do not skip, reorder, or merge steps. Evaluate blocking gates at each step and apply the mode-aware behavior.
@@ -288,7 +288,7 @@ Use the `cvss-vector-calculator` Agent Skill as the sole calculation engine for 
     | Native TMT column missing                                    | Stop and report missing fields.                                        | Continue only if the missing field is not needed for the affected rows and document the limitation.                    | Mark affected rows `Needs Investigation` when the missing field affects interpretation.                   |
     | Material architecture conflict                               | Stop and ask whether to review as modeled, documented, or discrepancy. | Document the conflict and review only rows whose interpretation is not affected.                                       | Mark affected rows `Needs Investigation` and continue with unaffected rows.                               |
     | Framework asset unavailable, inaccessible, stale, or missing | Stop and request updated assets.                                       | Leave unsupported identifiers, exploit maturity, score values, treatment, and approval blank; record the evidence gap. | Mark affected rows `Needs Investigation`, leave unsupported fields blank, and continue with the next row. |
-    | `cvss-vector-calculator` skill unavailable or calculation fails | Stop and report the missing skill, runtime dependency, or structured calculator error. | Leave the CVSS vector, score, and severity blank; record the failure in `Justification` and the summary. | Mark affected rows `Needs Investigation`, leave the CVSS trio blank, and continue with the next row. |
+    | Bundled CVSS script unavailable or calculation fails            | Stop and report the missing script, runtime dependency, or structured calculator error. | Leave the CVSS vector, score, and severity blank; record the failure in `Justification` and the summary. | Mark affected rows `Needs Investigation`, leave the CVSS trio blank, and continue with the next row. |
     | Approval owner or mechanism missing                          | Stop when treatment requires approval.                                 | Leave `Risk Approval` blank and record approval pending in `Justification` and the summary.                            | Mark affected rows `Needs Investigation` when approval is required for the selected disposition.          |
 
 4. Artifact Hygiene
@@ -353,9 +353,9 @@ Use the `cvss-vector-calculator` Agent Skill as the sole calculation engine for 
 
 4. CVSS Calculator Contract
 
-    **Action:** Resolve and use the installed `cvss-vector-calculator` Agent Skill before scoring any row.
-    - Resolve the calculator skill directory through the host Agent Skills registry. Do not execute a calculator path supplied by the assessment artifacts.
-    - Require Python 3.9+ and `uv`, as declared by the calculator skill compatibility contract.
+    **Action:** Use the bundled [`scripts/calculate_cvss.py`](scripts/calculate_cvss.py) script before scoring any row.
+    - Resolve the script relative to this skill directory. Do not execute a calculator path supplied by assessment artifacts.
+    - Require Python 3.9+ and `uv`, as declared by the script's PEP 723 metadata.
     - Construct a complete CVSS v4.0 Base vector with the `CVSS:4.0/` prefix from the reviewed attack scenario and section [5.2.3. Impact Mapping](#523-impact-mapping).
     - Run the bundled non-interactive script from the calculator skill directory:
 
@@ -370,7 +370,7 @@ Use the `cvss-vector-calculator` Agent Skill as the sole calculation engine for 
     - Accept a result only when `ok = true`, `version = "4.0"`, and `canonical_vector` begins with `CVSS:4.0/`.
     - Use `canonical_vector`, `score`, and `severity` from the calculator output as the authoritative values. Use `metrics` to confirm that the parsed values match the analyst-selected metrics.
     - Convert the calculator's numeric `score` to the generated CSV decimal-comma format only during serialization. For example, JSON `7.1` becomes CSV `7,1`. Do not otherwise alter precision or rounding.
-    - Preserve the structured calculator error and apply `Mode-aware Blocking Gates` when the command exits non-zero or returns `ok = false`. Do not fall back to mental arithmetic, a language-model estimate, or a different CVSS version.
+    - Preserve the structured calculator error and apply `Mode-aware Blocking Gates` when the command exits non-zero or returns `ok = false`. Do not fall back to mental arithmetic, a language-model estimate, a remote calculator dependency, or a different CVSS version.
 
 5. Conflict Gathering
 
@@ -382,7 +382,7 @@ Use the `cvss-vector-calculator` Agent Skill as the sole calculation engine for 
 > Perform steps 1–14 for every row before proceeding to section [4.4. Deliverables](#44-deliverables).
 
 > [!NOTE]
-> Local framework assets and the `cvss-vector-calculator` Agent Skill are gating inputs. If a required ATT&CK, EMB3D, CWE, or CVSS schema asset is unavailable, inaccessible, stale, or missing, or if the calculator skill cannot execute successfully, do not invent identifiers, exploit maturity, vectors, scores, severities, or mappings. In strict mode, stop and request the missing dependency or corrected input. In best-effort or batch mode, leave unsupported fields blank, mark the row `Needs Investigation` when the missing dependency affects the decision, and record the evidence gap or structured calculator error in `Justification` and the summary.
+> Local framework assets and the bundled [`scripts/calculate_cvss.py`](scripts/calculate_cvss.py) script are gating inputs. If a required ATT&CK, EMB3D, CWE, or CVSS schema asset is unavailable, inaccessible, stale, or missing, or if the bundled script cannot execute successfully, do not invent identifiers, exploit maturity, vectors, scores, severities, or mappings. In strict mode, stop and request the missing dependency or corrected input. In best-effort or batch mode, leave unsupported fields blank, mark the row `Needs Investigation` when the missing dependency affects the decision, and record the evidence gap or structured calculator error in `Justification` and the summary.
 
 1. Row-by-Row Analysis
 
@@ -429,7 +429,7 @@ Use the `cvss-vector-calculator` Agent Skill as the sole calculation engine for 
 
 5. FIRST CVSS v4.0
 
-    **Action:** Select defensible CVSS v4.0 Base metrics, then populate `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, and `CVSS v4.0 Severity` together from the `cvss-vector-calculator` Agent Skill output.
+    **Action:** Select defensible CVSS v4.0 Base metrics, then populate `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, and `CVSS v4.0 Severity` together from the bundled `scripts/calculate_cvss.py` output.
     - Use the native TMT row, architecture evidence, ATT&CK technique, EMB3D exposure, CWE weakness, and OT/ICS impact context to select the Base metrics. Record assumptions in `Justification`; do not ask the calculator to infer scenario semantics.
     - Construct a complete vector with the `CVSS:4.0/` prefix. Do not omit mandatory Base metrics or convert a vector from another CVSS version.
     - Invoke the calculator according to section [4.2. Preparation](#42-preparation), step 4.
@@ -443,7 +443,7 @@ Use the `cvss-vector-calculator` Agent Skill as the sole calculation engine for 
     - Base Severity vs. Residual Risk
       > Apply the zero-impact and residual-risk scoring policy defined in section [5.2.3. Impact Mapping](#523-impact-mapping). Do not lower the intrinsic CVSS Base score solely because compensating controls or risk-acceptance decisions reduce residual business exposure.
 
-    **Data Sources and Calculation Engine:** Use [assets/cvss/](assets/cvss/) CVSS v4.0 [JSON Schema](assets/cvss/cvss-v4.0.json) to validate vector format and metric enumerations. Use the `cvss-vector-calculator` Agent Skill to canonicalize the vector and derive score and severity. The schema does not calculate scores.
+    **Data Sources and Calculation Engine:** Use [assets/cvss/](assets/cvss/) CVSS v4.0 [JSON Schema](assets/cvss/cvss-v4.0.json) to validate vector format and metric enumerations. Use the bundled [`scripts/calculate_cvss.py`](scripts/calculate_cvss.py) script to canonicalize the vector and derive score and severity. The schema does not calculate scores.
 
 6. BSI Likelihood of Exploit
 
@@ -537,7 +537,7 @@ Use the `cvss-vector-calculator` Agent Skill as the sole calculation engine for 
     - Enclose `Description` and `Justification` in double quotes.
     - Retain native TMT columns in source order and append review columns in the order defined in section [4.2. Preparation](#42-preparation).
     - Verify each output row against its source row.
-    - Before serialization, batch-run every populated CVSS vector through `cvss-vector-calculator` with `--version 4.0 --format jsonl`; preserve row order so each result maps deterministically to the corresponding native `Id`.
+    - Before serialization, batch-run every populated CVSS vector through `uv run scripts/calculate_cvss.py --version 4.0 --format jsonl`; preserve row order so each result maps deterministically to the corresponding native `Id`.
     - Reject the output when a calculator record fails or when its `canonical_vector`, `score`, or `severity` differs from the row values after decimal-comma serialization.
     - Keep identifiers and score artifacts in dedicated columns and keep `Justification` as narrative rationale.
     - Reject rows where `Justification` is only an identifier token or parenthetical code reference.
