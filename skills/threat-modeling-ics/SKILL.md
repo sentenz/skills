@@ -4,9 +4,10 @@ description: >-
   Performs end-to-end threat modeling for OT/ICS systems from Microsoft Threat Modeling Tool (TMT) threat-list exports (`*.csv`) and model files (`*.tm7`). Uses TMT and
   STRIDE for initial threat enumeration, then enriches each threat with OT/ICS context, MITRE ATT&CK for ICS mappings, MITRE EMB3D device-property threat enrichment for
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
-  assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
+  assignment, Mitigation Level classification, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to
+  Physical Damage to Property.
 metadata:
-  version: "1.7.10"
+  version: "1.7.11"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -21,6 +22,7 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
   - [2.2. Purdue Model](#22-purdue-model)
   - [2.3. Threat Actors](#23-threat-actors)
   - [2.4. Diagram Depth Layers](#24-diagram-depth-layers)
+  - [2.5. Mitigation Levels](#25-mitigation-levels)
 - [3. Frameworks](#3-frameworks)
   - [3.1. Microsoft Threat Modeling Tool](#31-microsoft-threat-modeling-tool)
   - [3.2. STRIDE](#32-stride)
@@ -51,6 +53,7 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
       - [5.2.4.3. Likelihood Matrix](#5243-likelihood-matrix)
     - [5.2.5. Risk Matrix Mapping](#525-risk-matrix-mapping)
     - [5.2.6. Threat Actor Mapping](#526-threat-actor-mapping)
+      - [5.2.6.1. Mitigation Level Mapping](#5261-mitigation-level-mapping)
     - [5.2.7. Risk Treatment Mapping](#527-risk-treatment-mapping)
       - [5.2.7.1. Treatment Decision Guidance](#5271-treatment-decision-guidance)
       - [5.2.7.2. State and Treatment Compatibility](#5272-state-and-treatment-compatibility)
@@ -133,6 +136,22 @@ Use Microsoft [diagram depth layers](https://learn.microsoft.com/en-us/training/
 | 2     | Subprocess  | Implementation-level view, showing code, configuration, and detailed operational logic.        |
 | 3     | Lower-Level | Deep technical view, including low-level protocols, hardware interfaces, and system internals. |
 
+### 2.5. Mitigation Levels
+
+Use [`references/mitigation-levels.md`](references/mitigation-levels.md) as the canonical mitigation-level policy.
+
+| Value | Meaning |
+| ----- | ------- |
+| `Baseline` | Confirmed minimum, common, compensating, environmental, or operational controls materially reduce the threat without claiming an implemented EMB3D mitigation. |
+| `Foundational` | Confirmed implemented MITRE EMB3D Tier 0 mitigation. |
+| `Intermediate` | Confirmed implemented MITRE EMB3D Tier 1 mitigation. |
+| `Leading` | Confirmed implemented MITRE EMB3D Tier 2 mitigation. |
+| `N/A` | No mitigation classification applies because the finalized attack path is structurally eliminated or not applicable. |
+| Blank | Mitigation evidence remains unresolved or the row has not been reviewed. |
+
+> [!IMPORTANT]
+> `Baseline` is a skill-specific reporting label and is not a MITRE EMB3D tier. Do not treat mitigation level as implementation status, control effectiveness, residual risk, risk treatment, or approval status.
+
 ## 3. Frameworks
 
 ### 3.1. Microsoft Threat Modeling Tool
@@ -176,7 +195,7 @@ STRIDE is the foundational threat classification scheme for understanding each t
 [MITRE EMB3D (Embedded Device Threat Model)](https://emb3d.mitre.org/) is a MITRE-developed knowledge base of cyber threats and associated mitigations for embedded devices found in critical infrastructure, IoT, automotive, healthcare, and manufacturing environments.
 
 > [!NOTE]
-> EMB3D aligns with MITRE ATT&CK, CWE, and CVE to provide a property-based threat model that maps device features to specific threats and recommends mitigations tiered by implementation maturity. Use EMB3D when the modeled asset is, contains, or depends on an embedded device: PLC, PAC, RTU, SIS controller, HMI appliance, gateway, industrial edge node, drive, intelligent sensor, actuator, or embedded communication module. Do not use EMB3D as a substitute for ATT&CK for ICS. Use both layers when evidence supports both.
+> EMB3D aligns with MITRE ATT&CK, CWE, and CVE to provide a property-based threat model that maps device features to specific threats and recommends mitigations tiered by maturity and implementation difficulty. Use EMB3D when the modeled asset is, contains, or depends on an embedded device: PLC, PAC, RTU, SIS controller, HMI appliance, gateway, industrial edge node, drive, intelligent sensor, actuator, or embedded communication module. Do not use EMB3D as a substitute for ATT&CK for ICS. Use both layers when evidence supports both.
 
 - [Device Properties](https://emb3d.mitre.org/properties-list/)
   > Describe the hardware and software features of a device, including physical hardware, network services and protocols, software, and firmware. Each property is mapped to a set of threats, enabling enumeration of threat exposure based on known device features.
@@ -185,7 +204,7 @@ STRIDE is the foundational threat classification scheme for understanding each t
   > Embedded-device threat entries identify how a threat actor can achieve a specific objective or effect on the device. Each threat entry describes the targeted technical features, the required threat actions, the resulting impact, and the associated CWE weaknesses.
 
 - [Mitigations](https://emb3d.mitre.org/mitigations)
-  > Security mechanisms for each threat, categorized by implementation maturity level (Foundational, Intermediate, Leading). Mitigations are intended for device vendors to implement at design time and for asset owners to evaluate during device acquisition.
+  > Security mechanisms for each threat, categorized as Foundational, Intermediate, or Leading. Use the official MID-to-level mapping from the local EMB3D assets and apply the reporting rules in [`references/mitigation-levels.md`](references/mitigation-levels.md).
 
 ### 3.5. MITRE CWE
 
@@ -261,9 +280,9 @@ Save and integrate intermediate results after each step. When the objective is p
 
     | Value           | Meaning                                                                                                                          | Use                                                                         |
     | --------------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-    | `N/A`           | The finalized reviewed row has no applicable framework identifier or mapping for that column.                                    | Use for non-applicable ATT&CK, EMB3D, or CWE mappings.                      |
+    | `N/A`           | The finalized reviewed row has no applicable framework identifier, mitigation classification, or mapping for that column.        | Use for non-applicable ATT&CK, EMB3D, CWE, or Mitigation Level mappings.    |
     | Blank           | The field remains unresolved because the review is incomplete, blocked, or intentionally carried forward from an unreviewed row. | Use in strict, best-effort, or batch mode when evidence is missing.         |
-    | Populated value | Evidence supports the mapping, score, exploit maturity, prioritization, residual risk, treatment, or approval decision.          | Use only after the relevant data source and mapping rule have been checked. |
+    | Populated value | Evidence supports the mapping, score, exploit maturity, prioritization, mitigation level, residual risk, treatment, or approval. | Use only after the relevant data source and mapping rule have been checked. |
 
 2. Execution Mode
 
@@ -278,7 +297,7 @@ Save and integrate intermediate results after each step. When the objective is p
 3. Mode-aware Blocking Gates
 
     > [!IMPORTANT]
-    > Blocking gates are always evaluated, but their behavior depends on the selected execution mode. Do not treat unattended modes as permission to invent framework mappings, score values, treatment decisions, approval roles, or compliance conclusions.
+    > Blocking gates are always evaluated, but their behavior depends on the selected execution mode. Do not treat unattended modes as permission to invent framework mappings, score values, mitigation levels, treatment decisions, approval roles, or compliance conclusions.
 
     | Gate Condition                                               | Strict                                                                 | Best-effort                                                                                                            | Batch                                                                                                     |
     | ------------------------------------------------------------ | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
@@ -287,7 +306,7 @@ Save and integrate intermediate results after each step. When the objective is p
     | No TMT export CSV                                            | Stop and request the exported TMT CSV.                                 | Stop. The native TMT row inventory is the source of record and cannot be reconstructed safely.                         | Stop. Batch review cannot proceed without the row inventory.                                              |
     | Native TMT column missing                                    | Stop and report missing fields.                                        | Continue only if the missing field is not needed for the affected rows and document the limitation.                    | Mark affected rows `Needs Investigation` when the missing field affects interpretation.                   |
     | Material architecture conflict                               | Stop and ask whether to review as modeled, documented, or discrepancy. | Document the conflict and review only rows whose interpretation is not affected.                                       | Mark affected rows `Needs Investigation` and continue with unaffected rows.                               |
-    | Framework asset unavailable, inaccessible, stale, or missing | Stop and request updated assets.                                       | Leave unsupported identifiers, exploit maturity, score values, treatment, and approval blank; record the evidence gap. | Mark affected rows `Needs Investigation`, leave unsupported fields blank, and continue with the next row. |
+    | Framework asset unavailable, inaccessible, stale, or missing | Stop and request updated assets.                                       | Leave unsupported identifiers, exploit maturity, score values, mitigation levels, treatment, and approval blank; record the evidence gap. | Mark affected rows `Needs Investigation`, leave unsupported fields blank, and continue with the next row. |
     | Approval owner or mechanism missing                          | Stop when treatment requires approval.                                 | Leave `Risk Approval` blank and record approval pending in `Justification` and the summary.                            | Mark affected rows `Needs Investigation` when approval is required for the selected disposition.          |
 
 4. Artifact Hygiene
@@ -346,7 +365,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Retain native TMT columns in source order.
     - Preserve native source fields verbatim: `Id`, `Title`, `Category`, `Diagram`, `Interaction`, `Changed By`, `Description`, `Last Modified`.
     - Update native review fields only after analyst review: `State`, `Priority`, `Justification`.
-    - Append review columns in this order: `ATT&CK ID`, `EMB3D TID`, `CWE ID`, `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Threat Actor`, `Risk Treatment`, `Risk Approval`.
+    - Append review columns in this order: `ATT&CK ID`, `EMB3D TID`, `CWE ID`, `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Threat Actor`, `Mitigation Level`, `Risk Treatment`, `Risk Approval`.
     - Every output row must trace back to exactly one source row by native `Id`.
     - If enrichment columns already exist, carry their values forward unchanged for already-reviewed rows unless the user explicitly requests re-review.
 
@@ -357,10 +376,10 @@ Save and integrate intermediate results after each step. When the objective is p
 ### 4.3. Review
 
 > [!NOTE]
-> Perform steps 1–14 for every row before proceeding to section [4.4. Deliverables](#44-deliverables).
+> Perform steps 1–15 for every row before proceeding to section [4.4. Deliverables](#44-deliverables).
 
 > [!NOTE]
-> Local framework assets availability are gating inputs. If the required ATT&CK, EMB3D, CWE, or CVSS asset file is unavailable, inaccessible, stale, or missing, do not invent identifiers, exploit maturity, scores, or mappings. In strict mode, stop and request updated assets. In best-effort or batch mode, leave unsupported fields blank, mark the row `Needs Investigation` when the missing asset affects the decision, and record the evidence gap in `Justification` and the summary.
+> Local framework assets availability are gating inputs. If the required ATT&CK, EMB3D, CWE, or CVSS asset file is unavailable, inaccessible, stale, or missing, do not invent identifiers, exploit maturity, scores, mitigation levels, or mappings. In strict mode, stop and request updated assets. In best-effort or batch mode, leave unsupported fields blank, mark the row `Needs Investigation` when the missing asset affects the decision, and record the evidence gap in `Justification` and the summary.
 
 1. Row-by-Row Analysis
 
@@ -394,9 +413,13 @@ Save and integrate intermediate results after each step. When the objective is p
     - Apply Field Resolution Semantics.
     - In `Justification`, describe the mapped device property or missing control without repeating TIDs.
 
-    **Data Source:**
+    **Data Sources:**
     - [assets/emb3d/threats_2.0.1.json](assets/emb3d/threats_2.0.1.json)
-      > Use the MITRE EMB3D JSON to confirm TID(s), names, descriptions, mitigation levels, and property mapping.
+      > Use the MITRE EMB3D threat JSON to confirm TID(s), names, descriptions, and property mapping.
+    - [assets/emb3d/mitigations_threat_mappings_2.0.1.json](assets/emb3d/mitigations_threat_mappings_2.0.1.json)
+      > Use the MITRE EMB3D mitigation JSON to confirm MID(s), names, official mitigation levels, and threat mapping.
+    - [assets/emb3d/threats_properties_mitigations_mappings_2.0.1.json](assets/emb3d/threats_properties_mitigations_mappings_2.0.1.json)
+      > Use the combined mapping JSON to validate TID, property, MID, and mitigation-level relationships.
 
 4. MITRE CWE
 
@@ -453,20 +476,32 @@ Save and integrate intermediate results after each step. When the objective is p
     - Base the decision on access path, capability, and operational knowledge.
     - If several actors could plausibly perform the attack, record the minimum actor that can realistically achieve the described effect.
 
-9. TMT State
+9. Mitigation Level
 
-    **Action:** Revise `State` using the full analytical context: TMT row, ATT&CK technique, EMB3D exposure, CWE weakness, CVSS severity, inherent risk prioritization, and threat actor.
+    **Action:** Populate `Mitigation Level` using section [5.2.6.1. Mitigation Level Mapping](#5261-mitigation-level-mapping) and [`references/mitigation-levels.md`](references/mitigation-levels.md).
+    - Record only confirmed implemented or evidenced controls.
+    - Use `Baseline` for confirmed controls that materially reduce the threat without claiming an implemented EMB3D mitigation.
+    - Use `Foundational`, `Intermediate`, or `Leading` only when the applicable EMB3D MID and official level are confirmed from the local EMB3D assets.
+    - When complementary implemented mitigations span tiers, record all materially contributing levels, comma-separated in canonical order.
+    - When a higher-tier mitigation supersedes a lower-tier mitigation, record the implemented superseding tier and document the relationship in `Justification`.
+    - Use `N/A` only for finalized `Not Applicable` rows.
+    - Leave blank for unresolved, unreviewed, or evidence-gated rows.
+    - Do not classify planned recommendations as implemented mitigation levels.
+
+10. TMT State
+
+    **Action:** Revise `State` using the full analytical context: TMT row, ATT&CK technique, EMB3D exposure, CWE weakness, CVSS severity, inherent risk prioritization, threat actor, and mitigation level.
 
     | State                 | Use When                                                                                       | Justification Requirement                                                                                                |
     | --------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
     | `Not Started`         | Row has not yet been reviewed.                                                                 | Leave enrichment and governance fields blank except preserved source values.                                             |
     | `Not Applicable`      | Attack path is architecturally impossible, outside scope, or structurally eliminated.          | Name the contradiction or eliminated element and explain why the minimum actor was considered before rejecting the path. |
-    | `Mitigated`           | Confirmed controls, compensating measures, or design changes reduce risk to an accepted level. | Identify the control, residual risk, remaining exposure, owner, and approval mechanism.                                  |
-    | `Needs Investigation` | Critical evidence is missing or a key assumption cannot be validated.                          | Name the evidence gap and whether it affects actor assignment, scoring, treatment, or approval.                          |
+    | `Mitigated`           | Confirmed controls, compensating measures, or design changes reduce risk to an accepted level. | Identify the control, mitigation level, residual risk, remaining exposure, owner, and approval mechanism.                |
+    | `Needs Investigation` | Critical evidence is missing or a key assumption cannot be validated.                          | Name the evidence gap and whether it affects actor assignment, scoring, mitigation level, treatment, or approval.         |
 
     Do not use `Not Applicable` to downgrade a real weakness that merely has compensating controls, environmental restrictions, or an accepted residual risk.
 
-10. TMT Priority
+11. TMT Priority
 
     **Action:** Revise `Priority` using `Risk Prioritization` as the primary signal and adjust only when modeled context provides a specific reason to deviate.
 
@@ -476,39 +511,41 @@ Save and integrate intermediate results after each step. When the objective is p
     | `Medium` | Mitigation planning should be initiated and tracked in the security backlog. |
     | `High`   | Significant threat requiring prompt mitigation and possible escalation.      |
 
-11. Residual Risk
+12. Residual Risk
 
-    **Action:** Populate residual risk in `Justification` after `State` and `Priority` are revised and before selecting governance treatment.
+    **Action:** Populate residual risk in `Justification` after `State`, `Priority`, and `Mitigation Level` are revised and before selecting governance treatment.
     - Use one of `None`, `Info`, `Low`, `Medium`, `High`, or `Critical`.
     - For `Not Applicable`, record `None` when the attack path is structurally eliminated or outside scope.
     - For `Mitigated`, record the remaining risk after confirmed controls, compensating measures, environmental constraints, or design changes are applied.
     - For `Needs Investigation` or unresolved rows, leave blank and record the evidence gap in `Justification`.
     - Do not use residual risk to lower `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, or `Risk Prioritization`.
 
-12. Risk Treatment
+13. Risk Treatment
 
     **Action:** Populate `Risk Treatment` using section [5.2.7. Risk Treatment Mapping](#527-risk-treatment-mapping).
     - Select treatment from the inherent risk, residual risk, state, and available governance evidence.
     - Do not use `Acceptance` or `Transfer` to work around missing technical evidence.
+    - Do not infer treatment from `Mitigation Level`; the fields classify different concepts.
     - Apply Field Resolution Semantics.
 
-13. Risk Approval
+14. Risk Approval
 
     **Action:** Populate `Risk Approval` using section [5.2.8. Risk Approval Mapping](#528-risk-approval-mapping).
     - Record exactly one standardized role label.
     - Base approval on `Risk Prioritization` and `Risk Treatment`, then escalate when residual risk evidence requires a stronger approver.
     - Apply Field Resolution Semantics.
 
-14. TMT Justification
+15. TMT Justification
 
     **Action:** Write a concise analyst statement in `Justification` after all enrichment and governance steps are complete.
     - Enclose the entire justification in double quotes and avoid semicolons because the generated CSV is semicolon-delimited.
     - State the evidence-based rationale for `State`.
-    - Reference the modeled protocol, interface, trust relationship, validation behavior, compensating control, ATT&CK behavior, EMB3D device property, CWE weakness, CVSS severity, CVSS threat metric, likelihood, inherent risk, residual risk, threat actor, treatment, and approval where they support the decision.
-    - Do not repeat ATT&CK, EMB3D, or CWE identifiers already captured in dedicated columns.
+    - Reference the modeled protocol, interface, trust relationship, validation behavior, compensating control, ATT&CK behavior, EMB3D device property, CWE weakness, CVSS severity, CVSS threat metric, likelihood, inherent risk, residual risk, threat actor, mitigation level, treatment, and approval where they support the decision.
+    - Do not repeat ATT&CK, EMB3D TID, or CWE identifiers already captured in dedicated columns.
+    - When `Mitigation Level` uses an EMB3D tier, identify the supporting MID in `Justification` and state whether multi-tier controls are complementary or superseding when relevant.
     - Explain `N/A` or blank review fields once when their omission is intentional.
     - For `Not Applicable`, name the architectural contradiction or eliminated element and explain that `Threat Actor` records the minimum actor considered before the path was rejected.
-    - For `Mitigated`, identify applied controls and residual risk.
+    - For `Mitigated`, identify applied controls, mitigation level, and residual risk.
     - For `Needs Investigation`, state the most important evidence gap.
     - For `Mitigation` or `Acceptance`, identify the residual-risk owner or approving stakeholder and approval mechanism, or state that approval is pending.
     - For `Transfer`, identify the named organization, contract, SLA, warranty, or insurance policy responsible for the transferred risk.
@@ -525,9 +562,9 @@ Save and integrate intermediate results after each step. When the objective is p
     - Verify each output row against its source row.
     - Keep identifiers and score artifacts in dedicated columns and keep `Justification` as narrative rationale.
     - Reject rows where `Justification` is only an identifier token or parenthetical code reference.
-    - Reject rows where `State`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Risk Treatment`, or `Risk Approval` contradict section [5.2.7. Risk Treatment Mapping](#527-risk-treatment-mapping).
+    - Reject rows where `State`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Mitigation Level`, `Risk Treatment`, or `Risk Approval` contradict the mapping rules.
     - Reject rows that use legal or regulatory shorthand as the sole rationale for acceptance, transfer, mitigation, or avoidance.
-    - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, residual risk posture, and threat actor selection decision.
+    - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, mitigation-level evidence, residual risk posture, and threat actor selection decision.
 
     **Script Usage:**
     - [scripts/validate_cvss.py](scripts/validate_cvss.py)
@@ -536,7 +573,7 @@ Save and integrate intermediate results after each step. When the objective is p
 2. Review Summary
 
     **Action:** Write `<Device_Name>_Threat_Model_Summary.md`.
-    - Include assessment objective, product scope, threat counts by state/inherent risk/residual risk/actor, highest-risk interactions, primary attack vectors, assumptions, evidence gaps, conflict summary, Not Applicable rationale categories, residual risks, risk treatment summary, risk approval status, and recommended mitigations by priority.
+    - Include assessment objective, product scope, threat counts by state/inherent risk/residual risk/actor/mitigation level, highest-risk interactions, primary attack vectors, assumptions, evidence gaps, conflict summary, Not Applicable rationale categories, residual risks, mitigation-level coverage, risk treatment summary, risk approval status, and recommended mitigations by priority.
     - For compliance-oriented assessments, structure the summary as reusable risk-assessment evidence and technical documentation input.
     - Each risk claim must reference at least one threat row `Id`.
     - Record artifact-trust and spreadsheet-safety warnings that affect generated CSV consumption.
@@ -711,19 +748,35 @@ Normalize `Threat Actor` from common OT/ICS threat-path characteristics. Always 
 > [!NOTE]
 > When supply-chain compromise is the modeled vector, choose `Cybercriminal` for commodity ransomware or financial extortion, and `Nation-State Actor` for custom-signed tooling, strategic pre-positioning, or sabotage.
 
+##### 5.2.6.1. Mitigation Level Mapping
+
+Use [`references/mitigation-levels.md`](references/mitigation-levels.md) as the complete policy.
+
+| Value | Use When |
+| ----- | -------- |
+| `Baseline` | Confirmed non-EMB3D controls materially reduce the threat, including common, compensating, environmental, or operational controls. |
+| `Foundational` | Confirmed implemented EMB3D mitigation records have `level = foundational`. |
+| `Intermediate` | Confirmed implemented EMB3D mitigation records have `level = intermediate`. |
+| `Leading` | Confirmed implemented EMB3D mitigation records have `level = leading`. |
+| `N/A` | The finalized row is `Not Applicable` and no mitigation classification applies. |
+| Blank | The row is unresolved, unreviewed, or evidence-gated. |
+
+> [!IMPORTANT]
+> Record all materially contributing levels when complementary mitigations span tiers. Do not assume a higher tier includes lower-tier coverage. Planned recommendations do not populate `Mitigation Level`.
+
 #### 5.2.7. Risk Treatment Mapping
 
 Risk treatment records the governance disposition for the inherent risk and the resulting residual risk after controls, transfer mechanisms, avoidance decisions, or acceptance decisions are applied.
 
 > [!NOTE]
-> `State` records the technical review result. `Risk Prioritization` records the pre-treatment technical prioritization. `Risk Treatment` records the governance disposition. `Mitigated` may pair with `Acceptance` only when controls are in place and inherent residual risk is intentionally retained with documented approval.
+> `State` records the technical review result. `Risk Prioritization` records the pre-treatment technical prioritization. `Mitigation Level` classifies confirmed controls. `Risk Treatment` records the governance disposition. `Mitigated` may pair with `Acceptance` only when controls are in place and inherent residual risk is intentionally retained with documented approval.
 
 - Defensibility Checks
 
   | Concern            | Check                                                                                                                                                                           |
   | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-  | Consistency        | `State`, CVSS severity, likelihood, inherent prioritization, residual risk, treatment, and approval describe a coherent risk posture.                                           |
-  | Overprescription   | Example rows are generalized patterns. Replace actor, score, treatment, and approval when product evidence differs.                                                             |
+  | Consistency        | `State`, CVSS severity, likelihood, inherent prioritization, mitigation level, residual risk, treatment, and approval describe a coherent risk posture.                         |
+  | Overprescription   | Example rows are generalized patterns. Replace actor, score, mitigation level, treatment, and approval when product evidence differs.                                           |
   | Defense Risk       | Do not cite regulation, deployment restrictions, or trusted-environment assumptions as standalone mitigations. Tie each claim to controls, architecture, and approval evidence. |
   | Identifier Hygiene | Do not populate ATT&CK, EMB3D, or CWE identifiers for `Not Applicable` rows unless the row explicitly documents a retained discrepancy.                                         |
   | CVSS Defensibility | Keep CVSS Base scoring intrinsic. Document compensating controls and acceptance decisions outside the Base vector.                                                              |
@@ -746,8 +799,8 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 | --------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `Not Started`         | Blank                     | Row has not yet been reviewed. Leave enrichment and governance fields blank except preserved source values.                       |
 | `Needs Investigation` | Blank                     | Evidence gap remains. Do not assign treatment or approval until resolved.                                                         |
-| `Not Applicable`      | Avoidance                 | Attack path or risk source is impossible, structurally eliminated, or outside scope. Identifier columns should normally be `N/A`. |
-| `Mitigated`           | Mitigation                | Controls reduce risk to an accepted residual level. Identify control, remaining exposure, owner, and approval mechanism.          |
+| `Not Applicable`      | Avoidance                 | Attack path or risk source is impossible, structurally eliminated, or outside scope. Identifier columns and `Mitigation Level` should normally be `N/A`. |
+| `Mitigated`           | Mitigation                | Controls reduce risk to an accepted residual level. Identify control, mitigation level, remaining exposure, owner, and approval mechanism. |
 | `Mitigated`           | Acceptance                | Use only when controls reduce exposure but residual risk is intentionally retained with documented approval.                      |
 | `Mitigated`           | Transfer                  | Use only when controls and a named third-party mechanism share or delegate residual consequence.                                  |
 
@@ -756,7 +809,7 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 | Risk Treatment | Minimum Evidence in `Justification`                                                             |
 | -------------- | ----------------------------------------------------------------------------------------------- |
 | Avoidance      | Architectural record or design decision confirming the risk source has been eliminated.         |
-| Mitigation     | Control(s), residual risk level, residual-risk owner, and approval mechanism.                   |
+| Mitigation     | Control(s), mitigation level, residual risk level, residual-risk owner, and approval mechanism. |
 | Acceptance     | Business rationale for retention, approving stakeholder, and acceptance mechanism.              |
 | Transfer       | Named third party, specific contract/SLA/warranty/insurance reference, and explicit risk scope. |
 
@@ -817,19 +870,19 @@ Use these templates for Microsoft TMT CSV intake and review.
   > Completed review in semicolon-delimited CSV format with appended enrichment columns.
 
   ```csv
-  Id;Title;Category;Diagram;Interaction;Priority;State;Changed By;Description;Justification;Last Modified;ATT&CK ID;EMB3D TID;CWE ID;CVSS v4.0 Vector;CVSS-B v4.0 Score;CVSS v4.0 Severity;Likelihood of Exploit;Risk Prioritization;Threat Actor;Risk Treatment;Risk Approval
-  1;Potential Lack of Input Validation for [Target];Tampering;<Device_Name>;PLC to [Target] via Modbus RTU (RS-485);High;Mitigated;;"Data flowing across PLC to [Target] via Modbus RTU (RS-485) may be tampered with by an attacker. This may lead to a denial of service attack against [Target] or an elevation of privilege attack against [Target] or an information disclosure by [Target]. Failure to verify that input is as expected is a root cause of a very large number of exploitable issues. Consider all paths and the way they handle data. Verify that all input is verified for correctness using an approved list input validation approach.";"[Protocol] provides no authentication or integrity protection. An attacker on the adjacent fieldbus [Physical Medium] segment can inject tampered frames to alter commands sent to the [Target] potentially causing unauthorized actions. Input validation in firmware limits accepted parameter ranges but does not authenticate the sender. The adjacent-network attack vector requires shared bus access making Cybercriminal the minimum capable actor. Mitigation includes protected segment termination inside the trusted environment for physical bus access controls and range validation in firmware. Residual risk remains High due to lack of cryptographic integrity on the protocol level. Acceptance is product-specific and requires documented stakeholder approval for operation within the defined deployment boundary.";Generated;T1692.001;N/A;CWE-20;CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:H/VA:L/SC:N/SI:L/SA:N;7,1;High;Medium;High;Cybercriminal;Acceptance;CPSO
-  2;Data Flow Sniffing;Information Disclosure;<Device_Name>;PLC to [Target] via Modbus RTU (RS-485);Medium;Mitigated;;"Data flowing across PLC to [Target] via Modbus RTU (RS-485) may be sniffed by an attacker. Depending on what type of data an attacker can read, it may be used to attack other parts of the system or simply be a disclosure of information leading to compliance violations. Consider encrypting the data flow.";"Modbus RTU traffic on RS-485 is unencrypted and can be passively sniffed by tapping the bus pair. Exposed data includes valve position setpoint values and operating state. The adjacent-bus attack vector requires physical proximity to the bus segment, limiting the minimum actor to Cybercriminal. Modbus RTU provides no native confidentiality controls. Baseline mitigation provides protected termination, cable shielding, isolation from the IT network, and enclosure access controls. Intermediate mitigation may include secure network tunnels with a dedicated gateway device. Residual risk is Low since sniffed process data alone has limited standalone exploitation value. Acceptance requires documented stakeholder approval for the residual confidentiality exposure.";Generated;T0842;TID-408;CWE-319;CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N;7,1;High;Medium;High;Cybercriminal;Acceptance;CPSO
-  3;Potential Process Crash or Stop for [Target];Denial Of Service;<Device_Name>;PLC to [Target] via Modbus RTU (RS-485);Medium;Mitigated;;"[Target] crashes, halts, stops or runs slowly; in all cases violating an availability metric.";"Flooding the RS-485 bus with malformed or excessive Modbus RTU frames can cause the [Target] to crash halt or respond slowly violating availability. The [Target] firmware lacks rate limiting on the Modbus stack. Minimum actor is Cybercriminal, mapping to adjacent-vector exploitation as physical bus access is required. Baseline mitigation includes protected termination, physical access controls, and firmware watchdog timers. Residual risk is Low with hardware-level crash recovery. Acceptance requires documented stakeholder approval for the residual availability exposure on the defined deployment boundary.";Generated;T0814, T0881;TID-405;CWE-400, CWE-410;CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N;7,1;High;Medium;High;Cybercriminal;Acceptance;CPSO
-  4;Data Flow PLC to [Target] via Modbus RTU (RS-485) Is Potentially Interrupted;Denial Of Service;<Device_Name>;PLC to [Target] via Modbus RTU (RS-485);Medium;Mitigated;;"An external agent interrupts data flowing across a trust boundary in either direction.";"Physical disruption or electrical interference on the RS-485 bus interrupts the command and feedback loop between the PLC and [Target], resulting in loss of process visibility. Baseline mitigation includes RS-485 differential signaling for noise immunity of electrical interference, physical conduit protection, cable shielding, and isolation from IT networks. Minimum threat actor is Insider Threat, as this requires local or physical access to cable routing or termination points. Residual risk is Low due to PLC fail-safe behavior upon communication timeout. Acceptance requires documented stakeholder approval for the residual availability exposure.";Generated;T0813, T1691.001;TID-222;CWE-693;CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:L;5,3;Medium;Low;Low;Insider Threat;Acceptance;Lead Security
-  5;Potential Lack of Input Validation for [Target];Tampering;<Device_Name>;[Debug Tool] to [Target] via JTAG (THT);Medium;Mitigated;;"Data flowing across [Debug Tool] to [Target] via JTAG (THT) may be tampered with by an attacker. This may lead to a denial of service attack against [Target] or an elevation of privilege attack against [Target] or an information disclosure by [Target]. Failure to verify that input is as expected is a root cause of a very large number of exploitable issues. Consider all paths and the way they handle data. Verify that all input is verified for correctness using an approved list input validation approach.";"The JTAG interface provides direct unrestricted hardware-level read/write access to the [Target] flash memory SRAM and peripheral registers, completely bypassing application-layer input validation mechanisms. An attacker with physical contact to the internal through-hole technology pads can manipulate runtime state, extract cryptographic keys, alter configuration parameters, or overwrite firmware. Baseline mitigation is physical enclosure protection where JTAG pads are inside the sealed housing or disabled via fuse bits. Foundational mitigation includes firmware secure boot or code signature verification. Minimum actor is Insider Threat with direct PCB access and embedded debugging expertise. Risk treatment is Mitigation through production JTAG lockout, enclosure control, and boot integrity controls. Residual risk is Medium and requires Product Security approval.";Generated;T1693.001;TID-116, TID-119;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N;7,0;High;Low;Medium;Insider Threat;Mitigation;Product Security
-  6;Elevation by Changing the Execution Flow in [Target];Elevation Of Privilege;<Device_Name>;[Debug Tool] to [Target] via JTAG (THT);Medium;Mitigated;;"An attacker may pass data into [Target] in order to change the flow of program execution within [Target] to the attacker's choosing.";"JTAG provides direct register-level access to the [Target] program counter and stack pointer allowing complete control over program execution flow. An attacker can redirect execution to arbitrary code, modify interrupt vectors, or alter any runtime state. Baseline mitigation is physical enclosure protection and disabling JTAG via fuse bits for production devices. Foundational mitigation includes enabling JTAG lock bits and requiring authenticated administrative action for any reenablement path. Minimum actor is Insider Threat with direct PCB access and embedded debugging expertise. Risk treatment is Mitigation through production JTAG lockout and authenticated control of any reenablement path.";Generated;T0821;TID-119;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:H/VA:H/SC:N/SI:N/SA:N;5,2;Medium;Low;Low;Insider Threat;Mitigation;Lead Security
-  7;Potential Lack of Input Validation for [Target];Tampering;<Device_Name>;[Engineering Tool] to [Target] via [Protocol] (RJ-12/RS-232);Medium;Mitigated;;"Data flowing across [Engineering Tool] to [Target] via [Protocol] (RJ-12/RS-232) may be tampered with by an attacker. This may lead to a denial of service attack against [Target] or an elevation of privilege attack against [Target] or an information disclosure by [Target]. Failure to verify that input is as expected is a root cause of a very large number of exploitable issues. Consider all paths and the way they handle data. Verify that all input is verified for correctness using an approved list input validation approach.";"The [Protocol] provides no integrity protection and supports configuration commands including positioner setup, PID tuning, application selection, and communication parameters. An attacker connecting to the RJ-12 port could send malformed commands. Baseline mitigation requires communication parameter key-number entry and firmware validation of configuration ranges. Minimum actor is Insider Threat with local physical RS-232 port access and serial protocol knowledge. Residual risk is Low after range validation and controlled physical access.";Generated;T0836;TID-118;CWE-20;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:H/VA:L/SC:N/SI:L/SA:N;5,2;Medium;Low;Low;Insider Threat;Mitigation;Lead Security
-  8;Potential Lack of Input Validation for [Target];Tampering;<Device_Name>;[Removable Media Device] to [Target] (RJ-12/RS-232);Medium;Mitigated;;"Data flowing across [Removable Media Device] to [Target] (RJ-12/RS-232) may be tampered with by an attacker. This may lead to a denial of service attack against [Target] or an elevation of privilege attack against [Target] or an information disclosure by [Target]. Failure to verify that input is as expected is a root cause of a very large number of exploitable issues. Consider all paths and the way they handle data. Verify that all input is verified for correctness using an approved list input validation approach.";"A tampered [Removable Media Device] can inject malicious configuration parameters into the [Target] via RS-232 potentially altering positioner calibration application mode or fail-safe settings. The [Removable Media Device] acts as removable media carrying engineered parameter data. Baseline mitigation is that the port is internal and firmware validates configuration ranges. Foundational mitigation allows device administrators to disable removable media support. Residual risk is Low after internal-port exposure reduction, configuration validation, and administrative disablement of removable media support. Minimum actor is Insider Threat with local physical port access and removable media handling access. Risk treatment is Mitigation through internal-port exposure reduction, configuration validation, and administrative disablement of removable media support.";Generated;T0836;TID-111;CWE-20;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:H/VA:L/SC:N/SI:L/SA:N;5,2;Medium;Low;Low;Insider Threat;Mitigation;Lead Security
-  9;Potential Lack of Input Validation for [Target];Tampering;<Device_Name>;[Human Actor] to [Target] via [Physical Input Interface] (GPIO);Low;Mitigated;;"Data flowing across [Human Actor] to [Target] via [Physical Input Interface] (GPIO) may be tampered with by an attacker. This may lead to a denial of service attack against [Target] or an elevation of privilege attack against [Target] or an information disclosure by [Target]. Failure to verify that input is as expected is a root cause of a very large number of exploitable issues. Consider all paths and the way they handle data. Verify that all input is verified for correctness using an approved list input validation approach.";"Physical tampering with GPIO dry-contact inputs could send unauthorized position or mode commands to the [Target]. This requires physical access to the control panel wiring inside the housing. The [Target] firmware validates input debounce and limits accepted command ranges. Minimum actor is Insider Threat with local physical access. Baseline mitigation includes housing cover with IP65 protection and authorized access controls.";Generated;N/A;TID-116;CWE-20;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N;2,4;Low;Low;Low;Insider Threat;Mitigation;Lead Security
-  10;Spoofing the [Target] Process;Spoofing;<Device_Name>;[Human Actor] to [Target] via [Physical Input Interface] (GPIO);Low;Not Applicable;;"[Target] may be spoofed by an attacker and this may lead to information disclosure by [Human Actor]. Consider using a standard authentication mechanism to identify the destination process.";"The [Target] receives input from [Physical Input Interface] via dry-contact GPIO. The physical user-interface elements lack network identity or authentication protocols to spoof. The [Target] processes GPIO state changes internally without an identity-based trust model on the signal path. Identifier columns are N/A because the spoofing path is architecturally inapplicable rather than an exploitable embedded-device weakness.";Generated;N/A;N/A;N/A;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N;0,0;None;Info;Info;Insider Threat;Avoidance;Not Required
-  11;[Target] May be Subject to Elevation of Privilege Using Remote Code Execution;Elevation Of Privilege;<Device_Name>;PLC to [Target] via Modbus RTU (RS-485);Medium;Not Applicable;;"PLC may be able to remotely execute code for [Target].";"The Remote Code Execution (RCE) vulnerability does not match the retained Modbus RTU attack path for this generalized pattern. The serial bus path may support tampering or denial-of-service rows, but no independent remote-code-execution mechanism. Identifier columns are N/A because candidate mappings would overstate a rejected attack path.";Generated;N/A;N/A;N/A;CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N;0,0;None;Info;Info;Cybercriminal;Avoidance;Not Required
-  12;Potential Data Repudiation by [Target];Repudiation;<Device_Name>;PLC to [Target] via Modbus RTU (RS-485);Medium;Mitigated;;"[Target] claims that it did not receive data from a source outside the trust boundary. Consider using logging or auditing to record the source, time, and summary of the received data.";"Modbus RTU lacks native session logging or audit trails so the [Target] cannot cryptographically prove it received a specific command from the PLC. However the functional impact of pure repudiation on a valve actuator is limited since process consequences are physically observable. The adjacent-bus attack vector requires physical access to the RS-485 segment. Minimum actor is Cybercriminal with OT protocol knowledge. Residual risk is Low given adjacent-segment constraints and observable process state. Acceptance is product-specific and requires documented Product Security approval for the residual auditability limitation.";Generated;N/A;N/A;CWE-778;CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N;5,3;Medium;Medium;Medium;Cybercriminal;Acceptance;Product Security
+  Id;Title;Category;Diagram;Interaction;Priority;State;Changed By;Description;Justification;Last Modified;ATT&CK ID;EMB3D TID;CWE ID;CVSS v4.0 Vector;CVSS-B v4.0 Score;CVSS v4.0 Severity;Likelihood of Exploit;Risk Prioritization;Threat Actor;Mitigation Level;Risk Treatment;Risk Approval
+  1;Potential Lack of Input Validation for [Target];Tampering;<Device_Name>;PLC to [Target] via Modbus RTU (RS-485);High;Mitigated;;"Data flowing across PLC to [Target] via Modbus RTU (RS-485) may be tampered with by an attacker. This may lead to a denial of service attack against [Target] or an elevation of privilege attack against [Target] or an information disclosure by [Target]. Failure to verify that input is as expected is a root cause of a very large number of exploitable issues. Consider all paths and the way they handle data. Verify that all input is verified for correctness using an approved list input validation approach.";"[Protocol] provides no authentication or integrity protection. An attacker on the adjacent fieldbus [Physical Medium] segment can inject tampered frames to alter commands sent to the [Target] potentially causing unauthorized actions. Input validation in firmware limits accepted parameter ranges but does not authenticate the sender. The adjacent-network attack vector requires shared bus access making Cybercriminal the minimum capable actor. Baseline controls include protected segment termination inside the trusted environment for physical bus access controls and range validation in firmware. Residual risk remains High due to lack of cryptographic integrity on the protocol level. Acceptance is product-specific and requires documented stakeholder approval for operation within the defined deployment boundary.";Generated;T1692.001;N/A;CWE-20;CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:H/VA:L/SC:N/SI:L/SA:N;7,1;High;Medium;High;Cybercriminal;Baseline;Acceptance;CPSO
+  2;Data Flow Sniffing;Information Disclosure;<Device_Name>;PLC to [Target] via Modbus RTU (RS-485);Medium;Mitigated;;"Data flowing across PLC to [Target] via Modbus RTU (RS-485) may be sniffed by an attacker. Depending on what type of data an attacker can read, it may be used to attack other parts of the system or simply be a disclosure of information leading to compliance violations. Consider encrypting the data flow.";"Modbus RTU traffic on RS-485 is unencrypted and can be passively sniffed by tapping the bus pair. Exposed data includes valve position setpoint values and operating state. The adjacent-bus attack vector requires physical proximity to the bus segment, limiting the minimum actor to Cybercriminal. Modbus RTU provides no native confidentiality controls. Baseline controls provide protected termination, cable shielding, isolation from the IT network, and enclosure access controls. MID-081 Secure Network Tunnels is an Intermediate recommendation but is not treated as implemented in this example. Residual risk is Low since sniffed process data alone has limited standalone exploitation value. Acceptance requires documented stakeholder approval for the residual confidentiality exposure.";Generated;T0842;TID-408;CWE-319;CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N;7,1;High;Medium;High;Cybercriminal;Baseline;Acceptance;CPSO
+  3;Potential Process Crash or Stop for [Target];Denial Of Service;<Device_Name>;PLC to [Target] via Modbus RTU (RS-485);Medium;Mitigated;;"[Target] crashes, halts, stops or runs slowly; in all cases violating an availability metric.";"Flooding the RS-485 bus with malformed or excessive Modbus RTU frames can cause the [Target] to crash halt or respond slowly violating availability. The [Target] firmware lacks rate limiting on the Modbus stack. Minimum actor is Cybercriminal, mapping to adjacent-vector exploitation as physical bus access is required. Baseline controls include protected termination, physical access controls, and firmware watchdog timers. Residual risk is Low with hardware-level crash recovery. Acceptance requires documented stakeholder approval for the residual availability exposure on the defined deployment boundary.";Generated;T0814, T0881;TID-405;CWE-400, CWE-410;CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N;7,1;High;Medium;High;Cybercriminal;Baseline;Acceptance;CPSO
+  4;Data Flow PLC to [Target] via Modbus RTU (RS-485) Is Potentially Interrupted;Denial Of Service;<Device_Name>;PLC to [Target] via Modbus RTU (RS-485);Medium;Mitigated;;"An external agent interrupts data flowing across a trust boundary in either direction.";"Physical disruption or electrical interference on the RS-485 bus interrupts the command and feedback loop between the PLC and [Target], resulting in loss of process visibility. Baseline controls include RS-485 differential signaling for noise immunity of electrical interference, physical conduit protection, cable shielding, and isolation from IT networks. Minimum threat actor is Insider Threat, as this requires local or physical access to cable routing or termination points. Residual risk is Low due to PLC fail-safe behavior upon communication timeout. Acceptance requires documented stakeholder approval for the residual availability exposure.";Generated;T0813, T1691.001;TID-222;CWE-693;CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:L;5,3;Medium;Low;Low;Insider Threat;Baseline;Acceptance;Lead Security
+  5;Potential Lack of Input Validation for [Target];Tampering;<Device_Name>;[Debug Tool] to [Target] via JTAG (THT);Medium;Mitigated;;"Data flowing across [Debug Tool] to [Target] via JTAG (THT) may be tampered with by an attacker. This may lead to a denial of service attack against [Target] or an elevation of privilege attack against [Target] or an information disclosure by [Target]. Failure to verify that input is as expected is a root cause of a very large number of exploitable issues. Consider all paths and the way they handle data. Verify that all input is verified for correctness using an approved list input validation approach.";"The JTAG interface provides direct unrestricted hardware-level read/write access to the [Target] flash memory SRAM and peripheral registers, completely bypassing application-layer input validation mechanisms. An attacker with physical contact to the internal through-hole technology pads can manipulate runtime state, extract cryptographic keys, alter configuration parameters, or overwrite firmware. Baseline enclosure protection restricts physical access. Foundational EMB3D mitigations MID-057 and MID-058 disable production debug access and engage hardware readout protection. Minimum actor is Insider Threat with direct PCB access and embedded debugging expertise. Risk treatment is Mitigation through production JTAG lockout, enclosure control, and boot integrity controls. Residual risk is Medium and requires Product Security approval.";Generated;T1693.001;TID-116, TID-119;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N;7,0;High;Low;Medium;Insider Threat;Baseline, Foundational;Mitigation;Product Security
+  6;Elevation by Changing the Execution Flow in [Target];Elevation Of Privilege;<Device_Name>;[Debug Tool] to [Target] via JTAG (THT);Medium;Mitigated;;"An attacker may pass data into [Target] in order to change the flow of program execution within [Target] to the attacker's choosing.";"JTAG provides direct register-level access to the [Target] program counter and stack pointer allowing complete control over program execution flow. An attacker can redirect execution to arbitrary code, modify interrupt vectors, or alter any runtime state. Baseline enclosure protection restricts direct PCB access. Foundational EMB3D mitigations MID-057 and MID-058 disable the production debug port and engage hardware readout protection. Minimum actor is Insider Threat with direct PCB access and embedded debugging expertise. Risk treatment is Mitigation through production JTAG lockout and authenticated control of any reenablement path.";Generated;T0821;TID-119;CWE-1191;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:H/VA:H/SC:N/SI:N/SA:N;5,2;Medium;Low;Low;Insider Threat;Baseline, Foundational;Mitigation;Lead Security
+  7;Potential Lack of Input Validation for [Target];Tampering;<Device_Name>;[Engineering Tool] to [Target] via [Protocol] (RJ-12/RS-232);Medium;Mitigated;;"Data flowing across [Engineering Tool] to [Target] via [Protocol] (RJ-12/RS-232) may be tampered with by an attacker. This may lead to a denial of service attack against [Target] or an elevation of privilege attack against [Target] or an information disclosure by [Target]. Failure to verify that input is as expected is a root cause of a very large number of exploitable issues. Consider all paths and the way they handle data. Verify that all input is verified for correctness using an approved list input validation approach.";"The [Protocol] provides no integrity protection and supports configuration commands including positioner setup, PID tuning, application selection, and communication parameters. An attacker connecting to the RJ-12 port could send malformed commands. Baseline controls require communication parameter key-number entry and firmware validation of configuration ranges. Minimum actor is Insider Threat with local physical RS-232 port access and serial protocol knowledge. Residual risk is Low after range validation and controlled physical access.";Generated;T0836;TID-118;CWE-20;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:H/VA:L/SC:N/SI:L/SA:N;5,2;Medium;Low;Low;Insider Threat;Baseline;Mitigation;Lead Security
+  8;Potential Lack of Input Validation for [Target];Tampering;<Device_Name>;[Removable Media Device] to [Target] (RJ-12/RS-232);Medium;Mitigated;;"Data flowing across [Removable Media Device] to [Target] (RJ-12/RS-232) may be tampered with by an attacker. This may lead to a denial of service attack against [Target] or an elevation of privilege attack against [Target] or an information disclosure by [Target]. Failure to verify that input is as expected is a root cause of a very large number of exploitable issues. Consider all paths and the way they handle data. Verify that all input is verified for correctness using an approved list input validation approach.";"A tampered [Removable Media Device] can inject malicious configuration parameters into the [Target] via RS-232 potentially altering positioner calibration application mode or fail-safe settings. The [Removable Media Device] acts as removable media carrying engineered parameter data. Baseline controls include internal-port exposure reduction and firmware configuration validation. Foundational EMB3D mitigation MID-056 allows device administrators to disable removable storage support. Residual risk is Low after internal-port exposure reduction, configuration validation, and administrative disablement of removable media support. Minimum actor is Insider Threat with local physical port access and removable media handling access. Risk treatment is Mitigation through the confirmed controls.";Generated;T0836;TID-111;CWE-20;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:H/VA:L/SC:N/SI:L/SA:N;5,2;Medium;Low;Low;Insider Threat;Baseline, Foundational;Mitigation;Lead Security
+  9;Potential Lack of Input Validation for [Target];Tampering;<Device_Name>;[Human Actor] to [Target] via [Physical Input Interface] (GPIO);Low;Mitigated;;"Data flowing across [Human Actor] to [Target] via [Physical Input Interface] (GPIO) may be tampered with by an attacker. This may lead to a denial of service attack against [Target] or an elevation of privilege attack against [Target] or an information disclosure by [Target]. Failure to verify that input is as expected is a root cause of a very large number of exploitable issues. Consider all paths and the way they handle data. Verify that all input is verified for correctness using an approved list input validation approach.";"Physical tampering with GPIO dry-contact inputs could send unauthorized position or mode commands to the [Target]. This requires physical access to the control panel wiring inside the housing. The [Target] firmware validates input debounce and limits accepted command ranges. Minimum actor is Insider Threat with local physical access. Baseline controls include housing protection and authorized access controls.";Generated;N/A;TID-116;CWE-20;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N;2,4;Low;Low;Low;Insider Threat;Baseline;Mitigation;Lead Security
+  10;Spoofing the [Target] Process;Spoofing;<Device_Name>;[Human Actor] to [Target] via [Physical Input Interface] (GPIO);Low;Not Applicable;;"[Target] may be spoofed by an attacker and this may lead to information disclosure by [Human Actor]. Consider using a standard authentication mechanism to identify the destination process.";"The [Target] receives input from [Physical Input Interface] via dry-contact GPIO. The physical user-interface elements lack network identity or authentication protocols to spoof. The [Target] processes GPIO state changes internally without an identity-based trust model on the signal path. Identifier columns and Mitigation Level are N/A because the spoofing path is architecturally inapplicable rather than an exploitable embedded-device weakness.";Generated;N/A;N/A;N/A;CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N;0,0;None;Info;Info;Insider Threat;N/A;Avoidance;Not Required
+  11;[Target] May be Subject to Elevation of Privilege Using Remote Code Execution;Elevation Of Privilege;<Device_Name>;PLC to [Target] via Modbus RTU (RS-485);Medium;Not Applicable;;"PLC may be able to remotely execute code for [Target].";"The Remote Code Execution (RCE) vulnerability does not match the retained Modbus RTU attack path for this generalized pattern. The serial bus path may support tampering or denial-of-service rows, but no independent remote-code-execution mechanism. Identifier columns and Mitigation Level are N/A because candidate mappings would overstate a rejected attack path.";Generated;N/A;N/A;N/A;CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N;0,0;None;Info;Info;Cybercriminal;N/A;Avoidance;Not Required
+  12;Potential Data Repudiation by [Target];Repudiation;<Device_Name>;PLC to [Target] via Modbus RTU (RS-485);Medium;Mitigated;;"[Target] claims that it did not receive data from a source outside the trust boundary. Consider using logging or auditing to record the source, time, and summary of the received data.";"Modbus RTU lacks native session logging or audit trails so the [Target] cannot cryptographically prove it received a specific command from the PLC. However the functional impact of pure repudiation on a valve actuator is limited since process consequences are physically observable. The adjacent-bus attack vector requires physical access to the RS-485 segment. Minimum actor is Cybercriminal with OT protocol knowledge. Baseline controls include observable process-state reconciliation and adjacent-segment access restrictions. Residual risk is Low given adjacent-segment constraints and observable process state. Acceptance is product-specific and requires documented Product Security approval for the residual auditability limitation.";Generated;N/A;N/A;CWE-778;CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N;5,3;Medium;Medium;Medium;Cybercriminal;Baseline;Acceptance;Product Security
   ```
 
 ## 7. References
@@ -840,6 +893,9 @@ Use these templates for Microsoft TMT CSV intake and review.
 - MITRE [ATT&CK for ICS](https://attack.mitre.org/matrices/ics/) matrix.
 - MITRE [CWE](https://cwe.mitre.org/) page.
 - MITRE [EMB3D](https://emb3d.mitre.org/) page.
+- MITRE [EMB3D Mitigations](https://emb3d.mitre.org/mitigations/) catalog.
+- MITRE [EMB3D Threat Model for Embedded Devices](https://emb3d.mitre.org/assets/EMB3D_Paper_09-23-24.pdf) paper.
+- Local [Mitigation Levels](references/mitigation-levels.md) guidance.
 - FIRST [CVSS v4.0 Specification](https://www.first.org/cvss/v4.0/specification-document) page.
 - FIRST [CVSS v4.0 Calculator](https://www.first.org/cvss/calculator/4.0) page.
 - BSI [Risk Prioritization](https://www.bsi.bund.de/DE/Service-Navi/Abonnements/Newsletter/Buerger-CERT-Abos/Buerger-CERT-Sicherheitshinweise/Risikostufen/risikostufen.html) page.
