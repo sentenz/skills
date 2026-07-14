@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.3](https://github.com/sentenz/skills/compare/v1.10.2...v1.10.3) (2026-07-14)
+
+
+### Bug Fixes
+
+* **skills:** tighten consistency guidance in threat-modeling-ics ([#66](https://github.com/sentenz/skills/issues/66)) ([279ff29](https://github.com/sentenz/skills/commit/279ff29caaee50fe8d4cddaad105317c6d1120a3))
+
 ## [1.10.2](https://github.com/sentenz/skills/compare/v1.10.1...v1.10.2) (2026-07-08)
 
 
