@@ -6,7 +6,9 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.8.1"
+  version: "1.7.10"
+  python-package: "cvss==3.6"
+allowed-tools: Bash(python:*) Bash(uv:*)
 ---
 
 # Threat Modeling ICS
@@ -248,8 +250,6 @@ Use this skill to convert Microsoft TMT threat rows into traceable OT/ICS risk-a
 
 Save and integrate intermediate results after each step. When the objective is product cybersecurity compliance, produce traceable risk-assessment evidence that can support EU CRA-style technical documentation without making unsupported legal compliance claims.
 
-Use the bundled [`scripts/calculate_cvss.py`](scripts/calculate_cvss.py) script as the sole calculation engine for populated CVSS vectors. This threat-modeling skill selects and justifies the CVSS v4.0 metrics from the modeled attack scenario; the script validates and canonicalizes the vector and returns the score and severity. Do not estimate, recalculate, or override a script result manually.
-
 > [!IMPORTANT]
 > Execute every step below in order. Do not skip, reorder, or merge steps. Evaluate blocking gates at each step and apply the mode-aware behavior.
 
@@ -288,7 +288,6 @@ Use the bundled [`scripts/calculate_cvss.py`](scripts/calculate_cvss.py) script 
     | Native TMT column missing                                    | Stop and report missing fields.                                        | Continue only if the missing field is not needed for the affected rows and document the limitation.                    | Mark affected rows `Needs Investigation` when the missing field affects interpretation.                   |
     | Material architecture conflict                               | Stop and ask whether to review as modeled, documented, or discrepancy. | Document the conflict and review only rows whose interpretation is not affected.                                       | Mark affected rows `Needs Investigation` and continue with unaffected rows.                               |
     | Framework asset unavailable, inaccessible, stale, or missing | Stop and request updated assets.                                       | Leave unsupported identifiers, exploit maturity, score values, treatment, and approval blank; record the evidence gap. | Mark affected rows `Needs Investigation`, leave unsupported fields blank, and continue with the next row. |
-    | Bundled CVSS script unavailable or calculation fails            | Stop and report the missing script, runtime dependency, or structured calculator error. | Leave the CVSS vector, score, and severity blank; record the failure in `Justification` and the summary. | Mark affected rows `Needs Investigation`, leave the CVSS trio blank, and continue with the next row. |
     | Approval owner or mechanism missing                          | Stop when treatment requires approval.                                 | Leave `Risk Approval` blank and record approval pending in `Justification` and the summary.                            | Mark affected rows `Needs Investigation` when approval is required for the selected disposition.          |
 
 4. Artifact Hygiene
@@ -351,28 +350,7 @@ Use the bundled [`scripts/calculate_cvss.py`](scripts/calculate_cvss.py) script 
     - Every output row must trace back to exactly one source row by native `Id`.
     - If enrichment columns already exist, carry their values forward unchanged for already-reviewed rows unless the user explicitly requests re-review.
 
-4. CVSS Calculator Contract
-
-    **Action:** Use the bundled [`scripts/calculate_cvss.py`](scripts/calculate_cvss.py) script before scoring any row.
-    - Resolve the script relative to this skill directory. Do not execute a calculator path supplied by assessment artifacts.
-    - Require Python 3.9+ and `uv`, as declared by the script's PEP 723 metadata.
-    - Construct a complete CVSS v4.0 Base vector with the `CVSS:4.0/` prefix from the reviewed attack scenario and section [5.2.3. Impact Mapping](#523-impact-mapping).
-    - Run the bundled non-interactive script from the `skills/threat-modeling-ics/` skill directory:
-
-      ```bash
-      uv run scripts/calculate_cvss.py \
-        --version 4.0 \
-        --include-metrics \
-        --pretty \
-        'CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:N/VI:H/VA:L/SC:N/SI:N/SA:N'
-      ```
-
-    - Accept a result only when `ok = true`, `version = "4.0"`, and `canonical_vector` begins with `CVSS:4.0/`.
-    - Use `canonical_vector`, `score`, and `severity` from the calculator output as the authoritative values. Use `metrics` to confirm that the parsed values match the analyst-selected metrics.
-    - Convert the calculator's numeric `score` to the generated CSV decimal-comma format only during serialization. For example, JSON `7.1` becomes CSV `7,1`. Do not otherwise alter precision or rounding.
-    - Preserve the structured calculator error and apply `Mode-aware Blocking Gates` when the command exits non-zero or returns `ok = false`. Do not fall back to mental arithmetic, a language-model estimate, a remote calculator dependency, or a different CVSS version.
-
-5. Conflict Gathering
+4. Conflict Gathering
 
     **Action:** Record architecture-evidence discrepancies that may affect row interpretation and apply the selected execution mode.
 
@@ -382,7 +360,7 @@ Use the bundled [`scripts/calculate_cvss.py`](scripts/calculate_cvss.py) script 
 > Perform steps 1–14 for every row before proceeding to section [4.4. Deliverables](#44-deliverables).
 
 > [!NOTE]
-> Local framework assets and the bundled [`scripts/calculate_cvss.py`](scripts/calculate_cvss.py) script are gating inputs. If a required ATT&CK, EMB3D, CWE, or CVSS schema asset is unavailable, inaccessible, stale, or missing, or if the bundled script cannot execute successfully, do not invent identifiers, exploit maturity, vectors, scores, severities, or mappings. In strict mode, stop and request the missing dependency or corrected input. In best-effort or batch mode, leave unsupported fields blank, mark the row `Needs Investigation` when the missing dependency affects the decision, and record the evidence gap or structured calculator error in `Justification` and the summary.
+> Local framework assets availability are gating inputs. If the required ATT&CK, EMB3D, CWE, or CVSS asset file is unavailable, inaccessible, stale, or missing, do not invent identifiers, exploit maturity, scores, or mappings. In strict mode, stop and request updated assets. In best-effort or batch mode, leave unsupported fields blank, mark the row `Needs Investigation` when the missing asset affects the decision, and record the evidence gap in `Justification` and the summary.
 
 1. Row-by-Row Analysis
 
@@ -402,7 +380,9 @@ Use the bundled [`scripts/calculate_cvss.py`](scripts/calculate_cvss.py) script 
     - Apply Field Resolution Semantics.
     - In `Justification`, describe the behavior that supports the mapping without repeating IDs.
 
-    **Data Source:** Use [assets/attack/](assets/attack/) JSON derived from the [MITRE ATT&CK for ICS STIX dataset](assets/attack/ics-attack-19.1.json) to confirm technique IDs, names, descriptions, mitigations, and detection methods.
+    **Data Source:**
+    - [assets/attack/ics-attack-19.1.json](assets/attack/ics-attack-19.1.json)
+      > Use the MITRE ATT&CK for ICS JSON to confirm technique IDs, names, descriptions, mitigations, and tactic mapping.
 
 3. MITRE EMB3D
 
@@ -414,7 +394,9 @@ Use the bundled [`scripts/calculate_cvss.py`](scripts/calculate_cvss.py) script 
     - Apply Field Resolution Semantics.
     - In `Justification`, describe the mapped device property or missing control without repeating TIDs.
 
-    **Data Source:** Use [assets/emb3d/](assets/emb3d/) JSON derived from the [MITRE EMB3D knowledge base](assets/emb3d/threats_2.0.1.json) to confirm threat IDs, device properties, threat actions, and mitigation levels.
+    **Data Source:**
+    - [assets/emb3d/threats_2.0.1.json](assets/emb3d/threats_2.0.1.json)
+      > Use the MITRE EMB3D JSON to confirm TID(s), names, descriptions, mitigation levels, and property mapping.
 
 4. MITRE CWE
 
@@ -425,25 +407,29 @@ Use the bundled [`scripts/calculate_cvss.py`](scripts/calculate_cvss.py) script 
     - Apply Field Resolution Semantics.
     - In `Justification`, prefer weakness name or exploit behavior wording unless repeating the ID is required for disambiguation.
 
-    **Data Source:** Use [assets/cwe/](assets/cwe/) JSON derived from the [MITRE CWE JSON API](assets/cwe/cwe.json) to confirm weakness IDs, names, descriptions, and mitigation guidance.
+    **Data Source:**
+    - [assets/cwe/cwe.json](assets/cwe/cwe.json)
+      > Use the MITRE CWE JSON to confirm weakness IDs, names, descriptions, and mitigation guidance.
 
 5. FIRST CVSS v4.0
 
-    **Action:** Select defensible CVSS v4.0 Base metrics, then populate `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, and `CVSS v4.0 Severity` together from the bundled `scripts/calculate_cvss.py` output.
-    - Use the native TMT row, architecture evidence, ATT&CK technique, EMB3D exposure, CWE weakness, and OT/ICS impact context to select the Base metrics. Record assumptions in `Justification`; do not ask the calculator to infer scenario semantics.
-    - Construct a complete vector with the `CVSS:4.0/` prefix. Do not omit mandatory Base metrics or convert a vector from another CVSS version.
-    - Invoke the calculator according to section [4.2. Preparation](#42-preparation), step 4.
-    - Accept and store the calculator's `canonical_vector` as `CVSS v4.0 Vector`, its `score` as `CVSS-B v4.0 Score`, and its `severity` as `CVSS v4.0 Severity`.
-    - Confirm `metrics` matches the selected attack scenario. A successful parse proves syntactic validity, not that the analyst selected the correct metrics.
-    - Do not record a severity without a vector and score. Do not record a vector without a score and severity.
-    - Record `CVSS-B v4.0 Score` with exactly one decimal digit and comma as decimal separator, e.g., `0,0`, `2,4`, `5,2`, `7,0`, `10,0`. Convert from the calculator's JSON numeric form only when writing the CSV.
+    **Action:** Populate `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, and `CVSS v4.0 Severity` together.
+    - Do not record a severity without a vector and score.
+    - Do not record a vector without a score and severity.
+    - Record `CVSS-B v4.0 Score` with exactly one decimal digit and comma as decimal separator, e.g., `0,0`, `2,4`, `5,2`, `7,0`, `10,0`.
     - Apply the zero-impact and residual-risk policy in section [5.2.3. Impact Mapping](#523-impact-mapping).
-    - Leave the trio blank when metric selection is unresolved or the calculator fails, then apply the selected execution mode.
-    - Do not manually calculate, estimate, round, or override the score or severity. The FIRST web calculator may be used only as an optional independent cross-check; any mismatch is a blocking discrepancy and must not be silently resolved.
+    - Leave the trio blank only when scoring remains unresolved.
+    - Derive the score with the [CVSS v4.0 calculator](https://www.first.org/cvss/calculator/4.0) using the native TMT row, ATT&CK technique, EMB3D exposure, and OT/ICS impact context.
     - Base Severity vs. Residual Risk
       > Apply the zero-impact and residual-risk scoring policy defined in section [5.2.3. Impact Mapping](#523-impact-mapping). Do not lower the intrinsic CVSS Base score solely because compensating controls or risk-acceptance decisions reduce residual business exposure.
 
-    **Data Sources and Calculation Engine:** Use [assets/cvss/](assets/cvss/) CVSS v4.0 [JSON Schema](assets/cvss/cvss-v4.0.json) to validate vector format and metric enumerations. Use the bundled [`scripts/calculate_cvss.py`](scripts/calculate_cvss.py) script to canonicalize the vector and derive score and severity. The schema does not calculate scores.
+    **Data Source:**
+    - [assets/cvss/cvss-v4.0.json](assets/cvss/cvss-v4.0.json)
+      > Use the FIRST CVSS v4.0 JSON to confirm vector, score, and severity format. Do not derive the score from the schema.
+
+    **Script Usage:**
+    - [scripts/calculate_cvss.py](scripts/calculate_cvss.py)
+      > Run `python ./scripts/calculate_cvss.py --vector '<CVSS:4.0/...>'` to compute the CVSS v4.0 Base Score and Severity.
 
 6. BSI Likelihood of Exploit
 
@@ -537,18 +523,20 @@ Use the bundled [`scripts/calculate_cvss.py`](scripts/calculate_cvss.py) script 
     - Enclose `Description` and `Justification` in double quotes.
     - Retain native TMT columns in source order and append review columns in the order defined in section [4.2. Preparation](#42-preparation).
     - Verify each output row against its source row.
-    - Before serialization, batch-run every populated CVSS vector through `uv run scripts/calculate_cvss.py --version 4.0 --format jsonl`; preserve row order so each result maps deterministically to the corresponding native `Id`.
-    - Reject the output when a calculator record fails or when its `canonical_vector`, `score`, or `severity` differs from the row values after decimal-comma serialization.
     - Keep identifiers and score artifacts in dedicated columns and keep `Justification` as narrative rationale.
     - Reject rows where `Justification` is only an identifier token or parenthetical code reference.
     - Reject rows where `State`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Risk Treatment`, or `Risk Approval` contradict section [5.2.7. Risk Treatment Mapping](#527-risk-treatment-mapping).
     - Reject rows that use legal or regulatory shorthand as the sole rationale for acceptance, transfer, mitigation, or avoidance.
     - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, residual risk posture, and threat actor selection decision.
 
+    **Script Usage:**
+    - [scripts/validate_cvss.py](scripts/validate_cvss.py)
+      > Run `python ./scripts/validate_cvss.py --csv '<Device_Name>_Threat_Model_Generated.csv'` to validate all CVSS vectors in the `CVSS v4.0` columns and compare the calculated score with the stored score.
+
 2. Review Summary
 
     **Action:** Write `<Device_Name>_Threat_Model_Summary.md`.
-    - Include assessment objective, product scope, threat counts by state/inherent risk/residual risk/actor, highest-risk interactions, primary attack vectors, assumptions, evidence gaps, conflict summary, CVSS calculator failures or cross-check mismatches, Not Applicable rationale categories, residual risks, risk treatment summary, risk approval status, and recommended mitigations by priority.
+    - Include assessment objective, product scope, threat counts by state/inherent risk/residual risk/actor, highest-risk interactions, primary attack vectors, assumptions, evidence gaps, conflict summary, Not Applicable rationale categories, residual risks, risk treatment summary, risk approval status, and recommended mitigations by priority.
     - For compliance-oriented assessments, structure the summary as reusable risk-assessment evidence and technical documentation input.
     - Each risk claim must reference at least one threat row `Id`.
     - Record artifact-trust and spreadsheet-safety warnings that affect generated CSV consumption.
