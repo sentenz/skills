@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.10"
+  version: "1.7.11"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -395,8 +395,10 @@ Save and integrate intermediate results after each step. When the objective is p
     - In `Justification`, describe the mapped device property or missing control without repeating TIDs.
 
     **Data Source:**
-    - [assets/emb3d/threats_2.0.1.json](assets/emb3d/threats_2.0.1.json)
-      > Use the MITRE EMB3D JSON to confirm TID(s), names, descriptions, mitigation levels, and property mapping.
+    - [assets/emb3d/threats_properties_mitigations_mappings_2.0.1.json](assets/emb3d/threats_properties_mitigations_mappings_2.0.1.json)
+      > Use the combined mapping JSON as the threat-centric data source to validate EMB3D threat IDs (TIDs), associated device property IDs (PIDs), mitigation IDs (MIDs), and mitigation maturity levels.
+    - [assets/emb3d/properties_threat_mappings_2.0.1.json](assets/emb3d/properties_threat_mappings_2.0.1.json)
+      > Use the EMB3D property mapping JSON to validate property IDs, property names, categories, parent–child relationships, and associated threats when discovering applicable threats from the characteristics and capabilities of an embedded device.
 
 4. MITRE CWE
 
