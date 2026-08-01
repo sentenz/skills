@@ -1,8 +1,8 @@
 ---
 name: technical-article-writing
-description: Creates, revises, and reviews Sentenz convention-style technical articles using formal encyclopedic language, numbered Markdown sections, manual tables of contents, coherent taxonomies, practical examples, and source-qualified references. Use for technical or engineering articles and knowledge-base entries, especially Markdown files under content/articles, docs/articles, or articles.
+description: Creates, revises, and reviews technical articles using formal encyclopedic language, numbered Markdown sections, manual tables of contents, coherent taxonomies, practical examples, and source-qualified references. Use for technical or engineering articles and knowledge-base entries, especially Markdown files under content/articles, docs/articles, or articles.
 metadata:
-  version: "1.0.2"
+  version: "1.0.3"
   activation:
     implicit: true
     priority: 1
@@ -28,7 +28,7 @@ metadata:
 
 # Technical Article Writing
 
-Instructions for AI agents on creating, revising, and reviewing technical articles with the structural conventions and technical language used by the Sentenz convention article corpus.
+Instructions for AI agents on creating, revising, and reviewing technical articles using formal language, coherent structure, precise terminology, practical examples, and verifiable references.
 
 - [1. Benefits](#1-benefits)
 - [2. Principles](#2-principles)
@@ -169,7 +169,7 @@ Example:
 - [1. Category](#1-category)
   - [1.1. Deployment Strategies](#11-deployment-strategies)
     - [1.1.1. Blue-Green Deployment](#111-blue-green-deployment)
-    - [1.1.2. Canary Deployment](#111-canary-deployment)
+    - [1.1.2. Canary Deployment](#112-canary-deployment)
 - [2. Principle](#2-principle)
 - [3. Best Practice](#3-best-practice)
 - [4. Terminology](#4-terminology)
