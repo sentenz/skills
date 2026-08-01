@@ -2,7 +2,7 @@
 name: technical-article-writing
 description: Creates, revises, and reviews Sentenz convention-style technical articles using formal encyclopedic language, numbered Markdown sections, manual tables of contents, coherent taxonomies, practical examples, and source-qualified references. Use for technical or engineering articles and knowledge-base entries, especially Markdown files under content/articles, docs/articles, or articles.
 metadata:
-  version: "1.0.1"
+  version: "1.0.2"
   activation:
     implicit: true
     priority: 1
@@ -360,65 +360,147 @@ Report findings with the affected heading or line, the defect, its technical con
 
 ### 5.1. Voice and Tone
 
-- Use present tense for definitions, capabilities, and current practices.
-- Use past tense only for historical events or superseded behavior.
-- Prefer active voice when the actor or mechanism matters.
-- Use passive voice when the process or result is the focus and the actor is irrelevant.
-- Avoid first-person and second-person pronouns.
-- Avoid humor, idioms, rhetorical questions, exclamation marks, and marketing language.
-- Avoid unqualified adjectives such as `easy`, `simple`, `powerful`, `modern`, `best`, or `obvious`.
-- Use `should`, `must`, `may`, and `can` according to their actual normative meaning.
+- Present Tense
+  > Use present tense for definitions, capabilities, and current practices.
+
+- Past Tense
+  > Use past tense only for historical events or superseded behavior.
+
+- Active Voice
+  > Prefer active voice when the actor or mechanism matters.
+
+- Passive Voice
+  > Use passive voice when the process or result is the focus and the actor is irrelevant.
+
+- Impersonal Perspective
+  > Avoid first-person and second-person pronouns.
+
+- Professional Tone
+  > Avoid humor, idioms, rhetorical questions, exclamation marks, and marketing language.
+
+- Qualified Language
+  > Avoid unqualified adjectives such as `easy`, `simple`, `powerful`, `modern`, `best`, or `obvious`.
+
+- Normative Modal Verbs
+  > Use `should`, `must`, `may`, and `can` according to their actual normative meaning.
 
 ### 5.2. Terminology
 
-- Expand acronyms on first use: `Mean Time to Recovery (MTTR)`.
-- Preserve canonical capitalization for technologies, standards, protocols, and organizations.
-- Use one preferred term consistently; introduce aliases only when they are widely used or needed for searchability.
-- Distinguish a product from its category, a framework from a methodology, and a metric from the outcome it measures.
-- Use backticks for literal tokens, not for ordinary emphasis.
-- Define uncommon domain terms before relying on them in later sections.
+- Acronym Expansion
+  > Expand acronyms on first use, for example `Mean Time to Recovery (MTTR)`.
+
+- Canonical Capitalization
+  > Preserve canonical capitalization for technologies, standards, protocols, and organizations.
+
+- Preferred Terminology
+  > Use one preferred term consistently; introduce aliases only when they are widely used or needed for searchability.
+
+- Concept Classification
+  > Distinguish a product from its category, a framework from a methodology, and a metric from the outcome it measures.
+
+- Literal Tokens
+  > Use backticks for literal tokens, not for ordinary emphasis.
+
+- Domain Definitions
+  > Define uncommon domain terms before relying on them in later sections.
 
 ### 5.3. Sentences and Paragraphs
 
-- Begin each paragraph with its main technical claim.
-- Keep one conceptual purpose per paragraph.
-- Prefer direct subject-verb-object construction.
-- Remove repeated definitions and duplicated conclusions.
-- Use parallel grammar across peer list items and table rows.
-- Use complete sentences in prose and blockquote descriptions.
-- Keep heading text and list labels free of terminal punctuation.
-- Prefer `for example` in prose; use `e.g.` only where compact notation is appropriate.
-- State limitations and trade-offs adjacent to the capability they qualify.
+- Topic Sentence
+  > Begin each paragraph with its main technical claim.
+
+- Paragraph Scope
+  > Keep one conceptual purpose per paragraph.
+
+- Sentence Construction
+  > Prefer direct subject-verb-object construction.
+
+- Redundancy
+  > Remove repeated definitions and duplicated conclusions.
+
+- Parallel Grammar
+  > Use parallel grammar across peer list items and table rows.
+
+- Complete Sentences
+  > Use complete sentences in prose and blockquote descriptions.
+
+- Terminal Punctuation
+  > Keep heading text and list labels free of terminal punctuation.
+
+- Example Notation
+  > Prefer `for example` in prose; use `e.g.` only where compact notation is appropriate.
+
+- Adjacent Qualifications
+  > State limitations and trade-offs adjacent to the capability they qualify.
 
 ### 5.4. Lists and Blockquotes
 
-- Use unordered lists for taxonomies, properties, principles, tools, and terminology.
-- Use ordered lists for workflows, local group headings, and sequences.
-- Place the description on the next line as an indented blockquote.
-- Separate complex list items with blank lines.
-- Keep peer labels grammatically parallel.
-- Avoid a flat list when items belong to distinct categories; introduce subsections or grouped ordered-list headings instead.
+- Unordered Lists
+  > Use unordered lists for taxonomies, properties, principles, tools, and terminology.
+
+- Ordered Lists
+  > Use ordered lists for workflows, local group headings, and sequences.
+
+- Blockquote Descriptions
+  > Place the description on the next line as an indented blockquote.
+
+- Item Separation
+  > Separate complex list items with blank lines.
+
+- Parallel Labels
+  > Keep peer labels grammatically parallel.
+
+- Category Grouping
+  > Avoid a flat list when items belong to distinct categories; introduce subsections or grouped ordered-list headings instead.
 
 ### 5.5. Links and Citations
 
-- Link a technology, standard, or framework at its first material mention.
-- Prefer official documentation and primary sources over aggregators.
-- Use relative links for repository-local articles.
-- Use descriptive link text rather than raw URLs.
-- Avoid linking every repeated occurrence of the same term.
-- Ensure linked text accurately represents the destination.
-- Do not cite a source for a claim the source does not support.
+- First Material Mention
+  > Link a technology, standard, or framework at its first material mention.
+
+- Source Authority
+  > Prefer official documentation and primary sources over aggregators.
+
+- Internal Links
+  > Use relative links for repository-local articles.
+
+- Descriptive Link Text
+  > Use descriptive link text rather than raw URLs.
+
+- Link Frequency
+  > Avoid linking every repeated occurrence of the same term.
+
+- Destination Accuracy
+  > Ensure linked text accurately represents the destination.
+
+- Claim Support
+  > Do not cite a source for a claim the source does not support.
 
 ### 5.6. Code, Tables, and Admonitions
 
-- Use `plaintext` for abstract syntax, terminal output, and language-neutral examples.
-- Use `bash` for shell commands and a language-specific fence for source code.
-- Keep code examples minimal but complete enough to demonstrate the stated concept.
-- Do not include insecure or deprecated code without an explicit warning and safer alternative.
-- Use tables only when columns represent stable comparable attributes.
-- Align table headers consistently and keep terminology parallel.
-- Use admonitions for high-value caveats; do not use them as decorative callouts.
-- Ensure Mermaid diagrams use valid syntax and meaningful node labels.
+- Plaintext Fences
+  > Use `plaintext` for abstract syntax, terminal output, and language-neutral examples.
+
+- Shell and Source Fences
+  > Use `bash` for shell commands and a language-specific fence for source code.
+
+- Example Completeness
+  > Keep code examples minimal but complete enough to demonstrate the stated concept.
+
+- Secure Examples
+  > Do not include insecure or deprecated code without an explicit warning and safer alternative.
+
+- Table Applicability
+  > Use tables only when columns represent stable comparable attributes.
+
+- Table Consistency
+  > Align table headers consistently and keep terminology parallel.
+
+- Admonition Purpose
+  > Use admonitions for high-value caveats; do not use them as decorative callouts.
+
+- Mermaid Validity
+  > Ensure Mermaid diagrams use valid syntax and meaningful node labels.
 
 ## 6. Quality Gates
 
