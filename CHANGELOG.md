@@ -1,5 +1,17 @@
 # Changelog
 
+# [1.11.0](https://github.com/sentenz/skills/compare/v1.10.3...v1.11.0) (2026-08-01)
+
+
+### Bug Fixes
+
+* **skill:** address technical article review findings ([8d149c6](https://github.com/sentenz/skills/commit/8d149c677985b3ec83208ce93eaef3fb8b9f4fac))
+
+
+### Features
+
+* **skills:** add technical article writing skill ([70d9956](https://github.com/sentenz/skills/commit/70d99567884159d8ae373e821b6a2fb5c1d1915b))
+
 ## [1.10.3](https://github.com/sentenz/skills/compare/v1.10.2...v1.10.3) (2026-07-14)
 
 
