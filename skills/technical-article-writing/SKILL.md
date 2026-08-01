@@ -169,6 +169,7 @@ Example:
 - [1. Category](#1-category)
   - [1.1. Deployment Strategies](#11-deployment-strategies)
     - [1.1.1. Blue-Green Deployment](#111-blue-green-deployment)
+    - [1.1.2. Canary Deployment](#111-canary-deployment)
 - [2. Principle](#2-principle)
 - [3. Best Practice](#3-best-practice)
 - [4. Terminology](#4-terminology)
