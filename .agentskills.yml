@@ -80,8 +80,8 @@ skills:
     languages: [markdown]
     description: Creates and maintains Architecture Decision Records (ADRs) with structured State, Context, Decision, Considered, Consequences, Implementation, and References sections
 
-  - name: technical-article-writing
-    path: skills/technical-article-writing
+  - name: technical-article
+    path: skills/technical-article
     languages: [markdown]
     description: Creates, revises, and reviews convention-style technical articles with formal language, numbered structure, taxonomies, examples, and qualified references
 
