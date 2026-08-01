@@ -1,29 +1,26 @@
 ---
 name: technical-article-writing
-description: Creates, revises, and reviews technical articles in the Sentenz convention style using formal encyclopedic language, numbered Markdown sections, a manual table of contents, taxonomy-oriented organization, term-definition blockquotes, practical examples, admonitions, tables, and source-qualified references. Use when writing or editing technical articles, engineering knowledge-base entries, convention pages, or Markdown files under content/articles.
+description: Creates, revises, and reviews Sentenz convention-style technical articles using formal encyclopedic language, numbered Markdown sections, manual tables of contents, coherent taxonomies, practical examples, and source-qualified references. Use for technical or engineering articles and knowledge-base entries, especially Markdown files under content/articles, docs/articles, or articles.
 metadata:
-  version: "1.0.0"
+  version: "1.0.1"
   activation:
     implicit: true
     priority: 1
     triggers:
       - "technical article"
-      - "write article"
-      - "create article"
-      - "edit article"
-      - "review article"
-      - "convention article"
       - "engineering article"
+      - "convention article"
+      - "technical knowledge base"
       - "technical writing"
-      - "knowledge base article"
       - "content/articles"
+      - "docs/articles"
     match:
       languages: ["markdown"]
       paths:
         - "content/articles/**/*.md"
         - "docs/articles/**/*.md"
         - "articles/**/*.md"
-      prompt_regex: "(?i)(technical article|write article|create article|edit article|review article|convention article|engineering article|technical writing|knowledge[- ]base article|content/articles)"
+      prompt_regex: "(?i)(technical article|engineering article|convention article|technical knowledge[- ]base|technical writing|content/articles|docs/articles)"
   usage:
     load_on_prompt: true
     autodispatch: true
@@ -57,33 +54,32 @@ Instructions for AI agents on creating, revising, and reviewing technical articl
   - [5.5. Links and Citations](#55-links-and-citations)
   - [5.6. Code, Tables, and Admonitions](#56-code-tables-and-admonitions)
 - [6. Quality Gates](#6-quality-gates)
-- [7. Template](#7-template)
-  - [7.1. Technical Article Template](#71-technical-article-template)
+- [7. Resources](#7-resources)
 - [8. References](#8-references)
 
 ## 1. Benefits
 
 - Consistency
-  > A stable article grammar makes technical content predictable across topics, enabling readers to locate definitions, categories, principles, examples, and references without relearning the document structure.
+  > A stable article grammar makes technical content predictable across topics and allows readers to locate definitions, categories, principles, examples, and references without relearning the document structure.
 
 - Readability
-  > Short definitional paragraphs, explicit headings, and term-definition lists reduce cognitive load while preserving sufficient technical precision for engineering audiences.
+  > Concise definitional paragraphs, explicit headings, and term-definition lists reduce cognitive load while preserving technical precision.
 
 - Navigability
-  > A manually maintained hierarchical table of contents and numbered headings provide direct navigation for long articles and expose the conceptual hierarchy before detailed reading.
+  > A manually maintained hierarchical table of contents and numbered headings expose the conceptual hierarchy and provide direct navigation for long articles.
 
 - Reusability
   > Taxonomies, terminology lists, practical examples, and qualified references make each article useful as both an introduction and a durable engineering reference.
 
 - Reviewability
-  > Deterministic formatting and evidence rules allow reviewers to separate structural defects, language defects, and technical inaccuracies during review.
+  > Deterministic formatting and evidence rules allow reviewers to separate structural defects, language defects, and technical inaccuracies.
 
 ## 2. Principles
 
 ### 2.1. Language
 
 - Formal
-  > Use formal, neutral English suitable for software engineers, systems engineers, security professionals, and technical decision-makers.
+  > Use neutral English suitable for software engineers, systems engineers, security professionals, and technical decision-makers.
 
 - Encyclopedic
   > Define the subject before prescribing practices. Explain what a concept is, how it is categorized, and where it is applied before presenting recommendations.
@@ -122,7 +118,7 @@ Instructions for AI agents on creating, revising, and reviewing technical articl
   > Use a lowercase kebab-case file name that identifies the subject, for example `technical-debt.md`, `feature-flags.md`, or `file-systems.md`.
 
 - Frontmatter
-  > Do not add YAML frontmatter when writing for `content/articles/` unless the repository explicitly introduces a frontmatter requirement.
+  > Do not add YAML frontmatter to article files unless the target repository explicitly requires it.
 
 - H1 Title
   > Begin with exactly one H1 heading containing the canonical subject name in title case.
@@ -137,7 +133,7 @@ Place one or two concise paragraphs immediately after the H1 heading.
 
 1. Definition
 
-    Define the subject in the first sentence. Expand an acronym on first use when the acronym is not universally self-evident in the article domain.
+    Define the subject in the first sentence. Expand an acronym on first use when it is not universally self-evident in the article domain.
 
 2. Context
 
@@ -219,21 +215,6 @@ Use prose for conceptual transitions and term-definition lists for scannable tec
 - Grouped Pattern
   > Use an ordered list item as a local group heading when a subsection contains several distinct views, such as conventions, examples, or tools.
 
-  ```markdown
-  1. Conventions and Standards
-
-      - Type
-        > The type classifies the nature of a change.
-
-  2. Examples and Explanations
-
-      - Scope
-
-        ```plaintext
-        feat(auth): add token rotation
-        ```
-  ```
-
 - Label Capitalization
   > Use title case for conceptual labels and sentence case for descriptions.
 
@@ -242,8 +223,11 @@ Use prose for conceptual transitions and term-definition lists for scannable tec
 
 ### 3.6. Examples and Data
 
+- Standalone Examples
+  > Introduce prose-level standalone examples with `Example:`. Within grouped subsections such as `Examples and Explanations`, use a descriptive example label instead.
+
 - Code Examples
-  > Introduce standalone examples with `Example:` and use a fenced code block with the most accurate language identifier.
+  > Use a fenced code block with the most accurate language identifier.
 
 - Inline Syntax
   > Use backticks for commands, file paths, configuration keys, identifiers, literals, and short syntax fragments.
@@ -252,7 +236,7 @@ Use prose for conceptual transitions and term-definition lists for scannable tec
   > Use Markdown tables for compact comparisons, matrices, metrics, commands, or enumerated reference data. Keep cell content parallel and avoid prose paragraphs inside cells.
 
 - Diagrams
-  > Use text-based diagrams such as Mermaid when the relationships or flows cannot be explained efficiently with prose or a table.
+  > Use text-based diagrams such as Mermaid when relationships or flows cannot be explained efficiently with prose or a table.
 
 - Admonitions
   > Use GitHub admonitions sparingly for constraints, caveats, cross-links, or information that materially changes interpretation.
@@ -277,13 +261,13 @@ End every article with a numbered `References` section.
   > Name the organization or publisher before the linked title and identify the source type after the link.
 
   ```markdown
-  - NIST [Secure Software Development Framework](https://csrc.nist.gov/Projects/ssdf) standard.
+  - NIST [Secure Software Development Framework (SSDF) Version 1.1](https://csrc.nist.gov/pubs/sp/800/218/final) publication.
   - Kubernetes [Documentation](https://kubernetes.io/docs/) documentation.
   - GitHub [DORA Four Keys](https://github.com/dora-team/fourkeys) repository.
   ```
 
 - Source Types
-  > Use a precise qualifier such as `article`, `documentation`, `page`, `repository`, `report`, `specification`, or `standard`.
+  > Use a precise qualifier such as `article`, `documentation`, `page`, `publication`, `repository`, `report`, `specification`, or `standard`.
 
 - Relevance
   > Include only sources cited or materially used in the article. Do not create a general reading list unrelated to article claims.
@@ -308,23 +292,27 @@ End every article with a numbered `References` section.
 
     Select the required canonical sections and construct a numbered heading hierarchy before drafting prose.
 
-5. Draft Introduction
+5. Load Template
+
+    Load [`assets/technical-article-template.md`](assets/technical-article-template.md) when creating a new article. Remove sections that do not contribute to the subject.
+
+6. Draft Introduction
 
     Write the H1 title and one or two definitional paragraphs. Establish the subject and engineering context without front-loading implementation detail.
 
-6. Build Table of Contents
+7. Build Table of Contents
 
     Mirror the planned heading hierarchy and generate exact GitHub-compatible anchors.
 
-7. Write Sections
+8. Write Sections
 
     Add section leads, term-definition lists, examples, tables, diagrams, and admonitions only where they improve comprehension.
 
-8. Add References
+9. Add References
 
     Add internal relative links and external source-qualified references. Ensure every material external claim has an appropriate authoritative source.
 
-9. Validate
+10. Validate
 
     Apply all [Quality Gates](#6-quality-gates) before returning or committing the article.
 
@@ -409,7 +397,7 @@ Report findings with the affected heading or line, the defect, its technical con
 - Place the description on the next line as an indented blockquote.
 - Separate complex list items with blank lines.
 - Keep peer labels grammatically parallel.
-- Avoid a flat list when the items belong to distinct categories; introduce subsections or grouped ordered-list headings instead.
+- Avoid a flat list when items belong to distinct categories; introduce subsections or grouped ordered-list headings instead.
 
 ### 5.5. Links and Citations
 
@@ -467,7 +455,7 @@ An article is complete only when all applicable gates pass.
   > Internal paths are relative and valid; external links use descriptive text and resolve to the intended source.
 
 - References
-  > The final section contains only used sources and qualifies each source as an article, documentation, page, repository, report, specification, or standard.
+  > The final section contains only used sources and qualifies each source with an accurate source type.
 
 - Formatting
   > Markdown renders correctly, code fences are balanced, tables are valid, and list indentation is consistent.
@@ -475,105 +463,10 @@ An article is complete only when all applicable gates pass.
 - Completeness
   > No placeholders, editorial notes, unverified assumptions, or unfinished sections remain.
 
-## 7. Template
+## 7. Resources
 
-Use this template as a starting point. Remove sections that do not materially contribute to the subject and add domain-specific subsections where required.
-
-### 7.1. Technical Article Template
-
-````markdown
-# <Technical Subject>
-
-<Technical Subject> is <concise definition>. It <purpose, behavior, or engineering role>.
-
-<Optional second paragraph describing context, scope, or relationship to adjacent concepts.>
-
-- [1. Benefits](#1-benefits)
-- [2. Category](#2-category)
-  - [2.1. <Category Name>](#21-category-name)
-    - [2.1.1. <Topic Name>](#211-topic-name)
-- [3. Principle](#3-principle)
-- [4. Best Practice](#4-best-practice)
-- [5. Terminology](#5-terminology)
-- [6. References](#6-references)
-
-## 1. Benefits
-
-- <Benefit>
-  > <Explain the engineering value and the condition under which it applies.>
-
-- <Benefit>
-  > <Explain the engineering value and the condition under which it applies.>
-
-## 2. Category
-
-<Explain the classification dimension used in this section.>
-
-### 2.1. <Category Name>
-
-<Define the category and distinguish it from peer categories.>
-
-#### 2.1.1. <Topic Name>
-
-[<Topic Name>](<official-source-url>) is <precise definition and technical role>.
-
-1. Conventions and Standards
-
-    - <Element>
-      > <Define the element, constraint, or behavior.>
-
-    - <Element>
-      > <Define the element, constraint, or behavior.>
-
-2. Examples and Explanations
-
-    - <Example Name>
-
-      ```plaintext
-      <valid example>
-      ```
-
-3. Tools and Frameworks
-
-    - [<Tool Name>](<official-url>)
-      > <Describe the tool's role without promotional language.>
-
-## 3. Principle
-
-<Explain how the listed principles relate to the subject.>
-
-- <Principle>
-  > <State the principle and its operational consequence.>
-
-- <Principle>
-  > <State the principle and its operational consequence.>
-
-## 4. Best Practice
-
-<Explain the objective and scope of the practices.>
-
-- <Practice>
-  > <State the recommended action, rationale, and material limitation.>
-
-- <Practice>
-  > <State the recommended action, rationale, and material limitation.>
-
-> [!NOTE]
-> <Add a caveat only when it changes interpretation or implementation.>
-
-## 5. Terminology
-
-- <Term>
-  > <Provide a concise definition in the context of the article.>
-
-- <Term>
-  > <Provide a concise definition in the context of the article.>
-
-## 6. References
-
-- Sentenz [<Related Article>](../articles/<related-article>.md) article.
-- <Organization> [<Source Title>](<source-url>) <source-type>.
-````
+- [`assets/technical-article-template.md`](assets/technical-article-template.md)
+  > Complete starter template for new convention-style technical articles. Load it during the create workflow rather than for revision-only or review-only tasks.
 
 ## 8. References
 
