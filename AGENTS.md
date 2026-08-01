@@ -180,7 +180,7 @@ Available skills:
 - [Architecture Decision Records (ADR)](skills/adr/SKILL.md)
   > Creates and maintains Architecture Decision Records with structured State, Context, Decision, Considered, Consequences, Implementation, and References sections.
 
-- [Technical Article Writing](skills/technical-article-writing/SKILL.md)
+- [Technical Article](skills/technical-article/SKILL.md)
   > Creates, revises, and reviews convention-style technical articles using formal language, numbered Markdown structure, taxonomies, examples, and source-qualified references.
 
 ## 8. References
