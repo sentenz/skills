@@ -60,6 +60,9 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 - [Architecture Decision Records (ADR)](adr/SKILL.md)
   > Creates and maintains Architecture Decision Records following a structured format with State, Context, Decision, Considered, Consequences, Implementation, and References sections.
 
+- [Technical Article](technical-article/SKILL.md)
+  > Creates, revises, and reviews convention-style technical articles using formal language, numbered Markdown structure, taxonomies, examples, and source-qualified references.
+
 ## 2. References
 
 - [AGENTS.md](https://agents.md/) page.
