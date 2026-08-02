@@ -1,6 +1,6 @@
 # Technical Article Template
 
-Use this template when creating a new convention-style technical article. Remove sections that do not materially contribute to the subject and add domain-specific subsections where required.
+Use this template as a structural baseline when creating, revising, or reviewing a convention-style technical article. During creation or revision, remove sections that do not materially contribute to the subject and add domain-specific subsections where required. During review, treat template sections as optional unless their omission creates a completeness or coherence problem.
 
 ```markdown
 # <Technical Subject>
