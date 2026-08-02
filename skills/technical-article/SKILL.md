@@ -2,7 +2,7 @@
 name: technical-article
 description: Creates, revises, and reviews technical articles using formal encyclopedic language, numbered Markdown sections, manual tables of contents, coherent taxonomies, practical examples, and source-qualified references. Use for technical or engineering articles and knowledge-base entries, especially Markdown files under content/articles, docs/articles, or articles.
 metadata:
-  version: "1.0.4"
+  version: "1.0.5"
   activation:
     implicit: true
     priority: 1
@@ -323,39 +323,51 @@ End every article with a numbered `References` section.
 
     Identify the existing article's subject, scope, and taxonomy before changing structure.
 
-2. Diagnose
+2. Load Template
+
+    Load [`assets/technical-article-template.md`](assets/technical-article-template.md) before revising the article. Use it as a structural baseline, remove inapplicable template sections, and preserve valid article-specific sections.
+
+3. Diagnose
 
     Separate defects into technical accuracy, taxonomy, organization, language, formatting, links, examples, and references.
 
-3. Normalize
+4. Normalize
 
     Align the title, introduction, table of contents, numbering, heading levels, lists, blockquotes, code fences, and references with this skill.
 
-4. Refine Language
+5. Refine Language
 
     Replace vague, repetitive, conversational, or promotional wording with direct technical definitions and domain-appropriate verbs.
 
-5. Reconcile Navigation
+6. Reconcile Navigation
 
     Update anchors, cross-links, and references after every heading or file-name change.
 
-6. Validate
+7. Validate
 
     Re-run all quality gates and confirm that the revision does not remove technically relevant information without an explicit reason.
 
 ### 4.3. Review
 
-Review an article in the following order:
+1. Load Template
 
-1. Technical Correctness
-2. Scope and Taxonomic Coherence
-3. Structural Conformance
-4. Terminology and Acronyms
-5. Examples, Tables, and Diagrams
-6. Links and References
-7. Grammar, Punctuation, and Readability
+    Load [`assets/technical-article-template.md`](assets/technical-article-template.md) before reviewing an article. Use it as a structural baseline and do not report omitted optional sections as defects unless their absence creates a completeness or coherence problem.
 
-Report findings with the affected heading or line, the defect, its technical consequence, and a concrete correction. Prioritize factual errors and structural inconsistencies over stylistic preferences.
+2. Evaluate
+
+    Review the article in the following order:
+
+    1. Technical Correctness
+    2. Scope and Taxonomic Coherence
+    3. Structural Conformance
+    4. Terminology and Acronyms
+    5. Examples, Tables, and Diagrams
+    6. Links and References
+    7. Grammar, Punctuation, and Readability
+
+3. Report Findings
+
+    Report findings with the affected heading or line, the defect, its technical consequence, and a concrete correction. Prioritize factual errors and structural inconsistencies over stylistic preferences.
 
 ## 5. Style Guide
 
@@ -549,7 +561,7 @@ An article is complete only when all applicable gates pass.
 ## 7. Resources
 
 - [`assets/technical-article-template.md`](assets/technical-article-template.md)
-  > Complete starter template for new convention-style technical articles. Load it during the create workflow rather than for revision-only or review-only tasks.
+  > Complete structural baseline for convention-style technical articles. Load it during create, revise, and review workflows; adapt optional sections to the subject rather than enforcing them mechanically.
 
 ## 8. References
 
