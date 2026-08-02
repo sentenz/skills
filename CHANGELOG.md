@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.1](https://github.com/sentenz/skills/compare/v1.11.0...v1.11.1) (2026-08-02)
+
+
+### Bug Fixes
+
+* **skill:** load technical article template in revise and review workflows ([#85](https://github.com/sentenz/skills/issues/85)) ([4371f2a](https://github.com/sentenz/skills/commit/4371f2afada862f7a90f4254a4e62bac8458f31c))
+
 # [1.11.0](https://github.com/sentenz/skills/compare/v1.10.3...v1.11.0) (2026-08-01)
 
 
