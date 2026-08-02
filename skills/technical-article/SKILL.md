@@ -349,19 +349,25 @@ End every article with a numbered `References` section.
 
 ### 4.3. Review
 
-Load [`assets/technical-article-template.md`](assets/technical-article-template.md) before reviewing an article. Use it as a structural baseline and do not report omitted optional sections as defects unless their absence creates a completeness or coherence problem.
+1. Load Template
 
-Review the article in the following order:
+    Load [`assets/technical-article-template.md`](assets/technical-article-template.md) before reviewing an article. Use it as a structural baseline and do not report omitted optional sections as defects unless their absence creates a completeness or coherence problem.
 
-1. Technical Correctness
-2. Scope and Taxonomic Coherence
-3. Structural Conformance
-4. Terminology and Acronyms
-5. Examples, Tables, and Diagrams
-6. Links and References
-7. Grammar, Punctuation, and Readability
+2. Evaluate
 
-Report findings with the affected heading or line, the defect, its technical consequence, and a concrete correction. Prioritize factual errors and structural inconsistencies over stylistic preferences.
+    Review the article in the following order:
+
+    1. Technical Correctness
+    2. Scope and Taxonomic Coherence
+    3. Structural Conformance
+    4. Terminology and Acronyms
+    5. Examples, Tables, and Diagrams
+    6. Links and References
+    7. Grammar, Punctuation, and Readability
+
+3. Report Findings
+
+    Report findings with the affected heading or line, the defect, its technical consequence, and a concrete correction. Prioritize factual errors and structural inconsistencies over stylistic preferences.
 
 ## 5. Style Guide
 
