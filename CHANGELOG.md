@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.2](https://github.com/sentenz/skills/compare/v1.11.1...v1.11.2) (2026-08-04)
+
+
+### Bug Fixes
+
+* **skill:** update version and enhance threat modeling documentation ([2d488f2](https://github.com/sentenz/skills/commit/2d488f2fc1c40b92b26b281b0021018a929ae536))
+
 ## [1.11.1](https://github.com/sentenz/skills/compare/v1.11.0...v1.11.1) (2026-08-02)
 
 
