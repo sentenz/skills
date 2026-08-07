@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.10"
+  version: "1.7.11"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -17,10 +17,11 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
 
 - [1. Benefits](#1-benefits)
 - [2. Principles](#2-principles)
-  - [2.1. CIA Triad](#21-cia-triad)
-  - [2.2. Purdue Model](#22-purdue-model)
-  - [2.3. Threat Actors](#23-threat-actors)
-  - [2.4. Diagram Depth Layers](#24-diagram-depth-layers)
+  - [2.1. Scope Classification](#21-scope-classification)
+  - [2.2. CIA Triad](#22-cia-triad)
+  - [2.3. Purdue Model](#23-purdue-model)
+  - [2.4. Threat Actors](#24-threat-actors)
+  - [2.5. Diagram Depth Layers](#25-diagram-depth-layers)
 - [3. Frameworks](#3-frameworks)
   - [3.1. Microsoft Threat Modeling Tool](#31-microsoft-threat-modeling-tool)
   - [3.2. STRIDE](#32-stride)
@@ -83,7 +84,25 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
 
 ## 2. Principles
 
-### 2.1. CIA Triad
+### 2.1. Scope Classification
+
+The scope is classified as either [direct or indirect, logical or physical data connection to a device or network](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202402847#art_2) based on the [definitions](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202402847#art_3) of connection path, connection type, and target.
+
+> [!NOTE]
+> The classification framework maps directly to CVSS Attack Vector metrics: Physical (`AV:P`) for direct physical paths, Adjacent (`AV:A`) for shared bus/network segments, and guides Threat Actor capability assessment.
+
+| Case | Connection Path | Connection Type | Target  | Interpretation                                 | Representative                                                                                                                                                                                                                                                             |
+| ---- | --------------- | --------------- | ------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C1   | Direct          | Logical         | Device  | Direct logical data connection to a device     | Addressed Modbus RTU request/response between a PLC and the embedded device, RS-232/UART console protocol, JTAG/SWD debug commands, managed UPS protocol, local bootloader commands, SPI/I²C read/write operations targeting EEPROM or Flash                               |
+| C2   | Direct          | Logical         | Network | Direct logical data connection to a network    | Modbus RTU communication on an RS-485 multidrop segment, network-wide diagnostics or discovery, broadcast Modbus requests, maintenance software interacting directly with the shared serial network                                                                        |
+| C3   | Direct          | Physical        | Device  | Direct physical data connection to a device    | Point-to-point RS-232 cable, JTAG/SWD Probe connection, GPIO, Digital I/O, Analog I/O 4–20 mA / 0–10 V, UART TX/RX wiring, SPI/I²C traces to EEPROM/Flash, USB service cable, PLC or managed-UPS serial attachment                                                         |
+| C4   | Direct          | Physical        | Network | Direct physical data connection to a network   | RS-485 multidrop bus, trunk wiring, termination and device transceiver attachment, direct physical connection to a shared serial fieldbus, USB bus or hub only where the bus itself is explicitly modeled as a network                                                     |
+| C5   | Indirect        | Logical         | Device  | Indirect logical data connection to a device   | Maintenance Workstation → PLC/gateway → Embedded Device, HMI request relayed by the PLC, firmware-update command relayed to the bootloader, EEPROM or Flash access performed indirectly through application firmware or the bootloader                                     |
+| C6   | Indirect        | Logical         | Network | Indirect logical data connection to a network  | Maintenance Workstation/HMI → protocol gateway or serial server → Modbus RTU network, access to the RS-485 network through a PLC, remote diagnostic software reaching the field network through an intermediary                                                            |
+| C7   | Indirect        | Physical        | Device  | Indirect physical data connection to a device  | Sensor or actuator connected through remote I/O, relay, isolator, signal conditioner or transmitter, maintenance workstation connected through a USB-to-RS-232 adapter, physical programming path through an adapter board, UPS management path through a serial converter |
+| C8   | Indirect        | Physical        | Network | Indirect physical data connection to a network | Maintenance Workstation → USB-to-RS-485 adapter/serial server → RS-485 bus, internal MCU connected to the external multidrop network through an RS-485 transceiver and board connector, physical access to a fieldbus through a protocol gateway                           |
+
+### 2.2. CIA Triad
 
 Focus on Confidentiality, Integrity, and Availability to ensure comprehensive security coverage.
 
@@ -96,7 +115,7 @@ Focus on Confidentiality, Integrity, and Availability to ensure comprehensive se
 - Availability
   > Maintain uninterrupted operation of control systems and communications so that operators can monitor and adjust the process at all times.
 
-### 2.2. Purdue Model
+### 2.3. Purdue Model
 
 The Purdue Model (ISA-95 / IEC 62264) partitions industrial automation environments into hierarchical zones with distinct trust boundaries and characteristic attack surfaces.
 
@@ -110,7 +129,7 @@ The Purdue Model (ISA-95 / IEC 62264) partitions industrial automation environme
 | L1           | Basic Control             | PLCs, PACs, RTUs, SIS controllers.                               |
 | L0           | Field Process             | Sensors, actuators, drives, valves.                              |
 
-### 2.3. Threat Actors
+### 2.4. Threat Actors
 
 Threat actors are individuals, groups, or organizations with the motivation and capability to carry out attacks against systems, data, or infrastructure.
 
@@ -122,16 +141,21 @@ Threat actors are individuals, groups, or organizations with the motivation and 
 | Insider Threat     | Trusted local, physical, engineering, maintenance, or privileged plant access.                                                    |
 | Nation-State Actor | State-sponsored actors with significant resources, custom tooling, and long-duration campaigns targeting critical infrastructure. |
 
-### 2.4. Diagram Depth Layers
+### 2.5. Diagram Depth Layers
 
-Use Microsoft [diagram depth layers](https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/1b-depth-layers) when creating or validating the threat model diagram. Use section [5.2.1. Diagram Depth Layers](#521-diagram-depth-layers) as the canonical layer definition and ICS example set.
+[Diagram depth layers](https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/1b-depth-layers) are used to decompose a system into hierarchical levels of detail, enabling threat modeling at varying levels of abstraction.
 
-| Layer | Name        | Description                                                                                    |
-| ----- | ----------- | ---------------------------------------------------------------------------------------------- |
-| 0     | System      | High-level overview of the system, showing major components and their interactions.            |
-| 1     | Process     | Detailed view of the system, including specific components, data flows, and trust boundaries.  |
-| 2     | Subprocess  | Implementation-level view, showing code, configuration, and detailed operational logic.        |
-| 3     | Lower-Level | Deep technical view, including low-level protocols, hardware interfaces, and system internals. |
+| Layer | Title       | Components                                                                                                                                                                                                                                                                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ----- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0     | System      | Embedded Device, PLC, HMI/Engineering Station, Maintenance Workstation, Debug/Flash Probe, Managed UPS, Sensors, Actuators, Remote I/O, Protocol Gateway/Serial Server, USB Host or Service Laptop                                                                                  | Mandatory initial view of the systems major parts. Represents the Embedded Device as a single process within its trust boundary and shows all relevant external entities, intermediary systems, data flows, and physical or logical connection paths. Establishes the system context and identifies the Layer 0 processes that may require further decomposition. ([Microsoft Layer 0][1])                                                                                                                                                                     |
+| 1     | Process     | Controller/MCU, RS-485 Transceiver, RS-232 Transceiver, USB Interface, JTAG/SWD Interface, RJ-12/RJ-45 Connectors, GPIO Interface, Digital I/O, Analog I/O, Power Monitoring, Flash, EEPROM                                                                                         | Decomposes the Embedded Device process from Layer 0 into its principal board-level processes, interfaces, data stores, and trust boundaries. Identifies the products external physical and logical attack surfaces while retaining the Controller/MCU as a single process. Generally the appropriate minimum decomposition for evaluating an embedded product’s communication ports, field I/O, debug interface, storage, and service interfaces. ([Microsoft Layer 1][2])                                                                                     |
+| 2     | Subprocess  | Application and Control Logic, Modbus RTU Stack, GPIO Driver, UART Driver, SPI Driver, I²C Driver, Digital-I/O Driver, ADC/DAC Driver, Scheduler/Interrupt Dispatch, Configuration Manager, Bootloader, Secure Boot, Firmware-Update Manager, Debug-Access Control, Memory Manager  | Decomposes the Controller/MCU process from Layer 1 into security-relevant firmware subprocesses and data flows. Focuses on protocol parsing, control decisions, privilege boundaries, interrupt handling, secure startup, firmware updates, debug authorization, configuration processing, and non-volatile-memory access. Appropriate where compromise of an internal controller function could affect device integrity, availability, process control, or connected systems. ([Microsoft Layer 2][3])                                                        |
+| 3     | Lower-Level | Modbus RTU Frame Parser and Function Handlers, Boot Verification Chain, Firmware-Update State Machine, Signature Verification, Anti-Rollback Logic, UART ISR/DMA and Buffers, GPIO Interrupt/Debounce Logic, SPI/I²C Transaction State Machines, MPU Regions, Key-Handling Routines | Provides minute implementation detail for a selected critical Layer 2 subprocess rather than automatically decomposing the entire controller. Examines parser memory safety, input-validation branches, state transitions, buffer ownership, concurrency, cryptographic verification, privilege changes, key exposure, fault injection, and side-channel behavior. Reserved for security-critical, kernel-level, privileged, cryptographic, or timing-sensitive functions where Layer 2 does not provide sufficient analytical depth. ([Microsoft Layer 3][4]) |
+
+[1]: https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/2-layer-0-the-system-layer "Layer 0 | The System Layer Training | Microsoft Learn"
+[2]: https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/3-layer-1-the-process-layer "Layer 1 | The Process Layer Training | Microsoft Learn"
+[3]: https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/4-layer-2-the-sub-process-layer "Layer 2 | The Subprocess Layer Training | Microsoft Learn"
+[4]: https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/5-layer-3-the-lower-level-layer "Layer 3 | The Lower-Level Layer Training | Microsoft Learn"
 
 ## 3. Frameworks
 
@@ -395,8 +419,10 @@ Save and integrate intermediate results after each step. When the objective is p
     - In `Justification`, describe the mapped device property or missing control without repeating TIDs.
 
     **Data Source:**
-    - [assets/emb3d/threats_2.0.1.json](assets/emb3d/threats_2.0.1.json)
-      > Use the MITRE EMB3D JSON to confirm TID(s), names, descriptions, mitigation levels, and property mapping.
+    - [assets/emb3d/threats_properties_mitigations_mappings_2.0.1.json](assets/emb3d/threats_properties_mitigations_mappings_2.0.1.json)
+      > Use the combined mapping JSON as the threat-centric data source to validate EMB3D threat IDs (TIDs), associated device property IDs (PIDs), mitigation IDs (MIDs), and mitigation maturity levels.
+    - [assets/emb3d/properties_threat_mappings_2.0.1.json](assets/emb3d/properties_threat_mappings_2.0.1.json)
+      > Use the EMB3D property mapping JSON to validate property IDs, property names, categories, parent–child relationships, and associated threats when discovering applicable threats from the characteristics and capabilities of an embedded device.
 
 4. MITRE CWE
 
@@ -547,29 +573,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
 #### 5.1.1. Depth Layers
 
-- Layer 0 (System)
-  > In an operational technology (OT) network context, the embedded device is treated as a single system element.
-
-  ```mermaid
-  flowchart TD
-      classDef deviceBoundary stroke:#ff0000,stroke-width:2px;
-
-      subgraph External_Boundary [External Boundary]
-          PLC[PLC]
-          USER[Operator]
-          DEBUGGER[Debug Probe]
-      end
-
-      subgraph Device_Boundary [Trust Boundary]
-          DEVICE((Device Node))
-      end
-
-      DEBUGGER <--> |"JTAG"| DEVICE
-      USER --> |"Pushbuttons / LCD"| DEVICE
-      PLC <--> |"Modbus RTU (RS-485)"| DEVICE
-
-      class Device_Boundary deviceBoundary;
-  ```
+Refer to [Threat Depth Layers](references/threat-depth-layers.md) for guidance on depth-layer decomposition.
 
 ### 5.2. Mapping
 
