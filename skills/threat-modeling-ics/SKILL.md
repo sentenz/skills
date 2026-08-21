@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.20"
+  version: "1.7.21"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -37,25 +37,24 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
   - [4.2. Preparation](#42-preparation)
   - [4.3. Review](#43-review)
   - [4.4. Deliverables](#44-deliverables)
-- [5. Example](#5-example)
-  - [5.1. Mapping](#51-mapping)
-    - [5.1.1. Diagram Depth Layers](#511-diagram-depth-layers)
-    - [5.1.2. Purdue Model Mapping](#512-purdue-model-mapping)
-    - [5.1.3. Impact Mapping](#513-impact-mapping)
-      - [5.1.3.1. Exploitability Metrics](#5131-exploitability-metrics)
-      - [5.1.3.2. Vulnerable System Impact Metrics](#5132-vulnerable-system-impact-metrics)
-      - [5.1.3.3. Subsequent System Impact Metrics](#5133-subsequent-system-impact-metrics)
-    - [5.1.4. Probability Mapping](#514-probability-mapping)
-      - [5.1.4.1. Exploitation Method](#5141-exploitation-method)
-      - [5.1.4.2. Vulnerability State](#5142-vulnerability-state)
-      - [5.1.4.3. Likelihood Matrix](#5143-likelihood-matrix)
-    - [5.1.5. Risk Matrix Mapping](#515-risk-matrix-mapping)
-    - [5.1.6. Threat Actor Mapping](#516-threat-actor-mapping)
-    - [5.1.7. Risk Treatment Mapping](#517-risk-treatment-mapping)
-      - [5.1.7.1. Treatment Decision Guidance](#5171-treatment-decision-guidance)
-      - [5.1.7.2. State and Treatment Compatibility](#5172-state-and-treatment-compatibility)
-      - [5.1.7.3. Treatment Evidence Requirements](#5173-treatment-evidence-requirements)
-    - [5.1.8. Risk Approval Mapping](#518-risk-approval-mapping)
+- [5. Mapping Rules](#5-mapping-rules)
+  - [5.1. Diagram Depth Layers](#51-diagram-depth-layers)
+  - [5.2. Purdue Model Mapping](#52-purdue-model-mapping)
+  - [5.3. Impact Mapping](#53-impact-mapping)
+    - [5.3.1. Exploitability Metrics](#531-exploitability-metrics)
+    - [5.3.2. Vulnerable System Impact Metrics](#532-vulnerable-system-impact-metrics)
+    - [5.3.3. Subsequent System Impact Metrics](#533-subsequent-system-impact-metrics)
+  - [5.4. Probability Mapping](#54-probability-mapping)
+    - [5.4.1. Exploitation Method](#541-exploitation-method)
+    - [5.4.2. Vulnerability State](#542-vulnerability-state)
+    - [5.4.3. Likelihood Matrix](#543-likelihood-matrix)
+  - [5.5. Risk Matrix Mapping](#55-risk-matrix-mapping)
+  - [5.6. Threat Actor Mapping](#56-threat-actor-mapping)
+  - [5.7. Risk Treatment Mapping](#57-risk-treatment-mapping)
+    - [5.7.1. Treatment Decision Guidance](#571-treatment-decision-guidance)
+    - [5.7.2. State and Treatment Compatibility](#572-state-and-treatment-compatibility)
+    - [5.7.3. Treatment Evidence Requirements](#573-treatment-evidence-requirements)
+  - [5.8. Risk Approval Mapping](#58-risk-approval-mapping)
 - [6. References](#6-references)
 
 ## 1. Benefits
@@ -112,6 +111,8 @@ The core principles of Information Security (InfoSec) are confidentiality, integ
 
 The Purdue Model (ISA-95 / IEC 62264) partitions industrial automation environments into hierarchical zones with distinct trust boundaries and characteristic attack surfaces.
 
+Apply section [5.2. Purdue Model Mapping](#52-purdue-model-mapping) when classifying modeled assets and validating whether their threat surface is consistent with the assigned zone.
+
 | Purdue Level | Zone Label                | Representative Assets                                            |
 | ------------ | ------------------------- | ---------------------------------------------------------------- |
 | L5           | Enterprise                | ERP, Active Directory, email, cloud services.                    |
@@ -137,6 +138,8 @@ Threat actors are individuals, groups, or organizations with the motivation and 
 ### 2.5. Diagram Depth Layers
 
 [Diagram depth layers](https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/1b-depth-layers) are used to decompose a system into hierarchical levels of detail, enabling threat modeling at varying levels of abstraction.
+
+Apply section [5.1. Diagram Depth Layers](#51-diagram-depth-layers) when creating or validating the threat-model diagram.
 
 | Layer | Title       | Components                                                                                                                                                                                                                                                                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | ----- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -270,7 +273,7 @@ The [BSI Dringlichkeit / Eintrittspotenzial](https://www.bsi.bund.de/DE/Service-
 Risk treatment defines the disposition decision after each identified risk has been prioritized based on severity and likelihood.
 
 > [!NOTE]
-> Aligned with ISO 31000 and IEC 62443-3-2, every threat row that reaches a finalized reviewed disposition must be assigned a treatment option traceable to the risk-prioritization evidence. Use section [5.1.7. Risk Treatment Mapping](#517-risk-treatment-mapping) as the canonical treatment-selection policy.
+> Aligned with ISO 31000 and IEC 62443-3-2, every threat row that reaches a finalized reviewed disposition must be assigned a treatment option traceable to the risk-prioritization evidence. Use section [5.7. Risk Treatment Mapping](#57-risk-treatment-mapping) as the canonical treatment-selection policy.
 
 | Treatment    | Purpose                                                         | Required Evidence or Condition                                                                                 |
 | ------------ | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
@@ -282,6 +285,8 @@ Risk treatment defines the disposition decision after each identified risk has b
 ## 4. Workflow
 
 Use this skill to convert Microsoft TMT threat rows into traceable OT/ICS risk-assessment evidence. The review preserves the native TMT row inventory, enriches each supported threat with framework mappings and risk decisions, and produces a generated CSV plus a Markdown summary suitable for engineering review, product-security governance, and compliance-oriented technical documentation.
+
+Apply section [5. Mapping Rules](#5-mapping-rules) as the canonical source for diagram classification, scoring, prioritization, threat-actor selection, treatment, and approval decisions throughout the workflow.
 
 Save and integrate intermediate results after each step. When the objective is product cybersecurity compliance, produce traceable risk-assessment evidence that can support EU CRA-style technical documentation without making unsupported legal compliance claims.
 
@@ -467,11 +472,14 @@ Save and integrate intermediate results after each step. When the objective is p
     - Do not record a severity without a vector and score.
     - Do not record a vector without a score and severity.
     - Record `CVSS-B v4.0 Score` with exactly one decimal digit and comma as decimal separator, e.g., `0,0`, `2,4`, `5,2`, `7,0`, `10,0`.
-    - Apply the zero-impact and residual-risk policy in section [5.1.3. Impact Mapping](#513-impact-mapping).
+    - Apply the zero-impact and residual-risk policy in section [5.3. Impact Mapping](#53-impact-mapping).
+    - Select `AV` using section [5.3.1. Exploitability Metrics](#531-exploitability-metrics), then derive the remaining exploitability metrics from the row and architecture evidence.
+    - Map `VC`, `VI`, and `VA` using section [5.3.2. Vulnerable System Impact Metrics](#532-vulnerable-system-impact-metrics).
+    - Map `SC`, `SI`, and `SA` using section [5.3.3. Subsequent System Impact Metrics](#533-subsequent-system-impact-metrics).
     - Leave the trio blank only when scoring remains unresolved.
     - Derive the score with the [CVSS v4.0 calculator](https://www.first.org/cvss/calculator/4.0) using the native TMT row, ATT&CK technique, EMB3D exposure, and OT/ICS impact context.
     - Base Severity vs. Residual Risk
-      > Apply the zero-impact and residual-risk scoring policy defined in section [5.1.3. Impact Mapping](#513-impact-mapping). Do not lower the intrinsic CVSS Base score solely because compensating controls or risk-acceptance decisions reduce residual business exposure.
+      > Apply the zero-impact and residual-risk scoring policy defined in section [5.3. Impact Mapping](#53-impact-mapping). Do not lower the intrinsic CVSS Base score solely because compensating controls or risk-acceptance decisions reduce residual business exposure.
 
     **Data Source:**
     - [assets/cvss/cvss-v4.0.json](assets/cvss/cvss-v4.0.json)
@@ -483,14 +491,17 @@ Save and integrate intermediate results after each step. When the objective is p
 
 6. BSI Likelihood of Exploit
 
-    **Action:** Populate `Likelihood of Exploit` using section [5.1.4. Probability Mapping](#514-probability-mapping).
+    **Action:** Populate `Likelihood of Exploit` using section [5.4. Probability Mapping](#54-probability-mapping).
+    - Classify the exploitation method using section [5.4.1. Exploitation Method](#541-exploitation-method).
+    - Classify the vulnerability state using section [5.4.2. Vulnerability State](#542-vulnerability-state).
+    - Combine both classifications using section [5.4.3. Likelihood Matrix](#543-likelihood-matrix).
     - Do not record `N/A` for finalized reviewed rows.
     - Zero-impact outcomes still require a mapped likelihood value.
     - Apply Field Resolution Semantics.
 
 7. Risk Prioritization
 
-    **Action:** Populate `Risk Prioritization` by combining `CVSS v4.0 Severity` and `Likelihood of Exploit` using section [5.1.5. Risk Matrix Mapping](#515-risk-matrix-mapping).
+    **Action:** Populate `Risk Prioritization` by combining `CVSS v4.0 Severity` and `Likelihood of Exploit` using section [5.5. Risk Matrix Mapping](#55-risk-matrix-mapping).
     - Do not record `N/A` for finalized reviewed rows.
     - When `CVSS v4.0 Severity = None`, still evaluate the risk matrix using the derived likelihood value.
     - Treat this value as inherent technical prioritization before risk treatment, compensating controls, acceptance, transfer, or residual-risk ownership.
@@ -498,7 +509,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
 8. Threat Actor
 
-    **Action:** Populate `Threat Actor` with exactly one standardized label using section [5.1.6. Threat Actor Mapping](#516-threat-actor-mapping).
+    **Action:** Populate `Threat Actor` with exactly one standardized label using section [5.6. Threat Actor Mapping](#56-threat-actor-mapping).
     - Record the minimum required actor, not the most severe or most newsworthy actor.
     - Base the decision on access path, capability, and operational knowledge.
     - If several actors could plausibly perform the attack, record the minimum actor that can realistically achieve the described effect.
@@ -537,14 +548,16 @@ Save and integrate intermediate results after each step. When the objective is p
 
 12. Risk Treatment
 
-    **Action:** Populate `Risk Treatment` using section [5.1.7. Risk Treatment Mapping](#517-risk-treatment-mapping).
-    - Select treatment from the inherent risk, residual risk, state, and available governance evidence.
+    **Action:** Populate `Risk Treatment` using section [5.7. Risk Treatment Mapping](#57-risk-treatment-mapping).
+    - Select the default or an evidence-supported alternative using section [5.7.1. Treatment Decision Guidance](#571-treatment-decision-guidance).
+    - Verify the selected treatment against section [5.7.2. State and Treatment Compatibility](#572-state-and-treatment-compatibility).
+    - Record the evidence required by section [5.7.3. Treatment Evidence Requirements](#573-treatment-evidence-requirements).
     - Do not use `Acceptance` or `Transfer` to work around missing technical evidence.
     - Apply Field Resolution Semantics.
 
 13. Risk Approval
 
-    **Action:** Populate `Risk Approval` using section [5.1.8. Risk Approval Mapping](#518-risk-approval-mapping).
+    **Action:** Populate `Risk Approval` using section [5.8. Risk Approval Mapping](#58-risk-approval-mapping).
     - Record exactly one standardized role label.
     - Base approval on `Risk Prioritization` and `Risk Treatment`, then escalate when residual risk evidence requires a stronger approver.
     - Apply Field Resolution Semantics.
@@ -601,7 +614,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Verify each output row against its source row.
     - Keep identifiers and score artifacts in dedicated columns and keep `Justification` as narrative rationale.
     - Reject rows where `Justification` is only an identifier token or parenthetical code reference.
-    - Reject rows where `State`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Risk Treatment`, or `Risk Approval` contradict section [5.1.7. Risk Treatment Mapping](#517-risk-treatment-mapping).
+    - Reject rows where `State`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Risk Treatment`, or `Risk Approval` contradict section [5.7. Risk Treatment Mapping](#57-risk-treatment-mapping).
     - Reject rows that use legal or regulatory shorthand as the sole rationale for acceptance, transfer, mitigation, or avoidance.
     - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, residual risk posture, and threat actor selection decision.
 
@@ -619,11 +632,9 @@ Save and integrate intermediate results after each step. When the objective is p
     - Each risk claim must reference at least one threat row `Id`.
     - Record artifact-trust and spreadsheet-safety warnings that affect generated CSV consumption.
 
-## 5. Example
+## 5. Mapping Rules
 
-### 5.1. Mapping
-
-#### 5.1.1. Diagram Depth Layers
+### 5.1. Diagram Depth Layers
 
 Use Microsoft diagram depth layers when creating or validating the threat model diagram.
 
@@ -634,7 +645,7 @@ Use Microsoft diagram depth layers when creating or validating the threat model 
 | Layer 2     | Subprocess  | Secure firmware update, bootloader, secure boot, JTAG/SWD, flash, EEPROM | Details critical subprocesses such as boot integrity, secure updates, debug access, and non-volatile memory protection.                          |
 | Layer 3     | Lower-Level | GPIO, UART, SPI, I²C                                                     | Hardware-level detail for critical systems requiring micro-architectural analysis such as side-channel or fault-injection review.                |
 
-#### 5.1.2. Purdue Model Mapping
+### 5.2. Purdue Model Mapping
 
 Use this table to identify the Purdue zone of each asset from `Interaction` or `Diagram`, and to validate that the modeled threat surface is consistent with the zone's prevalent STRIDE categories. Do not override TMT `Category` values solely from this table.
 
@@ -646,7 +657,7 @@ Use this table to identify the Purdue zone of each asset from `Interaction` or `
 | Level 1      | Control     | PLC, PAC                                | Siemens S7, Allen-Bradley ControlLogix, Schneider Modicon.         | Tampering, Denial of Service, Elevation of Privilege.                                   |
 | Level 0      | Field       | Sensors, Actuators, RTUs, Field Devices | Transmitters, positioners, motor drives, RTUs.                     | Tampering, Denial of Service.                                                           |
 
-#### 5.1.3. Impact Mapping
+### 5.3. Impact Mapping
 
 Categorize impact using CVSS v4.0 Base Metrics. Keep CVSS Base scoring intrinsic. Document compensating controls, residual exposure, treatment, and approval outside the Base vector.
 
@@ -658,7 +669,7 @@ Categorize impact using CVSS v4.0 Base Metrics. Keep CVSS Base scoring intrinsic
   - Zero-impact does not make `Likelihood of Exploit` or `Risk Prioritization` inapplicable. For finalized reviewed rows, populate these columns from the mapping tables.
   - When `State = Not Applicable`, treat vulnerability state as `Theoretical` unless stronger exploit-maturity evidence exists, then derive likelihood from CVSS exploitability metrics and inherent prioritization from the `None` severity row in the risk matrix.
 
-##### 5.1.3.1. Exploitability Metrics
+#### 5.3.1. Exploitability Metrics
 
 | Attack Vector   | OT/ICS Scenarios                                                            | Example Interfaces                     |
 | --------------- | --------------------------------------------------------------------------- | -------------------------------------- |
@@ -667,7 +678,7 @@ Categorize impact using CVSS v4.0 Base Metrics. Keep CVSS Base scoring intrinsic
 | `AV:L` Local    | Workstation software, HMI application, locally executed configuration tool. | Engineering software, local database.  |
 | `AV:P` Physical | Direct cable connection, removable debug port, hardware tampering.          | RS-232, JTAG, SWD, USB, buttons.       |
 
-##### 5.1.3.2. Vulnerable System Impact Metrics
+#### 5.3.2. Vulnerable System Impact Metrics
 
 Metric abbreviations: `VC` = Vulnerable System Confidentiality Impact, `VI` = Vulnerable System Integrity Impact, `VA` = Vulnerable System Availability Impact.
 
@@ -680,7 +691,7 @@ Metric abbreviations: `VC` = Vulnerable System Confidentiality Impact, `VI` = Vu
 | Denial of Service      | VA                    | VI                      | High        | Degradation or outage is directly an availability impact. Integrity can follow where inconsistent processing results.                                                            |
 | Elevation of Privilege | VI                    | VC, VA                  | Medium-High | Privilege gain enables unauthorized modification, access, and potentially shutdown or execution. Read access maps to `VC`, write access to `VI`, admin/execution access to `VA`. |
 
-##### 5.1.3.3. Subsequent System Impact Metrics
+#### 5.3.3. Subsequent System Impact Metrics
 
 Use `SC`, `SI`, and `SA` to capture cascading effects on the physical process, safety systems, or connected devices. Values: `N` = None, `L` = Low, `H` = High.
 
@@ -692,11 +703,11 @@ Use `SC`, `SI`, and `SA` to capture cascading effects on the physical process, s
 | DoS on communication interface                   | N   | N   | H   | Loss of communication can trigger upstream fault handling or fail-safe mode. |
 | Configuration change via engineering workstation | N   | H   | N   | Modified setpoints propagate to field devices and affect process integrity.  |
 
-#### 5.1.4. Probability Mapping
+### 5.4. Probability Mapping
 
 Categorize likelihood of exploit using BSI `Dringlichkeit / Eintrittspotenzial` logic. Combine exploitation method with vulnerability state.
 
-##### 5.1.4.1. Exploitation Method
+#### 5.4.1. Exploitation Method
 
 | Method           | CVSS Exploitability Metrics                                      | Description                                                                                                                                      |
 | ---------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -707,7 +718,7 @@ Categorize likelihood of exploit using BSI `Dringlichkeit / Eintrittspotenzial` 
 > [!NOTE]
 > `PR` (Privileges Required) is independent of exploitation method in most cases. Do not change method classification based on `PR` alone.
 
-##### 5.1.4.2. Vulnerability State
+#### 5.4.2. Vulnerability State
 
 | State             | CVSS Threat Metrics | Description                                                                                                   |
 | ----------------- | ------------------- | ------------------------------------------------------------------------------------------------------------- |
@@ -716,7 +727,7 @@ Categorize likelihood of exploit using BSI `Dringlichkeit / Eintrittspotenzial` 
 | Active            | `E:A`               | Active exploitation observed in the wild or targeted campaigns.                                               |
 | Exploit Published | `E:A`               | Public exploit code or tooling is freely available. Prefer over Active when a public tool is directly usable. |
 
-##### 5.1.4.3. Likelihood Matrix
+#### 5.4.3. Likelihood Matrix
 
 | State / Method    | Manual | Automated | Self-Replicating |
 | ----------------- | ------ | --------- | ---------------- |
@@ -725,7 +736,7 @@ Categorize likelihood of exploit using BSI `Dringlichkeit / Eintrittspotenzial` 
 | Active            | Medium | High      | High             |
 | Exploit Published | Medium | High      | Critical         |
 
-#### 5.1.5. Risk Matrix Mapping
+### 5.5. Risk Matrix Mapping
 
 Combine `Likelihood of Exploit` and `CVSS v4.0 Severity` to determine `Risk Prioritization`.
 
@@ -740,7 +751,7 @@ Combine `Likelihood of Exploit` and `CVSS v4.0 Severity` to determine `Risk Prio
 | High                 | Low    | Medium | High   | High     | Critical |
 | Critical             | Medium | High   | High   | Critical | Critical |
 
-#### 5.1.6. Threat Actor Mapping
+### 5.6. Threat Actor Mapping
 
 Normalize `Threat Actor` from common OT/ICS threat-path characteristics. Always select the minimum actor that satisfies required access, capability, and process knowledge. Reassess upward only when the modeled path requires capabilities beyond the selected label.
 
@@ -761,7 +772,7 @@ Normalize `Threat Actor` from common OT/ICS threat-path characteristics. Always 
 > [!NOTE]
 > When supply-chain compromise is the modeled vector, choose `Cybercriminal` for commodity ransomware or financial extortion, and `Nation-State Actor` for custom-signed tooling, strategic pre-positioning, or sabotage.
 
-#### 5.1.7. Risk Treatment Mapping
+### 5.7. Risk Treatment Mapping
 
 Risk treatment records the governance disposition for the inherent risk and the resulting residual risk after controls, transfer mechanisms, avoidance decisions, or acceptance decisions are applied.
 
@@ -778,7 +789,7 @@ Risk treatment records the governance disposition for the inherent risk and the 
   | Identifier Hygiene | Do not populate ATT&CK, EMB3D, or CWE identifiers for `Not Applicable` rows unless the row explicitly documents a retained discrepancy.                                         |
   | CVSS Defensibility | Keep CVSS Base scoring intrinsic. Document compensating controls and acceptance decisions outside the Base vector.                                                              |
 
-##### 5.1.7.1. Treatment Decision Guidance
+#### 5.7.1. Treatment Decision Guidance
 
 Select the default treatment for the row's `Risk Prioritization`. Deviate to an acceptable alternative only when documented evidence supports the deviation and the rationale is recorded in `Justification`.
 
@@ -790,7 +801,7 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 | High                | Mitigation        | Avoidance, Transfer, Acceptance  | Acceptance is restricted to exceptional cases with CPSO approval and written justification.                                                  |
 | Critical            | Avoidance         | Mitigation, Transfer, Acceptance | Acceptance requires explicit executive risk acceptance and written rationale. Do not use acceptance as a substitute for unresolved evidence. |
 
-##### 5.1.7.2. State and Treatment Compatibility
+#### 5.7.2. State and Treatment Compatibility
 
 | TMT State             | Compatible Risk Treatment | Consistency Requirements                                                                                                          |
 | --------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
@@ -801,7 +812,7 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 | `Mitigated`           | Acceptance                | Use only when controls reduce exposure but residual risk is intentionally retained with documented approval.                      |
 | `Mitigated`           | Transfer                  | Use only when controls and a named third-party mechanism share or delegate residual consequence.                                  |
 
-##### 5.1.7.3. Treatment Evidence Requirements
+#### 5.7.3. Treatment Evidence Requirements
 
 | Risk Treatment | Minimum Evidence in `Justification`                                                             |
 | -------------- | ----------------------------------------------------------------------------------------------- |
@@ -810,7 +821,7 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 | Acceptance     | Business rationale for retention, approving stakeholder, and acceptance mechanism.              |
 | Transfer       | Named third party, specific contract/SLA/warranty/insurance reference, and explicit risk scope. |
 
-#### 5.1.8. Risk Approval Mapping
+### 5.8. Risk Approval Mapping
 
 `Risk Approval` records the minimum required approver role label from the intersection of `Risk Prioritization` and `Risk Treatment`.
 
