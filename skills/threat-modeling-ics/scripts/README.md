@@ -13,7 +13,7 @@
     ```
 
 - [validate_output.py](validate_output.py)
-  > Validates the complete generated CSV output contract, optionally compares preserved native fields with the raw TMT export, and reports all findings with actual-versus-expected diffs.
+  > Validates the complete generated CSV output contract, active MITRE ATT&CK techniques, mappable MITRE CWE weaknesses, cited EMB3D mitigations, and optional raw-TMT source traceability, then reports all findings with actual-versus-expected diffs.
 
     ```bash
     uv run ./scripts/validate_output.py --csv 'generated.csv' --source 'input.csv'

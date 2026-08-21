@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.26"
+  version: "1.7.27"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -116,7 +116,7 @@ STRIDE is a threat-classification model that categorizes threats into six types:
 [MITRE ATT&CK (Adversarial Tactics, Techniques, and Common Knowledge)](https://attack.mitre.org/) for ICS (Industrial Control Systems) provides the technique taxonomy for threat enrichment.
 
 > [!NOTE]
-> Apply [MITRE ATT&CK for ICS](https://attack.mitre.org/matrices/ics/) and validate every technique against the ATT&CK asset identified in the review workflow.
+> Apply [MITRE ATT&CK for ICS](https://attack.mitre.org/matrices/ics/) and validate every technique against the active, non-revoked, non-deprecated technique set in the review asset.
 
 ### 3.4. MITRE EMB3D
 
@@ -128,6 +128,9 @@ STRIDE is a threat-classification model that categorizes threats into six types:
 ### 3.5. MITRE CWE
 
 [MITRE CWE (Common Weakness Enumeration)](https://cwe.mitre.org/) records the most specific root weakness supported by the threat statement and architecture evidence.
+
+> [!NOTE]
+> Apply [MITRE CWE Mapping Rules](references/mapping-rules.md#13-mitre-cwe-mapping-rules) and validate every weakness against the versioned CWE review asset.
 
 ### 3.6. FIRST CVSS
 
@@ -309,8 +312,8 @@ Save and integrate intermediate results after each step. When the objective is p
     - In `Justification`, describe the behavior that supports the mapping without repeating IDs.
 
     **Data Source:**
-    - [assets/attack/ics-attack-19.1.json](assets/attack/ics-attack-19.1.json)
-      > Use the MITRE ATT&CK for ICS JSON to confirm technique IDs, names, descriptions, mitigations, and tactic mapping.
+    - [assets/attack/ics-attack-19.2.json](assets/attack/ics-attack-19.2.json)
+      > Use the MITRE ATT&CK for ICS STIX snapshot to confirm IDs, names, descriptions, mitigations, and tactics. Map only active `attack-pattern` objects with an ICS technique ID; exclude revoked or deprecated objects.
 
 3. MITRE EMB3D
 
@@ -333,15 +336,15 @@ Save and integrate intermediate results after each step. When the objective is p
 4. MITRE CWE
 
     **Action:** Populate `CWE ID` when the root weakness is identifiable from the TMT row, architecture evidence, ATT&CK behavior, or EMB3D device-property threat.
-    - Prefer the most specific CWE that fits the described weakness.
+    - Apply [MITRE CWE Mapping Rules](references/mapping-rules.md#13-mitre-cwe-mapping-rules) and select the most specific supported weakness.
     - Use comma-separated values when multiple concrete weaknesses are required.
     - Use `N/A` when no underlying weakness applies to a finalized row.
     - Apply Field Resolution Semantics.
     - In `Justification`, prefer weakness name or exploit behavior wording unless repeating the ID is required for disambiguation.
 
     **Data Source:**
-    - [assets/cwe/cwe.json](assets/cwe/cwe.json)
-      > Use the MITRE CWE JSON to confirm weakness IDs, names, descriptions, and mitigation guidance.
+    - [assets/cwe/cwe-4.20.json](assets/cwe/cwe-4.20.json)
+      > Use the versioned MITRE CWE projection to confirm weakness IDs, names, descriptions, abstraction, status, mapping usage, relationships, and candidate mitigation guidance.
 
 5. FIRST CVSS v4.0
 
@@ -466,7 +469,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Script Usage:**
     - [scripts/validate_output.py](scripts/validate_output.py)
-      > Run `uv run ./scripts/validate_output.py --csv '<Device_Name>_Threat_Model_Generated.csv' --source '<Device_Name>_Threat_Model.csv'` to scan the complete CSV, validate cited MIDs against the bundled EMB3D mitigation source, report every output-contract and source-traceability finding, and print an actual-versus-expected diff for each finding.
+      > Run `uv run ./scripts/validate_output.py --csv '<Device_Name>_Threat_Model_Generated.csv' --source '<Device_Name>_Threat_Model.csv'` to validate the complete CSV, active ATT&CK techniques, mappable CWE weaknesses, cited EMB3D mitigations, and source traceability, then print an actual-versus-expected diff for every finding.
     - [scripts/validate_cvss.py](scripts/validate_cvss.py)
       > Run `uv run ./scripts/validate_cvss.py --csv '<Device_Name>_Threat_Model_Generated.csv'` to validate all CVSS vectors in the `CVSS v4.0` columns and compare the calculated score with the stored score.
 

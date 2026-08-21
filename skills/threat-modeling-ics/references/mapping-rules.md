@@ -28,6 +28,7 @@ Use these rules only after reading the applicable workflow step in `SKILL.md`. T
   - [11.3. State and Treatment Compatibility](#113-state-and-treatment-compatibility)
   - [11.4. Treatment Evidence Requirements](#114-treatment-evidence-requirements)
 - [12. Risk Approval Mapping](#12-risk-approval-mapping)
+- [13. MITRE CWE Mapping Rules](#13-mitre-cwe-mapping-rules)
 
 ## 1. Connection-Path Scope Classification
 
@@ -360,3 +361,16 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 | Lead Security    | Technical lead, security engineer, or equivalent responsible for the design area.                |
 | CPSO             | CPSO, or equivalent with organizational risk management authority.                               |
 | Executive        | C-level executive, risk committee, or board-level function with final risk acceptance authority. |
+
+## 13. MITRE CWE Mapping Rules
+
+Use the bundled CWE 4.20 projection as the offline source of record. It contains all 969 weakness entries from the upstream snapshot, including status, abstraction, mapping notes, relationships, candidate mitigations, and the Software Development, Research Concepts, and Hardware Design discovery views.
+
+- **Active set:** weakness entries whose `status` is not `Deprecated`.
+- **Mappable set:** active weakness entries whose `mapping_notes.usage` is not `Prohibited`.
+- Map only `CWE-*` weakness IDs. Use views to discover candidates and relationships to refine them; never emit a view or category ID in `CWE ID`.
+- Reject deprecated and `Prohibited` entries. Accept `Allowed` entries when architecture evidence supports the root cause.
+- Prefer `Base` or `Variant` entries when supported, but do not force a narrower mapping beyond the available evidence.
+- Retain an `Allowed-with-Review` or `Discouraged` entry only when no better-supported `Allowed` entry exists. Add `CWE mapping rationale: ...` to `Justification`, naming the evidence and why a more specific allowed mapping is unsupported.
+- Use `N/A` when the row describes adversary behavior, a physical threat path, or an impact without evidence of an underlying product weakness.
+- Treat `potential_mitigations` as candidate guidance. A source-listed mitigation does not prove implementation, control effectiveness, or residual-risk reduction.

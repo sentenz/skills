@@ -61,11 +61,29 @@ IDENTIFIER_ONLY_PATTERN = re.compile(
 )
 MID_PATTERN = re.compile(r"\bMID-\d{3}\b", re.IGNORECASE)
 TID_PATTERN = re.compile(r"\bTID-\d{3}\b", re.IGNORECASE)
+ATTACK_ID_PATTERN = re.compile(r"T\d{4}(?:\.\d{3})?")
+CWE_ID_PATTERN = re.compile(r"CWE-\d+")
+CWE_RATIONALE_PATTERN = re.compile(r"\bCWE mapping rationale\s*:", re.IGNORECASE)
 MITIGATION_CLAUSE_PATTERN = re.compile(
     r"\b(Basic|Foundational|Intermediate|Leading)(?:\s+mitigation)?\s*:",
     re.IGNORECASE,
 )
 EMB3D_LEVELS = frozenset({"foundational", "intermediate", "leading"})
+CWE_MAPPING_USAGES = frozenset(
+    {"Allowed", "Allowed-with-Review", "Discouraged", "Prohibited"}
+)
+DEFAULT_ATTACK_SOURCE = (
+    Path(__file__).resolve().parent.parent
+    / "assets"
+    / "attack"
+    / "ics-attack-19.2.json"
+)
+DEFAULT_CWE_SOURCE = (
+    Path(__file__).resolve().parent.parent
+    / "assets"
+    / "cwe"
+    / "cwe-4.20.json"
+)
 DEFAULT_EMB3D_MITIGATIONS = (
     Path(__file__).resolve().parent.parent
     / "assets"
@@ -103,6 +121,22 @@ class Emb3dMitigation:
     name: str
     level: str
     threat_ids: frozenset[str]
+
+
+@dataclass(frozen=True)
+class AttackTechnique:
+    identifier: str
+    name: str
+    active: bool
+
+
+@dataclass(frozen=True)
+class CweWeakness:
+    identifier: str
+    name: str
+    abstraction: str
+    status: str
+    mapping_usage: str
 
 
 def values(record: Record) -> tuple[str, ...]:
@@ -369,6 +403,305 @@ def _expected_score(value: str) -> str:
     return f"{score:.1f}".replace(".", ",")
 
 
+def load_attack_techniques(path: Path) -> dict[str, AttackTechnique]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    raw_objects = payload.get("objects") if isinstance(payload, dict) else None
+    if not isinstance(raw_objects, list):
+        raise ValueError("ATT&CK source must contain an objects list")
+
+    technique_index: dict[str, AttackTechnique] = {}
+    for position, item in enumerate(raw_objects, start=1):
+        if not isinstance(item, dict) or item.get("type") != "attack-pattern":
+            continue
+
+        raw_references = item.get("external_references")
+        if not isinstance(raw_references, list):
+            continue
+        identifiers = {
+            str(reference.get("external_id", "")).strip().upper()
+            for reference in raw_references
+            if isinstance(reference, dict)
+            and reference.get("source_name") == "mitre-attack"
+            and ATTACK_ID_PATTERN.fullmatch(
+                str(reference.get("external_id", "")).strip().upper()
+            )
+        }
+        if not identifiers:
+            continue
+        if len(identifiers) != 1:
+            raise ValueError(
+                f"ATT&CK attack-pattern entry {position} has multiple technique ids"
+            )
+
+        identifier = next(iter(identifiers))
+        name = str(item.get("name", "")).strip()
+        if not name:
+            raise ValueError(f"ATT&CK technique {identifier} has no name")
+        if identifier in technique_index:
+            raise ValueError(f"ATT&CK technique id is duplicated: {identifier}")
+
+        technique_index[identifier] = AttackTechnique(
+            identifier=identifier,
+            name=name,
+            active=not bool(
+                item.get("revoked", False) or item.get("x_mitre_deprecated", False)
+            ),
+        )
+
+    if not technique_index:
+        raise ValueError("ATT&CK source contains no ICS technique ids")
+    return technique_index
+
+
+def load_cwe_weaknesses(path: Path) -> dict[str, CweWeakness]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    metadata = payload.get("metadata") if isinstance(payload, dict) else None
+    raw_weaknesses = payload.get("weaknesses") if isinstance(payload, dict) else None
+    if not isinstance(metadata, dict) or not metadata.get("content_version"):
+        raise ValueError("CWE source must contain version metadata")
+    if not isinstance(raw_weaknesses, list):
+        raise ValueError("CWE source must contain a weaknesses list")
+    if metadata.get("total_weaknesses") != len(raw_weaknesses):
+        raise ValueError("CWE source weakness count differs from its metadata")
+
+    weakness_index: dict[str, CweWeakness] = {}
+    for position, item in enumerate(raw_weaknesses, start=1):
+        if not isinstance(item, dict):
+            raise ValueError(f"CWE weakness entry {position} must be an object")
+
+        identifier = str(item.get("id", "")).strip().upper()
+        name = str(item.get("name", "")).strip()
+        abstraction = str(item.get("abstraction", "")).strip()
+        status = str(item.get("status", "")).strip()
+        mapping_notes = item.get("mapping_notes")
+        mapping_usage = (
+            str(mapping_notes.get("usage", "")).strip()
+            if isinstance(mapping_notes, dict)
+            else ""
+        )
+        if not CWE_ID_PATTERN.fullmatch(identifier):
+            raise ValueError(f"CWE weakness entry {position} has an invalid id")
+        if not name or not abstraction or not status:
+            raise ValueError(f"CWE weakness {identifier} has incomplete metadata")
+        if mapping_usage not in CWE_MAPPING_USAGES:
+            raise ValueError(f"CWE weakness {identifier} has invalid mapping usage")
+        if identifier in weakness_index:
+            raise ValueError(f"CWE weakness id is duplicated: {identifier}")
+
+        weakness_index[identifier] = CweWeakness(
+            identifier=identifier,
+            name=name,
+            abstraction=abstraction,
+            status=status,
+            mapping_usage=mapping_usage,
+        )
+
+    if not weakness_index:
+        raise ValueError("CWE source contains no weakness ids")
+    return weakness_index
+
+
+def _comma_identifiers(value: str) -> list[str]:
+    if not value or value.casefold() == "n/a":
+        return []
+    return [item.strip() for item in value.split(",")]
+
+
+def validate_attack_mappings(
+    value: str,
+    *,
+    row_number: int,
+    threat_id: str,
+    technique_index: dict[str, AttackTechnique],
+) -> list[Finding]:
+    findings: list[Finding] = []
+    seen: set[str] = set()
+    for raw_identifier in _comma_identifiers(value):
+        identifier = raw_identifier.upper()
+        if not ATTACK_ID_PATTERN.fullmatch(identifier):
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="ATT&CK ID",
+                    message="ATT&CK value is not a canonical ICS technique id",
+                    actual=raw_identifier or "<empty item>",
+                    expected="TNNNN or TNNNN.NNN",
+                )
+            )
+            continue
+        if raw_identifier != identifier:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="ATT&CK ID",
+                    message="ATT&CK technique id must use canonical case",
+                    actual=raw_identifier,
+                    expected=identifier,
+                )
+            )
+        if identifier in seen:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="ATT&CK ID",
+                    message="ATT&CK technique id is duplicated in the row",
+                    actual=identifier,
+                    expected="<one occurrence per technique id>",
+                )
+            )
+            continue
+        seen.add(identifier)
+
+        technique = technique_index.get(identifier)
+        if technique is None:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="ATT&CK ID",
+                    message="ATT&CK technique is absent from the ICS snapshot",
+                    actual=identifier,
+                    expected="<technique id present in the bundled ICS snapshot>",
+                )
+            )
+        elif not technique.active:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="ATT&CK ID",
+                    message="ATT&CK technique is revoked or deprecated",
+                    actual=f"{identifier} ({technique.name})",
+                    expected="<active ICS technique>",
+                )
+            )
+    return findings
+
+
+def validate_cwe_mappings(
+    value: str,
+    justification: str,
+    *,
+    row_number: int,
+    threat_id: str,
+    weakness_index: dict[str, CweWeakness],
+) -> list[Finding]:
+    findings: list[Finding] = []
+    seen: set[str] = set()
+    for raw_identifier in _comma_identifiers(value):
+        identifier = raw_identifier.upper()
+        if not CWE_ID_PATTERN.fullmatch(identifier):
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="CWE ID",
+                    message="CWE value is not a canonical weakness id",
+                    actual=raw_identifier or "<empty item>",
+                    expected="CWE-NNN",
+                )
+            )
+            continue
+        if raw_identifier != identifier:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="CWE ID",
+                    message="CWE weakness id must use canonical case",
+                    actual=raw_identifier,
+                    expected=identifier,
+                )
+            )
+        if identifier in seen:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="CWE ID",
+                    message="CWE weakness id is duplicated in the row",
+                    actual=identifier,
+                    expected="<one occurrence per weakness id>",
+                )
+            )
+            continue
+        seen.add(identifier)
+
+        weakness = weakness_index.get(identifier)
+        if weakness is None:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="CWE ID",
+                    message="CWE weakness is absent from the versioned snapshot",
+                    actual=identifier,
+                    expected="<weakness id present in the bundled CWE snapshot>",
+                )
+            )
+            continue
+        if weakness.status == "Deprecated":
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="CWE ID",
+                    message="CWE weakness is deprecated",
+                    actual=f"{identifier} ({weakness.name})",
+                    expected="<active CWE weakness>",
+                )
+            )
+            continue
+        if weakness.mapping_usage == "Prohibited":
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="CWE ID",
+                    message="CWE mapping usage is Prohibited",
+                    actual=f"{identifier} ({weakness.name})",
+                    expected="<mappable CWE weakness>",
+                )
+            )
+            continue
+        if (
+            weakness.mapping_usage in {"Allowed-with-Review", "Discouraged"}
+            and not CWE_RATIONALE_PATTERN.search(justification)
+        ):
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Justification",
+                    message=(
+                        f"{weakness.mapping_usage} CWE mapping requires an explicit "
+                        "review rationale"
+                    ),
+                    actual=f"{identifier} without CWE mapping rationale",
+                    expected=(
+                        "CWE mapping rationale: <evidence and why no more-specific "
+                        "Allowed entry fits>"
+                    ),
+                )
+            )
+    return findings
+
+
 def load_emb3d_mitigations(path: Path) -> dict[str, Emb3dMitigation]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     raw_mitigations = payload.get("mitigations") if isinstance(payload, dict) else None
@@ -591,6 +924,8 @@ def validate_mitigation_citations(
 
 def validate_rows(
     records: list[Record],
+    technique_index: Optional[dict[str, AttackTechnique]] = None,
+    weakness_index: Optional[dict[str, CweWeakness]] = None,
     mitigation_index: Optional[dict[str, Emb3dMitigation]] = None,
 ) -> list[Finding]:
     findings: list[Finding] = []
@@ -659,8 +994,10 @@ def validate_rows(
                 )
 
         justification_cell = _cell(record, "Justification")
+        justification = (
+            justification_cell.value.strip() if justification_cell is not None else ""
+        )
         if justification_cell is not None:
-            justification = justification_cell.value.strip()
             if ";" in justification:
                 findings.append(
                     Finding(
@@ -697,6 +1034,31 @@ def validate_rows(
                         mitigation_index=mitigation_index,
                     )
                 )
+
+        if technique_index is not None:
+            attack_cell = _cell(record, "ATT&CK ID")
+            attack_value = attack_cell.value.strip() if attack_cell is not None else ""
+            findings.extend(
+                validate_attack_mappings(
+                    attack_value,
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    technique_index=technique_index,
+                )
+            )
+
+        if weakness_index is not None:
+            cwe_cell = _cell(record, "CWE ID")
+            cwe_value = cwe_cell.value.strip() if cwe_cell is not None else ""
+            findings.extend(
+                validate_cwe_mappings(
+                    cwe_value,
+                    justification,
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    weakness_index=weakness_index,
+                )
+            )
 
         score_cell = _cell(record, "CVSS-B v4.0 Score")
         if score_cell is not None:
@@ -1006,6 +1368,24 @@ def main() -> int:
         help="Optional raw TMT CSV used to verify the preserved row inventory",
     )
     parser.add_argument(
+        "--attack",
+        type=Path,
+        default=DEFAULT_ATTACK_SOURCE,
+        help=(
+            "MITRE ATT&CK for ICS STIX JSON used to validate active technique ids "
+            "(defaults to the bundled asset)"
+        ),
+    )
+    parser.add_argument(
+        "--cwe",
+        type=Path,
+        default=DEFAULT_CWE_SOURCE,
+        help=(
+            "Versioned MITRE CWE projection used to validate mappable weakness ids "
+            "(defaults to the bundled asset)"
+        ),
+    )
+    parser.add_argument(
         "--emb3d-mitigations",
         type=Path,
         default=DEFAULT_EMB3D_MITIGATIONS,
@@ -1018,12 +1398,20 @@ def main() -> int:
 
     output_path = Path(args.csv).expanduser()
     source_path = Path(args.source).expanduser() if args.source else None
+    attack_path = args.attack.expanduser()
+    cwe_path = args.cwe.expanduser()
     mitigation_path = args.emb3d_mitigations.expanduser()
     if not output_path.is_file():
         print(f"ERROR: CSV file not found: {output_path}", file=sys.stderr)
         return 2
     if source_path is not None and not source_path.is_file():
         print(f"ERROR: source CSV file not found: {source_path}", file=sys.stderr)
+        return 2
+    if not attack_path.is_file():
+        print(f"ERROR: ATT&CK source not found: {attack_path}", file=sys.stderr)
+        return 2
+    if not cwe_path.is_file():
+        print(f"ERROR: CWE source not found: {cwe_path}", file=sys.stderr)
         return 2
     if not mitigation_path.is_file():
         print(
@@ -1034,6 +1422,8 @@ def main() -> int:
 
     findings: list[Finding] = []
     try:
+        technique_index = load_attack_techniques(attack_path)
+        weakness_index = load_cwe_weaknesses(cwe_path)
         mitigation_index = load_emb3d_mitigations(mitigation_path)
         output_records = read_records(
             output_path,
@@ -1041,7 +1431,14 @@ def main() -> int:
             findings=findings,
         )
         findings.extend(validate_header(output_records))
-        findings.extend(validate_rows(output_records, mitigation_index))
+        findings.extend(
+            validate_rows(
+                output_records,
+                technique_index=technique_index,
+                weakness_index=weakness_index,
+                mitigation_index=mitigation_index,
+            )
+        )
 
         source_records: Optional[list[Record]] = None
         if source_path is not None:
