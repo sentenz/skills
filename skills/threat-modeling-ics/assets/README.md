@@ -9,7 +9,7 @@
   > MITRE ATT&CK for ICS 19.2 STIX snapshot from the [ATT&CK STIX dataset](https://github.com/mitre-attack/attack-stix-data/blob/master/ics-attack/ics-attack-19.2.json). Contains techniques, tactics, mitigations, relationships, and lifecycle flags. **Used to validate** active technique IDs when populating the `ATT&CK ID` column.
 
 - [cwe/](cwe/)
-  > Versioned MITRE CWE 4.20 projection derived from the [CWE JSON API](https://github.com/CWE-CAPEC/REST-API-wg/tree/main/json_repo). Contains all weakness IDs plus abstraction, status, mapping notes, relationships, candidate mitigations, and selected discovery views. **Used to validate** the mappable weakness set when populating the `CWE ID` column.
+  > Versioned MITRE CWE 4.20 projection derived from the [CWE JSON API](https://github.com/CWE-CAPEC/REST-API-wg/tree/main/json_repo). Contains all weakness IDs plus abstraction, status, mapping notes, relationships, candidate mitigations, and selected discovery views. Treat it as programmatic input only: use `scripts/query_cwe.py` for bounded lookup and `scripts/validate_output.py` for complete-output validation.
 
 - [emb3d/](emb3d/)
   > MITRE EMB3D JSON data files derived from the [EMB3D knowledge base](https://github.com/mitre/emb3d/tree/main/_data). Contains threat IDs, device properties, threat actions, and mitigation levels. **Used to look up** threat details when populating the `EMB3D TID` column.

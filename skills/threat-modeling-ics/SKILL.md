@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.27"
+  version: "1.7.28"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -342,9 +342,10 @@ Save and integrate intermediate results after each step. When the objective is p
     - Apply Field Resolution Semantics.
     - In `Justification`, prefer weakness name or exploit behavior wording unless repeating the ID is required for disambiguation.
 
-    **Data Source:**
-    - [assets/cwe/cwe-4.20.json](assets/cwe/cwe-4.20.json)
-      > Use the versioned MITRE CWE projection to confirm weakness IDs, names, descriptions, abstraction, status, mapping usage, relationships, and candidate mitigation guidance.
+    **Data Access:**
+    - Do not read or print [assets/cwe/cwe-4.20.json](assets/cwe/cwe-4.20.json) directly.
+    - Discover candidates with `uv run ./scripts/query_cwe.py --search '<terms>' --top 5`.
+    - Inspect selected IDs with `uv run ./scripts/query_cwe.py --id 'CWE-NNN'`; request `--include description,mapping-notes,related,mitigations` only for one selected ID.
 
 5. FIRST CVSS v4.0
 

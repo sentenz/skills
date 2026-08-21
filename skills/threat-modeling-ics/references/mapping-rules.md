@@ -364,7 +364,7 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 
 ## 13. MITRE CWE Mapping Rules
 
-Use the bundled CWE 4.20 projection as the offline source of record. It contains all weakness entries from the upstream snapshot, including status, abstraction, mapping notes, relationships, candidate mitigations, and the Software Development, Research Concepts, and Hardware Design discovery views.
+Use the bundled CWE 4.20 projection as the offline source of record through `scripts/query_cwe.py` and `scripts/validate_output.py`; do not read or print the raw JSON. The projection contains all weakness entries from the upstream snapshot, including status, abstraction, mapping notes, relationships, candidate mitigations, and the Software Development, Research Concepts, and Hardware Design discovery views.
 
 - **Active set:** weakness entries whose `status` is not `Deprecated`.
 - **Mappable set:** active weakness entries whose `mapping_notes.usage` is not `Prohibited`.
