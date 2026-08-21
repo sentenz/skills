@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.28"
+  version: "1.7.29"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -311,9 +311,10 @@ Save and integrate intermediate results after each step. When the objective is p
     - Apply Field Resolution Semantics.
     - In `Justification`, describe the behavior that supports the mapping without repeating IDs.
 
-    **Data Source:**
-    - [assets/attack/ics-attack-19.2.json](assets/attack/ics-attack-19.2.json)
-      > Use the MITRE ATT&CK for ICS STIX snapshot to confirm IDs, names, descriptions, mitigations, and tactics. Map only active `attack-pattern` objects with an ICS technique ID; exclude revoked or deprecated objects.
+    **Data Access:**
+    - Do not read or print [assets/attack/ics-attack-19.2.json](assets/attack/ics-attack-19.2.json) directly.
+    - Discover active techniques with `uv run ./scripts/query_attack.py --search '<terms>' --top 5`.
+    - Inspect selected IDs with `uv run ./scripts/query_attack.py --id 'TNNNN'`; request `--include description,tactics,platforms,mitigations,detections,relationships` only for one selected ID.
 
 3. MITRE EMB3D
 
@@ -325,13 +326,11 @@ Save and integrate intermediate results after each step. When the objective is p
     - Apply Field Resolution Semantics.
     - In `Justification`, describe the mapped device property or missing control without repeating TIDs.
 
-    **Data Source:**
-    - [assets/emb3d/threats_properties_mitigations_mappings_2.0.1.json](assets/emb3d/threats_properties_mitigations_mappings_2.0.1.json)
-      > Use the combined mapping JSON as the threat-centric data source to validate EMB3D threat IDs (TIDs), associated device property IDs (PIDs), and mapped mitigation candidates.
-    - [assets/emb3d/mitigations_threat_mappings_2.0.1.json](assets/emb3d/mitigations_threat_mappings_2.0.1.json)
-      > Use the mitigation-centric JSON as the authoritative local source for each MID's exact name, EMB3D level, and associated TIDs.
-    - [assets/emb3d/properties_threat_mappings_2.0.1.json](assets/emb3d/properties_threat_mappings_2.0.1.json)
-      > Use the EMB3D property mapping JSON to validate property IDs, property names, categories, parent–child relationships, and associated threats when discovering applicable threats from the characteristics and capabilities of an embedded device.
+    **Data Access:**
+    - Do not read or print the [assets/emb3d/](assets/emb3d/) JSON files directly.
+    - Discover threats, properties, and mitigations with `uv run ./scripts/query_emb3d.py --search '<terms>' --top 5`; narrow discovery with `--kind threat`, `--kind property`, or `--kind mitigation` when needed.
+    - Inspect one selected identifier with `--tid 'TID-NNN'`, `--pid 'PID-NN'`, or `--mid 'MID-NNN'`; request only applicable `--include properties,mitigations,threats,hierarchy` fields.
+    - Treat the mitigation-centric query result as authoritative for each MID's exact name, EMB3D level, and associated TIDs; treat `resolved: false` properties as evidence gaps, and do not treat a source match as proof of implementation.
 
 4. MITRE CWE
 
@@ -363,7 +362,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Data Source:**
     - [assets/cvss/cvss-v4.0.json](assets/cvss/cvss-v4.0.json)
-      > Use the FIRST CVSS v4.0 JSON to confirm vector, score, and severity format. Do not derive the score from the schema.
+      > Treat the FIRST CVSS v4.0 schema as a machine-readable format reference; do not load it during normal row processing or derive a score from it. CVSS does not require a query layer.
 
     **Script Usage:**
     - [scripts/calculate_cvss.py](scripts/calculate_cvss.py)

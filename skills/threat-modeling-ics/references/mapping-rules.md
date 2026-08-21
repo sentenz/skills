@@ -125,7 +125,7 @@ Mitigation levels classify the extent and sophistication of mitigations applied 
 | 3     | Intermediate | Controls are standardized, consistently implemented, and validated against sophisticated threats.                     | Intermediate                 | SL 3                          |
 | 4     | Leading      | Controls continuously adapt to threat intelligence and are engineered for highly capable, well-resourced adversaries. | Leading                      | SL 4                          |
 
-- Cite an MID only when row evidence makes the mitigation applicable and the mitigation asset maps it to at least one `EMB3D TID` recorded in the row.
+- Cite an MID only when row evidence makes the mitigation applicable and the bounded EMB3D query maps it to at least one `EMB3D TID` recorded in the row.
 - Copy the mitigation's exact source name and group it under its exact source level in `Justification`.
 - Treat source validation and implementation evidence separately. A valid MID, name, level, and TID association does not prove that a product implements the mitigation.
 - Omit MIDs when `EMB3D TID` is `N/A`; describe verified product-specific controls without an EMB3D label instead.
@@ -133,7 +133,7 @@ Mitigation levels classify the extent and sophistication of mitigations applied 
 - Do not derive, raise, or lower an EMB3D level from implementation maturity, adversary capability, control coverage, or an IEC 62443 Security Level.
 
 > [!NOTE]
-> EMB3D levels are source taxonomy values, not a numeric maturity scale. Use the bundled [MITRE EMB3D mitigation snapshot](../assets/emb3d/mitigations_threat_mappings_2.0.1.json) as the offline source of record for each MID.
+> EMB3D levels are source taxonomy values, not a numeric maturity scale. Use the bundled mitigation snapshot as the offline source of record through [`query_emb3d.py`](../scripts/query_emb3d.py) and [`validate_output.py`](../scripts/validate_output.py); do not read or print the raw JSON.
 
 ## 7. Impact Mapping
 
