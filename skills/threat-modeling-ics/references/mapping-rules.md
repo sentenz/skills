@@ -1,35 +1,35 @@
 # Mapping Rules
 
-- [Connection-Path Scope Classification](#connection-path-scope-classification)
-- [CIA Impact Reference](#cia-impact-reference)
-- [Diagram Depth Layers](#diagram-depth-layers)
-- [Purdue Model Mapping](#purdue-model-mapping)
-  - [Purdue Zone Reference](#purdue-zone-reference)
-  - [Threat-Surface Mapping](#threat-surface-mapping)
-- [STRIDE Classification](#stride-classification)
-- [EMB3D Mitigation Levels](#emb3d-mitigation-levels)
-- [Impact Mapping](#impact-mapping)
-  - [Exploitability Metrics](#exploitability-metrics)
-  - [Vulnerable System Impact Metrics](#vulnerable-system-impact-metrics)
-  - [Subsequent System Impact Metrics](#subsequent-system-impact-metrics)
-- [Probability Mapping](#probability-mapping)
-  - [Exploitation Method](#exploitation-method)
-  - [Vulnerability State](#vulnerability-state)
-  - [Likelihood Matrix](#likelihood-matrix)
-- [Risk Matrix Mapping](#risk-matrix-mapping)
-- [Threat Actor Mapping](#threat-actor-mapping)
-  - [Capability Boundaries](#capability-boundaries)
-  - [Scenario Mapping](#scenario-mapping)
-- [Risk Treatment Mapping](#risk-treatment-mapping)
-  - [Treatment Semantics](#treatment-semantics)
-  - [Treatment Decision Guidance](#treatment-decision-guidance)
-  - [State and Treatment Compatibility](#state-and-treatment-compatibility)
-  - [Treatment Evidence Requirements](#treatment-evidence-requirements)
-- [Risk Approval Mapping](#risk-approval-mapping)
-
 Use these rules only after reading the applicable workflow step in `SKILL.md`. Treat `SKILL.md` as authoritative if a workflow instruction conflicts with this reference.
 
-## Connection-Path Scope Classification
+- [1. Connection-Path Scope Classification](#1-connection-path-scope-classification)
+- [2. CIA Impact Reference](#2-cia-impact-reference)
+- [3. Diagram Depth Layers](#3-diagram-depth-layers)
+- [4. Purdue Model Mapping](#4-purdue-model-mapping)
+  - [4.1. Purdue Zone Reference](#41-purdue-zone-reference)
+  - [4.2. Threat-Surface Mapping](#42-threat-surface-mapping)
+- [5. STRIDE Classification](#5-stride-classification)
+- [6. EMB3D Mitigation Levels](#6-emb3d-mitigation-levels)
+- [7. Impact Mapping](#7-impact-mapping)
+  - [7.1. Exploitability Metrics](#71-exploitability-metrics)
+  - [7.2. Vulnerable System Impact Metrics](#72-vulnerable-system-impact-metrics)
+  - [7.3. Subsequent System Impact Metrics](#73-subsequent-system-impact-metrics)
+- [8. Probability Mapping](#8-probability-mapping)
+  - [8.1. Exploitation Method](#81-exploitation-method)
+  - [8.2. Vulnerability State](#82-vulnerability-state)
+  - [8.3. Likelihood Matrix](#83-likelihood-matrix)
+- [9. Risk Matrix Mapping](#9-risk-matrix-mapping)
+- [10. Threat Actor Mapping](#10-threat-actor-mapping)
+  - [10.1. Capability Boundaries](#101-capability-boundaries)
+  - [10.2. Scenario Mapping](#102-scenario-mapping)
+- [11. Risk Treatment Mapping](#11-risk-treatment-mapping)
+  - [11.1. Treatment Semantics](#111-treatment-semantics)
+  - [11.2. Treatment Decision Guidance](#112-treatment-decision-guidance)
+  - [11.3. State and Treatment Compatibility](#113-state-and-treatment-compatibility)
+  - [11.4. Treatment Evidence Requirements](#114-treatment-evidence-requirements)
+- [12. Risk Approval Mapping](#12-risk-approval-mapping)
+
+## 1. Connection-Path Scope Classification
 
 Connection paths are classified as either [direct or indirect, logical or physical data connections to a device or network](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202402847#art_2), using the linked [definitions](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202402847#art_3) for connection path, connection type, and target.
 
@@ -47,7 +47,7 @@ Connection paths are classified as either [direct or indirect, logical or physic
 | C7   | Indirect        | Physical        | Device  | Indirect physical data connection to a device  | A physical path to a device that passes through one or more intermediate components or a larger directly connectable system: a laptop connected through a USB cable, debug probe and ribbon cable to a target MCU; a workstation connected through a USB-to-RS-232 adapter to a device; a sensor or actuator connected through remote I/O, an isolator, signal conditioner or transmitter; a connection through a fibre-to-copper media converter or wireless bridge; an internal component connected through an adapter board, backplane or product-level external connector; or a device connection through a USB-to-IR or equivalent adapter. The final IR segment is an optical physical connection.          |
 | C8   | Indirect        | Physical        | Network | Indirect physical data connection to a network | A physical path to a network implemented through an intermediate system or conversion stage: a maintenance workstation connected through a USB-to-RS-485 adapter or serial server to an RS-485 bus; an internal MCU connected through isolation, an RS-485 transceiver and a board connector to an external multidrop network; a device connected through a copper-to-fibre media converter to an optical network; an electrically connected device reaching a WLAN through an Ethernet-to-Wi-Fi bridge; a module connected through an industrial backplane and network coupler to a fieldbus; or network attachment through an IR adapter, access point or gateway. The IR segment is an optical network medium. |
 
-## CIA Impact Reference
+## 2. CIA Impact Reference
 
 The core principles of Information Security (InfoSec) are confidentiality, integrity, and availability (CIA). The CIA triad is used for evaluating the security posture of systems and data.
 
@@ -57,14 +57,14 @@ The core principles of Information Security (InfoSec) are confidentiality, integ
 | Integrity       | Ensures that information remains accurate, complete, and unaltered except through authorized actions. | Data tampering, unauthorized modification, malware, injection attacks, man-in-the-middle attacks, replay attacks. |
 | Availability    | Ensures that systems, services, and data remain accessible to authorized users when required.         | Denial-of-service (DoS/DDoS), ransomware, hardware failure, power outages, resource exhaustion.                   |
 
-## Diagram Depth Layers
+## 3. Diagram Depth Layers
 
 [Diagram depth layers](https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/1b-depth-layers) are used to decompose a system into hierarchical levels of detail, enabling threat modeling at varying levels of abstraction.
 
 | Layer | Title       | Components                                                                                                                                                                                                                                                                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | ----- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0     | System      | Embedded Device, PLC, HMI/Engineering Station, Maintenance Workstation, Debug/Flash Probe, Managed UPS, Sensors, Actuators, Remote I/O, Protocol Gateway/Serial Server, USB Host or Service Laptop                                                                                  | Mandatory initial view of the system's major parts. Represents the Embedded Device as a single process within its trust boundary and shows all relevant external entities, intermediary systems, data flows, and physical or logical connection paths. Establishes the system context and identifies the Layer 0 processes that may require further decomposition. ([Microsoft Layer 0][1])                                                                                                                                                                     |
-| 1     | Process     | Controller/MCU, RS-485 Transceiver, RS-232 Transceiver, USB Interface, JTAG/SWD Interface, RJ-12/RJ-45 Connectors, GPIO Interface, Digital I/O, Analog I/O, Power Monitoring, Flash, EEPROM                                                                                         | Decomposes the Embedded Device process from Layer 0 into its principal board-level processes, interfaces, data stores, and trust boundaries. Identifies the product's external physical and logical attack surfaces while retaining the Controller/MCU as a single process. Generally the appropriate minimum decomposition for evaluating an embedded product’s communication ports, field I/O, debug interface, storage, and service interfaces. ([Microsoft Layer 1][2])                                                                                     |
+| 0     | System      | Embedded Device, PLC, HMI/Engineering Station, Maintenance Workstation, Debug/Flash Probe, Managed UPS, Sensors, Actuators, Remote I/O, Protocol Gateway/Serial Server, USB Host or Service Laptop                                                                                  | Mandatory initial view of the system's major parts. Represents the Embedded Device as a single process within its trust boundary and shows all relevant external entities, intermediary systems, data flows, and physical or logical connection paths. Establishes the system context and identifies the Layer 0 processes that may require further decomposition. ([Microsoft Layer 0][1])                                                                                                                                                                    |
+| 1     | Process     | Controller/MCU, RS-485 Transceiver, RS-232 Transceiver, USB Interface, JTAG/SWD Interface, RJ-12/RJ-45 Connectors, GPIO Interface, Digital I/O, Analog I/O, Power Monitoring, Flash, EEPROM                                                                                         | Decomposes the Embedded Device process from Layer 0 into its principal board-level processes, interfaces, data stores, and trust boundaries. Identifies the product's external physical and logical attack surfaces while retaining the Controller/MCU as a single process. Generally the appropriate minimum decomposition for evaluating an embedded product’s communication ports, field I/O, debug interface, storage, and service interfaces. ([Microsoft Layer 1][2])                                                                                    |
 | 2     | Subprocess  | Application and Control Logic, Modbus RTU Stack, GPIO Driver, UART Driver, SPI Driver, I²C Driver, Digital-I/O Driver, ADC/DAC Driver, Scheduler/Interrupt Dispatch, Configuration Manager, Bootloader, Secure Boot, Firmware-Update Manager, Debug-Access Control, Memory Manager  | Decomposes the Controller/MCU process from Layer 1 into security-relevant firmware subprocesses and data flows. Focuses on protocol parsing, control decisions, privilege boundaries, interrupt handling, secure startup, firmware updates, debug authorization, configuration processing, and non-volatile-memory access. Appropriate where compromise of an internal controller function could affect device integrity, availability, process control, or connected systems. ([Microsoft Layer 2][3])                                                        |
 | 3     | Lower-Level | Modbus RTU Frame Parser and Function Handlers, Boot Verification Chain, Firmware-Update State Machine, Signature Verification, Anti-Rollback Logic, UART ISR/DMA and Buffers, GPIO Interrupt/Debounce Logic, SPI/I²C Transaction State Machines, MPU Regions, Key-Handling Routines | Provides minute implementation detail for a selected critical Layer 2 subprocess rather than automatically decomposing the entire controller. Examines parser memory safety, input-validation branches, state transitions, buffer ownership, concurrency, cryptographic verification, privilege changes, key exposure, fault injection, and side-channel behavior. Reserved for security-critical, kernel-level, privileged, cryptographic, or timing-sensitive functions where Layer 2 does not provide sufficient analytical depth. ([Microsoft Layer 3][4]) |
 
@@ -73,9 +73,9 @@ The core principles of Information Security (InfoSec) are confidentiality, integ
 [3]: https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/4-layer-2-the-sub-process-layer "Layer 2 | The Subprocess Layer Training | Microsoft Learn"
 [4]: https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/5-layer-3-the-lower-level-layer "Layer 3 | The Lower-Level Layer Training | Microsoft Learn"
 
-## Purdue Model Mapping
+## 4. Purdue Model Mapping
 
-### Purdue Zone Reference
+### 4.1. Purdue Zone Reference
 
 | Purdue Level | Zone Label                | Representative Assets                                            |
 | ------------ | ------------------------- | ---------------------------------------------------------------- |
@@ -87,7 +87,7 @@ The core principles of Information Security (InfoSec) are confidentiality, integ
 | L1           | Basic Control             | PLCs, PACs, RTUs, SIS controllers.                               |
 | L0           | Field Process             | Sensors, actuators, drives, valves.                              |
 
-### Threat-Surface Mapping
+### 4.2. Threat-Surface Mapping
 
 Use this table to identify the Purdue zone of each asset from `Interaction` or `Diagram`, and to validate that the modeled threat surface is consistent with the zone's prevalent STRIDE categories. Do not override TMT `Category` values solely from this table.
 
@@ -99,7 +99,7 @@ Use this table to identify the Purdue zone of each asset from `Interaction` or `
 | Level 1      | Control     | PLC, PAC                                | Siemens S7, Allen-Bradley ControlLogix, Schneider Modicon.         | Tampering, Denial of Service, Elevation of Privilege.                                   |
 | Level 0      | Field       | Sensors, Actuators, RTUs, Field Devices | Transmitters, positioners, motor drives, RTUs.                     | Tampering, Denial of Service.                                                           |
 
-## STRIDE Classification
+## 5. STRIDE Classification
 
 STRIDE is the foundational threat classification scheme for understanding each threat statement and for guiding the review process.
 
@@ -112,7 +112,7 @@ STRIDE is the foundational threat classification scheme for understanding each t
 | Denial Of Service      | Interruption, degradation, blocking, or exhaustion affecting availability.              |
 | Elevation Of Privilege | Gain of permissions beyond the intended security boundary.                              |
 
-## EMB3D Mitigation Levels
+## 6. EMB3D Mitigation Levels
 
 Mitigation levels classify the extent and sophistication of mitigations applied to an identified threat, ranging from no implemented mitigation to comprehensive and adaptive mitigation across the relevant architectural layers.
 
@@ -130,7 +130,7 @@ Mitigation levels classify the extent and sophistication of mitigations applied 
 > - **ISO/IEC 62443 (OT/ICS)** measures mitigation based on adversary capability and resources (from simple mistakes to APTs across entire industrial networks).
 > - [MITRE EMB3D (Embedded Systems)](https://emb3d.mitre.org/) measures mitigation based on hardware/firmware architecture depth and implementation complexity.
 
-## Impact Mapping
+## 7. Impact Mapping
 
 Categorize impact using CVSS v4.0 Base Metrics. Keep CVSS Base scoring intrinsic. Document compensating controls, residual exposure, treatment, and approval outside the Base vector.
 
@@ -142,7 +142,7 @@ Categorize impact using CVSS v4.0 Base Metrics. Keep CVSS Base scoring intrinsic
   - Zero-impact does not make `Likelihood of Exploit` or `Risk Prioritization` inapplicable. For finalized reviewed rows, populate these columns from the mapping tables.
   - When `State = Not Applicable`, treat vulnerability state as `Theoretical` unless stronger exploit-maturity evidence exists, then derive likelihood from CVSS exploitability metrics and inherent prioritization from the `None` severity row in the risk matrix.
 
-### Exploitability Metrics
+### 7.1. Exploitability Metrics
 
 | Attack Vector   | OT/ICS Scenarios                                                            | Example Interfaces                     |
 | --------------- | --------------------------------------------------------------------------- | -------------------------------------- |
@@ -151,7 +151,7 @@ Categorize impact using CVSS v4.0 Base Metrics. Keep CVSS Base scoring intrinsic
 | `AV:L` Local    | Workstation software, HMI application, locally executed configuration tool. | Engineering software, local database.  |
 | `AV:P` Physical | Direct cable connection, removable debug port, hardware tampering.          | RS-232, JTAG, SWD, USB, buttons.       |
 
-### Vulnerable System Impact Metrics
+### 7.2. Vulnerable System Impact Metrics
 
 Metric abbreviations: `VC` = Vulnerable System Confidentiality Impact, `VI` = Vulnerable System Integrity Impact, `VA` = Vulnerable System Availability Impact.
 
@@ -164,7 +164,7 @@ Metric abbreviations: `VC` = Vulnerable System Confidentiality Impact, `VI` = Vu
 | Denial of Service      | VA                    | VI                      | High        | Degradation or outage is directly an availability impact. Integrity can follow where inconsistent processing results.                                                            |
 | Elevation of Privilege | VI                    | VC, VA                  | Medium-High | Privilege gain enables unauthorized modification, access, and potentially shutdown or execution. Read access maps to `VC`, write access to `VI`, admin/execution access to `VA`. |
 
-### Subsequent System Impact Metrics
+### 7.3. Subsequent System Impact Metrics
 
 Use `SC`, `SI`, and `SA` to capture cascading effects on the physical process, safety systems, or connected devices. Values: `N` = None, `L` = Low, `H` = High.
 
@@ -176,11 +176,11 @@ Use `SC`, `SI`, and `SA` to capture cascading effects on the physical process, s
 | DoS on communication interface                   | N   | N   | H   | Loss of communication can trigger upstream fault handling or fail-safe mode. |
 | Configuration change via engineering workstation | N   | H   | N   | Modified setpoints propagate to field devices and affect process integrity.  |
 
-## Probability Mapping
+## 8. Probability Mapping
 
 Categorize likelihood of exploit using BSI `Dringlichkeit / Eintrittspotenzial` logic. Combine exploitation method with vulnerability state.
 
-### Exploitation Method
+### 8.1. Exploitation Method
 
 | Method           | CVSS Exploitability Metrics                                      | Description                                                                                                                                      |
 | ---------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -191,7 +191,7 @@ Categorize likelihood of exploit using BSI `Dringlichkeit / Eintrittspotenzial` 
 > [!NOTE]
 > `PR` (Privileges Required) is independent of exploitation method in most cases. Do not change method classification based on `PR` alone.
 
-### Vulnerability State
+### 8.2. Vulnerability State
 
 | State             | CVSS Threat Metrics | Description                                                                                                   |
 | ----------------- | ------------------- | ------------------------------------------------------------------------------------------------------------- |
@@ -200,7 +200,7 @@ Categorize likelihood of exploit using BSI `Dringlichkeit / Eintrittspotenzial` 
 | Active            | `E:A`               | Active exploitation observed in the wild or targeted campaigns.                                               |
 | Exploit Published | `E:A`               | Public exploit code or tooling is freely available. Prefer over Active when a public tool is directly usable. |
 
-### Likelihood Matrix
+### 8.3. Likelihood Matrix
 
 | State / Method    | Manual | Automated | Self-Replicating |
 | ----------------- | ------ | --------- | ---------------- |
@@ -209,7 +209,7 @@ Categorize likelihood of exploit using BSI `Dringlichkeit / Eintrittspotenzial` 
 | Active            | Medium | High      | High             |
 | Exploit Published | Medium | High      | Critical         |
 
-## Risk Matrix Mapping
+## 9. Risk Matrix Mapping
 
 Combine `Likelihood of Exploit` and `CVSS v4.0 Severity` to determine `Risk Prioritization`.
 
@@ -224,9 +224,9 @@ Combine `Likelihood of Exploit` and `CVSS v4.0 Severity` to determine `Risk Prio
 | High                 | Low    | Medium | High   | High     | Critical |
 | Critical             | Medium | High   | High   | Critical | Critical |
 
-## Threat Actor Mapping
+## 10. Threat Actor Mapping
 
-### Capability Boundaries
+### 10.1. Capability Boundaries
 
 | Threat Actor       | Typical Capability Boundary                                                                                                       |
 | ------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
@@ -236,7 +236,7 @@ Combine `Likelihood of Exploit` and `CVSS v4.0 Severity` to determine `Risk Prio
 | Insider Threat     | Trusted local, physical, engineering, maintenance, or privileged plant access.                                                    |
 | Nation-State Actor | State-sponsored actors with significant resources, custom tooling, and long-duration campaigns targeting critical infrastructure. |
 
-### Scenario Mapping
+### 10.2. Scenario Mapping
 
 Normalize `Threat Actor` from common OT/ICS threat-path characteristics. Always select the minimum actor that satisfies required access, capability, and process knowledge. Reassess upward only when the modeled path requires capabilities beyond the selected label.
 
@@ -257,9 +257,9 @@ Normalize `Threat Actor` from common OT/ICS threat-path characteristics. Always 
 > [!NOTE]
 > When supply-chain compromise is the modeled vector, choose `Cybercriminal` for commodity ransomware or financial extortion, and `Nation-State Actor` for custom-signed tooling, strategic pre-positioning, or sabotage.
 
-## Risk Treatment Mapping
+## 11. Risk Treatment Mapping
 
-### Treatment Semantics
+### 11.1. Treatment Semantics
 
 | Treatment    | Purpose                                                         | Required Evidence or Condition                                                                                 |
 | ------------ | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
@@ -283,7 +283,7 @@ Risk treatment records the governance disposition for the inherent risk and the 
   | Identifier Hygiene | Do not populate ATT&CK, EMB3D, or CWE identifiers for `Not Applicable` rows unless the row explicitly documents a retained discrepancy.                                         |
   | CVSS Defensibility | Keep CVSS Base scoring intrinsic. Document compensating controls and acceptance decisions outside the Base vector.                                                              |
 
-### Treatment Decision Guidance
+### 11.2. Treatment Decision Guidance
 
 Select the default treatment for the row's `Risk Prioritization`. Deviate to an acceptable alternative only when documented evidence supports the deviation and the rationale is recorded in `Justification`.
 
@@ -295,7 +295,7 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 | High                | Mitigation        | Avoidance, Transfer, Acceptance  | Acceptance is restricted to exceptional cases with CPSO approval and written justification.                                                  |
 | Critical            | Avoidance         | Mitigation, Transfer, Acceptance | Acceptance requires explicit executive risk acceptance and written rationale. Do not use acceptance as a substitute for unresolved evidence. |
 
-### State and Treatment Compatibility
+### 11.3. State and Treatment Compatibility
 
 | TMT State             | Compatible Risk Treatment | Consistency Requirements                                                                                                          |
 | --------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
@@ -306,7 +306,7 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 | `Mitigated`           | Acceptance                | Use only when controls reduce exposure but residual risk is intentionally retained with documented approval.                      |
 | `Mitigated`           | Transfer                  | Use only when controls and a named third-party mechanism share or delegate residual consequence.                                  |
 
-### Treatment Evidence Requirements
+### 11.4. Treatment Evidence Requirements
 
 | Risk Treatment | Minimum Evidence in `Justification`                                                             |
 | -------------- | ----------------------------------------------------------------------------------------------- |
@@ -315,7 +315,7 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 | Acceptance     | Business rationale for retention, approving stakeholder, and acceptance mechanism.              |
 | Transfer       | Named third party, specific contract/SLA/warranty/insurance reference, and explicit risk scope. |
 
-## Risk Approval Mapping
+## 12. Risk Approval Mapping
 
 `Risk Approval` records the minimum required approver role label from the intersection of `Risk Prioritization` and `Risk Treatment`.
 
