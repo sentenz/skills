@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.19"
+  version: "1.7.20"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -56,10 +56,7 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
       - [5.1.7.2. State and Treatment Compatibility](#5172-state-and-treatment-compatibility)
       - [5.1.7.3. Treatment Evidence Requirements](#5173-treatment-evidence-requirements)
     - [5.1.8. Risk Approval Mapping](#518-risk-approval-mapping)
-- [6. Template](#6-template)
-  - [6.1. CSV](#61-csv)
-    - [6.1.1. Serial Protocol-Specific Example](#611-serial-protocol-specific-example)
-- [7. References](#7-references)
+- [6. References](#6-references)
 
 ## 1. Benefits
 
@@ -393,7 +390,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - If enrichment columns already exist, carry their values forward unchanged for already-reviewed rows unless the user explicitly requests re-review.
     - **Justification Quality:** Each justification must follow the narrative pattern defined in section [4.3. Review, Step 14](#43-review). Do not produce generic, short, or identifier-only justifications. Enclose the justification in double quotes. Avoid semicolons inside the justification text since the CSV is semicolon-delimited.
 
-4. Serial Output Baseline
+4. Output Baseline
 
     **Action:** For SERIAL, RS-232, or UART assessments, read [SERIAL_Threat_Model_Generated.csv](references/SERIAL_Threat_Model_Generated.csv) before starting the row-by-row review.
 
@@ -836,27 +833,7 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 | CPSO             | CPSO, or equivalent with organizational risk management authority.                               |
 | Executive        | C-level executive, risk committee, or board-level function with final risk acceptance authority. |
 
-## 6. Template
-
-### 6.1. CSV
-
-> [!NOTE]
-> Use the example as a quality reference and validation baseline. Compare your output column order, field semantics, scoring patterns, and justification structure against it. It demonstrates how `Interaction` drives attack-vector selection (e.g., `AV:P`), how `STRIDE Category` maps to CVSS impact metrics, how `Avoidance` is applied to architecturally eliminated paths, and how `Justification` traces from protocol characteristics through EMB3D mitigation references to residual risk without repeating framework identifiers in the narrative.
-
-#### 6.1.1. Serial Protocol-Specific Example
-
-Refer to [SERIAL_Threat_Model_Generated.csv](references/SERIAL_Threat_Model_Generated.csv) CSV example file for a completed, protocol-specific example demonstrating all enrichment columns populated for an RS-232 engineering interface.
-
-This reference demonstrates:
-
-- **Column format:** Semicolon-delimited, exact column names as defined in the Output Contract.
-- **CVSS-B Score format:** Comma as decimal separator (`5,2`, `7,0`, `0,0`).
-- **Justification structure:** Each `Mitigated` row follows the structured narrative pattern, names every applicable EMB3D mitigation level, includes MID references inline, describes the attack scenario, and concludes with residual risk and treatment.
-- **Not Applicable rows:** Short identifier-style justifications (e.g., `"Passive optical data presentation with no device or network data connection."`) are acceptable when the attack path is structurally eliminated.
-- **Identifier hygiene:** `ATT&CK ID`, `EMB3D TID`, and `CWE ID` use `N/A` for `Not Applicable` rows; populated values only when evidence supports the mapping.
-- **State/Treatment alignment:** `Mitigated` rows use `Mitigation`, `Acceptance`, or `Transfer` only when the conditions and evidence requirements in section [5.1.7. Risk Treatment Mapping](#517-risk-treatment-mapping) are satisfied; `Not Applicable` rows pair with `Avoidance`; `Needs Investigation` rows leave `Risk Treatment` and `Risk Approval` blank.
-
-## 7. References
+## 6. References
 
 - Microsoft [Threat Modeling Tool](https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool) documentation.
 - Microsoft [Threat Modeling Fundamentals](https://learn.microsoft.com/en-us/training/paths/tm-threat-modeling-fundamentals/) training.
