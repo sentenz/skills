@@ -23,7 +23,7 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
   - [2.4. Threat Actors](#24-threat-actors)
   - [2.5. Diagram Depth Layers](#25-diagram-depth-layers)
 - [3. Frameworks](#3-frameworks)
-  - [3.1. Microsoft Threat Modeling Tool](#31-microsoft-threat-modeling-tool)
+  - [3.1. Microsoft Threat Modeling Tool (TMT)](#31-microsoft-threat-modeling-tool-tmt)
   - [3.2. STRIDE](#32-stride)
   - [3.3. MITRE ATT\&CK](#33-mitre-attck)
   - [3.4. MITRE EMB3D](#34-mitre-emb3d)
@@ -41,12 +41,23 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
 
 ## 1. Benefits
 
-- **Proactive defense:** Identify security risks early enough to address weaknesses before implementation.
-- **Residual-risk visibility:** Document the risk remaining after controls, its accountable owner, and any additional treatment.
-- **Compliance alignment:** Record assumptions, threats, controls, decisions, and residual risk for risk-assessment and technical-documentation obligations.
-- **Evidence-based assessment:** Ground likelihood, impact, and prioritization in architecture, attack paths, asset characteristics, and verified controls.
-- **Treatment traceability:** Preserve each disposition, owner, approval, and residual-risk decision for governance review.
-- **Adversary-informed analysis:** Map credible attack behavior to frameworks such as MITRE ATT&CK for ICS so controls address realistic scenarios.
+- Proactive Defense
+  > Identify and mitigate threats before they are exploited in the field.
+
+- Residual Risk
+  > Quantify the remaining risk after controls, compensating measures, and design changes are applied.
+
+- Compliance Alignment
+  > Record assumptions, threats, controls, decisions, and residual risk for risk-assessment and technical-documentation obligations.
+
+- Evidence-Based Assessment
+  > Ground likelihood, impact, and prioritization in architecture, attack paths, asset characteristics, and verified controls.
+
+- Treatment Traceability
+  > Link every risk treatment decision to the inherent prioritization, residual risk, controls, ownership, and approval evidence.
+
+- Adversary-Informed Analysis
+  > Use MITRE ATT&CK for ICS and MITRE EMB3D to map concrete adversary behavior and embedded-device threats to the modeled architecture.
 
 ## 2. Principles
 
@@ -54,65 +65,103 @@ Apply the detailed taxonomies in [Mapping Rules](references/mapping-rules.md) on
 
 ### 2.1. Scope Classification
 
-Classify each connection by path (`Direct` or `Indirect`), type (`Logical` or `Physical`), and target (`Device` or `Network`) using [Connection-Path Scope Classification](references/mapping-rules.md#1-connection-path-scope-classification) and the linked EU CRA definitions.
+Classify each connection by path (`Direct` or `Indirect`), type (`Logical` or `Physical`), and target (`Device` or `Network`) based on EU CRA Regulation definitions.
+
+> [!NOTE]
+> Apply section [Connection-Path Scope Classification](references/mapping-rules.md#1-connection-path-scope-classification) to classify each connection to determine whether it is in-scope or out-of-scope for the modeled threat.
 
 ### 2.2. CIA Triad
 
-Evaluate confidentiality, integrity, and availability consequences using [CIA Impact Reference](references/mapping-rules.md#2-cia-impact-reference). Record only impacts supported by the modeled scenario.
+Evaluate confidentiality, integrity, and availability (CIA) consequences for Information Security (InfoSec).
+
+> [!NOTE]
+> Apply section [CIA Impact Reference](references/mapping-rules.md#2-cia-impact-reference) when evaluating the security posture of systems and data.
 
 ### 2.3. Purdue Model
 
-Apply [Purdue Model Mapping](references/mapping-rules.md#4-purdue-model-mapping): classify modeled assets with the [Purdue Zone Reference](references/mapping-rules.md#41-purdue-zone-reference), then validate their zone-specific exposure with [Threat-Surface Mapping](references/mapping-rules.md#42-threat-surface-mapping). Do not infer a TMT `Category` solely from the Purdue zone.
+The Purdue Model (ISA-95 / IEC 62264) partitions industrial automation environments into hierarchical zones with distinct trust boundaries and characteristic attack surfaces.
+
+> [!NOTE]
+> Apply section [Purdue Model Mapping](references/mapping-rules.md#4-purdue-model-mapping) to classify modeled assets with the [Purdue Zone Reference](references/mapping-rules.md#41-purdue-zone-reference), then validate their zone-specific exposure with [Threat-Surface Mapping](references/mapping-rules.md#42-threat-surface-mapping). Do not infer a TMT `Category` solely from the Purdue zone.
 
 ### 2.4. Threat Actors
 
-Select the minimum-capable actor by applying [Capability Boundaries](references/mapping-rules.md#101-capability-boundaries) and [Scenario Mapping](references/mapping-rules.md#102-scenario-mapping). Base the selection on required access, capability, and process knowledge rather than severity or notoriety.
+Threat actors are individuals, groups, or organizations with the motivation and capability to carry out attacks against systems, data, or infrastructure.
+
+> [!NOTE]
+> Select the minimum-capable actor by applying [Capability Boundaries](references/mapping-rules.md#101-capability-boundaries) and [Scenario Mapping](references/mapping-rules.md#102-scenario-mapping). Base the selection on required access, capability, and process knowledge rather than severity or notoriety.
 
 ### 2.5. Diagram Depth Layers
 
-Start with Layer 0 and decompose only where additional detail changes the threat analysis. Apply [Diagram Depth Layers](references/mapping-rules.md#3-diagram-depth-layers) when creating or validating the threat-model diagram.
+Diagram depth layers are a visual classification of the modeled architecture used by analysts to identify missing or misrepresented interfaces, trust boundaries, and attack paths.
+
+> [!NOTE]
+> Apply [Diagram Depth Layers](references/mapping-rules.md#3-diagram-depth-layers) when creating or validating the threat-model diagram.
 
 ## 3. Frameworks
 
-Use framework identifiers only after validating them against the local data sources named in the workflow.
-
-### 3.1. Microsoft Threat Modeling Tool
+### 3.1. Microsoft Threat Modeling Tool (TMT)
 
 Treat the native Microsoft TMT CSV row inventory as the source of record and use its STRIDE enumeration as the starting point, not as the final analytical decision.
 
 ### 3.2. STRIDE
 
-Interpret each native TMT `Category` using [STRIDE Classification](references/mapping-rules.md#5-stride-classification). Preserve the source category unless analyst review documents a supported native-field revision.
+STRIDE is a threat-classification model that categorizes threats into six types: Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, and Elevation of Privilege.
+
+> [!NOTE]
+> Apply [STRIDE Classification](references/mapping-rules.md#5-stride-classification) to map TMT `Category` to STRIDE threat types. Do not infer STRIDE from ATT&CK, EMB3D, or CWE mappings.
 
 ### 3.3. MITRE ATT&CK
 
-Map concrete adversary behavior to [MITRE ATT&CK for ICS](https://attack.mitre.org/matrices/ics/) and validate every technique against the ATT&CK asset identified in the review workflow.
+[MITRE ATT&CK (Adversarial Tactics, Techniques, and Common Knowledge)](https://attack.mitre.org/) for ICS (Industrial Control Systems) provides the technique taxonomy for threat enrichment.
+
+> [!NOTE]
+> Apply [MITRE ATT&CK for ICS](https://attack.mitre.org/matrices/ics/) and validate every technique against the ATT&CK asset identified in the review workflow.
 
 ### 3.4. MITRE EMB3D
 
-Use [MITRE EMB3D](https://emb3d.mitre.org/) for embedded-device properties, threats, and mitigations. Apply [EMB3D Mitigation Levels](references/mapping-rules.md#6-emb3d-mitigation-levels), and use EMB3D alongside—not instead of—ATT&CK when evidence supports both.
+[MITRE EMB3D](https://emb3d.mitre.org/) for embedded-device properties, threats, and mitigations.
+
+> [!NOTE]
+> Apply [EMB3D Mitigation Levels](references/mapping-rules.md#6-emb3d-mitigation-levels), and use EMB3D alongside—not instead of—ATT&CK when evidence supports both.
 
 ### 3.5. MITRE CWE
 
-Use [MITRE CWE](https://cwe.mitre.org/) to record the most specific root weakness supported by the threat statement and architecture evidence.
+[MITRE CWE (Common Weakness Enumeration)](https://cwe.mitre.org/) records the most specific root weakness supported by the threat statement and architecture evidence.
 
 ### 3.6. FIRST CVSS
 
-Keep [CVSS v4.0](https://www.first.org/cvss/) Base scoring intrinsic to the vulnerability and attack scenario. Apply [Impact Mapping](references/mapping-rules.md#7-impact-mapping), then calculate and validate the vector, comma-decimal score, and severity together.
+The [CVSS v4.0](https://www.first.org/cvss/) Base scoring is intrinsic to the vulnerability and attack scenario without regard to compensating controls, environmental constraints, or residual risk acceptance.
+
+> [!NOTE]
+> Apply [Impact Mapping](references/mapping-rules.md#7-impact-mapping), then calculate and validate the vector, comma-decimal score, and severity together.
 
 ### 3.7. BSI Likelihood of Exploit
 
-Determine likelihood from exploitation method and vulnerability state using [Probability Mapping](references/mapping-rules.md#8-probability-mapping) and the [BSI urgency model](https://www.bsi.bund.de/DE/Service-Navi/Abonnements/Newsletter/Buerger-CERT-Abos/Buerger-CERT-Sicherheitshinweise/Risikostufen/risikostufen.html).
+Determine likelihood from exploitation method and vulnerability state based on the [BSI Urgency Model](https://www.bsi.bund.de/DE/Service-Navi/Abonnements/Newsletter/Buerger-CERT-Abos/Buerger-CERT-Sicherheitshinweise/Risikostufen/risikostufen.html).
+
+- Exploitation Method
+  > The exploitation method describes the degree of attacker interaction and automation required to perform the attack.
+
+- Vulnerability State
+  > The vulnerability state describes the maturity, availability, and observed use of the exploitation method.
+
+> [!NOTE]
+> Apply [Probability Mapping](references/mapping-rules.md#8-probability-mapping) to classify the exploitation method, vulnerability state, and likelihood of exploit.
 
 ### 3.8. Risk Treatment
 
-Assign every finalized risk a defensible disposition using [Treatment Semantics](references/mapping-rules.md#111-treatment-semantics) and the linked decision, compatibility, evidence, and approval mappings in the review workflow. Keep treatment traceable to inherent prioritization, residual risk, controls, ownership, and approval evidence.
+Risk treatment is the governance decision to mitigate, accept, transfer, or avoid the inherent risk.
+
+> [!NOTE]
+> Apply [Treatment Semantics](references/mapping-rules.md#111-treatment-semantics) and the linked decision, compatibility, evidence, and approval mappings in the review workflow. Keep treatment traceable to inherent prioritization, residual risk, controls, ownership, and approval evidence.
 
 ## 4. Workflow
 
 Use this skill to convert Microsoft TMT threat rows into traceable OT/ICS risk-assessment evidence. The review preserves the native TMT row inventory, enriches each supported threat with framework mappings and risk decisions, and produces a generated CSV plus a Markdown summary suitable for engineering review, product-security governance, and compliance-oriented technical documentation.
 
-Apply [Mapping Rules](references/mapping-rules.md) as the canonical source for diagram classification, scoring, prioritization, threat-actor selection, treatment, and approval decisions throughout the workflow.
+> [!NOTE]
+> Apply [Mapping Rules](references/mapping-rules.md) as the canonical source for diagram classification, scoring, prioritization, threat-actor selection, treatment, and approval decisions throughout the workflow.
 
 Save and integrate intermediate results after each step. When the objective is product cybersecurity compliance, produce traceable risk-assessment evidence that can support EU CRA-style technical documentation without making unsupported legal compliance claims.
 
@@ -298,7 +347,6 @@ Save and integrate intermediate results after each step. When the objective is p
     - Do not record a severity without a vector and score.
     - Do not record a vector without a score and severity.
     - Record `CVSS-B v4.0 Score` with exactly one decimal digit and comma as decimal separator, e.g., `0,0`, `2,4`, `5,2`, `7,0`, `10,0`.
-    - Apply the zero-impact and residual-risk policy in [Impact Mapping](references/mapping-rules.md#7-impact-mapping).
     - Select `AV` using [Exploitability Metrics](references/mapping-rules.md#71-exploitability-metrics), then derive the remaining exploitability metrics from the row and architecture evidence.
     - Map `VC`, `VI`, and `VA` using [Vulnerable System Impact Metrics](references/mapping-rules.md#72-vulnerable-system-impact-metrics).
     - Map `SC`, `SI`, and `SA` using [Subsequent System Impact Metrics](references/mapping-rules.md#73-subsequent-system-impact-metrics).
@@ -461,11 +509,6 @@ Save and integrate intermediate results after each step. When the objective is p
 ## 5. Mapping Rules
 
 **Action:** Load only the applicable subsection of [Mapping Rules](references/mapping-rules.md) when a workflow step links to it; do not load the full reference by default.
-
-- For diagram work, load the scope, depth-layer, and Purdue mappings linked in sections 2 and 4.
-- For row review, load each linked scoring, actor, treatment, or approval mapping immediately before assigning the corresponding value.
-- Recheck the applicable mapping whenever architecture evidence, exploit maturity, controls, or governance evidence changes.
-- Treat the workflow, output contract, and field-resolution semantics in this file as authoritative if the reference conflicts with them.
 
 ## 6. References
 
