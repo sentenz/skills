@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.17"
+  version: "1.7.18"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -393,7 +393,15 @@ Save and integrate intermediate results after each step. When the objective is p
     - If enrichment columns already exist, carry their values forward unchanged for already-reviewed rows unless the user explicitly requests re-review.
     - **Justification Quality:** Each justification must follow the narrative pattern defined in section [4.3. Review, Step 14](#43-review). Do not produce generic, short, or identifier-only justifications. Enclose the justification in double quotes. Avoid semicolons inside the justification text since the CSV is semicolon-delimited.
 
-4. Conflict Gathering
+4. Serial Output Baseline
+
+    **Action:** For SERIAL, RS-232, or UART assessments, read [SERIAL_Threat_Model_Generated.csv](references/SERIAL_Threat_Model_Generated.csv) before starting the row-by-row review.
+
+    - Use the completed example only as a schema, scoring, and narrative-quality baseline. Do not copy system-specific threats, mappings, scores, actors, treatments, or approvals.
+    - Compare the planned output against the example's exact column order, semicolon delimiter, quoted `Description` and `Justification` fields, comma-decimal score format, and structured rationale pattern.
+    - Treat the Output Contract and the mapping rules in this skill as authoritative if the example conflicts with them. Correct and report any baseline inconsistency before relying on it.
+
+5. Conflict Gathering
 
     **Action:** Record architecture-evidence discrepancies that may affect row interpretation and apply the selected execution mode.
 
@@ -474,7 +482,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Script Usage:**
     - [scripts/calculate_cvss.py](scripts/calculate_cvss.py)
-      > Run `python ./scripts/calculate_cvss.py --vector '<CVSS:4.0/...>'` to compute the CVSS v4.0 Base Score and Severity.
+      > Run `uv run ./scripts/calculate_cvss.py --vector '<CVSS:4.0/...>'` to compute the CVSS v4.0 Base Score and Severity.
 
 6. BSI Likelihood of Exploit
 
@@ -601,8 +609,10 @@ Save and integrate intermediate results after each step. When the objective is p
     - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, residual risk posture, and threat actor selection decision.
 
     **Script Usage:**
+    - [scripts/validate_output.py](scripts/validate_output.py)
+      > Run `uv run ./scripts/validate_output.py --csv '<Device_Name>_Threat_Model_Generated.csv' --source '<Device_Name>_Threat_Model.csv'` to validate the output contract, source-row traceability, quoting, score formatting, identifier hygiene, and state/treatment compatibility.
     - [scripts/validate_cvss.py](scripts/validate_cvss.py)
-      > Run `python ./scripts/validate_cvss.py --csv '<Device_Name>_Threat_Model_Generated.csv'` to validate all CVSS vectors in the `CVSS v4.0` columns and compare the calculated score with the stored score.
+      > Run `uv run ./scripts/validate_cvss.py --csv '<Device_Name>_Threat_Model_Generated.csv'` to validate all CVSS vectors in the `CVSS v4.0` columns and compare the calculated score with the stored score.
 
 2. Review Summary
 
@@ -831,7 +841,7 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 ### 6.1. CSV
 
 > [!NOTE]
-> Use the examples as a quality reference and validation baseline. Compare your output column order, field semantics, scoring patterns, and justification structure against it. It demonstrates how `Interaction` drives attack-vector selection (e.g., `AV:P`), how `STRIDE Category` maps to CVSS impact metrics, how `Avoidance` is applied to architecturally eliminated paths, and how `Justification` traces from protocol characteristics through EMB3D mitigation references to residual risk without repeating framework identifiers in the narrative.
+> Use the example as a quality reference and validation baseline. Compare your output column order, field semantics, scoring patterns, and justification structure against it. It demonstrates how `Interaction` drives attack-vector selection (e.g., `AV:P`), how `STRIDE Category` maps to CVSS impact metrics, how `Avoidance` is applied to architecturally eliminated paths, and how `Justification` traces from protocol characteristics through EMB3D mitigation references to residual risk without repeating framework identifiers in the narrative.
 
 #### 6.1.1. Serial Protocol-Specific Example
 
@@ -841,10 +851,10 @@ This reference demonstrates:
 
 - **Column format:** Semicolon-delimited, exact column names as defined in the Output Contract.
 - **CVSS-B Score format:** Comma as decimal separator (`5,2`, `7,0`, `0,0`).
-- **Justification structure:** Each `Mitigated` row follows the structured narrative pattern with explicit EMB3D mitigation level mentions (Basic, Foundational, Intermediate, Leading), MID references inline, attack scenario description, residual risk, and treatment conclusion.
+- **Justification structure:** Each `Mitigated` row follows the structured narrative pattern, names every applicable EMB3D mitigation level, includes MID references inline, describes the attack scenario, and concludes with residual risk and treatment.
 - **Not Applicable rows:** Short identifier-style justifications (e.g., `"Passive optical data presentation with no device or network data connection."`) are acceptable when the attack path is structurally eliminated.
 - **Identifier hygiene:** `ATT&CK ID`, `EMB3D TID`, and `CWE ID` use `N/A` for `Not Applicable` rows; populated values only when evidence supports the mapping.
-- **State/Treatment alignment:** `Mitigated` rows pair with `Mitigation` treatment; `Not Applicable` rows pair with `Avoidance` treatment; `Needs Investigation` rows leave `Risk Treatment` and `Risk Approval` blank.
+- **State/Treatment alignment:** `Mitigated` rows use `Mitigation`, `Acceptance`, or `Transfer` only when the conditions and evidence requirements in section [5.1.7. Risk Treatment Mapping](#517-risk-treatment-mapping) are satisfied; `Not Applicable` rows pair with `Avoidance`; `Needs Investigation` rows leave `Risk Treatment` and `Risk Approval` blank.
 
 ## 7. References
 

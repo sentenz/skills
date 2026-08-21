@@ -9,14 +9,21 @@
   > Calculates a CVSS vector and returns compact JSON. Supports CVSS v2, v3, and v4 formats. Primarily used to populate the `CVSS v4.0` columns.
 
     ```bash
-    python ./scripts/calculate_cvss.py --vector 'CVSS:4.0/AV:P/AC:H/AT:P/PR:N/UI:N/VC:H/VI:H/VA:L/SC:N/SI:N/SA:N'
+    uv run ./scripts/calculate_cvss.py --vector 'CVSS:4.0/AV:P/AC:H/AT:P/PR:N/UI:N/VC:H/VI:H/VA:L/SC:N/SI:N/SA:N'
+    ```
+
+- [validate_output.py](validate_output.py)
+  > Validates the generated CSV output contract and optionally compares preserved native fields with the raw TMT export.
+
+    ```bash
+    uv run ./scripts/validate_output.py --csv 'generated.csv' --source 'input.csv'
     ```
 
 - [validate_cvss.py](validate_cvss.py)
   > Validates all CVSS vectors in the `CVSS v4.0` columns and compares the calculated score with the stored score.
 
     ```bash
-    python ./scripts/validate_cvss.py --csv 'input.csv'
+    uv run ./scripts/validate_cvss.py --csv 'generated.csv'
     ```
 
 ## 2. References

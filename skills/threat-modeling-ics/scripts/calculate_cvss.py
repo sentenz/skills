@@ -13,7 +13,7 @@ Usage:
     Run the script from the skill directory:
 
     ```bash
-    python ./scripts/calculate_cvss.py \
+    uv run ./scripts/calculate_cvss.py \
     --vector 'CVSS:4.0/AV:P/AC:H/AT:P/PR:N/UI:N/VC:H/VI:H/VA:L/SC:N/SI:N/SA:N'
     ```
 
@@ -27,7 +27,7 @@ Usage:
     when required:
 
     ```bash
-    python ./scripts/calculate_cvss.py \
+    uv run ./scripts/calculate_cvss.py \
     --details \
     --vector 'CVSS:4.0/AV:P/AC:H/AT:P/PR:N/UI:N/VC:H/VI:H/VA:L/SC:N/SI:N/SA:N'
     ```
