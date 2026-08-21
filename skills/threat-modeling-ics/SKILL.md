@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.24"
+  version: "1.7.25"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -36,8 +36,7 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
   - [4.2. Preparation](#42-preparation)
   - [4.3. Review](#43-review)
   - [4.4. Deliverables](#44-deliverables)
-- [5. Mapping Rules](#5-mapping-rules)
-- [6. References](#6-references)
+- [5. References](#5-references)
 
 ## 1. Benefits
 
@@ -61,7 +60,7 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
 
 ## 2. Principles
 
-Apply the detailed taxonomies in [Mapping Rules](references/mapping-rules.md) only when the corresponding workflow step requires them.
+Load only the applicable subsection of [Mapping Rules](references/mapping-rules.md) when linked by the current principle, framework, or workflow step; do not load the full reference by default.
 
 ### 2.1. Scope Classification
 
@@ -476,11 +475,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Each risk claim must reference at least one threat row `Id`.
     - Record artifact-trust and spreadsheet-safety warnings that affect generated CSV consumption.
 
-## 5. Mapping Rules
-
-**Action:** Load only the applicable subsection of [Mapping Rules](references/mapping-rules.md) when a workflow step links to it; do not load the full reference by default.
-
-## 6. References
+## 5. References
 
 - Microsoft [Threat Modeling Tool](https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool) documentation.
 - Microsoft [Threat Modeling Fundamentals](https://learn.microsoft.com/en-us/training/paths/tm-threat-modeling-fundamentals/) training.
