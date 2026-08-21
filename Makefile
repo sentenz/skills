@@ -79,7 +79,7 @@ skills-agent-restore:
 
 # ── Dependency Manager ───────────────────────────────────────────────────────────────────────────
 
-DEPENDENCY_IMAGE_RENOVATE ?= docker.io/renovate/renovate:43.270.0@sha256:7d9f8ff502fa09243e0c3356a763abd95a1ba056f7974a0cb1eee96dd442be43
+DEPENDENCY_IMAGE_RENOVATE ?= docker.io/renovate/renovate:44.30.4@sha256:e28fae22baff685b0c4d00277500b41886ff457bb6f89d7d08eaf82c95fae442
 
 ## Update project dependencies locally using Renovate and generate a report
 dependency-renovate-update:
@@ -90,7 +90,7 @@ dependency-renovate-update:
 
 # ── Secrets Manager ──────────────────────────────────────────────────────────────────────────────
 
-SECRETS_IMAGE_SOPS ?= ghcr.io/getsops/sops:v3.13.2@sha256:0bc8915bce25ea3bf0f3e27a74cb5ad092488e6e5245af384816d628ed7fd426
+SECRETS_IMAGE_SOPS ?= ghcr.io/getsops/sops:v3.13.3@sha256:857f5a151ac0b2bfc55c1e4e5581d66fb8e268e4d106b38e74191f3bac9d58ea
 SECRETS_SOPS_UID ?= sops-skills
 
 # Usage: make secrets-gpg-generate SECRETS_SOPS_UID=<uid>
@@ -224,7 +224,7 @@ secrets-sops-view:
 
 # ── Policy Manager ───────────────────────────────────────────────────────────────────────────────
 
-POLICY_IMAGE_CONFTEST ?= docker.io/openpolicyagent/conftest:v0.68.2@sha256:5fd81e332d7e4bc01daf3ef35371800a9a9720a30c0c37a78de0c5fbe4b6d622
+POLICY_IMAGE_CONFTEST ?= docker.io/openpolicyagent/conftest:v0.69.0@sha256:a38ba21668929a00dce2fe6ee43d1312228340bce5fd243f47dd0ce90516e558
 
 # Usage: make policy-conftest-test <filepath>
 #
@@ -270,7 +270,7 @@ lint-markdown:
 
 # ── SAST Manager ─────────────────────────────────────────────────────────────────────────────────
 
-SAST_IMAGE_SEMGREP ?= semgrep/semgrep:1.170.0@sha256:c98f8829eea377274ee4b10656458b078b88232469b2ff913f091c2317347c9d
+SAST_IMAGE_SEMGREP ?= semgrep/semgrep:1.173.0@sha256:67319956da3dcb58baf5b322899c15458e3963e7018a86aeeb5cd224e69cb77a
 SAST_FILES_SEMGREP ?= .
 SAST_REGEX_SEMGREP = $(if $(strip $(SAST_FILES_SEMGREP)),$(SAST_FILES_SEMGREP),.)
 
@@ -281,7 +281,7 @@ sast-semgrep-scan:
 	docker run --rm -v "${PWD}:/workspace" -w /workspace "$(SAST_IMAGE_SEMGREP)" semgrep scan --config auto --error --json --output logs/sast/semgrep.json $(SAST_REGEX_SEMGREP) 2> logs/sast/semgrep.log
 .PHONY: sast-semgrep-scan
 
-SAST_IMAGE_TRIVY ?= aquasec/trivy:0.72.0@sha256:cffe3f5161a47a6823fbd23d985795b3ed72a4c806da4c4df16266c02accdd6f
+SAST_IMAGE_TRIVY ?= aquasec/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
 SAST_FILES_TRIVY ?= .
 
 ## Scan Infrastructure-as-Code (IaC) files for misconfigurations using Trivy and generate a report
@@ -465,7 +465,7 @@ sast-gitleaks-staged:
 	docker run --rm -v "${PWD}:/workspace" -w /workspace "$(SAST_IMAGE_GITLEAKS)" protect --redact --staged --source /workspace --report-format json --report-path logs/sast/gitleaks-protect.json 2>&1
 .PHONY: sast-gitleaks-staged
 
-SAST_IMAGE_TRUFFLEHOG ?= trufflesecurity/trufflehog:3.95.9@sha256:59b244249d1a1aef4baa24fe73d3c931616264482580d806d77f6c74d26b3e42
+SAST_IMAGE_TRUFFLEHOG ?= trufflesecurity/trufflehog:3.97.0@sha256:ff4c95e9df7d645daf2140e3ca1039031c63106268d5fbb25feb43ceca1bcc33
 
 ## Scan local filesystem for leaked secrets using TruffleHog and generate a report
 sast-trufflehog-fs:

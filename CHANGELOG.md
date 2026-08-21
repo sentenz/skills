@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.11.2](https://github.com/sentenz/skills/compare/v1.11.1...v1.11.2) (2026-08-04)
+
+
+### Bug Fixes
+
+* **skill:** update version and enhance threat modeling documentation ([2d488f2](https://github.com/sentenz/skills/commit/2d488f2fc1c40b92b26b281b0021018a929ae536))
+
+## [1.11.1](https://github.com/sentenz/skills/compare/v1.11.0...v1.11.1) (2026-08-02)
+
+
+### Bug Fixes
+
+* **skill:** load technical article template in revise and review workflows ([#85](https://github.com/sentenz/skills/issues/85)) ([4371f2a](https://github.com/sentenz/skills/commit/4371f2afada862f7a90f4254a4e62bac8458f31c))
+
+# [1.11.0](https://github.com/sentenz/skills/compare/v1.10.3...v1.11.0) (2026-08-01)
+
+
+### Bug Fixes
+
+* **skill:** address technical article review findings ([8d149c6](https://github.com/sentenz/skills/commit/8d149c677985b3ec83208ce93eaef3fb8b9f4fac))
+
+
+### Features
+
+* **skills:** add technical article writing skill ([70d9956](https://github.com/sentenz/skills/commit/70d99567884159d8ae373e821b6a2fb5c1d1915b))
+
 ## [1.10.3](https://github.com/sentenz/skills/compare/v1.10.2...v1.10.3) (2026-07-14)
 
 
