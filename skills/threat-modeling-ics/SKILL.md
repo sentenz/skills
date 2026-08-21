@@ -60,7 +60,8 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
 
 ## 2. Principles
 
-Load only the applicable subsection of [Mapping Rules](references/mapping-rules.md) when linked by the current principle, framework, or workflow step; do not load the full reference by default.
+> [!NOTE]
+> Load only the applicable subsection of [Mapping Rules](references/mapping-rules.md) when linked by the current principle, framework, or workflow step; do not load the full reference by default.
 
 ### 2.1. Scope Classification
 
