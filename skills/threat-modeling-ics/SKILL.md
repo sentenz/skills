@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.18"
+  version: "1.7.19"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -610,7 +610,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Script Usage:**
     - [scripts/validate_output.py](scripts/validate_output.py)
-      > Run `uv run ./scripts/validate_output.py --csv '<Device_Name>_Threat_Model_Generated.csv' --source '<Device_Name>_Threat_Model.csv'` to validate the output contract, source-row traceability, quoting, score formatting, identifier hygiene, and state/treatment compatibility.
+      > Run `uv run ./scripts/validate_output.py --csv '<Device_Name>_Threat_Model_Generated.csv' --source '<Device_Name>_Threat_Model.csv'` to scan the complete CSV, report every output-contract and source-traceability finding, and print an actual-versus-expected diff for each finding.
     - [scripts/validate_cvss.py](scripts/validate_cvss.py)
       > Run `uv run ./scripts/validate_cvss.py --csv '<Device_Name>_Threat_Model_Generated.csv'` to validate all CVSS vectors in the `CVSS v4.0` columns and compare the calculated score with the stored score.
 
