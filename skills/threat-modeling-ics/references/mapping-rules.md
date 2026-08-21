@@ -114,13 +114,15 @@ STRIDE is the foundational threat classification scheme for understanding each t
 
 ## 6. EMB3D Mitigation Levels
 
-Use the bundled [MITRE EMB3D mitigation snapshot](../assets/emb3d/mitigations_threat_mappings_2.0.1.json) as the offline source of record for each MID. It corresponds to MITRE's [published mitigation data](https://github.com/mitre/emb3d/blob/main/_data/mitigations_threat_mappings.json).
+Mitigation levels classify the extent and sophistication of mitigations applied to an identified threat, ranging from no implemented mitigation to comprehensive and adaptive mitigation across the relevant architectural layers.
 
-| EMB3D label  | Source-backed use                                          |
-| ------------ | ---------------------------------------------------------- |
-| Foundational | Cite only an MID whose `level` value is `foundational`.     |
-| Intermediate | Cite only an MID whose `level` value is `intermediate`.     |
-| Leading      | Cite only an MID whose `level` value is `leading`.          |
+| Level | Maturity     | General Interpretation                                                                                                | MITRE EMB3D Mitigation Level | IEC 62443 Security Level (SL) |
+| ----- | ------------ | --------------------------------------------------------------------------------------------------------------------- | ---------------------------- | ----------------------------- |
+| 0     | Basic        | Controls are not established, undocumented, or not evaluated.                                                         | N/A                          | SL 0                          |
+| 1     | Foundational | Controls address casual, accidental, or low-complexity threats.                                                       | Foundational                 | SL 1                          |
+| 2     | Intermediate | Controls address intentional attacks using simple methods and limited resources.                                      | Intermediate                 | SL 2                          |
+| 3     | Intermediate | Controls are standardized, consistently implemented, and validated against sophisticated threats.                     | Intermediate                 | SL 3                          |
+| 4     | Leading      | Controls continuously adapt to threat intelligence and are engineered for highly capable, well-resourced adversaries. | Leading                      | SL 4                          |
 
 - Cite an MID only when row evidence makes the mitigation applicable and the mitigation asset maps it to at least one `EMB3D TID` recorded in the row.
 - Copy the mitigation's exact source name and group it under its exact source level in `Justification`.
@@ -130,7 +132,7 @@ Use the bundled [MITRE EMB3D mitigation snapshot](../assets/emb3d/mitigations_th
 - Do not derive, raise, or lower an EMB3D level from implementation maturity, adversary capability, control coverage, or an IEC 62443 Security Level.
 
 > [!NOTE]
-> EMB3D levels are source taxonomy values, not a numeric maturity scale. No direct EMB3D-to-IEC 62443 Security Level crosswalk is defined by the bundled EMB3D data.
+> EMB3D levels are source taxonomy values, not a numeric maturity scale. Use the bundled [MITRE EMB3D mitigation snapshot](../assets/emb3d/mitigations_threat_mappings_2.0.1.json) as the offline source of record for each MID.
 
 ## 7. Impact Mapping
 
