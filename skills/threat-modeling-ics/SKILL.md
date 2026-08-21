@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.23"
+  version: "1.7.24"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -438,44 +438,14 @@ Save and integrate intermediate results after each step. When the objective is p
 
 14. TMT Justification
 
-    **Action:** Write a concise analyst statement in `Justification` after all enrichment and governance steps are complete.
-    - Enclose the entire justification in double quotes and avoid semicolons because the generated CSV is semicolon-delimited.
-    - State the evidence-based rationale for `State`.
-    - Reference the modeled protocol, interface, trust relationship, validation behavior, compensating control, ATT&CK behavior, EMB3D device property, CWE weakness, CVSS severity, CVSS threat metric, likelihood, inherent risk, residual risk, threat actor, treatment, and approval where they support the decision.
-    - Do not repeat ATT&CK, EMB3D, or CWE identifiers already captured in dedicated columns.
-    - Explain `N/A` or blank review fields once when their omission is intentional.
-    - For `Not Applicable`, name the architectural contradiction or eliminated element and explain that `Threat Actor` records the minimum actor considered before the path was rejected.
-    - For `Mitigated`, identify applied controls and residual risk.
-    - For `Needs Investigation`, state the most important evidence gap.
-    - For `Mitigation` or `Acceptance`, identify the residual-risk owner or approving stakeholder and approval mechanism, or state that approval is pending.
-    - For `Transfer`, identify the named organization, contract, SLA, warranty, or insurance policy responsible for the transferred risk.
-    - Avoid unqualified legal safe-harbor language. Compliance-oriented statements must be framed as technical documentation support or product-specific evidence pending stakeholder review.
-
-    **Justification Narrative Pattern (Reference Quality):**
-
-    When writing justifications for `Mitigated` rows, follow this structured narrative that explicitly mentions EMB3D mitigation levels inline:
-
-    ```plaintext
-    [Attack scenario: who does what, through which interface, achieving what effect]. 
-    The [protocol/interface] lacks [specific missing control]. 
-    Attack vector is [AV:X] requiring [access type]. 
-    Minimum actor is [Threat Actor] with [capability requirements]. 
-    Basic mitigation: [level 0 / physical / procedural controls]. 
-    Foundational mitigation: [description] ([MID-NNN]), [description] ([MID-NNN]). 
-    Intermediate mitigation: [description] ([MID-NNN]), [description] ([MID-NNN]). 
-    Leading mitigation: [description] ([MID-NNN]), [description] ([MID-NNN]) [if applicable]. 
-    Residual risk is [Level] after [applied controls]. 
-    Treatment is [Treatment] through [approach summary].
-    ```
-
-    Key rules for the narrative:
-    - Mention **EMB3D mitigation levels** (Basic, Foundational, Intermediate, Leading) explicitly in the text when EMB3D mitigations apply.
-    - Reference MID IDs inline with their descriptions (e.g., "authenticate network messages  (MID-034)") without repeating the full EMB3D TID.
-    - Describe the attack scenario concretely rather than generically.
-    - Connect the protocol/interface characteristics to the missing control.
-    - State the access requirement and minimum actor before listing mitigations.
-    - Conclude with residual risk level and treatment decision.
-    - Avoid semicolons within the justification text.
+    **Action:** Read [Justification Templates](references/justification-template.md), select the pattern for the final `State`, and write one concise analyst paragraph after steps 1–13 are complete.
+    - State the evidence-based rationale for `State` and the concrete scenario, architectural contradiction, or evidence gap.
+    - Add protocol, trust relationship, validation behavior, access, actor, scoring, and mapping details only when they explain the decision.
+    - For finalized risks, include the treatment evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
+    - Describe applicable mitigations by name. Include MID identifiers because no dedicated MID column exists, but do not repeat ATT&CK, EMB3D TID, CWE, CVSS, or governance values mechanically.
+    - Explain intentional `N/A` or blank fields once. Never invent missing evidence to complete a template.
+    - Avoid unqualified legal safe-harbor language. Frame compliance-oriented statements as technical-documentation support or product-specific evidence pending stakeholder review.
+    - Use no semicolons or embedded line breaks. Let the CSV writer enclose the complete `Justification` cell in double quotes.
 
 ### 4.4. Deliverables
 
