@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.22"
+  version: "1.7.23"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -54,23 +54,23 @@ Apply the detailed taxonomies in [Mapping Rules](references/mapping-rules.md) on
 
 ### 2.1. Scope Classification
 
-Classify each connection by path (`Direct` or `Indirect`), type (`Logical` or `Physical`), and target (`Device` or `Network`) using [Connection-Path Scope Classification](references/mapping-rules.md#connection-path-scope-classification) and the linked EU CRA definitions.
+Classify each connection by path (`Direct` or `Indirect`), type (`Logical` or `Physical`), and target (`Device` or `Network`) using [Connection-Path Scope Classification](references/mapping-rules.md#1-connection-path-scope-classification) and the linked EU CRA definitions.
 
 ### 2.2. CIA Triad
 
-Evaluate confidentiality, integrity, and availability consequences using [CIA Impact Reference](references/mapping-rules.md#cia-impact-reference). Record only impacts supported by the modeled scenario.
+Evaluate confidentiality, integrity, and availability consequences using [CIA Impact Reference](references/mapping-rules.md#2-cia-impact-reference). Record only impacts supported by the modeled scenario.
 
 ### 2.3. Purdue Model
 
-Apply [Purdue Model Mapping](references/mapping-rules.md#purdue-model-mapping): classify modeled assets with the [Purdue Zone Reference](references/mapping-rules.md#purdue-zone-reference), then validate their zone-specific exposure with [Threat-Surface Mapping](references/mapping-rules.md#threat-surface-mapping). Do not infer a TMT `Category` solely from the Purdue zone.
+Apply [Purdue Model Mapping](references/mapping-rules.md#4-purdue-model-mapping): classify modeled assets with the [Purdue Zone Reference](references/mapping-rules.md#41-purdue-zone-reference), then validate their zone-specific exposure with [Threat-Surface Mapping](references/mapping-rules.md#42-threat-surface-mapping). Do not infer a TMT `Category` solely from the Purdue zone.
 
 ### 2.4. Threat Actors
 
-Select the minimum-capable actor by applying [Capability Boundaries](references/mapping-rules.md#capability-boundaries) and [Scenario Mapping](references/mapping-rules.md#scenario-mapping). Base the selection on required access, capability, and process knowledge rather than severity or notoriety.
+Select the minimum-capable actor by applying [Capability Boundaries](references/mapping-rules.md#101-capability-boundaries) and [Scenario Mapping](references/mapping-rules.md#102-scenario-mapping). Base the selection on required access, capability, and process knowledge rather than severity or notoriety.
 
 ### 2.5. Diagram Depth Layers
 
-Start with Layer 0 and decompose only where additional detail changes the threat analysis. Apply [Diagram Depth Layers](references/mapping-rules.md#diagram-depth-layers) when creating or validating the threat-model diagram.
+Start with Layer 0 and decompose only where additional detail changes the threat analysis. Apply [Diagram Depth Layers](references/mapping-rules.md#3-diagram-depth-layers) when creating or validating the threat-model diagram.
 
 ## 3. Frameworks
 
@@ -82,7 +82,7 @@ Treat the native Microsoft TMT CSV row inventory as the source of record and use
 
 ### 3.2. STRIDE
 
-Interpret each native TMT `Category` using [STRIDE Classification](references/mapping-rules.md#stride-classification). Preserve the source category unless analyst review documents a supported native-field revision.
+Interpret each native TMT `Category` using [STRIDE Classification](references/mapping-rules.md#5-stride-classification). Preserve the source category unless analyst review documents a supported native-field revision.
 
 ### 3.3. MITRE ATT&CK
 
@@ -90,7 +90,7 @@ Map concrete adversary behavior to [MITRE ATT&CK for ICS](https://attack.mitre.o
 
 ### 3.4. MITRE EMB3D
 
-Use [MITRE EMB3D](https://emb3d.mitre.org/) for embedded-device properties, threats, and mitigations. Apply [EMB3D Mitigation Levels](references/mapping-rules.md#emb3d-mitigation-levels), and use EMB3D alongside—not instead of—ATT&CK when evidence supports both.
+Use [MITRE EMB3D](https://emb3d.mitre.org/) for embedded-device properties, threats, and mitigations. Apply [EMB3D Mitigation Levels](references/mapping-rules.md#6-emb3d-mitigation-levels), and use EMB3D alongside—not instead of—ATT&CK when evidence supports both.
 
 ### 3.5. MITRE CWE
 
@@ -98,15 +98,15 @@ Use [MITRE CWE](https://cwe.mitre.org/) to record the most specific root weaknes
 
 ### 3.6. FIRST CVSS
 
-Keep [CVSS v4.0](https://www.first.org/cvss/) Base scoring intrinsic to the vulnerability and attack scenario. Apply [Impact Mapping](references/mapping-rules.md#impact-mapping), then calculate and validate the vector, comma-decimal score, and severity together.
+Keep [CVSS v4.0](https://www.first.org/cvss/) Base scoring intrinsic to the vulnerability and attack scenario. Apply [Impact Mapping](references/mapping-rules.md#7-impact-mapping), then calculate and validate the vector, comma-decimal score, and severity together.
 
 ### 3.7. BSI Likelihood of Exploit
 
-Determine likelihood from exploitation method and vulnerability state using [Probability Mapping](references/mapping-rules.md#probability-mapping) and the [BSI urgency model](https://www.bsi.bund.de/DE/Service-Navi/Abonnements/Newsletter/Buerger-CERT-Abos/Buerger-CERT-Sicherheitshinweise/Risikostufen/risikostufen.html).
+Determine likelihood from exploitation method and vulnerability state using [Probability Mapping](references/mapping-rules.md#8-probability-mapping) and the [BSI urgency model](https://www.bsi.bund.de/DE/Service-Navi/Abonnements/Newsletter/Buerger-CERT-Abos/Buerger-CERT-Sicherheitshinweise/Risikostufen/risikostufen.html).
 
 ### 3.8. Risk Treatment
 
-Assign every finalized risk a defensible disposition using [Treatment Semantics](references/mapping-rules.md#treatment-semantics) and the linked decision, compatibility, evidence, and approval mappings in the review workflow. Keep treatment traceable to inherent prioritization, residual risk, controls, ownership, and approval evidence.
+Assign every finalized risk a defensible disposition using [Treatment Semantics](references/mapping-rules.md#111-treatment-semantics) and the linked decision, compatibility, evidence, and approval mappings in the review workflow. Keep treatment traceable to inherent prioritization, residual risk, controls, ownership, and approval evidence.
 
 ## 4. Workflow
 
@@ -298,14 +298,14 @@ Save and integrate intermediate results after each step. When the objective is p
     - Do not record a severity without a vector and score.
     - Do not record a vector without a score and severity.
     - Record `CVSS-B v4.0 Score` with exactly one decimal digit and comma as decimal separator, e.g., `0,0`, `2,4`, `5,2`, `7,0`, `10,0`.
-    - Apply the zero-impact and residual-risk policy in [Impact Mapping](references/mapping-rules.md#impact-mapping).
-    - Select `AV` using [Exploitability Metrics](references/mapping-rules.md#exploitability-metrics), then derive the remaining exploitability metrics from the row and architecture evidence.
-    - Map `VC`, `VI`, and `VA` using [Vulnerable System Impact Metrics](references/mapping-rules.md#vulnerable-system-impact-metrics).
-    - Map `SC`, `SI`, and `SA` using [Subsequent System Impact Metrics](references/mapping-rules.md#subsequent-system-impact-metrics).
+    - Apply the zero-impact and residual-risk policy in [Impact Mapping](references/mapping-rules.md#7-impact-mapping).
+    - Select `AV` using [Exploitability Metrics](references/mapping-rules.md#71-exploitability-metrics), then derive the remaining exploitability metrics from the row and architecture evidence.
+    - Map `VC`, `VI`, and `VA` using [Vulnerable System Impact Metrics](references/mapping-rules.md#72-vulnerable-system-impact-metrics).
+    - Map `SC`, `SI`, and `SA` using [Subsequent System Impact Metrics](references/mapping-rules.md#73-subsequent-system-impact-metrics).
     - Leave the trio blank only when scoring remains unresolved.
     - Derive the score with the [CVSS v4.0 calculator](https://www.first.org/cvss/calculator/4.0) using the native TMT row, ATT&CK technique, EMB3D exposure, and OT/ICS impact context.
     - Base Severity vs. Residual Risk
-      > Apply the zero-impact and residual-risk scoring policy defined in [Impact Mapping](references/mapping-rules.md#impact-mapping). Do not lower the intrinsic CVSS Base score solely because compensating controls or risk-acceptance decisions reduce residual business exposure.
+      > Apply the zero-impact and residual-risk scoring policy defined in [Impact Mapping](references/mapping-rules.md#7-impact-mapping). Do not lower the intrinsic CVSS Base score solely because compensating controls or risk-acceptance decisions reduce residual business exposure.
 
     **Data Source:**
     - [assets/cvss/cvss-v4.0.json](assets/cvss/cvss-v4.0.json)
@@ -317,17 +317,17 @@ Save and integrate intermediate results after each step. When the objective is p
 
 6. BSI Likelihood of Exploit
 
-    **Action:** Populate `Likelihood of Exploit` using [Probability Mapping](references/mapping-rules.md#probability-mapping).
-    - Classify the exploitation method using [Exploitation Method](references/mapping-rules.md#exploitation-method).
-    - Classify the vulnerability state using [Vulnerability State](references/mapping-rules.md#vulnerability-state).
-    - Combine both classifications using [Likelihood Matrix](references/mapping-rules.md#likelihood-matrix).
+    **Action:** Populate `Likelihood of Exploit` using [Probability Mapping](references/mapping-rules.md#8-probability-mapping).
+    - Classify the exploitation method using [Exploitation Method](references/mapping-rules.md#81-exploitation-method).
+    - Classify the vulnerability state using [Vulnerability State](references/mapping-rules.md#82-vulnerability-state).
+    - Combine both classifications using [Likelihood Matrix](references/mapping-rules.md#83-likelihood-matrix).
     - Do not record `N/A` for finalized reviewed rows.
     - Zero-impact outcomes still require a mapped likelihood value.
     - Apply Field Resolution Semantics.
 
 7. Risk Prioritization
 
-    **Action:** Populate `Risk Prioritization` by combining `CVSS v4.0 Severity` and `Likelihood of Exploit` using [Risk Matrix Mapping](references/mapping-rules.md#risk-matrix-mapping).
+    **Action:** Populate `Risk Prioritization` by combining `CVSS v4.0 Severity` and `Likelihood of Exploit` using [Risk Matrix Mapping](references/mapping-rules.md#9-risk-matrix-mapping).
     - Do not record `N/A` for finalized reviewed rows.
     - When `CVSS v4.0 Severity = None`, still evaluate the risk matrix using the derived likelihood value.
     - Treat this value as inherent technical prioritization before risk treatment, compensating controls, acceptance, transfer, or residual-risk ownership.
@@ -335,7 +335,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
 8. Threat Actor
 
-    **Action:** Populate `Threat Actor` with exactly one standardized label using [Threat Actor Mapping](references/mapping-rules.md#threat-actor-mapping).
+    **Action:** Populate `Threat Actor` with exactly one standardized label using [Threat Actor Mapping](references/mapping-rules.md#10-threat-actor-mapping).
     - Record the minimum required actor, not the most severe or most newsworthy actor.
     - Base the decision on access path, capability, and operational knowledge.
     - If several actors could plausibly perform the attack, record the minimum actor that can realistically achieve the described effect.
@@ -374,16 +374,16 @@ Save and integrate intermediate results after each step. When the objective is p
 
 12. Risk Treatment
 
-    **Action:** Populate `Risk Treatment` using [Risk Treatment Mapping](references/mapping-rules.md#risk-treatment-mapping).
-    - Select the default or an evidence-supported alternative using [Treatment Decision Guidance](references/mapping-rules.md#treatment-decision-guidance).
-    - Verify the selected treatment against [State and Treatment Compatibility](references/mapping-rules.md#state-and-treatment-compatibility).
-    - Record the evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#treatment-evidence-requirements).
+    **Action:** Populate `Risk Treatment` using [Risk Treatment Mapping](references/mapping-rules.md#11-risk-treatment-mapping).
+    - Select the default or an evidence-supported alternative using [Treatment Decision Guidance](references/mapping-rules.md#112-treatment-decision-guidance).
+    - Verify the selected treatment against [State and Treatment Compatibility](references/mapping-rules.md#113-state-and-treatment-compatibility).
+    - Record the evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
     - Do not use `Acceptance` or `Transfer` to work around missing technical evidence.
     - Apply Field Resolution Semantics.
 
 13. Risk Approval
 
-    **Action:** Populate `Risk Approval` using [Risk Approval Mapping](references/mapping-rules.md#risk-approval-mapping).
+    **Action:** Populate `Risk Approval` using [Risk Approval Mapping](references/mapping-rules.md#12-risk-approval-mapping).
     - Record exactly one standardized role label.
     - Base approval on `Risk Prioritization` and `Risk Treatment`, then escalate when residual risk evidence requires a stronger approver.
     - Apply Field Resolution Semantics.
@@ -440,7 +440,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Verify each output row against its source row.
     - Keep identifiers and score artifacts in dedicated columns and keep `Justification` as narrative rationale.
     - Reject rows where `Justification` is only an identifier token or parenthetical code reference.
-    - Reject rows where `State`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Risk Treatment`, or `Risk Approval` contradict [Risk Treatment Mapping](references/mapping-rules.md#risk-treatment-mapping).
+    - Reject rows where `State`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Risk Treatment`, or `Risk Approval` contradict [Risk Treatment Mapping](references/mapping-rules.md#11-risk-treatment-mapping).
     - Reject rows that use legal or regulatory shorthand as the sole rationale for acceptance, transfer, mitigation, or avoidance.
     - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, residual risk posture, and threat actor selection decision.
 
