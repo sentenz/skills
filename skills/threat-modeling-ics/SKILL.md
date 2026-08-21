@@ -392,7 +392,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
 4. Output Baseline
 
-    **Action:** For SERIAL, RS-232, or UART assessments, read [SERIAL_Threat_Model_Generated.csv](references/SERIAL_Threat_Model_Generated.csv) before starting the row-by-row review.
+    **Action:** Read [SERIAL_Threat_Model_Generated.csv](references/SERIAL_Threat_Model_Generated.csv) before starting the row-by-row review.
 
     - Use the completed example only as a schema, scoring, and narrative-quality baseline. Do not copy system-specific threats, mappings, scores, actors, treatments, or approvals.
     - Compare the planned output against the example's exact column order, semicolon delimiter, quoted `Description` and `Justification` fields, comma-decimal score format, and structured rationale pattern.
