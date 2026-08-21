@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.25"
+  version: "1.7.26"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -122,7 +122,7 @@ STRIDE is a threat-classification model that categorizes threats into six types:
 [MITRE EMB3D](https://emb3d.mitre.org/) for embedded-device properties, threats, and mitigations.
 
 > [!NOTE]
-> Apply [EMB3D Mitigation Levels](references/mapping-rules.md#6-emb3d-mitigation-levels), and use EMB3D alongside—not instead of—ATT&CK when evidence supports both.
+> Apply the source-backed [EMB3D Mitigation Levels](references/mapping-rules.md#6-emb3d-mitigation-levels), never infer an EMB3D level from IEC 62443 SL or product-control maturity, and use EMB3D alongside—not instead of—ATT&CK when evidence supports both.
 
 ### 3.5. MITRE CWE
 
@@ -323,7 +323,9 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Data Source:**
     - [assets/emb3d/threats_properties_mitigations_mappings_2.0.1.json](assets/emb3d/threats_properties_mitigations_mappings_2.0.1.json)
-      > Use the combined mapping JSON as the threat-centric data source to validate EMB3D threat IDs (TIDs), associated device property IDs (PIDs), mitigation IDs (MIDs), and mitigation maturity levels.
+      > Use the combined mapping JSON as the threat-centric data source to validate EMB3D threat IDs (TIDs), associated device property IDs (PIDs), and mapped mitigation candidates.
+    - [assets/emb3d/mitigations_threat_mappings_2.0.1.json](assets/emb3d/mitigations_threat_mappings_2.0.1.json)
+      > Use the mitigation-centric JSON as the authoritative local source for each MID's exact name, EMB3D level, and associated TIDs.
     - [assets/emb3d/properties_threat_mappings_2.0.1.json](assets/emb3d/properties_threat_mappings_2.0.1.json)
       > Use the EMB3D property mapping JSON to validate property IDs, property names, categories, parent–child relationships, and associated threats when discovering applicable threats from the characteristics and capabilities of an embedded device.
 
@@ -441,7 +443,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - State the evidence-based rationale for `State` and the concrete scenario, architectural contradiction, or evidence gap.
     - Add protocol, trust relationship, validation behavior, access, actor, scoring, and mapping details only when they explain the decision.
     - For finalized risks, include the treatment evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
-    - Describe applicable mitigations by name. Include MID identifiers because no dedicated MID column exists, but do not repeat ATT&CK, EMB3D TID, CWE, CVSS, or governance values mechanically.
+    - Cite an MID only when row evidence supports the mitigation. Copy its exact name and Foundational, Intermediate, or Leading level from the mitigation-centric EMB3D asset and confirm that it maps to at least one TID in the row. A source match does not prove implementation. Omit MIDs when `EMB3D TID` is `N/A`; Basic controls are product-specific and must not carry MIDs.
     - Explain intentional `N/A` or blank fields once. Never invent missing evidence to complete a template.
     - Avoid unqualified legal safe-harbor language. Frame compliance-oriented statements as technical-documentation support or product-specific evidence pending stakeholder review.
     - Use no semicolons or embedded line breaks. Let the CSV writer enclose the complete `Justification` cell in double quotes.
@@ -463,7 +465,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Script Usage:**
     - [scripts/validate_output.py](scripts/validate_output.py)
-      > Run `uv run ./scripts/validate_output.py --csv '<Device_Name>_Threat_Model_Generated.csv' --source '<Device_Name>_Threat_Model.csv'` to scan the complete CSV, report every output-contract and source-traceability finding, and print an actual-versus-expected diff for each finding.
+      > Run `uv run ./scripts/validate_output.py --csv '<Device_Name>_Threat_Model_Generated.csv' --source '<Device_Name>_Threat_Model.csv'` to scan the complete CSV, validate cited MIDs against the bundled EMB3D mitigation source, report every output-contract and source-traceability finding, and print an actual-versus-expected diff for each finding.
     - [scripts/validate_cvss.py](scripts/validate_cvss.py)
       > Run `uv run ./scripts/validate_cvss.py --csv '<Device_Name>_Threat_Model_Generated.csv'` to validate all CVSS vectors in the `CVSS v4.0` columns and compare the calculated score with the stored score.
 

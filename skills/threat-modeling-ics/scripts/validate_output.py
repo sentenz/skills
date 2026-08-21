@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from dataclasses import dataclass
@@ -58,6 +59,19 @@ IDENTIFIER_ONLY_PATTERN = re.compile(
     r"^\s*(?:N/?A|(?:ATT&CK|TID|CWE|MID)[- :0-9.,]+|\([^)]*\))\s*$",
     re.IGNORECASE,
 )
+MID_PATTERN = re.compile(r"\bMID-\d{3}\b", re.IGNORECASE)
+TID_PATTERN = re.compile(r"\bTID-\d{3}\b", re.IGNORECASE)
+MITIGATION_CLAUSE_PATTERN = re.compile(
+    r"\b(Basic|Foundational|Intermediate|Leading)(?:\s+mitigation)?\s*:",
+    re.IGNORECASE,
+)
+EMB3D_LEVELS = frozenset({"foundational", "intermediate", "leading"})
+DEFAULT_EMB3D_MITIGATIONS = (
+    Path(__file__).resolve().parent.parent
+    / "assets"
+    / "emb3d"
+    / "mitigations_threat_mappings_2.0.1.json"
+)
 MAX_DIFF_LENGTH = 500
 
 
@@ -81,6 +95,14 @@ class Finding:
     message: str
     actual: str
     expected: str
+
+
+@dataclass(frozen=True)
+class Emb3dMitigation:
+    identifier: str
+    name: str
+    level: str
+    threat_ids: frozenset[str]
 
 
 def values(record: Record) -> tuple[str, ...]:
@@ -347,7 +369,230 @@ def _expected_score(value: str) -> str:
     return f"{score:.1f}".replace(".", ",")
 
 
-def validate_rows(records: list[Record]) -> list[Finding]:
+def load_emb3d_mitigations(path: Path) -> dict[str, Emb3dMitigation]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    raw_mitigations = payload.get("mitigations") if isinstance(payload, dict) else None
+    if not isinstance(raw_mitigations, list):
+        raise ValueError("EMB3D mitigation source must contain a mitigations list")
+
+    mitigation_index: dict[str, Emb3dMitigation] = {}
+    for position, item in enumerate(raw_mitigations, start=1):
+        if not isinstance(item, dict):
+            raise ValueError(f"EMB3D mitigation entry {position} must be an object")
+
+        identifier = str(item.get("id", "")).strip().upper()
+        name = str(item.get("name", "")).strip()
+        level = str(item.get("level", "")).strip().casefold()
+        raw_threats = item.get("threats")
+        if not re.fullmatch(r"MID-\d{3}", identifier):
+            raise ValueError(f"EMB3D mitigation entry {position} has an invalid id")
+        if not name:
+            raise ValueError(f"EMB3D mitigation {identifier} has no name")
+        if level not in EMB3D_LEVELS:
+            raise ValueError(f"EMB3D mitigation {identifier} has an invalid level")
+        if not isinstance(raw_threats, list):
+            raise ValueError(f"EMB3D mitigation {identifier} has no threats list")
+
+        threat_ids: set[str] = set()
+        for threat in raw_threats:
+            if not isinstance(threat, dict):
+                raise ValueError(f"EMB3D mitigation {identifier} has an invalid threat")
+            threat_id = str(threat.get("id", "")).strip().upper()
+            if not re.fullmatch(r"TID-\d{3}", threat_id):
+                raise ValueError(
+                    f"EMB3D mitigation {identifier} has an invalid threat id"
+                )
+            threat_ids.add(threat_id)
+
+        if identifier in mitigation_index:
+            raise ValueError(f"EMB3D mitigation id is duplicated: {identifier}")
+        mitigation_index[identifier] = Emb3dMitigation(
+            identifier=identifier,
+            name=name,
+            level=level,
+            threat_ids=frozenset(threat_ids),
+        )
+
+    return mitigation_index
+
+
+def _mitigation_clauses(text: str) -> list[tuple[str, int, int, str]]:
+    matches = list(MITIGATION_CLAUSE_PATTERN.finditer(text))
+    clauses: list[tuple[str, int, int, str]] = []
+    for index, match in enumerate(matches):
+        start = match.start()
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+        clauses.append((match.group(1).casefold(), start, end, text[start:end].strip()))
+    return clauses
+
+
+def validate_mitigation_citations(
+    justification: str,
+    tid_value: str,
+    *,
+    row_number: int,
+    threat_id: str,
+    mitigation_index: dict[str, Emb3dMitigation],
+) -> list[Finding]:
+    findings: list[Finding] = []
+    clauses = _mitigation_clauses(justification)
+    mid_matches = list(MID_PATTERN.finditer(justification))
+    row_tids = {match.group().upper() for match in TID_PATTERN.finditer(tid_value)}
+
+    for level, _, _, clause_text in clauses:
+        if level != "basic" and not MID_PATTERN.search(clause_text):
+            label = level.title()
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Justification",
+                    message="EMB3D mitigation clause has no MID",
+                    actual=clause_text,
+                    expected=f"{label} mitigation: <exact source name> (MID-NNN)",
+                )
+            )
+
+    seen_mids: set[str] = set()
+    for mid_match in mid_matches:
+        identifier = mid_match.group().upper()
+        if identifier in seen_mids:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Justification",
+                    message="MID is cited more than once in the row",
+                    actual=identifier,
+                    expected="<one source-backed citation per MID>",
+                )
+            )
+            continue
+        seen_mids.add(identifier)
+
+        mitigation = mitigation_index.get(identifier)
+        if mitigation is None:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Justification",
+                    message="MID is absent from the EMB3D mitigation source",
+                    actual=identifier,
+                    expected="<MID present in the bundled EMB3D mitigation source>",
+                )
+            )
+            continue
+
+        clause = next(
+            (
+                candidate
+                for candidate in clauses
+                if candidate[1] <= mid_match.start() < candidate[2]
+            ),
+            None,
+        )
+        if clause is None:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Justification",
+                    message="MID is not grouped under an EMB3D mitigation level",
+                    actual=identifier,
+                    expected=(
+                        f"{mitigation.level.title()} mitigation: "
+                        f"{mitigation.name} ({identifier})"
+                    ),
+                )
+            )
+        else:
+            declared_level, _, _, clause_text = clause
+            if declared_level == "basic":
+                findings.append(
+                    Finding(
+                        origin="output",
+                        row_number=row_number,
+                        threat_id=threat_id,
+                        column="Justification",
+                        message="Basic is product-specific and must not cite an MID",
+                        actual=clause_text,
+                        expected=(
+                            f"{mitigation.level.title()} mitigation: "
+                            f"{mitigation.name} ({identifier})"
+                        ),
+                    )
+                )
+            elif declared_level != mitigation.level:
+                findings.append(
+                    Finding(
+                        origin="output",
+                        row_number=row_number,
+                        threat_id=threat_id,
+                        column="Justification",
+                        message="MID level differs from the EMB3D mitigation source",
+                        actual=f"{declared_level.title()} mitigation: {identifier}",
+                        expected=(
+                            f"{mitigation.level.title()} mitigation: {identifier}"
+                        ),
+                    )
+                )
+
+            if mitigation.name not in clause_text:
+                findings.append(
+                    Finding(
+                        origin="output",
+                        row_number=row_number,
+                        threat_id=threat_id,
+                        column="Justification",
+                        message="MID exact source name is missing from its clause",
+                        actual=clause_text,
+                        expected=(
+                            f"{mitigation.level.title()} mitigation: "
+                            f"{mitigation.name} ({identifier})"
+                        ),
+                    )
+                )
+
+        if not row_tids:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="EMB3D TID",
+                    message="MID requires a populated EMB3D TID",
+                    actual=tid_value or "<blank>",
+                    expected="<TID mapped to the cited MID>",
+                )
+            )
+        elif row_tids.isdisjoint(mitigation.threat_ids):
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="EMB3D TID",
+                    message="MID is not mapped to any EMB3D TID in the row",
+                    actual=f"{identifier} with {', '.join(sorted(row_tids))}",
+                    expected=(
+                        f"{identifier} with one of "
+                        f"{', '.join(sorted(mitigation.threat_ids))}"
+                    ),
+                )
+            )
+
+    return findings
+
+
+def validate_rows(
+    records: list[Record],
+    mitigation_index: Optional[dict[str, Emb3dMitigation]] = None,
+) -> list[Finding]:
     findings: list[Finding] = []
     if not records:
         return findings
@@ -438,6 +683,18 @@ def validate_rows(records: list[Record]) -> list[Finding]:
                         message="Justification must not be identifier-only",
                         actual=justification,
                         expected="<structured narrative rationale>",
+                    )
+                )
+            if mitigation_index is not None:
+                tid_cell = _cell(record, "EMB3D TID")
+                tid_value = tid_cell.value.strip() if tid_cell is not None else ""
+                findings.extend(
+                    validate_mitigation_citations(
+                        justification,
+                        tid_value,
+                        row_number=row_number,
+                        threat_id=threat_id,
+                        mitigation_index=mitigation_index,
                     )
                 )
 
@@ -748,32 +1005,49 @@ def main() -> int:
         "--source",
         help="Optional raw TMT CSV used to verify the preserved row inventory",
     )
+    parser.add_argument(
+        "--emb3d-mitigations",
+        type=Path,
+        default=DEFAULT_EMB3D_MITIGATIONS,
+        help=(
+            "EMB3D mitigation-to-threat JSON used to validate MID names, levels, "
+            "and row TID associations (defaults to the bundled asset)"
+        ),
+    )
     args = parser.parse_args()
 
     output_path = Path(args.csv).expanduser()
     source_path = Path(args.source).expanduser() if args.source else None
+    mitigation_path = args.emb3d_mitigations.expanduser()
     if not output_path.is_file():
         print(f"ERROR: CSV file not found: {output_path}", file=sys.stderr)
         return 2
     if source_path is not None and not source_path.is_file():
         print(f"ERROR: source CSV file not found: {source_path}", file=sys.stderr)
         return 2
+    if not mitigation_path.is_file():
+        print(
+            f"ERROR: EMB3D mitigation source not found: {mitigation_path}",
+            file=sys.stderr,
+        )
+        return 2
 
     findings: list[Finding] = []
     try:
+        mitigation_index = load_emb3d_mitigations(mitigation_path)
         output_records = read_records(
             output_path,
             origin="output",
             findings=findings,
         )
         findings.extend(validate_header(output_records))
-        findings.extend(validate_rows(output_records))
+        findings.extend(validate_rows(output_records, mitigation_index))
 
         source_records: Optional[list[Record]] = None
         if source_path is not None:
             source_records = read_source_records(source_path, findings)
             findings.extend(validate_source(output_records, source_records))
-    except (OSError, UnicodeError) as exc:
+    except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
 
