@@ -1,35 +1,21 @@
+# Threat Depth Layers
 
-# Threat Layers
+- [1. Depth Layers](#1-depth-layers)
+- [2. Diagram Layers](#2-diagram-layers)
+  - [2.1. Depth Layer 0](#21-depth-layer-0)
+  - [2.2. Depth Layer 2](#22-depth-layer-2)
 
-- [1. Connection Paths](#1-connection-paths)
-- [2. Depth Layers](#2-depth-layers)
-- [3. Diagram Layers](#3-diagram-layers)
-  - [3.1. Depth Layer 0](#31-depth-layer-0)
-  - [3.2. Depth Layer 2](#32-depth-layer-2)
+> [!NOTE]
+> Refer to the [Scope Classification](../SKILL.md#21-scope-classification) for Connection Path framework (C1–C8).
 
-## 1. Connection Paths
-
-Connection paths are classified as either [direct or indirect, logical or physical data connection to a device or network](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202402847#art_2) and [definitions](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202402847#art_3) of connection path, connection type, and target.
-
-| Case | Connection Path | Connection Type | Target  | Interpretation                                 | Representative                                                                                                                                                                                                                                                             |
-| ---- | --------------- | --------------- | ------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| C1   | Direct          | Logical         | Device  | Direct logical data connection to a device     | Addressed Modbus RTU request/response between a PLC and the embedded device, RS-232/UART console protocol, JTAG/SWD debug commands, managed UPS protocol, local bootloader commands, SPI/I²C read/write operations targeting EEPROM or Flash                               |
-| C2   | Direct          | Logical         | Network | Direct logical data connection to a network    | Modbus RTU communication on an RS-485 multidrop segment, network-wide diagnostics or discovery, broadcast Modbus requests, maintenance software interacting directly with the shared serial network                                                                        |
-| C3   | Direct          | Physical        | Device  | Direct physical data connection to a device    | Point-to-point RS-232 cable, JTAG/SWD Probe connection, GPIO, Digital I/O, Analog I/O 4–20 mA / 0–10 V, UART TX/RX wiring, SPI/I²C traces to EEPROM/Flash, USB service cable, PLC or managed-UPS serial attachment                                                         |
-| C4   | Direct          | Physical        | Network | Direct physical data connection to a network   | RS-485 multidrop bus, trunk wiring, termination and device transceiver attachment, direct physical connection to a shared serial fieldbus, USB bus or hub only where the bus itself is explicitly modeled as a network                                                     |
-| C5   | Indirect        | Logical         | Device  | Indirect logical data connection to a device   | Maintenance Workstation → PLC/gateway → Embedded Device, HMI request relayed by the PLC, firmware-update command relayed to the bootloader, EEPROM or Flash access performed indirectly through application firmware or the bootloader                                     |
-| C6   | Indirect        | Logical         | Network | Indirect logical data connection to a network  | Maintenance Workstation/HMI → protocol gateway or serial server → Modbus RTU network, access to the RS-485 network through a PLC, remote diagnostic software reaching the field network through an intermediary                                                            |
-| C7   | Indirect        | Physical        | Device  | Indirect physical data connection to a device  | Sensor or actuator connected through remote I/O, relay, isolator, signal conditioner or transmitter, maintenance workstation connected through a USB-to-RS-232 adapter, physical programming path through an adapter board, UPS management path through a serial converter |
-| C8   | Indirect        | Physical        | Network | Indirect physical data connection to a network | Maintenance Workstation → USB-to-RS-485 adapter/serial server → RS-485 bus, internal MCU connected to the external multidrop network through an RS-485 transceiver and board connector, physical access to a fieldbus through a protocol gateway                           |
-
-## 2. Depth Layers
+## 1. Depth Layers
 
 [Diagram depth layers](https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/1b-depth-layers) are used to decompose a system into hierarchical levels of detail, enabling threat modeling at varying levels of abstraction.
 
 | Layer | Title       | Components                                                                                                                                                                                                                                                                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | ----- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 0     | System      | Embedded Device, PLC, HMI/Engineering Station, Maintenance Workstation, Debug/Flash Probe, Managed UPS, Sensors, Actuators, Remote I/O, Protocol Gateway/Serial Server, USB Host or Service Laptop                                                                                  | Mandatory initial view of the systems major parts. Represents the Embedded Device as a single process within its trust boundary and shows all relevant external entities, intermediary systems, data flows, and physical or logical connection paths. Establishes the system context and identifies the Layer 0 processes that may require further decomposition.  ([Microsoft Layer 0][1])                                                                                                                                                                     |
-| 1     | Process     | Controller/MCU, RS-485 Transceiver, RS-232 Transceiver, USB Interface, JTAG/SWD Interface, RJ-12/RJ-45 Connectors, GPIO Interface, Digital I/O, Analog I/O, Power Monitoring, Flash, EEPROM                                                                                         | Decomposes the Embedded Device process from Layer 0 into its principal board-level processes, interfaces, data stores, and trust boundaries. Identifies the products external physical and logical attack surfaces while retaining the Controller/MCU as a single process. Generally the appropriate minimum decomposition for evaluating an embedded product’s communication ports, field I/O, debug interface, storage, and service interfaces.  ([Microsoft Layer 1][2])                                                                                     |
+| 1     | Process     | Controller/MCU, RS-485 Transceiver, RS-232 Transceiver, USB Interface, JTAG/SWD Interface, RJ-12/RJ-45 Connectors, GPIO Interface, Digital I/O, Analog I/O, Power Monitoring, Flash, EEPROM                                                                                         | Decomposes the Embedded Device process from Layer 0 into its principal board-level processes, interfaces, data stores, and trust boundaries. Identifies the products external physical and logical attack surfaces while retaining the Controller/MCU as a single process. Generally the appropriate minimum decomposition for evaluating an embedded product's communication ports, field I/O, debug interface, storage, and service interfaces.  ([Microsoft Layer 1][2])                                                                                     |
 | 2     | Subprocess  | Application and Control Logic, Modbus RTU Stack, GPIO Driver, UART Driver, SPI Driver, I²C Driver, Digital-I/O Driver, ADC/DAC Driver, Scheduler/Interrupt Dispatch, Configuration Manager, Bootloader, Secure Boot, Firmware-Update Manager, Debug-Access Control, Memory Manager  | Decomposes the Controller/MCU process from Layer 1 into security-relevant firmware subprocesses and data flows. Focuses on protocol parsing, control decisions, privilege boundaries, interrupt handling, secure startup, firmware updates, debug authorization, configuration processing, and non-volatile-memory access. Appropriate where compromise of an internal controller function could affect device integrity, availability, process control, or connected systems.  ([Microsoft Layer 2][3])                                                        |
 | 3     | Lower-Level | Modbus RTU Frame Parser and Function Handlers, Boot Verification Chain, Firmware-Update State Machine, Signature Verification, Anti-Rollback Logic, UART ISR/DMA and Buffers, GPIO Interrupt/Debounce Logic, SPI/I²C Transaction State Machines, MPU Regions, Key-Handling Routines | Provides minute implementation detail for a selected critical Layer 2 subprocess rather than automatically decomposing the entire controller. Examines parser memory safety, input-validation branches, state transitions, buffer ownership, concurrency, cryptographic verification, privilege changes, key exposure, fault injection, and side-channel behavior. Reserved for security-critical, kernel-level, privileged, cryptographic, or timing-sensitive functions where Layer 2 does not provide sufficient analytical depth.  ([Microsoft Layer 3][4]) |
 
@@ -38,9 +24,9 @@ Connection paths are classified as either [direct or indirect, logical or physic
 [3]: https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/4-layer-2-the-sub-process-layer "Layer 2 | The Subprocess Layer Training | Microsoft Learn"
 [4]: https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/5-layer-3-the-lower-level-layer "Layer 3 | The Lower-Level Layer Training | Microsoft Learn"
 
-## 3. Diagram Layers
+## 2. Diagram Layers
 
-### 3.1. Depth Layer 0
+### 2.1. Depth Layer 0
 
 At depth layer 0, the embedded product is represented as a single system node. Internal elements such as the bootloader, Flash, EEPROM, protocol stack, drivers, and application firmware are intentionally omitted.
 
@@ -48,10 +34,10 @@ At depth layer 0, the embedded product is represented as a single system node. I
 flowchart TD
     %% ============================================================
     %% Threat-model depth: Layer 0 — System context
-    %%
+    %% ------------------------------------------------------------
     %% The embedded product is represented as one process.
     %% Internal firmware, storage, buses, and components are omitted.
-    %%
+    %% ------------------------------------------------------------
     %% C1-C8 are engineering labels, not CRA statutory categories.
     %% ============================================================
 
@@ -117,7 +103,7 @@ flowchart TD
     class DEVICE product;
 ```
 
-### 3.2. Depth Layer 2
+### 2.2. Depth Layer 2
 
 At depth layer 2, the embedded device is decomposed into its major functional blocks (processes) and critical sub‑processes. Internal data flows, trust boundaries, and interfaces between components are shown, enabling detailed threat analysis of the device's attack surface and internal architecture.
 
@@ -125,10 +111,10 @@ At depth layer 2, the embedded device is decomposed into its major functional bl
 flowchart TD
     %% ============================================================
     %% Threat-model depth: Layer 2 — system subparts
-    %%
+    %% ------------------------------------------------------------
     %% Classification perspective:
     %% All C1-C8 labels are evaluated relative to the embedded device.
-    %%
+    %% ------------------------------------------------------------
     %% Solid external paths = direct connections
     %% Dashed paths         = indirect end-to-end reachability
     %% NC                   = not a device/network data connection
