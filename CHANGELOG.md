@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.12.0](https://github.com/sentenz/skills/compare/v1.11.2...v1.12.0) (2026-08-22)
+
+
+### Features
+
+* add external TM7 threat model skill ([#98](https://github.com/sentenz/skills/issues/98)) ([07b345d](https://github.com/sentenz/skills/commit/07b345df21228a0557acad2e800c64ea1cfbf771))
+
 ## [1.11.2](https://github.com/sentenz/skills/compare/v1.11.1...v1.11.2) (2026-08-04)
 
 
