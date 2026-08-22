@@ -6,6 +6,12 @@
       "sourceType": "github",
       "skillPath": "skills/terraform/SKILL.md",
       "computedHash": "2fbcf60b149bd4ed5a31c82b799b15fe955138238a3f68ec697605d994cb9234"
+    },
+    "tm7-threat-model": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/tm7-threat-model/SKILL.md",
+      "computedHash": "77eca7f07afd3ef5a079cdcc6467af6da34f43d25e019f4b30b8166063b5f1ce"
     }
   }
 }

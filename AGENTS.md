@@ -174,6 +174,9 @@ Available skills:
 - [Terraform](skills/terraform/SKILL.md)
   > Guides Terraform/OpenTofu module design, testing, CI/CD, security, compliance, and state management with version-aware guardrails.
 
+- [TM7 Threat Model](skills/tm7-threat-model/SKILL.md)
+  > Generates valid Microsoft Threat Modeling Tool v7.3+ `.tm7` files with architecture diagrams, data flows, trust boundaries, and STRIDE threats.
+
 - [Threat Modeling ICS](skills/threat-modeling-ics/SKILL.md)
   > Performs threat modeling for OT/ICS systems using Microsoft TMT, STRIDE, MITRE ATT&CK for ICS, CWE, and CVSS v4.0.
 
