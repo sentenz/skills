@@ -52,6 +52,9 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 
 ### 1.4. Threat Modeling Skills
 
+- [TM7 Threat Model](tm7-threat-model/SKILL.md)
+  > External Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awesome-copilot) for generating valid [Microsoft Threat Modeling Tool (TMT)](https://github.com/github/awesome-copilot/tree/main/skills/tm7-threat-model) v7.3+ files with diagrams and STRIDE threats.
+
 - [Threat Modeling ICS](threat-modeling-ics/SKILL.md)
   > Threat modeling for OT/ICS systems using Microsoft TMT, STRIDE, MITRE ATT&CK for ICS, CWE, and CVSS v4.0.
 

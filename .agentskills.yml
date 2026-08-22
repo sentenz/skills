@@ -69,6 +69,11 @@ skills:
     description: Terraform and OpenTofu module, testing, CI/CD, security, compliance, and state management guidance
 
   # Security Skills
+  - name: tm7-threat-model
+    path: skills/tm7-threat-model
+    languages: [markdown, xml]
+    description: Generates valid Microsoft Threat Modeling Tool v7.3+ files with diagrams and STRIDE threats
+
   - name: threat-modeling-ics
     path: skills/threat-modeling-ics
     languages: [markdown, csv]

@@ -59,7 +59,7 @@ Available skills can be activated by agents based on defined triggers and contex
   > Terraform and OpenTofu module design, testing, CI/CD, security, compliance, and state management skills.
 
 - [Threat Modeling Skills](skills/README.md#14-threat-modeling-skills)
-  > Threat modeling for OT/ICS systems.
+  > Threat modeling for OT/ICS systems and Microsoft Threat Modeling Tool (`.tm7`) file generation.
 
 - [Documentation Skills](skills/README.md#15-documentation-skills)
   > Architecture Decision Records (ADR) creation and maintenance skills.
