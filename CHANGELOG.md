@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.13.0](https://github.com/sentenz/skills/compare/v1.12.0...v1.13.0) (2026-08-23)
+
+
+### Features
+
+* add external Dependabot skill from GitHub Awesome-Copilot ([#99](https://github.com/sentenz/skills/issues/99)) ([69065d9](https://github.com/sentenz/skills/commit/69065d905e4daf611877f4ab2771c0d48a2dc8dd))
+
 # [1.12.0](https://github.com/sentenz/skills/compare/v1.11.2...v1.12.0) (2026-08-22)
 
 
