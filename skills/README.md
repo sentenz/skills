@@ -6,8 +6,9 @@ Agent skills are modular capabilities that AI agents can utilize to perform spec
   - [1.1. C++ Skills](#11-c-skills)
   - [1.2. Go Skills](#12-go-skills)
   - [1.3. Terraform Skills](#13-terraform-skills)
-  - [1.4. Threat Modeling Skills](#14-threat-modeling-skills)
-  - [1.5. Documentation Skills](#15-documentation-skills)
+  - [1.4. Dependency Management Skills](#14-dependency-management-skills)
+  - [1.5. Threat Modeling Skills](#15-threat-modeling-skills)
+  - [1.6. Documentation Skills](#16-documentation-skills)
 - [2. References](#2-references)
 
 ## 1. Agent Skills
@@ -50,7 +51,12 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 - [Terraform](terraform/SKILL.md)
   > External Agent Skill for [Terraform and OpenTofu](https://github.com/antonbabenko/terraform-skill) guidance for module design, testing, CI/CD, security, compliance, and state management.
 
-### 1.4. Threat Modeling Skills
+### 1.4. Dependency Management Skills
+
+- [Dependabot](dependabot/SKILL.md)
+  > External Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awesome-copilot) for [Dependabot](https://github.com/github/awesome-copilot/tree/main/skills/dependabot) configuration and management, including version updates, security updates, grouping, monorepos, and pull requests.
+
+### 1.5. Threat Modeling Skills
 
 - [TM7 Threat Model](tm7-threat-model/SKILL.md)
   > External Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awesome-copilot) for generating valid [Microsoft Threat Modeling Tool (TMT)](https://github.com/github/awesome-copilot/tree/main/skills/tm7-threat-model) v7.3+ files with diagrams and STRIDE threats.
@@ -58,7 +64,7 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 - [Threat Modeling ICS](threat-modeling-ics/SKILL.md)
   > Threat modeling for OT/ICS systems using Microsoft TMT, STRIDE, MITRE ATT&CK for ICS, CWE, and CVSS v4.0.
 
-### 1.5. Documentation Skills
+### 1.6. Documentation Skills
 
 - [Architecture Decision Records (ADR)](adr/SKILL.md)
   > Creates and maintains Architecture Decision Records following a structured format with State, Context, Decision, Considered, Consequences, Implementation, and References sections.
