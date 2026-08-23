@@ -58,10 +58,13 @@ Available skills can be activated by agents based on defined triggers and contex
 - [Terraform Skills](skills/README.md#13-terraform-skills)
   > Terraform and OpenTofu module design, testing, CI/CD, security, compliance, and state management skills.
 
-- [Threat Modeling Skills](skills/README.md#14-threat-modeling-skills)
+- [Dependency Management Skills](skills/README.md#14-dependency-management-skills)
+  > GitHub Dependabot configuration and management for version updates, security updates, grouping, and monorepos.
+
+- [Threat Modeling Skills](skills/README.md#15-threat-modeling-skills)
   > Threat modeling for OT/ICS systems and Microsoft Threat Modeling Tool (`.tm7`) file generation.
 
-- [Documentation Skills](skills/README.md#15-documentation-skills)
+- [Documentation Skills](skills/README.md#16-documentation-skills)
   > Architecture Decision Records (ADR) creation and maintenance skills.
 
 ## 2. Contribute
