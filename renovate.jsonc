@@ -46,7 +46,7 @@
         "**/*.mk"
       ],
       "matchStringsStrategy": "any",
-      "      "matchStrings": [
+      "matchStrings": [
         "(?<depName>(?:(?:[A-Za-z0-9.-]+(?::[0-9]+)?/)?[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)+)):(?<currentValue>v?\\d[0-9A-Za-z_.-]*)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?"
       ],
       "autoReplaceStringTemplate": "{{{depName}}}:{{{newValue}}}{{#if newDigest}}@{{{newDigest}}}{{else}}{{#if currentDigest}}@{{{currentDigest}}}{{/if}}{{/if}}",
