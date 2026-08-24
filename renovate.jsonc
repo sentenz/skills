@@ -38,34 +38,30 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Update versioned container image references in GitHub Actions files",
+      "description": "Update versioned Docker image references in repository support files.",
       "managerFilePatterns": [
-        "**/action.{yml,yaml}"
-      ],
-      "matchStrings": [
-        "(?<depName>(?:(?:[A-Za-z0-9.-]+(?::[0-9]+)?/)?[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*)):(?<currentValue>v?\\d[0-9A-Za-z_.-]*)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?"
-      ],
-      "autoReplaceStringTemplate": "{{{depName}}}:{{{newValue}}}{{#if newDigest}}@{{{newDigest}}}{{else}}{{#if currentDigest}}@{{{currentDigest}}}{{/if}}{{/if}}",
-      "datasourceTemplate": "docker",
-      "versioningTemplate": "docker"
-    },
-    {
-      "customType": "regex",
-      "description": "Update versioned container image references in Makefiles",
-      "managerFilePatterns": [
+        "**/action.{yml,yaml}",
         "**/[Mm]akefile",
         "**/GNUMakefile",
         "**/*.mk"
       ],
+      "matchStringsStrategy": "any",
       "matchStrings": [
-        "(?<depName>(?:(?:docker\\.io|ghcr\\.io|quay\\.io|gcr\\.io|mcr\\.microsoft\\.com|registry\\.gitlab\\.com|cgr\\.dev|oci\\.io)/)?[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)+):(?<currentValue>v?\\d[0-9A-Za-z_.-]*)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?"
+        "(?<depName>(?:(?:[A-Za-z0-9.-]+(?::[0-9]+)?/)?[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)+)):(?<currentValue>v?\\d[0-9A-Za-z_.-]*)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?"
       ],
-      "autoReplaceStringTemplate": "{{depName}}:{{newValue}}{{#if newDigest}}@{{newDigest}}{{else}}{{#if currentDigest}}@{{currentDigest}}{{/if}}{{/if}}",
+      "autoReplaceStringTemplate": "{{{depName}}}:{{{newValue}}}{{#if newDigest}}@{{{newDigest}}}{{else}}{{#if currentDigest}}@{{{currentDigest}}}{{/if}}{{/if}}",
       "datasourceTemplate": "docker",
       "versioningTemplate": "docker"
     }
   ],
   "packageRules": [
+    {
+      "description": "Defer dependency management of GitHub Actions to Dependabot.",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "enabled": false
+    },
     {
       "description": "Introduces breaking changes or requires code adjustments due to changes in public APIs.",
       "matchUpdateTypes": [
