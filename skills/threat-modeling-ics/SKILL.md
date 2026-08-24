@@ -362,7 +362,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Data Source:**
     - [assets/cvss/cvss-v4.0.json](assets/cvss/cvss-v4.0.json)
-      > Treat the FIRST CVSS v4.0 schema as a machine-readable format reference; do not load it during normal row processing or derive a score from it. CVSS does not require a query layer.
+      > Treat the FIRST CVSS v4.0 schema as a machine-readable format reference; do not load it during normal row processing or derive a score from it.
 
     **Script Usage:**
     - [scripts/calculate_cvss.py](scripts/calculate_cvss.py)
