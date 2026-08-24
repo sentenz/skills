@@ -133,7 +133,7 @@ Mitigation levels classify the extent and sophistication of mitigations applied 
 - Do not derive, raise, or lower an EMB3D level from implementation maturity, adversary capability, control coverage, or an IEC 62443 Security Level.
 
 > [!NOTE]
-> EMB3D levels are source taxonomy values, not a numeric maturity scale. Use the bundled mitigation snapshot as the offline source of record through [`query_emb3d.py`](../scripts/query_emb3d.py) and [`validate_output.py`](../scripts/validate_output.py); do not read or print the raw JSON.
+> EMB3D levels are source taxonomy values, not a numeric maturity scale. Use the bundled mitigation snapshot as the offline source of record through [`query_emb3d.py`](../scripts/query_emb3d.py) and [`validate_output.py`](../scripts/validate_output.py). Do not read or print the raw JSON.
 
 ## 7. Impact Mapping
 
@@ -364,7 +364,7 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 
 ## 13. MITRE CWE Mapping Rules
 
-Use the bundled CWE 4.20 projection as the offline source of record through `scripts/query_cwe.py` and `scripts/validate_output.py`; do not read or print the raw JSON. The projection contains all weakness entries from the upstream snapshot, including status, abstraction, mapping notes, relationships, candidate mitigations, and the Software Development, Research Concepts, and Hardware Design discovery views.
+Use the bundled CWE 4.20 projection as the offline source of record through `scripts/query_cwe.py` and `scripts/validate_output.py`. Do not read or print the raw JSON. The projection contains all weakness entries from the upstream snapshot, including status, abstraction, mapping notes, relationships, candidate mitigations, and the Software Development, Research Concepts, and Hardware Design discovery views.
 
 - **Active set:** weakness entries whose `status` is not `Deprecated`.
 - **Mappable set:** active weakness entries whose `mapping_notes.usage` is not `Prohibited`.
