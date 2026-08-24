@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.1](https://github.com/sentenz/skills/compare/v1.13.0...v1.13.1) (2026-08-24)
+
+
+### Bug Fixes
+
+* create threat-depth-layers.md for ICS threat modeling ([#79](https://github.com/sentenz/skills/issues/79)) ([6462582](https://github.com/sentenz/skills/commit/6462582cc24e988ccd88d0e740a394e29408dc42))
+
 # [1.13.0](https://github.com/sentenz/skills/compare/v1.12.0...v1.13.0) (2026-08-23)
 
 
