@@ -14,18 +14,20 @@ SHELL := bash
 .SHELLFLAGS := -euo pipefail -c
 .ONESHELL:
 
-# Define Targets
+# ─── General ─────────────────────────────────────────────────────────────────────────────────────
 
 default: help
 
 # NOTE Targets MUST have a leading comment line starting with `##` to be included in the list. See the targets below for examples.
+#
+## Display help message with a list of available tasks and their descriptions
 help:
 	@awk 'BEGIN {printf "Tasks\n\tA collection of tasks used in the current project.\n\n"}'
 	@awk 'BEGIN {printf "Usage\n\tmake $(shell tput -Txterm setaf 6)<task>$(shell tput -Txterm sgr0)\n\n"}' $(MAKEFILE_LIST)
 	@awk '/^##/{c=substr($$0,3);next}c&&/^[[:alpha:]][[:alnum:]_-]+:/{print "$(shell tput -Txterm setaf 6)\t" substr($$1,1,index($$1,":")) "$(shell tput -Txterm sgr0)",c}1{c=0}' $(MAKEFILE_LIST) | column -s: -t
 .PHONY: help
 
-# ── Setup & Teardown ─────────────────────────────────────────────────────────────────────────────
+# ─── Setup & Teardown ────────────────────────────────────────────────────────────────────────────
 
 # NOTE May require elevated privileges (`sudo`) to install dependencies on the host system.
 #
@@ -39,6 +41,7 @@ bootstrap:
 ## Install and configure all dependencies essential for development
 setup:
 	npm install -g skills
+	curl -LsSf https://astral.sh/uv/install.sh | sh
 .PHONY: setup
 
 # NOTE May require elevated privileges (`sudo`) to remove dependencies from the host system.
@@ -48,7 +51,7 @@ teardown:
 	npm uninstall -g skills
 .PHONY: teardown
 
-# ── Git Hooks Manager ────────────────────────────────────────────────────────────────────────────
+# ─── Git Hooks Manager ───────────────────────────────────────────────────────────────────────────
 
 ## Initialize Lefthook Git hooks in the local repository
 githooks-lefthook-initialize:
@@ -60,7 +63,7 @@ githooks-lefthook-deinitialize:
 	lefthook uninstall
 .PHONY: githooks-lefthook-deinitialize
 
-# ── Skills Manager ───────────────────────────────────────────────────────────────────────────────
+# ─── Skills Manager ──────────────────────────────────────────────────────────────────────────────
 
 ## Provision new Agent Skills into the project environment
 skills-agent-add:
@@ -77,7 +80,7 @@ skills-agent-restore:
 	skills experimental_install
 .PHONY: skills-agent-restore
 
-# ── Dependency Manager ───────────────────────────────────────────────────────────────────────────
+# ─── Dependency Manager ──────────────────────────────────────────────────────────────────────────
 
 DEPENDENCY_IMAGE_RENOVATE ?= docker.io/renovate/renovate:44.30.4@sha256:e28fae22baff685b0c4d00277500b41886ff457bb6f89d7d08eaf82c95fae442
 
@@ -88,7 +91,7 @@ dependency-renovate-update:
 	docker run --rm -v "${PWD}:/workspace" -w /workspace -e LOG_LEVEL=debug -e RENOVATE_REPOSITORIES -e RENOVATE_TOKEN=$(RENOVATE_TOKEN) "$(DEPENDENCY_IMAGE_RENOVATE)" renovate --platform=local --repository-cache=reset > logs/dependency/renovate.log 2>&1
 .PHONY: dependency-renovate-update
 
-# ── Secrets Manager ──────────────────────────────────────────────────────────────────────────────
+# ─── Secrets Manager ─────────────────────────────────────────────────────────────────────────────
 
 SECRETS_IMAGE_SOPS ?= ghcr.io/getsops/sops:v3.13.3@sha256:857f5a151ac0b2bfc55c1e4e5581d66fb8e268e4d106b38e74191f3bac9d58ea
 SECRETS_SOPS_UID ?= sops-skills
@@ -222,7 +225,7 @@ secrets-sops-view:
 	docker run --rm -v "${PWD}:/workspace" -v "$${HOME}/.gnupg:/root/.gnupg" -w /workspace $(SECRETS_IMAGE_SOPS) decrypt "$(filter-out $@,$(MAKECMDGOALS))"
 .PHONY: secrets-sops-view
 
-# ── Policy Manager ───────────────────────────────────────────────────────────────────────────────
+# ─── Policy Manager ──────────────────────────────────────────────────────────────────────────────
 
 POLICY_IMAGE_CONFTEST ?= docker.io/openpolicyagent/conftest:v0.69.0@sha256:a38ba21668929a00dce2fe6ee43d1312228340bce5fd243f47dd0ce90516e558
 
@@ -256,7 +259,7 @@ policy-regal-lint:
 	docker run --rm -v "${PWD}:/workspace" -w /workspace "$(POLICY_IMAGE_REGAL)" lint "$(filter-out $@,$(MAKECMDGOALS))" --format json > logs/policy/regal.json 2>&1
 .PHONY: policy-regal-lint
 
-# ── Static Analysis ──────────────────────────────────────────────────────────────────────────────
+# ─── Static Analysis ─────────────────────────────────────────────────────────────────────────────
 
 LINT_IMAGE_MARKDOWNLINT ?= davidanson/markdownlint-cli2:0.22.1@sha256:0ed9a5f4c77ef447da2a2ac6e67caf74b214a7f80288819565e8b7d2ac148fe5
 LINT_FILES_MARKDOWNLINT ?= "**/*.md"
@@ -268,7 +271,7 @@ lint-markdown:
 	docker run --rm -v "${PWD}:/workspace" -w /workspace "$(LINT_IMAGE_MARKDOWNLINT)" $(LINT_FILES_MARKDOWNLINT) > logs/lint/markdownlint 2>&1
 .PHONY: lint-markdown
 
-# ── SAST Manager ─────────────────────────────────────────────────────────────────────────────────
+# ─── SAST Manager ────────────────────────────────────────────────────────────────────────────────
 
 SAST_IMAGE_SEMGREP ?= semgrep/semgrep:1.173.0@sha256:67319956da3dcb58baf5b322899c15458e3963e7018a86aeeb5cd224e69cb77a
 SAST_FILES_SEMGREP ?= .
@@ -481,7 +484,7 @@ sast-trufflehog-git:
 	docker run --rm -v "${PWD}:/workspace" -w /workspace "$(SAST_IMAGE_TRUFFLEHOG)" git file:///workspace --no-update --json > logs/sast/trufflehog-git.json 2> logs/sast/trufflehog-git.log
 .PHONY: sast-trufflehog-git
 
-# ── Supply Chain Security ────────────────────────────────────────────────────────────────────────
+# ─── Supply Chain Security ───────────────────────────────────────────────────────────────────────
 
 SAST_IMAGE_COSIGN ?= cgr.dev/chainguard/cosign:3.0.0@sha256:b6bc266358e9368be1b3d01fca889b78d5ad5a47832986e14640c34a237ef638
 
@@ -528,7 +531,7 @@ sast-cosign-verify:
 	docker run --rm -v "${HOME}/.docker/config.json:/root/.docker/config.json" -v "${PWD}:/workspace" -w /workspace "$(SAST_IMAGE_COSIGN)" verify-attestation --key cosign.pub --type cyclonedx "$(filter-out $@,$(MAKECMDGOALS))" > logs/sbom/sbom.cdx.intoto.jsonl 2> logs/sast/cosign-verify.log
 .PHONY: sast-cosign-verify
 
-# ── Static Site Generator (SSG) ─────────────────────────────────────────────────────────────────
+# ─── Static Site Generator (SSG) ────────────────────────────────────────────────────────────────
 
 ### Setup documentation pages with MkDocs
 pages-mkdocs-setup:
@@ -545,7 +548,7 @@ pages-mkdocs-serve:
 	@. $(PIP_VENV)/activate; mkdocs serve --dev-addr 127.0.0.1:8000 --livereload
 .PHONY: pages-mkdocs-serve
 
-# ── Documentation Generators ─────────────────────────────────────────────────────────────────────
+# ─── Documentation Generators ────────────────────────────────────────────────────────────────────
 
 ## Build content using Static Site Generator (SSG) for Doxygen documentation
 pages-doxygen-build:

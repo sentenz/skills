@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.9"
+# dependencies = [
+#   "cvss==3.6",
+# ]
+# ///
 
 """Validate stored CVSS v4.0 values in a threat-model CSV."""
 
@@ -13,7 +19,7 @@ import sys
 from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal, TypeAlias
+from typing import Literal
 
 COL_ID = "Id"
 COL_TITLE = "Title"
@@ -32,11 +38,12 @@ REQUIRED_COLUMNS = (
 SCORE_EPSILON = 0.0001
 DEFAULT_TIMEOUT_SECONDS = 30.0
 MAX_DIAGNOSTIC_LENGTH = 500
+DEFAULT_VALIDATOR_PATH = Path(__file__).resolve().with_name("calculate_cvss.py")
 
-ValidationStatus: TypeAlias = Literal["PASS", "FAIL", "ERROR", "SKIP"]
+ValidationStatus = Literal["PASS", "FAIL", "ERROR", "SKIP"]
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class ValidationResult:
     row_number: int
     threat_id: str
@@ -417,8 +424,8 @@ def main() -> int:
     parser.add_argument("--csv", required=True, help="Path to the threat-model CSV")
     parser.add_argument(
         "--validator",
-        default=".agents/skills/threat-modeling-ics/scripts/calculate_cvss.py",
-        help="Path to calculate_cvss.py",
+        default=DEFAULT_VALIDATOR_PATH,
+        help="Path to calculate_cvss.py (default: sibling script)",
     )
     parser.add_argument(
         "--timeout",
