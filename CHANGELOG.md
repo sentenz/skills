@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.14.0](https://github.com/sentenz/skills/compare/v1.13.1...v1.14.0) (2026-08-26)
+
+
+### Features
+
+* add Agent Skill for Material Design 3 (M3) ([#105](https://github.com/sentenz/skills/issues/105)) ([7495e59](https://github.com/sentenz/skills/commit/7495e5926a10bc6de14c491a1fb5a332d9256341))
+
 ## [1.13.1](https://github.com/sentenz/skills/compare/v1.13.0...v1.13.1) (2026-08-24)
 
 
