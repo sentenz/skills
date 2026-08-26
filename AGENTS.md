@@ -189,6 +189,9 @@ Available skills:
 - [Technical Article](skills/technical-article/SKILL.md)
   > Creates, revises, and reviews convention-style technical articles using formal language, numbered Markdown structure, taxonomies, examples, and source-qualified references.
 
+- [Material Design 3](skills/material-3/SKILL.md)
+  > Implements Google's Material Design 3 across Jetpack Compose, Flutter, and limited web, with design tokens, components, theming, adaptive layout, accessibility, and compliance auditing.
+
 ## 8. References
 
 - [AGENTS.md](https://agents.md/) specification page.
