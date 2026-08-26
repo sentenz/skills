@@ -9,6 +9,7 @@ Agent skills are modular capabilities that AI agents can utilize to perform spec
   - [1.4. Dependency Management Skills](#14-dependency-management-skills)
   - [1.5. Threat Modeling Skills](#15-threat-modeling-skills)
   - [1.6. Documentation Skills](#16-documentation-skills)
+  - [1.7. UI and Design Skills](#17-ui-and-design-skills)
 - [2. References](#2-references)
 
 ## 1. Agent Skills
@@ -71,6 +72,11 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 
 - [Technical Article](technical-article/SKILL.md)
   > Creates, revises, and reviews convention-style technical articles using formal language, numbered Markdown structure, taxonomies, examples, and source-qualified references.
+
+### 1.7. UI and Design Skills
+
+- [Material Design 3](material-3/SKILL.md)
+  > External Agent Skill from [hamen/material-3-skill](https://github.com/hamen/material-3-skill) for Material Design 3 implementation across Jetpack Compose, Flutter, and limited web, including design tokens, 30+ components, theming, adaptive layout, M3 Expressive guidance, accessibility, and compliance auditing.
 
 ## 2. References
 
