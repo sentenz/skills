@@ -76,7 +76,7 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 ### 1.7. UI and Design Skills
 
 - [Material Design 3](material-3/SKILL.md)
-  > External Agent Skill from [hamen/material-3-skill](https://github.com/hamen/material-3-skill) for Material Design 3 implementation across Jetpack Compose, Flutter, and limited web, including design tokens, 30+ components, theming, adaptive layout, M3 Expressive guidance, accessibility, and compliance auditing.
+  > External Agent Skill from the MIT-licensed [hamen/material-3-skill](https://github.com/hamen/material-3-skill) for Material Design 3 implementation across Jetpack Compose, Flutter, and limited web, including design tokens, 30+ components, theming, adaptive layout, M3 Expressive guidance, accessibility, and compliance auditing.
 
 ## 2. References
 
