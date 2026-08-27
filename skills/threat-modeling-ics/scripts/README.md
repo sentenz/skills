@@ -13,11 +13,11 @@
     ```
 
 - [query_attack.py](query_attack.py)
-  > Searches the complete ATT&CK for ICS STIX snapshot in-process and returns only bounded active-technique candidates or single-technique details with a 30,000-character ceiling.
+  > Searches the complete ATT&CK for ICS STIX snapshot in-process and returns only bounded active-technique candidates or single-technique details with a 30,000-character ceiling. Related mitigation and detection records preserve both the generic ATT&CK object description and the technique-specific STIX relationship guidance so that agents can derive concrete controls without treating an ATT&CK mapping as proof of implementation.
 
     ```bash
     uv run ./scripts/query_attack.py --search 'remote services' --top 5
-    uv run ./scripts/query_attack.py --id 'T0886' --include tactics,platforms,mitigations
+    uv run ./scripts/query_attack.py --id 'T0886' --include description,tactics,platforms,mitigations,detections
     ```
 
 - [query_cwe.py](query_cwe.py)
