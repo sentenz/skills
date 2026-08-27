@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.29"
+  version: "1.8.0"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -113,10 +113,10 @@ STRIDE is a threat-classification model that categorizes threats into six types:
 
 ### 3.3. MITRE ATT&CK
 
-[MITRE ATT&CK (Adversarial Tactics, Techniques, and Common Knowledge)](https://attack.mitre.org/) for ICS (Industrial Control Systems) provides the technique taxonomy for threat enrichment.
+[MITRE ATT&CK (Adversarial Tactics, Techniques, and Common Knowledge)](https://attack.mitre.org/) for ICS (Industrial Control Systems) provides an adversary-behavior technique taxonomy and technique-specific mitigation and detection relationships for threat enrichment and control derivation.
 
 > [!NOTE]
-> Apply [MITRE ATT&CK for ICS](https://attack.mitre.org/matrices/ics/) and validate every technique against the active, non-revoked, non-deprecated technique set in the review asset.
+> Apply [MITRE ATT&CK for ICS](https://attack.mitre.org/matrices/ics/) and validate every technique against the active, non-revoked, non-deprecated technique set in the versioned review asset. Select techniques from the concrete attack behavior and architecture evidence, not from STRIDE-category similarity. Treat `course-of-action --mitigates--> attack-pattern` relationship descriptions as technique-specific mitigation guidance; an ATT&CK mitigation mapping is not proof that a control is applicable, implemented, or verified.
 
 ### 3.4. MITRE EMB3D
 
@@ -305,16 +305,23 @@ Save and integrate intermediate results after each step. When the objective is p
 
 2. MITRE ATT&CK for ICS
 
-    **Action:** Populate `ATT&CK ID` when a concrete ATT&CK for ICS technique is supported by the TMT row and architecture evidence.
+    **Action:** Populate `ATT&CK ID` only when a concrete active ATT&CK for ICS technique matches the adversary behavior described by the TMT row and architecture evidence.
     - Record the most relevant technique ID(s) in `ATT&CK ID`.
-    - Use `N/A` when no ICS-specific ATT&CK technique applies to a finalized row.
+    - Require behavior-level semantic fit: attack path, interface type, preconditions, and adversary action must match the selected technique. Do not map a technique solely because its name resembles the STRIDE category or impact.
+    - Use `N/A` when no ICS-specific ATT&CK technique applies to a finalized row. A direct physical or serial behavior does not become a network technique merely because both affect confidentiality, integrity, or availability.
     - Apply Field Resolution Semantics.
-    - In `Justification`, describe the behavior that supports the mapping without repeating IDs.
+    - For each selected technique whose treatment may rely on mitigation, resolve the active `mitigates` relationships and evaluate the returned candidate mitigations against the modeled architecture, OT safety/availability constraints, and product capabilities.
+    - Treat the mitigation object's generic description as control intent and the `mitigates` relationship description as technique-specific application guidance. Translate applicable guidance into a concrete, testable security requirement or compensating control.
+    - Keep these states distinct: `ATT&CK recommended` means MITRE maps the mitigation to the technique; `applicable` means the control fits the architecture; `implemented` requires product or operational evidence; `verified` requires test, inspection, or other effectiveness evidence. Never infer a later state from an earlier one.
+    - Keep detection coverage separate from mitigation coverage. Use ATT&CK detection relationships to derive telemetry or analytic requirements when relevant, but do not treat detection as prevention or as evidence that a mitigation is implemented.
+    - In `Justification`, describe the behavior that supports the technique mapping and, when mitigation affects the final state or treatment, identify the concrete confirmed control and remaining exposure rather than repeating ATT&CK IDs.
 
     **Data Access:**
     - Do not read or print [assets/attack/ics-attack-19.2.json](assets/attack/ics-attack-19.2.json) directly.
     - Discover active techniques with `uv run ./scripts/query_attack.py --search '<terms>' --top 5`.
-    - Inspect selected IDs with `uv run ./scripts/query_attack.py --id 'TNNNN'`; request `--include description,tactics,platforms,mitigations,detections,relationships` only for one selected ID.
+    - Inspect selected IDs with `uv run ./scripts/query_attack.py --id 'TNNNN'`; request `--include description,tactics,platforms,mitigations` for one selected ID when deriving controls. The `mitigations` records preserve both generic mitigation descriptions and technique-specific relationship guidance.
+    - Request `--include detections` when deriving telemetry or analytic requirements and `--include relationships` only when relationship-level troubleshooting or broader graph inspection is required.
+    - Record the returned dataset `name`, `version`, `modified`, `file`, and `bundle_id` once per assessment and include that provenance in the Markdown summary.
 
 3. MITRE EMB3D
 
@@ -405,6 +412,7 @@ Save and integrate intermediate results after each step. When the objective is p
     | `Needs Investigation` | Critical evidence is missing or a key assumption cannot be validated.                          | Name the evidence gap and whether it affects actor assignment, scoring, treatment, or approval.                          |
 
     Do not use `Not Applicable` to downgrade a real weakness that merely has compensating controls, environmental restrictions, or an accepted residual risk.
+    Do not use an ATT&CK mitigation mapping, generic mitigation recommendation, or applicable candidate control as evidence for `Mitigated`. The state requires implementation evidence and enough verification evidence to support the claimed residual-risk reduction.
 
 10. TMT Priority
 
@@ -431,6 +439,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Select the default or an evidence-supported alternative using [Treatment Decision Guidance](references/mapping-rules.md#112-treatment-decision-guidance).
     - Verify the selected treatment against [State and Treatment Compatibility](references/mapping-rules.md#113-state-and-treatment-compatibility).
     - Record the evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
+    - When treatment is `Mitigation`, use applicable ATT&CK mitigation guidance as a candidate control source when an ATT&CK technique is mapped, but require architecture fit, implementation evidence, and verification before claiming treatment effectiveness.
     - Do not use `Acceptance` or `Transfer` to work around missing technical evidence.
     - Apply Field Resolution Semantics.
 
@@ -447,6 +456,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - State the evidence-based rationale for `State` and the concrete scenario, architectural contradiction, or evidence gap.
     - Add protocol, trust relationship, validation behavior, access, actor, scoring, and mapping details only when they explain the decision.
     - For finalized risks, include the treatment evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
+    - When ATT&CK mitigation guidance informs treatment, express the resulting product or operational control requirement and the evidence for applicability, implementation, and verification. Do not treat an `Mxxxx` relationship as implementation evidence and do not cite a mitigation identifier without explaining the concrete control it represents.
     - Cite an MID only when row evidence supports the mitigation. Copy its exact name and Foundational, Intermediate, or Leading level from the mitigation-centric EMB3D asset and confirm that it maps to at least one TID in the row. A source match does not prove implementation. Omit MIDs when `EMB3D TID` is `N/A`; Basic controls are product-specific and must not carry MIDs.
     - Explain intentional `N/A` or blank fields once. Never invent missing evidence to complete a template.
     - Avoid unqualified legal safe-harbor language. Frame compliance-oriented statements as technical-documentation support or product-specific evidence pending stakeholder review.
@@ -477,6 +487,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Action:** Write `<Device_Name>_Threat_Model_Summary.md`.
     - Include assessment objective, product scope, threat counts by state/inherent risk/residual risk/actor, highest-risk interactions, primary attack vectors, assumptions, evidence gaps, conflict summary, Not Applicable rationale categories, residual risks, risk treatment summary, risk approval status, and recommended mitigations by priority.
+    - Include ATT&CK review provenance from `query_attack.py`: collection name, version, modified timestamp, source file, and bundle ID. For ATT&CK-informed recommendations, distinguish recommended/applicable controls from implemented/verified controls and identify the threat rows they address.
     - For compliance-oriented assessments, structure the summary as reusable risk-assessment evidence and technical documentation input.
     - Each risk claim must reference at least one threat row `Id`.
     - Record artifact-trust and spreadsheet-safety warnings that affect generated CSV consumption.
