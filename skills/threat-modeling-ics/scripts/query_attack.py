@@ -259,6 +259,26 @@ def _object_record(item: dict[str, Any], text_limit: int) -> dict[str, Any]:
     }
 
 
+def _related_object_record(
+    relationship: dict[str, Any],
+    item: dict[str, Any],
+    text_limit: int,
+) -> dict[str, Any]:
+    result = _object_record(item, text_limit)
+    description, truncated = _bounded_text(
+        relationship.get("description"), text_limit
+    )
+    result.update(
+        {
+            "relationship": relationship.get("relationship_type"),
+            "relationship_stix_id": relationship.get("id"),
+            "relationship_description_excerpt": description,
+            "relationship_description_truncated": truncated,
+        }
+    )
+    return result
+
+
 def _related_objects(
     dataset: dict[str, Any],
     technique: dict[str, Any],
@@ -314,8 +334,10 @@ def _add_details(
 
     if "mitigations" in includes:
         mitigations = [
-            _object_record(source, nested_text_limit)
-            for _, source in _related_objects(dataset, technique, "mitigates")
+            _related_object_record(relationship, source, nested_text_limit)
+            for relationship, source in _related_objects(
+                dataset, technique, "mitigates"
+            )
         ]
         result["mitigations"] = _bounded_list(
             mitigations, MAX_MITIGATIONS
@@ -323,8 +345,10 @@ def _add_details(
 
     if "detections" in includes:
         detections = [
-            _object_record(source, nested_text_limit)
-            for _, source in _related_objects(dataset, technique, "detects")
+            _related_object_record(relationship, source, nested_text_limit)
+            for relationship, source in _related_objects(
+                dataset, technique, "detects"
+            )
         ]
         result["detections"] = _bounded_list(detections, MAX_DETECTIONS)
 
@@ -482,7 +506,8 @@ def main() -> int:
         default="",
         help=(
             "Comma-separated detail fields for one --id: description, tactics, "
-            "platforms, mitigations, detections, relationships"
+            "platforms, mitigations, detections, relationships. Mitigation and "
+            "detection records include their technique-specific relationship text."
         ),
     )
     parser.add_argument(
