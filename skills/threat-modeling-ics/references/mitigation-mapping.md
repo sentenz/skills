@@ -49,9 +49,9 @@ Apply this procedure once per reviewed row after ATT&CK, EMB3D, and CWE identifi
    - If a framework mapping is `N/A`, do not invent a mitigation from that framework for the row.
 
 2. **Retrieve bounded source-backed mitigation guidance.**
-   - ATT&CK: inspect the selected technique with `query_attack.py --include mitigations` and accept only active mitigation objects connected by the active `mitigates` relationship returned by the asset.
-   - CWE: inspect the selected weakness with `query_cwe.py --include mitigations` and retain relevant `potential_mitigations` attributes such as phase, strategy, effectiveness, and effectiveness notes.
-   - EMB3D: inspect the selected TID/MID through `query_emb3d.py` and retain the exact source MID name, level, and applicable TID association.
+   - ATT&CK: inspect the selected technique with `uv run ./scripts/query_attack.py --id 'TNNNN' --include mitigations` and accept only active mitigation objects connected by the active `mitigates` relationship returned by the asset.
+   - CWE: inspect the selected weakness with `uv run ./scripts/query_cwe.py --id 'CWE-NNN' --include mitigations` and retain relevant `potential_mitigations` attributes such as phase, strategy, effectiveness, and effectiveness notes.
+   - EMB3D: inspect the selected threat with `uv run ./scripts/query_emb3d.py --tid 'TID-NNN' --include mitigations`. For a selected mitigation, verify the exact source name, level, and TID associations with `uv run ./scripts/query_emb3d.py --mid 'MID-NNN' --include threats`.
 
 3. **Filter for row-level applicability.**
    Reject source guidance that does not address the concrete interface, trust relationship, attack prerequisite, root weakness, device property, or consequence represented by the row. A generally sound security practice is not automatically applicable mitigation evidence.
