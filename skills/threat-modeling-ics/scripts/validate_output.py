@@ -64,6 +64,10 @@ TID_PATTERN = re.compile(r"\bTID-\d{3}\b", re.IGNORECASE)
 ATTACK_ID_PATTERN = re.compile(r"T\d{4}(?:\.\d{3})?")
 CWE_ID_PATTERN = re.compile(r"CWE-\d+")
 CWE_RATIONALE_PATTERN = re.compile(r"\bCWE mapping rationale\s*:", re.IGNORECASE)
+CWE_ROOT_CAUSE_EVIDENCE_PATTERN = re.compile(
+    r"\bCWE root-cause evidence\s*:\s*(CWE-\d+)\s*(?:—|-|:)\s*(?=\S)",
+    re.IGNORECASE,
+)
 MITIGATION_CLAUSE_PATTERN = re.compile(
     r"\b(Basic|Foundational|Intermediate|Leading)(?:\s+mitigation)?\s*:",
     re.IGNORECASE,
@@ -507,6 +511,14 @@ def _comma_identifiers(value: str) -> list[str]:
     return [item.strip() for item in value.split(",")]
 
 
+def _cwe_root_cause_evidence_counts(justification: str) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for match in CWE_ROOT_CAUSE_EVIDENCE_PATTERN.finditer(justification):
+        identifier = match.group(1).upper()
+        counts[identifier] = counts.get(identifier, 0) + 1
+    return counts
+
+
 def validate_attack_mappings(
     value: str,
     *,
@@ -596,6 +608,9 @@ def validate_cwe_mappings(
 ) -> list[Finding]:
     findings: list[Finding] = []
     seen: set[str] = set()
+    mapped: set[str] = set()
+    evidence_counts = _cwe_root_cause_evidence_counts(justification)
+
     for raw_identifier in _comma_identifiers(value):
         identifier = raw_identifier.upper()
         if not CWE_ID_PATTERN.fullmatch(identifier):
@@ -611,6 +626,7 @@ def validate_cwe_mappings(
                 )
             )
             continue
+        mapped.add(identifier)
         if raw_identifier != identifier:
             findings.append(
                 Finding(
@@ -699,6 +715,50 @@ def validate_cwe_mappings(
                     ),
                 )
             )
+
+    for identifier in sorted(mapped):
+        evidence_count = evidence_counts.get(identifier, 0)
+        if evidence_count == 0:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Justification",
+                    message="CWE mapping has no explicit root-cause evidence",
+                    actual=f"{identifier} without CWE root-cause evidence",
+                    expected=(
+                        f"CWE root-cause evidence: {identifier} — "
+                        "<product-specific evidence satisfying the weakness definition>"
+                    ),
+                )
+            )
+        elif evidence_count > 1:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Justification",
+                    message="CWE mapping has duplicate root-cause evidence clauses",
+                    actual=f"{identifier} has {evidence_count} root-cause evidence clauses",
+                    expected=f"<exactly one root-cause evidence clause for {identifier}>",
+                )
+            )
+
+    for identifier in sorted(set(evidence_counts) - mapped):
+        findings.append(
+            Finding(
+                origin="output",
+                row_number=row_number,
+                threat_id=threat_id,
+                column="Justification",
+                message="CWE root-cause evidence cites an unmapped weakness",
+                actual=identifier,
+                expected="<root-cause evidence only for IDs present in CWE ID>",
+            )
+        )
+
     return findings
 
 
@@ -1382,7 +1442,7 @@ def main() -> int:
         default=DEFAULT_CWE_SOURCE,
         help=(
             "Versioned MITRE CWE projection used to validate mappable weakness ids "
-            "(defaults to the bundled asset)"
+            "and per-ID root-cause evidence (defaults to the bundled asset)"
         ),
     )
     parser.add_argument(
