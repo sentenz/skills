@@ -287,12 +287,12 @@ Normalize `Threat Actor` from common OT/ICS threat-path characteristics. Always 
 
 Risk treatment records the governance disposition for the inherent risk and the resulting residual risk after controls, transfer mechanisms, avoidance decisions, or acceptance decisions are applied.
 
-| Treatment    | Purpose                                                         | Required Evidence or Condition                                                                                 |
-| ------------ | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `Avoidance`  | Eliminate the risk source or make the threat inapplicable.      | Document the removed or restructured system element, function, interface, data flow, or attack path.           |
-| `Mitigation` | Reduce likelihood or impact through controls or design changes. | Document the applied controls, remaining exposure, residual risk, residual-risk owner, and approval mechanism. |
-| `Acceptance` | Intentionally retain the risk without further treatment.        | Document the business rationale, acceptance threshold, responsible stakeholder, and explicit approval.         |
-| `Transfer`   | Shift part of the financial, operational, or legal consequence. | Identify the third party and the applicable contract, SLA, warranty, insurance policy, or managed service.     |
+| Treatment    | Purpose                                                         | Required Evidence or Condition                                                                                                                                     |
+| ------------ | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Avoidance`  | Eliminate the risk source or make the threat inapplicable.      | Document the removed or restructured system element, function, interface, data flow, or attack path.                                                               |
+| `Mitigation` | Reduce likelihood or impact through controls or design changes. | Document concrete implemented controls, verification/effectiveness evidence, remaining exposure, residual-risk basis and level, residual-risk owner, and approval. |
+| `Acceptance` | Intentionally retain the risk without further treatment.        | Document the business rationale, acceptance threshold, responsible stakeholder, and explicit approval.                                                             |
+| `Transfer`   | Shift part of the financial, operational, or legal consequence. | Identify the third party and the applicable contract, SLA, warranty, insurance policy, or managed service.                                                         |
 
 > [!NOTE]
 > `State` records the technical review result. `Risk Prioritization` records the pre-treatment technical prioritization. `Risk Treatment` records the governance disposition. `Mitigated` may pair with `Acceptance` only when controls are in place and inherent residual risk is intentionally retained with documented approval.
@@ -321,23 +321,23 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 
 ### 11.3. State and Treatment Compatibility
 
-| TMT State             | Compatible Risk Treatment | Consistency Requirements                                                                                                          |
-| --------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `Not Started`         | Blank                     | Row has not yet been reviewed. Leave enrichment and governance fields blank except preserved source values.                       |
-| `Needs Investigation` | Blank                     | Evidence gap remains. Do not assign treatment or approval until resolved.                                                         |
-| `Not Applicable`      | Avoidance                 | Attack path or risk source is impossible, structurally eliminated, or outside scope. Identifier columns should normally be `N/A`. |
-| `Mitigated`           | Mitigation                | Controls reduce risk to an accepted residual level. Identify control, remaining exposure, owner, and approval mechanism.          |
-| `Mitigated`           | Acceptance                | Use only when controls reduce exposure but residual risk is intentionally retained with documented approval.                      |
-| `Mitigated`           | Transfer                  | Use only when controls and a named third-party mechanism share or delegate residual consequence.                                  |
+| TMT State             | Compatible Risk Treatment | Consistency Requirements                                                                                                                                                 |
+| --------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Not Started`         | Blank                     | Row has not yet been reviewed. Leave enrichment and governance fields blank except preserved source values.                                                              |
+| `Needs Investigation` | Blank                     | Evidence gap remains. Do not assign treatment or approval until resolved.                                                                                                |
+| `Not Applicable`      | Avoidance                 | Attack path or risk source is impossible, structurally eliminated, or outside scope. Identifier columns should normally be `N/A`.                                        |
+| `Mitigated`           | Mitigation                | Implemented controls have verification/effectiveness evidence supporting the claimed residual-risk reduction. Identify remaining exposure, owner, and approval mechanism. |
+| `Mitigated`           | Acceptance                | Use only when controls reduce exposure but residual risk is intentionally retained with documented approval.                                                             |
+| `Mitigated`           | Transfer                  | Use only when controls and a named third-party mechanism share or delegate residual consequence.                                                                         |
 
 ### 11.4. Treatment Evidence Requirements
 
-| Risk Treatment | Minimum Evidence in `Justification`                                                             |
-| -------------- | ----------------------------------------------------------------------------------------------- |
-| Avoidance      | Architectural record or design decision confirming the risk source has been eliminated.         |
-| Mitigation     | Control(s), residual risk level, residual-risk owner, and approval mechanism.                   |
-| Acceptance     | Business rationale for retention, approving stakeholder, and acceptance mechanism.              |
-| Transfer       | Named third party, specific contract/SLA/warranty/insurance reference, and explicit risk scope. |
+| Risk Treatment | Minimum Evidence in `Justification`                                                                                                                               |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Avoidance      | Architectural record or design decision confirming the risk source has been eliminated.                                                                           |
+| Mitigation     | Concrete control(s), implementation evidence, verification/effectiveness evidence, residual-risk basis and level, residual-risk owner, and approval mechanism. |
+| Acceptance     | Business rationale for retention, approving stakeholder, and acceptance mechanism.                                                                                |
+| Transfer       | Named third party, specific contract/SLA/warranty/insurance reference, and explicit risk scope.                                                                   |
 
 ## 12. Risk Approval Mapping
 

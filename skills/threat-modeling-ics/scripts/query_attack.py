@@ -39,6 +39,7 @@ MAX_IDS = 20
 MAX_TOP = 10
 MAX_MITIGATIONS = 15
 MAX_DETECTIONS = 15
+MAX_ANALYTICS = 20
 MAX_RELATIONSHIPS = 20
 MIN_TEXT_CHARS = 200
 MAX_TEXT_CHARS = 2000
@@ -259,6 +260,66 @@ def _object_record(item: dict[str, Any], text_limit: int) -> dict[str, Any]:
     }
 
 
+def _related_object_record(
+    relationship: dict[str, Any],
+    item: dict[str, Any],
+    text_limit: int,
+) -> dict[str, Any]:
+    result = _object_record(item, text_limit)
+    description, truncated = _bounded_text(
+        relationship.get("description"), text_limit
+    )
+    result.update(
+        {
+            "relationship": relationship.get("relationship_type"),
+            "relationship_stix_id": relationship.get("id"),
+            "relationship_description_excerpt": description,
+            "relationship_description_truncated": truncated,
+        }
+    )
+    return result
+
+
+def _detection_record(
+    dataset: dict[str, Any],
+    relationship: dict[str, Any],
+    strategy: dict[str, Any],
+    text_limit: int,
+) -> dict[str, Any]:
+    result = _related_object_record(relationship, strategy, text_limit)
+    analytic_refs = strategy.get("x_mitre_analytic_refs", [])
+    if not isinstance(analytic_refs, list):
+        raise ValueError(
+            f"ATT&CK detection strategy {strategy.get('id')} has invalid analytic refs"
+        )
+
+    analytics = []
+    for analytic_ref in analytic_refs:
+        ref = str(analytic_ref).strip()
+        analytic = dataset["object_index"].get(ref)
+        if analytic is None:
+            raise ValueError(
+                f"ATT&CK detection strategy {strategy.get('id')} references "
+                f"unknown analytic {ref or '<empty>'}"
+            )
+        if analytic.get("type") != "x-mitre-analytic":
+            raise ValueError(
+                f"ATT&CK detection strategy {strategy.get('id')} references "
+                f"non-analytic object {ref}"
+            )
+        if _is_active(analytic):
+            analytics.append(_object_record(analytic, text_limit))
+
+    analytics.sort(
+        key=lambda item: (
+            _normalize_text(item.get("name")).casefold(),
+            str(item.get("stix_id")),
+        )
+    )
+    result["analytics"] = _bounded_list(analytics, MAX_ANALYTICS)
+    return result
+
+
 def _related_objects(
     dataset: dict[str, Any],
     technique: dict[str, Any],
@@ -314,8 +375,10 @@ def _add_details(
 
     if "mitigations" in includes:
         mitigations = [
-            _object_record(source, nested_text_limit)
-            for _, source in _related_objects(dataset, technique, "mitigates")
+            _related_object_record(relationship, source, nested_text_limit)
+            for relationship, source in _related_objects(
+                dataset, technique, "mitigates"
+            )
         ]
         result["mitigations"] = _bounded_list(
             mitigations, MAX_MITIGATIONS
@@ -323,8 +386,12 @@ def _add_details(
 
     if "detections" in includes:
         detections = [
-            _object_record(source, nested_text_limit)
-            for _, source in _related_objects(dataset, technique, "detects")
+            _detection_record(
+                dataset, relationship, source, nested_text_limit
+            )
+            for relationship, source in _related_objects(
+                dataset, technique, "detects"
+            )
         ]
         result["detections"] = _bounded_list(detections, MAX_DETECTIONS)
 
@@ -482,7 +549,9 @@ def main() -> int:
         default="",
         help=(
             "Comma-separated detail fields for one --id: description, tactics, "
-            "platforms, mitigations, detections, relationships"
+            "platforms, mitigations, detections, relationships. Mitigation records "
+            "include technique-specific relationship text; detection records also "
+            "resolve referenced ATT&CK analytics."
         ),
     )
     parser.add_argument(
