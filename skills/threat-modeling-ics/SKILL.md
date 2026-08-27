@@ -3,10 +3,10 @@ name: threat-modeling-ics
 description: >-
   Performs end-to-end threat modeling for OT/ICS systems from Microsoft Threat Modeling Tool (TMT) threat-list exports (`*.csv`) and model files (`*.tm7`). Uses TMT and
   STRIDE for initial threat enumeration, then enriches each threat with OT/ICS context, MITRE ATT&CK for ICS mappings, MITRE EMB3D device-property threat enrichment for
-  embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
-  assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
+  embedded field devices, CWE weakness classification, cross-framework mitigation mapping, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix,
+  minimum-capable Threat Actor assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.29"
+  version: "1.7.30"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -51,6 +51,9 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
 
 - Evidence-Based Assessment
   > Ground likelihood, impact, and prioritization in architecture, attack paths, asset characteristics, and verified controls.
+
+- Mitigation Traceability
+  > Separate framework-recommended mitigations from product-specific implementation evidence, validate the control effect, and carry the remaining exposure into residual risk and treatment decisions.
 
 - Treatment Traceability
   > Link every risk treatment decision to the inherent prioritization, residual risk, controls, ownership, and approval evidence.
@@ -116,7 +119,7 @@ STRIDE is a threat-classification model that categorizes threats into six types:
 [MITRE ATT&CK (Adversarial Tactics, Techniques, and Common Knowledge)](https://attack.mitre.org/) for ICS (Industrial Control Systems) provides the technique taxonomy for threat enrichment.
 
 > [!NOTE]
-> Apply [MITRE ATT&CK for ICS](https://attack.mitre.org/matrices/ics/) and validate every technique against the active, non-revoked, non-deprecated technique set in the review asset.
+> Apply [MITRE ATT&CK for ICS](https://attack.mitre.org/matrices/ics/) and validate every technique against the active, non-revoked, non-deprecated technique set in the review asset. Treat technique-linked ATT&CK mitigations as source-backed candidate controls until product evidence establishes implementation and effect.
 
 ### 3.4. MITRE EMB3D
 
@@ -130,7 +133,7 @@ STRIDE is a threat-classification model that categorizes threats into six types:
 [MITRE CWE (Common Weakness Enumeration)](https://cwe.mitre.org/) records the most specific root weakness supported by the threat statement and architecture evidence.
 
 > [!NOTE]
-> Apply [MITRE CWE Mapping Rules](references/mapping-rules.md#13-mitre-cwe-mapping-rules) and validate every weakness against the versioned CWE review asset.
+> Apply [MITRE CWE Mapping Rules](references/mapping-rules.md#13-mitre-cwe-mapping-rules) and validate every weakness against the versioned CWE review asset. Treat CWE `potential_mitigations` as root-cause candidate guidance until product evidence establishes implementation and effect.
 
 ### 3.6. FIRST CVSS
 
@@ -164,7 +167,7 @@ Risk treatment is the governance decision to mitigate, accept, transfer, or avoi
 Use this skill to convert Microsoft TMT threat rows into traceable OT/ICS risk-assessment evidence. The review preserves the native TMT row inventory, enriches each supported threat with framework mappings and risk decisions, and produces a generated CSV plus a Markdown summary suitable for engineering review, product-security governance, and compliance-oriented technical documentation.
 
 > [!NOTE]
-> Apply [Mapping Rules](references/mapping-rules.md) as the canonical source for diagram classification, scoring, prioritization, threat-actor selection, treatment, and approval decisions throughout the workflow.
+> Apply [Mapping Rules](references/mapping-rules.md) as the canonical source for diagram classification, scoring, prioritization, threat-actor selection, treatment, and approval decisions. Apply [Cross-Framework Mitigation Mapping](references/mitigation-mapping.md) as the canonical source for converting ATT&CK, CWE, and EMB3D mitigation guidance into product-evidence-backed control claims.
 
 Save and integrate intermediate results after each step. When the objective is product cybersecurity compliance, produce traceable risk-assessment evidence that can support EU CRA-style technical documentation without making unsupported legal compliance claims.
 
@@ -271,7 +274,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Append review columns in this exact order with these exact column names: `ATT&CK ID`, `EMB3D TID`, `CWE ID`, `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Threat Actor`, `Risk Treatment`, `Risk Approval`.
     - Every output row must trace back to exactly one source row by native `Id`.
     - If enrichment columns already exist, carry their values forward unchanged for already-reviewed rows unless the user explicitly requests re-review.
-    - **Justification Quality:** Each justification must follow the narrative pattern defined in section [4.3. Review, Step 14](#43-review). Do not produce generic, short, or identifier-only justifications. Enclose the justification in double quotes. Avoid semicolons inside the justification text since the CSV is semicolon-delimited.
+    - **Justification Quality:** Each justification must follow the narrative pattern defined in section [4.3. Review, Step 15](#43-review). Do not produce generic, short, or identifier-only justifications. Enclose the justification in double quotes. Avoid semicolons inside the justification text since the CSV is semicolon-delimited.
 
 4. Output Baseline
 
@@ -288,7 +291,7 @@ Save and integrate intermediate results after each step. When the objective is p
 ### 4.3. Review
 
 > [!NOTE]
-> Perform steps 1–14 for every row before proceeding to section [4.4. Deliverables](#44-deliverables).
+> Perform steps 1–15 for every row before proceeding to section [4.4. Deliverables](#44-deliverables).
 
 > [!NOTE]
 > Local framework assets availability are gating inputs. If the required ATT&CK, EMB3D, CWE, or CVSS asset file is unavailable, inaccessible, stale, or missing, do not invent identifiers, exploit maturity, scores, or mappings. In strict mode, stop and request updated assets. In best-effort or batch mode, leave unsupported fields blank, mark the row `Needs Investigation` when the missing asset affects the decision, and record the evidence gap in `Justification` and the summary.
@@ -346,7 +349,19 @@ Save and integrate intermediate results after each step. When the objective is p
     - Discover candidates with `uv run ./scripts/query_cwe.py --search '<terms>' --top 5`.
     - Inspect selected IDs with `uv run ./scripts/query_cwe.py --id 'CWE-NNN'`; request `--include description,mapping-notes,related,mitigations` only for one selected ID.
 
-5. FIRST CVSS v4.0
+5. Cross-Framework Mitigation Mapping
+
+    **Action:** Apply [Cross-Framework Mitigation Mapping](references/mitigation-mapping.md) to determine which source-backed mitigation candidates are applicable, implemented, and validated for the row before revising `State` or residual risk.
+    - ATT&CK: use only mitigations returned for an ATT&CK technique already recorded in the row. Require the active source `mitigates` relationship from the bounded ATT&CK query. Treat ATT&CK detections separately and do not present detection-only evidence as prevention.
+    - CWE: use only `potential_mitigations` from a CWE already recorded in the row. Preserve phase, strategy, effectiveness, and effectiveness notes when they qualify applicability or expected effect.
+    - EMB3D: preserve the existing MID requirements for exact source name, source level, and association to at least one TID recorded in the row.
+    - Normalize equivalent framework recommendations into one product control claim. Multiple framework sources may strengthen traceability but do not create multiple independent controls.
+    - Classify material controls as `Candidate`, `Applicable`, `Implemented`, or `Validated`. Only `Validated` controls may support residual-risk reduction or `State = Mitigated`; when implementation exists but a material effect remains unverified, apply the mode-aware blocking behavior.
+    - Record the validated effect as one or more of: prerequisite eliminated, attack vector constrained, privilege constrained, exploitation prevented, impact contained, detection only, or recovery only.
+    - Identify the remaining attack path or consequence after validated controls. Keep CVSS Base severity and inherent `Risk Prioritization` unchanged by compensating controls.
+    - Do not add a mitigation column to the generated CSV. Carry only decision-relevant control evidence, remaining exposure, and unresolved mitigation gaps into `Justification` and the review summary.
+
+6. FIRST CVSS v4.0
 
     **Action:** Populate `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, and `CVSS v4.0 Severity` together.
     - Do not record a severity without a vector and score.
@@ -368,7 +383,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - [scripts/calculate_cvss.py](scripts/calculate_cvss.py)
       > Run `uv run ./scripts/calculate_cvss.py --vector '<CVSS:4.0/...>'` to compute the CVSS v4.0 Base Score and Severity.
 
-6. BSI Likelihood of Exploit
+7. BSI Likelihood of Exploit
 
     **Action:** Populate `Likelihood of Exploit` using [Probability Mapping](references/mapping-rules.md#8-probability-mapping).
     - Classify the exploitation method using [Exploitation Method](references/mapping-rules.md#81-exploitation-method).
@@ -378,7 +393,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Zero-impact outcomes still require a mapped likelihood value.
     - Apply Field Resolution Semantics.
 
-7. Risk Prioritization
+8. Risk Prioritization
 
     **Action:** Populate `Risk Prioritization` by combining `CVSS v4.0 Severity` and `Likelihood of Exploit` using [Risk Matrix Mapping](references/mapping-rules.md#9-risk-matrix-mapping).
     - Do not record `N/A` for finalized reviewed rows.
@@ -386,27 +401,27 @@ Save and integrate intermediate results after each step. When the objective is p
     - Treat this value as inherent technical prioritization before risk treatment, compensating controls, acceptance, transfer, or residual-risk ownership.
     - Apply Field Resolution Semantics.
 
-8. Threat Actor
+9. Threat Actor
 
     **Action:** Populate `Threat Actor` with exactly one standardized label using [Threat Actor Mapping](references/mapping-rules.md#10-threat-actor-mapping).
     - Record the minimum required actor, not the most severe or most newsworthy actor.
     - Base the decision on access path, capability, and operational knowledge.
     - If several actors could plausibly perform the attack, record the minimum actor that can realistically achieve the described effect.
 
-9. TMT State
+10. TMT State
 
-    **Action:** Revise `State` using the full analytical context: TMT row, ATT&CK technique, EMB3D exposure, CWE weakness, CVSS severity, inherent risk prioritization, and threat actor.
+    **Action:** Revise `State` using the full analytical context: TMT row, ATT&CK technique, EMB3D exposure, CWE weakness, cross-framework mitigation evidence, CVSS severity, inherent risk prioritization, and threat actor.
 
-    | State                 | Use When                                                                                       | Justification Requirement                                                                                                |
-    | --------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-    | `Not Started`         | Row has not yet been reviewed.                                                                 | Leave enrichment and governance fields blank except preserved source values.                                             |
-    | `Not Applicable`      | Attack path is architecturally impossible, outside scope, or structurally eliminated.          | Name the contradiction or eliminated element and explain why the minimum actor was considered before rejecting the path. |
-    | `Mitigated`           | Confirmed controls, compensating measures, or design changes reduce risk to an accepted level. | Identify the control, residual risk, remaining exposure, owner, and approval mechanism.                                  |
-    | `Needs Investigation` | Critical evidence is missing or a key assumption cannot be validated.                          | Name the evidence gap and whether it affects actor assignment, scoring, treatment, or approval.                          |
+    | State                 | Use When                                                                                                                   | Justification Requirement                                                                                                                    |
+    | --------------------- | -------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+    | `Not Started`         | Row has not yet been reviewed.                                                                                             | Leave enrichment and governance fields blank except preserved source values.                                                                 |
+    | `Not Applicable`      | Attack path is architecturally impossible, outside scope, or structurally eliminated.                                      | Name the contradiction or eliminated element and explain why the minimum actor was considered before rejecting the path.                     |
+    | `Mitigated`           | Validated controls, compensating measures, or design changes reduce risk to an accepted residual level.                    | Identify the implemented control, validation evidence, control effect, remaining exposure, residual risk, owner, and approval mechanism.     |
+    | `Needs Investigation` | Critical evidence is missing, including material mitigation implementation/effect evidence, or a key assumption is unverified. | Name the evidence gap and whether it affects mitigation, actor assignment, scoring, treatment, or approval.                                  |
 
-    Do not use `Not Applicable` to downgrade a real weakness that merely has compensating controls, environmental restrictions, or an accepted residual risk.
+    Do not use `Not Applicable` to downgrade a real weakness that merely has compensating controls, environmental restrictions, or an accepted residual risk. Do not use `Mitigated` when only source-recommended or applicable candidate mitigations are known without validated product evidence.
 
-10. TMT Priority
+11. TMT Priority
 
     **Action:** Revise `Priority` using `Risk Prioritization` as the primary signal and adjust only when modeled context provides a specific reason to deviate.
 
@@ -416,38 +431,42 @@ Save and integrate intermediate results after each step. When the objective is p
     | `Medium` | Mitigation planning should be initiated and tracked in the security backlog. |
     | `High`   | Significant threat requiring prompt mitigation and possible escalation.      |
 
-11. Residual Risk
+12. Residual Risk
 
     **Action:** Populate residual risk in `Justification` after `State` and `Priority` are revised and before selecting governance treatment.
     - Use one of `None`, `Info`, `Low`, `Medium`, `High`, or `Critical`.
     - For `Not Applicable`, record `None` when the attack path is structurally eliminated or outside scope.
-    - For `Mitigated`, record the remaining risk after confirmed controls, compensating measures, environmental constraints, or design changes are applied.
+    - For `Mitigated`, record the remaining risk after validated controls, compensating measures, environmental constraints, or design changes are applied and the remaining exposure has been identified.
     - For `Needs Investigation` or unresolved rows, leave blank and record the evidence gap in `Justification`.
     - Do not use residual risk to lower `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, or `Risk Prioritization`.
 
-12. Risk Treatment
+13. Risk Treatment
 
     **Action:** Populate `Risk Treatment` using [Risk Treatment Mapping](references/mapping-rules.md#11-risk-treatment-mapping).
     - Select the default or an evidence-supported alternative using [Treatment Decision Guidance](references/mapping-rules.md#112-treatment-decision-guidance).
     - Verify the selected treatment against [State and Treatment Compatibility](references/mapping-rules.md#113-state-and-treatment-compatibility).
     - Record the evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
+    - For `Risk Treatment = Mitigation`, base the applied-control claim on validated mitigation evidence from step 5, not on a framework recommendation alone.
     - Do not use `Acceptance` or `Transfer` to work around missing technical evidence.
     - Apply Field Resolution Semantics.
 
-13. Risk Approval
+14. Risk Approval
 
     **Action:** Populate `Risk Approval` using [Risk Approval Mapping](references/mapping-rules.md#12-risk-approval-mapping).
     - Record exactly one standardized role label.
     - Base approval on `Risk Prioritization` and `Risk Treatment`, then escalate when residual risk evidence requires a stronger approver.
     - Apply Field Resolution Semantics.
 
-14. TMT Justification
+15. TMT Justification
 
-    **Action:** Read [Justification Templates](references/justification-template.md), select the pattern for the final `State`, and write one concise analyst paragraph after steps 1–13 are complete.
+    **Action:** Read [Justification Templates](references/justification-template.md), select the pattern for the final `State`, and write one concise analyst paragraph after steps 1–14 are complete.
     - State the evidence-based rationale for `State` and the concrete scenario, architectural contradiction, or evidence gap.
     - Add protocol, trust relationship, validation behavior, access, actor, scoring, and mapping details only when they explain the decision.
     - For finalized risks, include the treatment evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
+    - Distinguish source-backed candidate mitigations from implemented and validated product controls. Lead applied-control claims with product evidence and state the validated effect and remaining exposure.
+    - For ATT&CK, cite an exact mitigation name/identifier only when the bounded asset returns an active `mitigates` relationship to a technique recorded in the row. For CWE, use the relevant mitigation strategy, phase, or engineering behavior only when it materially explains the control rationale. A source match does not prove implementation.
     - Cite an MID only when row evidence supports the mitigation. Copy its exact name and Foundational, Intermediate, or Leading level from the mitigation-centric EMB3D asset and confirm that it maps to at least one TID in the row. A source match does not prove implementation. Omit MIDs when `EMB3D TID` is `N/A`; Basic controls are product-specific and must not carry MIDs.
+    - Describe detection-only and recovery-only controls precisely; do not present them as prevention or root-cause remediation without separate evidence.
     - Explain intentional `N/A` or blank fields once. Never invent missing evidence to complete a template.
     - Avoid unqualified legal safe-harbor language. Frame compliance-oriented statements as technical-documentation support or product-specific evidence pending stakeholder review.
     - Use no semicolons or embedded line breaks. Let the CSV writer enclose the complete `Justification` cell in double quotes.
@@ -465,7 +484,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Reject rows where `Justification` is only an identifier token or parenthetical code reference.
     - Reject rows where `State`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Risk Treatment`, or `Risk Approval` contradict [Risk Treatment Mapping](references/mapping-rules.md#11-risk-treatment-mapping).
     - Reject rows that use legal or regulatory shorthand as the sole rationale for acceptance, transfer, mitigation, or avoidance.
-    - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, residual risk posture, and threat actor selection decision.
+    - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, validated mitigation effects, remaining exposure, residual risk posture, and threat actor selection decision.
 
     **Script Usage:**
     - [scripts/validate_output.py](scripts/validate_output.py)
@@ -476,7 +495,7 @@ Save and integrate intermediate results after each step. When the objective is p
 2. Review Summary
 
     **Action:** Write `<Device_Name>_Threat_Model_Summary.md`.
-    - Include assessment objective, product scope, threat counts by state/inherent risk/residual risk/actor, highest-risk interactions, primary attack vectors, assumptions, evidence gaps, conflict summary, Not Applicable rationale categories, residual risks, risk treatment summary, risk approval status, and recommended mitigations by priority.
+    - Include assessment objective, product scope, threat counts by state/inherent risk/residual risk/actor, highest-risk interactions, primary attack vectors, assumptions, evidence gaps, conflict summary, Not Applicable rationale categories, validated mitigation controls, unresolved candidate-control gaps, residual risks, risk treatment summary, risk approval status, and recommended mitigations by priority.
     - For compliance-oriented assessments, structure the summary as reusable risk-assessment evidence and technical documentation input.
     - Each risk claim must reference at least one threat row `Id`.
     - Record artifact-trust and spreadsheet-safety warnings that affect generated CSV consumption.
