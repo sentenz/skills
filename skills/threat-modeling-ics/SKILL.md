@@ -167,7 +167,7 @@ Risk treatment is the governance decision to mitigate, accept, transfer, or avoi
 Use this skill to convert Microsoft TMT threat rows into traceable OT/ICS risk-assessment evidence. The review preserves the native TMT row inventory, enriches each supported threat with framework mappings and risk decisions, and produces a generated CSV plus a Markdown summary suitable for engineering review, product-security governance, and compliance-oriented technical documentation.
 
 > [!NOTE]
-> Apply [Mapping Rules](references/mapping-rules.md) as the canonical source for diagram classification, scoring, prioritization, threat-actor selection, treatment, and approval decisions. Apply [Cross-Framework Mitigation Mapping](references/mitigation-mapping.md) as the canonical source for converting ATT&CK, CWE, and EMB3D mitigation guidance into product-evidence-backed control claims.
+> Apply [Mapping Rules](references/mapping-rules.md) as the canonical source for diagram classification, scoring, prioritization, threat-actor selection, treatment, and approval decisions. Apply [Cross-Framework Mitigation Mapping](references/mitigation-mapping.md) as the canonical source for keeping framework mitigation provenance separate from product-control implementation and validated-effect evidence.
 
 Save and integrate intermediate results after each step. When the objective is product cybersecurity compliance, produce traceable risk-assessment evidence that can support EU CRA-style technical documentation without making unsupported legal compliance claims.
 
@@ -351,12 +351,14 @@ Save and integrate intermediate results after each step. When the objective is p
 
 5. Cross-Framework Mitigation Mapping
 
-    **Action:** Apply [Cross-Framework Mitigation Mapping](references/mitigation-mapping.md) to determine which source-backed mitigation candidates are applicable, implemented, and validated for the row before revising `State` or residual risk.
+    **Action:** Apply [Cross-Framework Mitigation Mapping](references/mitigation-mapping.md) to track framework mitigation provenance separately from product-control implementation and validated-effect evidence before revising `State` or residual risk.
     - ATT&CK: use only mitigations returned for an ATT&CK technique already recorded in the row. Require the active source `mitigates` relationship from the bounded ATT&CK query. Treat ATT&CK detections separately and do not present detection-only evidence as prevention.
     - CWE: use only `potential_mitigations` from a CWE already recorded in the row. Preserve phase, strategy, effectiveness, and effectiveness notes when they qualify applicability or expected effect.
     - EMB3D: preserve the existing MID requirements for exact source name, source level, and association to at least one TID recorded in the row.
+    - Identify product-specific controls independently from architecture, design, implementation, configuration, verification, or operational evidence. A product control may be `Implemented` or `Validated` even when no ATT&CK, CWE, or EMB3D mitigation aligns to it.
+    - Use `Candidate` and `Applicable` for framework guidance provenance. Use `Implemented` and `Validated` for product-control evidence. When a control aligns to framework guidance, link both dimensions; do not require framework provenance as a prerequisite for an independently evidenced product control.
     - Normalize equivalent framework recommendations into one product control claim. Multiple framework sources may strengthen traceability but do not create multiple independent controls.
-    - Classify material controls as `Candidate`, `Applicable`, `Implemented`, or `Validated`. Only `Validated` controls may support residual-risk reduction or `State = Mitigated`; when implementation exists but a material effect remains unverified, apply the mode-aware blocking behavior.
+    - Only a `Validated` product control may support residual-risk reduction or `State = Mitigated`; when implementation exists but a material effect remains unverified, apply the mode-aware blocking behavior.
     - Record the validated effect as one or more of: prerequisite eliminated, attack vector constrained, privilege constrained, exploitation prevented, impact contained, detection only, or recovery only.
     - Identify the remaining attack path or consequence after validated controls. Keep CVSS Base severity and inherent `Risk Prioritization` unchanged by compensating controls.
     - Do not add a mitigation column to the generated CSV. Carry only decision-relevant control evidence, remaining exposure, and unresolved mitigation gaps into `Justification` and the review summary.
@@ -410,16 +412,16 @@ Save and integrate intermediate results after each step. When the objective is p
 
 10. TMT State
 
-    **Action:** Revise `State` using the full analytical context: TMT row, ATT&CK technique, EMB3D exposure, CWE weakness, cross-framework mitigation evidence, CVSS severity, inherent risk prioritization, and threat actor.
+    **Action:** Revise `State` using the full analytical context: TMT row, ATT&CK technique, EMB3D exposure, CWE weakness, product-control evidence and any framework mitigation provenance, CVSS severity, inherent risk prioritization, and threat actor.
 
-    | State                 | Use When                                                                                                                   | Justification Requirement                                                                                                                    |
-    | --------------------- | -------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-    | `Not Started`         | Row has not yet been reviewed.                                                                                             | Leave enrichment and governance fields blank except preserved source values.                                                                 |
-    | `Not Applicable`      | Attack path is architecturally impossible, outside scope, or structurally eliminated.                                      | Name the contradiction or eliminated element and explain why the minimum actor was considered before rejecting the path.                     |
-    | `Mitigated`           | Validated controls, compensating measures, or design changes reduce risk to an accepted residual level.                    | Identify the implemented control, validation evidence, control effect, remaining exposure, residual risk, owner, and approval mechanism.     |
-    | `Needs Investigation` | Critical evidence is missing, including material mitigation implementation/effect evidence, or a key assumption is unverified. | Name the evidence gap and whether it affects mitigation, actor assignment, scoring, treatment, or approval.                                  |
+    | State                 | Use When                                                                                                                        | Justification Requirement                                                                                                                            |
+    | --------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+    | `Not Started`         | Row has not yet been reviewed.                                                                                                  | Leave enrichment and governance fields blank except preserved source values.                                                                         |
+    | `Not Applicable`      | Attack path is architecturally impossible, outside scope, or structurally eliminated.                                           | Name the contradiction or eliminated element and explain why the minimum actor was considered before rejecting the path.                             |
+    | `Mitigated`           | Validated product controls, compensating measures, or design changes materially reduce the modeled threat and remaining exposure is identified. | Identify the implemented control, validation evidence, validated control effect, and remaining exposure. Residual risk, treatment, owner, and approval evidence are completed in steps 12–14. |
+    | `Needs Investigation` | Critical evidence is missing, including material control implementation/effect evidence, or a key assumption is unverified.      | Name the evidence gap and whether it affects mitigation, actor assignment, scoring, treatment, or approval.                                          |
 
-    Do not use `Not Applicable` to downgrade a real weakness that merely has compensating controls, environmental restrictions, or an accepted residual risk. Do not use `Mitigated` when only source-recommended or applicable candidate mitigations are known without validated product evidence.
+    Treat `State` as the technical review decision at this step. Do not require residual-risk, treatment, ownership, or approval fields that are computed later in the ordered workflow to already be populated. Do not use `Not Applicable` to downgrade a real weakness that merely has compensating controls, environmental restrictions, or an accepted residual risk. Do not use `Mitigated` when only source-recommended or applicable candidate guidance is known without validated product evidence.
 
 11. TMT Priority
 
@@ -446,7 +448,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Select the default or an evidence-supported alternative using [Treatment Decision Guidance](references/mapping-rules.md#112-treatment-decision-guidance).
     - Verify the selected treatment against [State and Treatment Compatibility](references/mapping-rules.md#113-state-and-treatment-compatibility).
     - Record the evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
-    - For `Risk Treatment = Mitigation`, base the applied-control claim on validated mitigation evidence from step 5, not on a framework recommendation alone.
+    - For `Risk Treatment = Mitigation`, base the applied-control claim on validated product-control evidence from step 5, not on a framework recommendation alone. Framework alignment is optional supporting traceability.
     - Do not use `Acceptance` or `Transfer` to work around missing technical evidence.
     - Apply Field Resolution Semantics.
 
@@ -464,6 +466,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Add protocol, trust relationship, validation behavior, access, actor, scoring, and mapping details only when they explain the decision.
     - For finalized risks, include the treatment evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
     - Distinguish source-backed candidate mitigations from implemented and validated product controls. Lead applied-control claims with product evidence and state the validated effect and remaining exposure.
+    - Framework alignment is optional for an implemented or validated product control. Do not invent ATT&CK, CWE, or EMB3D mitigation provenance merely to support a product-control claim.
     - For ATT&CK, cite an exact mitigation name/identifier only when the bounded asset returns an active `mitigates` relationship to a technique recorded in the row. For CWE, use the relevant mitigation strategy, phase, or engineering behavior only when it materially explains the control rationale. A source match does not prove implementation.
     - Cite an MID only when row evidence supports the mitigation. Copy its exact name and Foundational, Intermediate, or Leading level from the mitigation-centric EMB3D asset and confirm that it maps to at least one TID in the row. A source match does not prove implementation. Omit MIDs when `EMB3D TID` is `N/A`; Basic controls are product-specific and must not carry MIDs.
     - Describe detection-only and recovery-only controls precisely; do not present them as prevention or root-cause remediation without separate evidence.
