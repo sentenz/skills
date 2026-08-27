@@ -113,7 +113,7 @@ STRIDE is a threat-classification model that categorizes threats into six types:
 
 ### 3.3. MITRE ATT&CK
 
-[MITRE ATT&CK (Adversarial Tactics, Techniques, and Common Knowledge)](https://attack.mitre.org/) for ICS (Industrial Control Systems) provides an adversary-behavior technique taxonomy and technique-specific mitigation and detection relationships for threat enrichment and control derivation.
+[MITRE ATT&CK (Adversarial Tactics, Techniques, and Common Knowledge)](https://attack.mitre.org/) for ICS (Industrial Control Systems) provides an adversary-behavior technique taxonomy, technique-specific mitigation relationships, and detection strategies and analytics for threat enrichment, control derivation, and telemetry requirements.
 
 > [!NOTE]
 > Apply [MITRE ATT&CK for ICS](https://attack.mitre.org/matrices/ics/) and validate every technique against the active, non-revoked, non-deprecated technique set in the versioned review asset. Select techniques from the concrete attack behavior and architecture evidence, not from STRIDE-category similarity. Treat `course-of-action --mitigates--> attack-pattern` relationship descriptions as technique-specific mitigation guidance; an ATT&CK mitigation mapping is not proof that a control is applicable, implemented, or verified.
@@ -320,7 +320,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Do not read or print [assets/attack/ics-attack-19.2.json](assets/attack/ics-attack-19.2.json) directly.
     - Discover active techniques with `uv run ./scripts/query_attack.py --search '<terms>' --top 5`.
     - Inspect selected IDs with `uv run ./scripts/query_attack.py --id 'TNNNN'`; request `--include description,tactics,platforms,mitigations` for one selected ID when deriving controls. The `mitigations` records preserve both generic mitigation descriptions and technique-specific relationship guidance.
-    - Request `--include detections` when deriving telemetry or analytic requirements and `--include relationships` only when relationship-level troubleshooting or broader graph inspection is required.
+    - Request `--include detections` when deriving telemetry or analytic requirements. Detection strategy records resolve active `x_mitre_analytic_refs` into bounded analytic records containing the ATT&CK analytic name and description. Request `--include relationships` only when relationship-level troubleshooting or broader graph inspection is required.
     - Record the returned dataset `name`, `version`, `modified`, `file`, and `bundle_id` once per assessment and include that provenance in the Markdown summary.
 
 3. MITRE EMB3D
@@ -456,7 +456,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - State the evidence-based rationale for `State` and the concrete scenario, architectural contradiction, or evidence gap.
     - Add protocol, trust relationship, validation behavior, access, actor, scoring, and mapping details only when they explain the decision.
     - For finalized risks, include the treatment evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
-    - When ATT&CK mitigation guidance informs treatment, express the resulting product or operational control requirement and the evidence for applicability, implementation, and verification. Do not treat an `Mxxxx` relationship as implementation evidence and do not cite a mitigation identifier without explaining the concrete control it represents.
+    - When ATT&CK mitigation guidance informs treatment, express the resulting product or operational control requirement and the evidence for applicability, implementation, and verification. Do not treat an `Mxxxx` mitigation mapping as implementation evidence and do not cite a mitigation identifier without explaining the concrete control it represents.
     - Cite an MID only when row evidence supports the mitigation. Copy its exact name and Foundational, Intermediate, or Leading level from the mitigation-centric EMB3D asset and confirm that it maps to at least one TID in the row. A source match does not prove implementation. Omit MIDs when `EMB3D TID` is `N/A`; Basic controls are product-specific and must not carry MIDs.
     - Explain intentional `N/A` or blank fields once. Never invent missing evidence to complete a template.
     - Avoid unqualified legal safe-harbor language. Frame compliance-oriented statements as technical-documentation support or product-specific evidence pending stakeholder review.
