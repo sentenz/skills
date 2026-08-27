@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.29"
+  version: "1.7.30"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -127,10 +127,10 @@ STRIDE is a threat-classification model that categorizes threats into six types:
 
 ### 3.5. MITRE CWE
 
-[MITRE CWE (Common Weakness Enumeration)](https://cwe.mitre.org/) records the most specific root weakness supported by the threat statement and architecture evidence.
+[MITRE CWE (Common Weakness Enumeration)](https://cwe.mitre.org/) records the most specific root weakness supported by affirmative product, architecture, design, implementation, configuration, test, or verified behavioral evidence. STRIDE, ATT&CK, and EMB3D may nominate candidate weaknesses but do not independently prove a CWE mapping.
 
 > [!NOTE]
-> Apply [MITRE CWE Mapping Rules](references/mapping-rules.md#13-mitre-cwe-mapping-rules) and validate every weakness against the versioned CWE review asset.
+> Apply [MITRE CWE Mapping Rules](references/mapping-rules.md#13-mitre-cwe-mapping-rules), use [CWE Root-Cause Evidence Examples](references/cwe-evidence-examples.md) for current examples, and validate every weakness against the versioned CWE review asset.
 
 ### 3.6. FIRST CVSS
 
@@ -275,11 +275,12 @@ Save and integrate intermediate results after each step. When the objective is p
 
 4. Output Baseline
 
-    **Action:** Read [SERIAL_Threat_Model_Generated.csv](references/SERIAL_Threat_Model_Generated.csv) before starting the row-by-row review.
+    **Action:** Read [SERIAL_Threat_Model_Generated.csv](references/SERIAL_Threat_Model_Generated.csv) before starting the row-by-row review, and read [CWE Root-Cause Evidence Examples](references/cwe-evidence-examples.md) before assigning CWE mappings.
 
-    - Use the completed example only as a schema, scoring, and narrative-quality baseline. Do not copy system-specific threats, mappings, scores, actors, treatments, or approvals.
-    - Compare the planned output against the example's exact column order, semicolon delimiter, quoted `Description` and `Justification` fields, comma-decimal score format, and structured rationale pattern.
-    - Treat the Output Contract and the mapping rules in this skill as authoritative if the example conflicts with them. Correct and report any baseline inconsistency before relying on it.
+    - Use the completed SERIAL example only as a CSV schema, scoring-format, and narrative-shape baseline. Do not copy system-specific threats, mappings, scores, actors, treatments, approvals, or legacy CWE decisions.
+    - Use `cwe-evidence-examples.md`, the current CWE mapping rules, and the validator as the authoritative examples for CWE semantics and evidence requirements.
+    - Compare the planned output against the SERIAL example's exact column order, semicolon delimiter, quoted `Description` and `Justification` fields, comma-decimal score format, and structured rationale pattern.
+    - Treat the Output Contract and current mapping rules in this skill as authoritative if an example conflicts with them. Correct and report any baseline inconsistency before relying on it.
 
 5. Conflict Gathering
 
@@ -322,7 +323,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Use EMB3D in addition to ATT&CK when evidence supports both. Do not use EMB3D as a substitute for ATT&CK for ICS.
     - Record matched TID(s) in `EMB3D TID`, comma-separated when needed.
     - Use `N/A` when no EMB3D threat mapping applies to a finalized row.
-    - When `Interaction` names JTAG, UART, RS-232, RS-485, SPI, I²C, GPIO, USB, Modbus RTU, proprietary serial, or a firmware update path, cross-reference the EMB3D Properties Mapper before finalizing `EMB3D TID` and `CWE ID`.
+    - When `Interaction` names JTAG, UART, RS-232, RS-485, SPI, I²C, GPIO, USB, Modbus RTU, proprietary serial, or a firmware update path, cross-reference the EMB3D Properties Mapper before finalizing `EMB3D TID`. Use EMB3D results to nominate CWE candidates only; finalize `CWE ID` only after independent affirmative root-cause evidence satisfies the CWE mapping rules.
     - Apply Field Resolution Semantics.
     - In `Justification`, describe the mapped device property or missing control without repeating TIDs.
 
@@ -334,12 +335,16 @@ Save and integrate intermediate results after each step. When the objective is p
 
 4. MITRE CWE
 
-    **Action:** Populate `CWE ID` when the root weakness is identifiable from the TMT row, architecture evidence, ATT&CK behavior, or EMB3D device-property threat.
+    **Action:** Populate `CWE ID` only when affirmative product, architecture, design, implementation, configuration, test, or verified behavioral evidence establishes the root weakness. STRIDE, ATT&CK, and EMB3D may nominate candidate weaknesses but SHALL NOT independently substantiate a CWE mapping.
     - Apply [MITRE CWE Mapping Rules](references/mapping-rules.md#13-mitre-cwe-mapping-rules) and select the most specific supported weakness.
-    - Use comma-separated values when multiple concrete weaknesses are required.
-    - Use `N/A` when no underlying weakness applies to a finalized row.
+    - For every populated CWE, add exactly one `CWE root-cause evidence: CWE-NNN — <product-specific evidence>` clause to `Justification`. The evidence must satisfy the selected weakness definition rather than restate the threat outcome.
+    - Use comma-separated values only when multiple concrete weaknesses are independently established. Provide separately sufficient root-cause evidence for every mapped ID and do not stack ancestors, descendants, alternative hypotheses, or plausible causes of the same outcome.
+    - Use `N/A` when the finalized row has a concrete threat, attack path, or impact but no underlying product weakness can be defensibly identified. Leave `CWE ID` blank and set `State = Needs Investigation` when missing evidence prevents a defensible root-cause decision.
+    - Inspect CWE `potential_mitigations` only after selecting an evidenced CWE. Treat them as candidate security treatments, not requirements, implemented controls, or proof of effectiveness.
+    - For each applicable CWE candidate mitigation, preserve relevant source metadata during analysis, record applicability, translate the guidance into a product-specific normative and testable engineering control, and identify verification evidence before using the control to justify `State = Mitigated` or residual-risk reduction.
+    - Keep MITRE's qualitative mitigation effectiveness separate from local control effectiveness and residual risk. Do not convert CWE effectiveness labels directly into numeric risk multipliers unless an organization-specific calibration method explicitly defines that transformation.
     - Apply Field Resolution Semantics.
-    - In `Justification`, prefer weakness name or exploit behavior wording unless repeating the ID is required for disambiguation.
+    - Read [CWE Root-Cause Evidence Examples](references/cwe-evidence-examples.md) when deciding whether evidence supports a CWE or only a candidate hypothesis.
 
     **Data Access:**
     - Do not read or print [assets/cwe/cwe-4.20.json](assets/cwe/cwe-4.20.json) directly.
@@ -446,7 +451,9 @@ Save and integrate intermediate results after each step. When the objective is p
     **Action:** Read [Justification Templates](references/justification-template.md), select the pattern for the final `State`, and write one concise analyst paragraph after steps 1–13 are complete.
     - State the evidence-based rationale for `State` and the concrete scenario, architectural contradiction, or evidence gap.
     - Add protocol, trust relationship, validation behavior, access, actor, scoring, and mapping details only when they explain the decision.
+    - For every populated CWE, include exactly one `CWE root-cause evidence: CWE-NNN — ...` clause for that same ID. If multiple CWEs are populated, provide separately sufficient evidence for each one.
     - For finalized risks, include the treatment evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
+    - Distinguish CWE candidate mitigations from implemented product controls. Only controls with implementation and verification evidence may support a `Mitigated` state or residual-risk reduction.
     - Cite an MID only when row evidence supports the mitigation. Copy its exact name and Foundational, Intermediate, or Leading level from the mitigation-centric EMB3D asset and confirm that it maps to at least one TID in the row. A source match does not prove implementation. Omit MIDs when `EMB3D TID` is `N/A`; Basic controls are product-specific and must not carry MIDs.
     - Explain intentional `N/A` or blank fields once. Never invent missing evidence to complete a template.
     - Avoid unqualified legal safe-harbor language. Frame compliance-oriented statements as technical-documentation support or product-specific evidence pending stakeholder review.
@@ -463,13 +470,14 @@ Save and integrate intermediate results after each step. When the objective is p
     - Verify each output row against its source row.
     - Keep identifiers and score artifacts in dedicated columns and keep `Justification` as narrative rationale.
     - Reject rows where `Justification` is only an identifier token or parenthetical code reference.
+    - Reject a populated CWE when `Justification` does not contain exactly one matching root-cause evidence clause for that ID, or when a root-cause evidence clause cites a CWE absent from `CWE ID`.
     - Reject rows where `State`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Risk Treatment`, or `Risk Approval` contradict [Risk Treatment Mapping](references/mapping-rules.md#11-risk-treatment-mapping).
     - Reject rows that use legal or regulatory shorthand as the sole rationale for acceptance, transfer, mitigation, or avoidance.
-    - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, residual risk posture, and threat actor selection decision.
+    - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, residual risk posture, threat actor selection, and, where CWE treatment is used, candidate mitigation through product-specific control and verification evidence.
 
     **Script Usage:**
     - [scripts/validate_output.py](scripts/validate_output.py)
-      > Run `uv run ./scripts/validate_output.py --csv '<Device_Name>_Threat_Model_Generated.csv' --source '<Device_Name>_Threat_Model.csv'` to validate the complete CSV, active ATT&CK techniques, mappable CWE weaknesses, cited EMB3D mitigations, and source traceability, then print an actual-versus-expected diff for every finding.
+      > Run `uv run ./scripts/validate_output.py --csv '<Device_Name>_Threat_Model_Generated.csv' --source '<Device_Name>_Threat_Model.csv'` to validate the complete CSV, active ATT&CK techniques, mappable CWE weaknesses, per-CWE root-cause evidence, cited EMB3D mitigations, and source traceability, then print an actual-versus-expected diff for every finding.
     - [scripts/validate_cvss.py](scripts/validate_cvss.py)
       > Run `uv run ./scripts/validate_cvss.py --csv '<Device_Name>_Threat_Model_Generated.csv'` to validate all CVSS vectors in the `CVSS v4.0` columns and compare the calculated score with the stored score.
 
@@ -477,6 +485,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Action:** Write `<Device_Name>_Threat_Model_Summary.md`.
     - Include assessment objective, product scope, threat counts by state/inherent risk/residual risk/actor, highest-risk interactions, primary attack vectors, assumptions, evidence gaps, conflict summary, Not Applicable rationale categories, residual risks, risk treatment summary, risk approval status, and recommended mitigations by priority.
+    - For CWE-derived treatments, summarize the traceability from evidenced weakness through candidate mitigation, applicability decision, product-specific control, and verification status.
     - For compliance-oriented assessments, structure the summary as reusable risk-assessment evidence and technical documentation input.
     - Each risk claim must reference at least one threat row `Id`.
     - Record artifact-trust and spreadsheet-safety warnings that affect generated CSV consumption.
