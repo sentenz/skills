@@ -29,6 +29,7 @@ EXPECTED_COLUMNS = (
     "Justification",
     "Last Modified",
     "ATT&CK ID",
+    "EMB3D PID",
     "EMB3D TID",
     "CWE ID",
     "CVSS v4.0 Vector",
@@ -52,15 +53,16 @@ PRESERVED_NATIVE_COLUMNS = (
     "Last Modified",
 )
 
-IDENTIFIER_COLUMNS = ("ATT&CK ID", "EMB3D TID", "CWE ID")
+IDENTIFIER_COLUMNS = ("ATT&CK ID", "EMB3D PID", "EMB3D TID", "CWE ID")
 QUOTED_COLUMNS = ("Description", "Justification")
 SCORE_PATTERN = re.compile(r"^(?:[0-9],[0-9]|10,0)$")
 IDENTIFIER_ONLY_PATTERN = re.compile(
-    r"^\s*(?:N/?A|(?:ATT&CK|TID|CWE|MID)[- :0-9.,]+|\([^)]*\))\s*$",
+    r"^\s*(?:N/?A|(?:ATT&CK|PID|TID|CWE|MID)[- :0-9.,]+|\([^)]*\))\s*$",
     re.IGNORECASE,
 )
 MID_PATTERN = re.compile(r"\bMID-\d{3}\b", re.IGNORECASE)
-TID_PATTERN = re.compile(r"\bTID-\d{3}\b", re.IGNORECASE)
+PID_PATTERN = re.compile(r"PID-\d+")
+TID_PATTERN = re.compile(r"TID-\d{3}")
 ATTACK_ID_PATTERN = re.compile(r"T\d{4}(?:\.\d{3})?")
 CWE_ID_PATTERN = re.compile(r"CWE-\d+")
 CWE_RATIONALE_PATTERN = re.compile(r"\bCWE mapping rationale\s*:", re.IGNORECASE)
@@ -83,6 +85,12 @@ DEFAULT_CWE_SOURCE = (
     / "assets"
     / "cwe"
     / "cwe-4.20.json"
+)
+DEFAULT_EMB3D_PROPERTIES = (
+    Path(__file__).resolve().parent.parent
+    / "assets"
+    / "emb3d"
+    / "properties_threat_mappings_2.0.1.json"
 )
 DEFAULT_EMB3D_MITIGATIONS = (
     Path(__file__).resolve().parent.parent
@@ -113,6 +121,13 @@ class Finding:
     message: str
     actual: str
     expected: str
+
+
+@dataclass(frozen=True)
+class Emb3dProperty:
+    identifier: str
+    name: str
+    threat_ids: frozenset[str]
 
 
 @dataclass(frozen=True)
@@ -702,6 +717,246 @@ def validate_cwe_mappings(
     return findings
 
 
+def load_emb3d_properties(path: Path) -> dict[str, Emb3dProperty]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    raw_properties = payload.get("properties") if isinstance(payload, dict) else None
+    if not isinstance(raw_properties, list):
+        raise ValueError("EMB3D property source must contain a properties list")
+
+    property_index: dict[str, Emb3dProperty] = {}
+    for position, item in enumerate(raw_properties, start=1):
+        if not isinstance(item, dict):
+            raise ValueError(f"EMB3D property entry {position} must be an object")
+
+        identifier = str(item.get("id", "")).strip().upper()
+        name = str(item.get("text", "")).strip()
+        raw_threats = item.get("threats")
+        if not PID_PATTERN.fullmatch(identifier):
+            raise ValueError(f"EMB3D property entry {position} has an invalid id")
+        if not name:
+            raise ValueError(f"EMB3D property {identifier} has no name")
+        if not isinstance(raw_threats, list):
+            raise ValueError(f"EMB3D property {identifier} has no threats list")
+
+        threat_ids: set[str] = set()
+        for threat in raw_threats:
+            if not isinstance(threat, dict):
+                raise ValueError(f"EMB3D property {identifier} has an invalid threat")
+            threat_id = str(threat.get("id", "")).strip().upper()
+            if not TID_PATTERN.fullmatch(threat_id):
+                raise ValueError(
+                    f"EMB3D property {identifier} has an invalid threat id"
+                )
+            threat_ids.add(threat_id)
+
+        if identifier in property_index:
+            raise ValueError(f"EMB3D property id is duplicated: {identifier}")
+        property_index[identifier] = Emb3dProperty(
+            identifier=identifier,
+            name=name,
+            threat_ids=frozenset(threat_ids),
+        )
+
+    if not property_index:
+        raise ValueError("EMB3D property source contains no property ids")
+    return property_index
+
+
+def validate_emb3d_property_threat_mappings(
+    pid_value: str,
+    tid_value: str,
+    *,
+    row_number: int,
+    threat_id: str,
+    property_index: dict[str, Emb3dProperty],
+) -> list[Finding]:
+    findings: list[Finding] = []
+    raw_pids = _comma_identifiers(pid_value)
+    raw_tids = _comma_identifiers(tid_value)
+    row_pids: set[str] = set()
+    row_tids: set[str] = set()
+
+    for raw_identifier in raw_pids:
+        identifier = raw_identifier.upper()
+        if not PID_PATTERN.fullmatch(identifier):
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="EMB3D PID",
+                    message="EMB3D property value is not a canonical PID",
+                    actual=raw_identifier or "<empty item>",
+                    expected="PID-NN...",
+                )
+            )
+            continue
+        if raw_identifier != identifier:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="EMB3D PID",
+                    message="EMB3D property id must use canonical case",
+                    actual=raw_identifier,
+                    expected=identifier,
+                )
+            )
+        if identifier in row_pids:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="EMB3D PID",
+                    message="EMB3D property id is duplicated in the row",
+                    actual=identifier,
+                    expected="<one occurrence per property id>",
+                )
+            )
+            continue
+        row_pids.add(identifier)
+        if identifier not in property_index:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="EMB3D PID",
+                    message="EMB3D property is absent from the property snapshot",
+                    actual=identifier,
+                    expected="<PID present in the bundled EMB3D property snapshot>",
+                )
+            )
+
+    for raw_identifier in raw_tids:
+        identifier = raw_identifier.upper()
+        if not TID_PATTERN.fullmatch(identifier):
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="EMB3D TID",
+                    message="EMB3D threat value is not a canonical TID",
+                    actual=raw_identifier or "<empty item>",
+                    expected="TID-NNN",
+                )
+            )
+            continue
+        if raw_identifier != identifier:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="EMB3D TID",
+                    message="EMB3D threat id must use canonical case",
+                    actual=raw_identifier,
+                    expected=identifier,
+                )
+            )
+        if identifier in row_tids:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="EMB3D TID",
+                    message="EMB3D threat id is duplicated in the row",
+                    actual=identifier,
+                    expected="<one occurrence per threat id>",
+                )
+            )
+            continue
+        row_tids.add(identifier)
+
+    pid_is_na = pid_value.strip().casefold() == "n/a"
+    tid_is_na = tid_value.strip().casefold() == "n/a"
+    if pid_is_na != tid_is_na:
+        findings.append(
+            Finding(
+                origin="output",
+                row_number=row_number,
+                threat_id=threat_id,
+                column="EMB3D PID / EMB3D TID",
+                message="EMB3D PID and TID must use N/A together",
+                actual=f"PID={pid_value or '<blank>'}, TID={tid_value or '<blank>'}",
+                expected="PID=N/A, TID=N/A",
+            )
+        )
+
+    if row_tids and not row_pids:
+        findings.append(
+            Finding(
+                origin="output",
+                row_number=row_number,
+                threat_id=threat_id,
+                column="EMB3D PID",
+                message="populated EMB3D TID requires a property-backed PID",
+                actual=pid_value or "<blank>",
+                expected="<PID mapped to at least one EMB3D TID in the row>",
+            )
+        )
+    if row_pids and not row_tids:
+        findings.append(
+            Finding(
+                origin="output",
+                row_number=row_number,
+                threat_id=threat_id,
+                column="EMB3D TID",
+                message="populated EMB3D PID requires a mapped TID",
+                actual=tid_value or "<blank>",
+                expected="<TID mapped from at least one EMB3D PID in the row>",
+            )
+        )
+
+    known_properties = {
+        identifier: property_index[identifier]
+        for identifier in row_pids
+        if identifier in property_index
+    }
+    if row_tids and known_properties:
+        for tid in sorted(row_tids):
+            mapped_pids = sorted(
+                identifier
+                for identifier, prop in known_properties.items()
+                if tid in prop.threat_ids
+            )
+            if not mapped_pids:
+                findings.append(
+                    Finding(
+                        origin="output",
+                        row_number=row_number,
+                        threat_id=threat_id,
+                        column="EMB3D TID",
+                        message="EMB3D TID is not mapped from any PID in the row",
+                        actual=f"{tid} with {', '.join(sorted(row_pids))}",
+                        expected="<TID mapped from at least one recorded PID>",
+                    )
+                )
+
+        for identifier, prop in sorted(known_properties.items()):
+            if row_tids.isdisjoint(prop.threat_ids):
+                findings.append(
+                    Finding(
+                        origin="output",
+                        row_number=row_number,
+                        threat_id=threat_id,
+                        column="EMB3D PID",
+                        message="EMB3D PID is not mapped to any TID in the row",
+                        actual=f"{identifier} with {', '.join(sorted(row_tids))}",
+                        expected=(
+                            f"{identifier} with one of "
+                            f"{', '.join(sorted(prop.threat_ids)) or '<no mapped threats>'}"
+                        ),
+                    )
+                )
+
+    return findings
+
+
 def load_emb3d_mitigations(path: Path) -> dict[str, Emb3dMitigation]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     raw_mitigations = payload.get("mitigations") if isinstance(payload, dict) else None
@@ -731,7 +986,7 @@ def load_emb3d_mitigations(path: Path) -> dict[str, Emb3dMitigation]:
             if not isinstance(threat, dict):
                 raise ValueError(f"EMB3D mitigation {identifier} has an invalid threat")
             threat_id = str(threat.get("id", "")).strip().upper()
-            if not re.fullmatch(r"TID-\d{3}", threat_id):
+            if not TID_PATTERN.fullmatch(threat_id):
                 raise ValueError(
                     f"EMB3D mitigation {identifier} has an invalid threat id"
                 )
@@ -926,6 +1181,7 @@ def validate_rows(
     records: list[Record],
     technique_index: Optional[dict[str, AttackTechnique]] = None,
     weakness_index: Optional[dict[str, CweWeakness]] = None,
+    property_index: Optional[dict[str, Emb3dProperty]] = None,
     mitigation_index: Optional[dict[str, Emb3dMitigation]] = None,
 ) -> list[Finding]:
     findings: list[Finding] = []
@@ -1022,18 +1278,32 @@ def validate_rows(
                         expected="<structured narrative rationale>",
                     )
                 )
-            if mitigation_index is not None:
-                tid_cell = _cell(record, "EMB3D TID")
-                tid_value = tid_cell.value.strip() if tid_cell is not None else ""
-                findings.extend(
-                    validate_mitigation_citations(
-                        justification,
-                        tid_value,
-                        row_number=row_number,
-                        threat_id=threat_id,
-                        mitigation_index=mitigation_index,
-                    )
+
+        pid_cell = _cell(record, "EMB3D PID")
+        tid_cell = _cell(record, "EMB3D TID")
+        pid_value = pid_cell.value.strip() if pid_cell is not None else ""
+        tid_value = tid_cell.value.strip() if tid_cell is not None else ""
+        if property_index is not None:
+            findings.extend(
+                validate_emb3d_property_threat_mappings(
+                    pid_value,
+                    tid_value,
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    property_index=property_index,
                 )
+            )
+
+        if mitigation_index is not None:
+            findings.extend(
+                validate_mitigation_citations(
+                    justification,
+                    tid_value,
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    mitigation_index=mitigation_index,
+                )
+            )
 
         if technique_index is not None:
             attack_cell = _cell(record, "ATT&CK ID")
@@ -1386,6 +1656,15 @@ def main() -> int:
         ),
     )
     parser.add_argument(
+        "--emb3d-properties",
+        type=Path,
+        default=DEFAULT_EMB3D_PROPERTIES,
+        help=(
+            "EMB3D property-to-threat JSON used to validate PID/TID traceability "
+            "(defaults to the bundled asset)"
+        ),
+    )
+    parser.add_argument(
         "--emb3d-mitigations",
         type=Path,
         default=DEFAULT_EMB3D_MITIGATIONS,
@@ -1400,6 +1679,7 @@ def main() -> int:
     source_path = Path(args.source).expanduser() if args.source else None
     attack_path = args.attack.expanduser()
     cwe_path = args.cwe.expanduser()
+    property_path = args.emb3d_properties.expanduser()
     mitigation_path = args.emb3d_mitigations.expanduser()
     if not output_path.is_file():
         print(f"ERROR: CSV file not found: {output_path}", file=sys.stderr)
@@ -1413,6 +1693,12 @@ def main() -> int:
     if not cwe_path.is_file():
         print(f"ERROR: CWE source not found: {cwe_path}", file=sys.stderr)
         return 2
+    if not property_path.is_file():
+        print(
+            f"ERROR: EMB3D property source not found: {property_path}",
+            file=sys.stderr,
+        )
+        return 2
     if not mitigation_path.is_file():
         print(
             f"ERROR: EMB3D mitigation source not found: {mitigation_path}",
@@ -1424,6 +1710,7 @@ def main() -> int:
     try:
         technique_index = load_attack_techniques(attack_path)
         weakness_index = load_cwe_weaknesses(cwe_path)
+        property_index = load_emb3d_properties(property_path)
         mitigation_index = load_emb3d_mitigations(mitigation_path)
         output_records = read_records(
             output_path,
@@ -1436,6 +1723,7 @@ def main() -> int:
                 output_records,
                 technique_index=technique_index,
                 weakness_index=weakness_index,
+                property_index=property_index,
                 mitigation_index=mitigation_index,
             )
         )
