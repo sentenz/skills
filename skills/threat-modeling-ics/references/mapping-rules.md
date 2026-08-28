@@ -127,9 +127,11 @@ EMB3D `Foundational`, `Intermediate`, and `Leading` values are source taxonomy l
 - Copy the mitigation's exact source name and group it under its exact source level in `Justification`.
 - Treat source validation, implementation evidence, and control effectiveness as separate questions. A valid MID, name, level, PID, and TID association does not prove that a product implements the mitigation or that the control is effective in the assessed design.
 - Treat a source-backed MID as a candidate or recommendation unless device-specific evidence confirms that the embedded product implements it. Record the verification evidence when claiming implementation.
-- Do not present an external gateway, network firewall, network segmentation control, monitoring service, or physical/procedural control as an EMB3D mitigation implemented by the embedded device. Describe it as a compensating control and state the remaining device-native exposure.
-- Omit MIDs when `EMB3D TID` is `N/A`; describe verified product-specific controls without an EMB3D label instead.
-- Treat Basic controls as product-specific physical, procedural, or implementation controls. `Basic` is not an EMB3D mitigation level and must not carry an MID.
+- Classify verified controls by enforcement boundary rather than by perceived strength.
+- Describe a verified firmware, hardware, or product-integrated control enforced within the assessed product or device boundary as an `Implemented control`. A product-specific implemented control does not carry an MID unless the source-backed EMB3D mitigation is applicable and device-specific evidence verifies that implementation.
+- Describe a control enforced outside the vulnerable component or device boundary as a `Compensating control`. Examples include an external gateway, network firewall, network segmentation control, monitoring service, cabinet or site-access restriction, external workstation control, or procedure. These controls may reduce residual system risk but do not prove an EMB3D MID is implemented by the device.
+- Omit MIDs when `EMB3D TID` is `N/A`; classify verified product-specific controls as `Implemented controls` or `Compensating controls` according to their enforcement boundary.
+- Do not use `Basic mitigation` or `Basic controls` as a control category. `Basic` is not an EMB3D mitigation level and does not identify where a control is enforced.
 - Do not derive, raise, or lower an EMB3D source level from implementation maturity, adversary capability, control coverage, residual risk, or an IEC 62443 Security Level.
 - Do not map EMB3D source levels to IEC 62443 SL 0–4. When an IEC 62443 relationship is required, use an explicit source-backed mapping from the individual MID to the applicable IEC 62443 requirement rather than a tier-to-SL crosswalk.
 
