@@ -334,8 +334,10 @@ Save and integrate intermediate results after each step. When the objective is p
     **Mitigation Semantics:**
     - Treat TID-to-MID relationships as candidate mitigation guidance, not proof that the product implements a control or that the threat is fully mitigated.
     - Cite an MID only when it maps to at least one `EMB3D TID` in the row and that TID is source-backed by at least one `EMB3D PID` in the row.
-    - Distinguish device-native mitigation implementation from external compensating controls. An external gateway, firewall, segmentation mechanism, monitoring service, or physical/procedural restriction may reduce residual system risk but must not be presented as an EMB3D MID implemented by the embedded device unless the device itself implements the cited mechanism.
+    - Classify verified controls by enforcement boundary. Use `Implemented controls` for controls enforced within the assessed product or device boundary and `Compensating controls` for controls enforced outside the vulnerable component or device boundary.
+    - An external gateway, firewall, segmentation mechanism, monitoring service, cabinet or site-access restriction, external workstation control, or procedure may reduce residual system risk but must not be presented as an EMB3D MID implemented by the embedded device unless the device itself implements the cited mechanism.
     - Preserve the MID's exact source level (`Foundational`, `Intermediate`, or `Leading`). Do not map EMB3D levels to IEC 62443 Security Levels or adversary capability.
+    - Do not use `Basic mitigation` or `Basic controls` as a control category. `Basic` is not an EMB3D mitigation level and does not identify where a control is enforced.
 
     **Data Access:**
     - Do not read or print the [assets/emb3d/](assets/emb3d/) JSON files directly.
@@ -461,8 +463,9 @@ Save and integrate intermediate results after each step. When the objective is p
     - Add protocol, trust relationship, validation behavior, access, actor, scoring, and mapping details only when they explain the decision.
     - For every populated `EMB3D TID`, state the architecture or product fact that makes at least one recorded `EMB3D PID` applicable. The source PID-to-TID relationship is necessary but does not itself prove that the property exists in the assessed product.
     - For finalized risks, include the treatment evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
-    - Cite an MID only when row evidence supports the mitigation. Copy its exact name and Foundational, Intermediate, or Leading source level from the mitigation-centric EMB3D asset and confirm that it maps to at least one TID in the row and that the TID is source-backed by at least one PID in the row. A source match does not prove implementation. Omit MIDs when `EMB3D TID` is `N/A`; Basic controls are product-specific and must not carry MIDs.
-    - Distinguish confirmed device-native controls from external compensating controls. Do not claim an external gateway, firewall, segmentation mechanism, monitoring service, or physical/procedural restriction implements an EMB3D MID on the device.
+    - Cite an MID only when row evidence supports the mitigation. Copy its exact name and Foundational, Intermediate, or Leading source level from the mitigation-centric EMB3D asset and confirm that it maps to at least one TID in the row and that the TID is source-backed by at least one PID in the row. A source match does not prove implementation. Omit MIDs when `EMB3D TID` is `N/A`; describe verified non-EMB3D controls enforced within the assessed product or device boundary as `Implemented controls`.
+    - Distinguish `Implemented controls` from `Compensating controls` by enforcement boundary. Do not claim an external gateway, firewall, segmentation mechanism, monitoring service, cabinet or site-access restriction, external workstation control, or procedure implements an EMB3D MID on the device.
+    - Do not use `Basic mitigation` or `Basic controls` in generated justifications.
     - Explain intentional `N/A` or blank fields once. Never invent missing evidence to complete a template.
     - Avoid unqualified legal safe-harbor language. Frame compliance-oriented statements as technical-documentation support or product-specific evidence pending stakeholder review.
     - Use no semicolons or embedded line breaks. Let the CSV writer enclose the complete `Justification` cell in double quotes.
