@@ -115,22 +115,23 @@ STRIDE is the foundational threat classification scheme for understanding each t
 
 ## 6. EMB3D Mitigation Levels
 
-Mitigation levels classify the extent and sophistication of mitigations applied to an identified threat, ranging from no implemented mitigation to comprehensive and adaptive mitigation across the relevant architectural layers.
+EMB3D `Foundational`, `Intermediate`, and `Leading` values are source taxonomy labels used to communicate the maturity, demonstrated feasibility, adoption, implementation complexity, and supporting technology associated with a mitigation. They are not product-security maturity scores, assurance levels, attacker-capability levels, risk ratings, or IEC 62443 Security Levels.
 
-| Level | Maturity     | General Interpretation                                                                                                | MITRE EMB3D Mitigation Level | IEC 62443 Security Level (SL) |
-| ----- | ------------ | --------------------------------------------------------------------------------------------------------------------- | ---------------------------- | ----------------------------- |
-| 0     | Basic        | Controls are not established, undocumented, or not evaluated.                                                         | N/A                          | SL 0                          |
-| 1     | Foundational | Controls address casual, accidental, or low-complexity threats.                                                       | Foundational                 | SL 1                          |
-| 2     | Intermediate | Controls address intentional attacks using simple methods and limited resources.                                      | Intermediate                 | SL 2                          |
-| 3     | Intermediate | Controls are standardized, consistently implemented, and validated against sophisticated threats.                     | Intermediate                 | SL 3                          |
-| 4     | Leading      | Controls continuously adapt to threat intelligence and are engineered for highly capable, well-resourced adversaries. | Leading                      | SL 4                          |
+| EMB3D Source Level | Interpretation for this skill |
+| ------------------ | ----------------------------- |
+| Foundational       | Preserve the source label for established, broadly feasible mitigations with comparatively mature implementation practice. Do not infer that the mitigation only addresses low-capability attackers. |
+| Intermediate       | Preserve the source label for demonstrated mitigations that may require greater integration effort, specialized dependencies, or less-established embedded-device deployment practice. Do not convert it to a numeric maturity score. |
+| Leading            | Preserve the source label for advanced or emerging mitigations that may require substantial engineering, specialized technology, or additional research and validation. Do not infer a specific adversary class or assurance level. |
 
-- Cite an MID only when row evidence makes the mitigation applicable and the bounded EMB3D query maps it to at least one `EMB3D TID` recorded in the row.
+- Cite an MID only when row evidence makes the mitigation applicable, the bounded EMB3D query maps it to at least one `EMB3D TID` recorded in the row, and at least one recorded `EMB3D PID` maps to that TID in the bundled source.
 - Copy the mitigation's exact source name and group it under its exact source level in `Justification`.
-- Treat source validation and implementation evidence separately. A valid MID, name, level, and TID association does not prove that a product implements the mitigation.
+- Treat source validation, implementation evidence, and control effectiveness as separate questions. A valid MID, name, level, PID, and TID association does not prove that a product implements the mitigation or that the control is effective in the assessed design.
+- Treat a source-backed MID as a candidate or recommendation unless device-specific evidence confirms that the embedded product implements it. Record the verification evidence when claiming implementation.
+- Do not present an external gateway, network firewall, network segmentation control, monitoring service, or physical/procedural control as an EMB3D mitigation implemented by the embedded device. Describe it as a compensating control and state the remaining device-native exposure.
 - Omit MIDs when `EMB3D TID` is `N/A`; describe verified product-specific controls without an EMB3D label instead.
 - Treat Basic controls as product-specific physical, procedural, or implementation controls. `Basic` is not an EMB3D mitigation level and must not carry an MID.
-- Do not derive, raise, or lower an EMB3D level from implementation maturity, adversary capability, control coverage, or an IEC 62443 Security Level.
+- Do not derive, raise, or lower an EMB3D source level from implementation maturity, adversary capability, control coverage, residual risk, or an IEC 62443 Security Level.
+- Do not map EMB3D source levels to IEC 62443 SL 0–4. When an IEC 62443 relationship is required, use an explicit source-backed mapping from the individual MID to the applicable IEC 62443 requirement rather than a tier-to-SL crosswalk.
 
 > [!NOTE]
 > EMB3D levels are source taxonomy values, not a numeric maturity scale. Use the bundled mitigation snapshot as the offline source of record through [`query_emb3d.py`](../scripts/query_emb3d.py) and [`validate_csv.py`](../scripts/validate_csv.py). Do not read or print the raw JSON.
