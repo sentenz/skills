@@ -55,7 +55,7 @@ Name the architectural record or design decision when `Risk Treatment = Avoidanc
 [Candidate scenario and affected interface]. The row remains Needs Investigation because [specific evidence gap or conflict]. The gap prevents a defensible decision for [affected mappings, score, actor, treatment, or approval]. Resolve it with [required artifact, test, owner decision, or architecture clarification].
 ```
 
-Leave unsupported review fields blank. For EMB3D, leave both `EMB3D PID` and `EMB3D TID` blank when device-property applicability is unresolved. Do not convert missing evidence into `Not Applicable`, `Mitigated`, or a speculative governance decision.
+Leave unsupported review fields blank. For EMB3D, leave both `EMB3D PID` and `EMB3D TID` blank when device-property applicability is unresolved. When device-property applicability is established but the mapped threat's scenario relevance remains unresolved, retain the evidence-backed `EMB3D PID`, leave `EMB3D TID` blank, and keep the row in `Needs Investigation` until the threat can be confirmed or excluded. Do not convert missing evidence into `Not Applicable`, `Mitigated`, or a speculative governance decision.
 
 ## 6. Not Started
 
