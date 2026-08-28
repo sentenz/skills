@@ -29,16 +29,17 @@
     ```
 
 - [query_emb3d.py](query_emb3d.py)
-  > Searches and joins the versioned EMB3D threat, property, and mitigation assets in-process, returning bounded candidates or single-record mappings with a 30,000-character ceiling.
+  > Searches and joins the versioned EMB3D threat, property, and mitigation assets in-process, returning bounded candidates or single-record mappings with a 30,000-character ceiling. Threat enrichment should begin from architecture-supported device properties and then follow source-backed PID-to-TID mappings.
 
     ```bash
     uv run ./scripts/query_emb3d.py --search 'firmware installation' --top 5
+    uv run ./scripts/query_emb3d.py --pid 'PID-271' --include threats,hierarchy
     uv run ./scripts/query_emb3d.py --tid 'TID-211' --include properties,mitigations
     uv run ./scripts/query_emb3d.py --mid 'MID-001' --include threats
     ```
 
 - [validate_output.py](validate_output.py)
-  > Validates the complete generated CSV output contract, active MITRE ATT&CK techniques, mappable MITRE CWE weaknesses, cited EMB3D mitigations, and optional raw-TMT source traceability, then reports all findings with actual-versus-expected diffs.
+  > Validates the complete generated CSV output contract, active MITRE ATT&CK techniques, mappable MITRE CWE weaknesses, source-backed EMB3D PID-to-TID mappings, cited EMB3D mitigations, and optional raw-TMT source traceability, then reports all findings with actual-versus-expected diffs.
 
     ```bash
     uv run ./scripts/validate_output.py --csv 'generated.csv' --source 'input.csv'
