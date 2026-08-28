@@ -23,18 +23,20 @@ Do not treat omissions in an example row as permission to omit evidence required
 ## 2. Universal Rules
 
 - State the decision rationale before supporting framework details.
-- Describe behavior and evidence rather than repeating `ATT&CK ID`, `EMB3D TID`, `CWE ID`, the full CVSS vector, or other dedicated-column values.
+- Describe behavior and evidence rather than repeating `ATT&CK ID`, `EMB3D PID`, `EMB3D TID`, `CWE ID`, the full CVSS vector, or other dedicated-column values.
+- For every populated `EMB3D TID`, describe the architecture or product evidence that makes at least one recorded `EMB3D PID` applicable. A source PID-to-TID relationship is necessary but does not by itself prove that the property exists in the assessed product.
 - When retaining a CWE marked `Allowed-with-Review` or `Discouraged`, add `CWE mapping rationale: ...` with the supporting evidence and why no more-specific `Allowed` entry fits.
-- Include an MID only when row evidence supports the mitigation and the mitigation asset maps it to at least one TID in the row. Copy its exact source name and Foundational, Intermediate, or Leading level. Distinguish implemented controls from recommendations. Omit MIDs when `EMB3D TID` is `N/A`. No dedicated MID column exists.
+- Include an MID only when row evidence supports the mitigation, the mitigation asset maps it to at least one TID in the row, and the row's PID-to-TID relationship is source-valid. Copy its exact source name and Foundational, Intermediate, or Leading level. Distinguish a source-backed recommendation from a control verified as implemented. Omit MIDs when `EMB3D TID` is `N/A`. No dedicated MID column exists.
+- Do not present an external gateway, network firewall, segmentation control, monitoring service, or physical procedure as an EMB3D mitigation implemented by the embedded device. Record such measures as compensating controls and describe the device-native residual exposure separately.
 - Add attack vector, access requirements, minimum actor, CVSS severity, likelihood, or inherent risk only when they explain the decision.
 - End a finalized risk narrative with the treatment-specific evidence: remaining exposure, residual risk, owner or approving stakeholder, and approval mechanism where required.
 - Use no semicolons or embedded line breaks. Let the CSV writer enclose the complete cell in double quotes.
-- Never invent a control, owner, approval, transfer mechanism, or architectural fact to complete a template.
+- Never invent a device property, control, owner, approval, transfer mechanism, or architectural fact to complete a template.
 
 ## 3. Mitigated
 
 ```plaintext
-[Actor or failure mode] can [action] through [protocol, interface, or trust relationship], causing [effect]. [Protocol, component, or process] lacks [control] or relies on [validated limitation]. [Optional: The path requires [access] and the minimum capable actor is [actor] because [capability evidence].] Applied controls include [confirmed controls]. [Optional: Foundational mitigation: [name] ([MID-NNN]). Intermediate mitigation: [name] ([MID-NNN]). Leading mitigation: [name] ([MID-NNN]).] Residual risk is [level] after [controls and remaining exposure]. Treatment is [Mitigation, Acceptance, or Transfer] because [decision rationale]. [Residual-risk owner or approving stakeholder] records approval through [mechanism or pending status].
+[Actor or failure mode] can [action] through [protocol, interface, or trust relationship], causing [effect]. [Protocol, component, or process] lacks [control] or relies on [validated limitation]. [Optional: EMB3D property evidence: [architecture or product fact] supports [property name].] [Optional: The path requires [access] and the minimum capable actor is [actor] because [capability evidence].] Applied device-native controls include [confirmed device controls]. [Optional: Compensating controls include [external or procedural controls], while [remaining device-native exposure] remains.] [Optional: Foundational mitigation: [name] ([MID-NNN]). Intermediate mitigation: [name] ([MID-NNN]). Leading mitigation: [name] ([MID-NNN]).] Residual risk is [level] after [controls and remaining exposure]. Treatment is [Mitigation, Acceptance, or Transfer] because [decision rationale]. [Residual-risk owner or approving stakeholder] records approval through [mechanism or pending status].
 ```
 
 For `Acceptance`, replace the control-focused treatment sentence with the business rationale, acceptance threshold, approving stakeholder, and explicit approval mechanism. For `Transfer`, identify the named third party, contract, SLA, warranty, insurance policy, or managed service and state which consequences remain with the product owner.
@@ -53,7 +55,7 @@ Name the architectural record or design decision when `Risk Treatment = Avoidanc
 [Candidate scenario and affected interface]. The row remains Needs Investigation because [specific evidence gap or conflict]. The gap prevents a defensible decision for [affected mappings, score, actor, treatment, or approval]. Resolve it with [required artifact, test, owner decision, or architecture clarification].
 ```
 
-Leave unsupported review fields blank. Do not convert missing evidence into `Not Applicable`, `Mitigated`, or a speculative governance decision.
+Leave unsupported review fields blank. For EMB3D, leave both `EMB3D PID` and `EMB3D TID` blank when device-property applicability is unresolved. Do not convert missing evidence into `Not Applicable`, `Mitigated`, or a speculative governance decision.
 
 ## 6. Not Started
 
