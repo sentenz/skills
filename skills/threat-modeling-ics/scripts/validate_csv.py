@@ -766,6 +766,7 @@ def validate_emb3d_property_threat_mappings(
     pid_value: str,
     tid_value: str,
     *,
+    state: str,
     row_number: int,
     threat_id: str,
     property_index: dict[str, Emb3dProperty],
@@ -887,6 +888,22 @@ def validate_emb3d_property_threat_mappings(
             )
         )
 
+    if state == "Mitigated" and not pid_value and not tid_value:
+        findings.append(
+            Finding(
+                origin="output",
+                row_number=row_number,
+                threat_id=threat_id,
+                column="EMB3D PID / EMB3D TID",
+                message="finalized row requires an EMB3D mapping or paired N/A values",
+                actual="PID=<blank>, TID=<blank>",
+                expected=(
+                    "PID=<source-backed property>, TID=<mapped relevant threat> "
+                    "or PID=N/A, TID=N/A"
+                ),
+            )
+        )
+
     if row_tids and not row_pids:
         findings.append(
             Finding(
@@ -899,14 +916,17 @@ def validate_emb3d_property_threat_mappings(
                 expected="<PID mapped to at least one EMB3D TID in the row>",
             )
         )
-    if row_pids and not row_tids:
+    if row_pids and not row_tids and state != "Needs Investigation":
         findings.append(
             Finding(
                 origin="output",
                 row_number=row_number,
                 threat_id=threat_id,
                 column="EMB3D TID",
-                message="populated EMB3D PID requires a mapped TID",
+                message=(
+                    "populated EMB3D PID requires a mapped TID unless the row "
+                    "Needs Investigation"
+                ),
                 actual=tid_value or "<blank>",
                 expected="<TID mapped from at least one EMB3D PID in the row>",
             )
@@ -1191,7 +1211,9 @@ def validate_rows(
     seen_ids: set[str] = set()
     for row_number, record in enumerate(records[1:], start=2):
         id_cell = _cell(record, "Id")
+        state_cell = _cell(record, "State")
         threat_id = id_cell.value.strip() if id_cell is not None else ""
+        state = state_cell.value.strip() if state_cell is not None else ""
 
         if len(record.cells) != len(EXPECTED_COLUMNS):
             findings.append(
@@ -1288,6 +1310,7 @@ def validate_rows(
                 validate_emb3d_property_threat_mappings(
                     pid_value,
                     tid_value,
+                    state=state,
                     row_number=row_number,
                     threat_id=threat_id,
                     property_index=property_index,
@@ -1350,10 +1373,8 @@ def validate_rows(
                     )
                 )
 
-        state_cell = _cell(record, "State")
         treatment_cell = _cell(record, "Risk Treatment")
         approval_cell = _cell(record, "Risk Approval")
-        state = state_cell.value.strip() if state_cell is not None else ""
         treatment = treatment_cell.value.strip() if treatment_cell is not None else ""
         approval = approval_cell.value.strip() if approval_cell is not None else ""
 
