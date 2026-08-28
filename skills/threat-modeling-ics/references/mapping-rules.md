@@ -57,7 +57,6 @@ The core principles of Information Security (InfoSec) are confidentiality, integ
 | Confidentiality | Ensures that information is accessible only to authorized users, systems, or processes.               | Unauthorized access, data breaches, credential theft, eavesdropping, information disclosure.                      |
 | Integrity       | Ensures that information remains accurate, complete, and unaltered except through authorized actions. | Data tampering, unauthorized modification, malware, injection attacks, man-in-the-middle attacks, replay attacks. |
 | Availability    | Ensures that systems, services, and data remain accessible to authorized users when required.         | Denial-of-service (DoS/DDoS), ransomware, hardware failure, power outages, resource exhaustion.                   |
-
 ## 3. Diagram Depth Layers
 
 [Diagram depth layers](https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/1b-depth-layers) are used to decompose a system into hierarchical levels of detail, enabling threat modeling at varying levels of abstraction.
@@ -129,7 +128,7 @@ EMB3D `Foundational`, `Intermediate`, and `Leading` values are source taxonomy l
 - Treat a source-backed MID as a candidate or recommendation unless device-specific evidence confirms that the embedded product implements it. Record the verification evidence when claiming implementation.
 - Classify verified controls by enforcement boundary rather than by perceived strength.
 - Describe a verified firmware, hardware, or product-integrated control enforced within the assessed product or device boundary as an `Implemented control`. A product-specific implemented control does not carry an MID unless the source-backed EMB3D mitigation is applicable and device-specific evidence verifies that implementation.
-- Describe a control enforced outside the vulnerable component or device boundary as a `Compensating control`. Examples include an external gateway, network firewall, network segmentation control, monitoring service, cabinet or site-access restriction, external workstation control, or procedure. These controls may reduce residual system risk but do not prove an EMB3D MID is implemented by the device.
+- Describe a control enforced outside the assessed product or device boundary as a `Compensating control`. Examples include an external gateway, network firewall, network segmentation control, monitoring service, cabinet or site-access restriction, external workstation control, or procedure. These controls may reduce residual system risk but do not prove an EMB3D MID is implemented by the device.
 - Omit MIDs when `EMB3D TID` is `N/A`; classify verified product-specific controls as `Implemented controls` or `Compensating controls` according to their enforcement boundary.
 - Do not use `Basic mitigation` or `Basic controls` as a control category. `Basic` is not an EMB3D mitigation level and does not identify where a control is enforced.
 - Do not derive, raise, or lower an EMB3D source level from implementation maturity, adversary capability, control coverage, residual risk, or an IEC 62443 Security Level.
@@ -169,8 +168,8 @@ Metric abbreviations: `VC` = Vulnerable System Confidentiality Impact, `VI` = Vu
 | Tampering              | VI                    | VA, VC                  | High        | Unauthorized modification is directly an integrity impact. Availability and confidentiality may follow when tampering disrupts operation or alters protection controls.          |
 | Repudiation            | VI                    | VC                      | Medium-Low  | CVSS has no explicit non-repudiation metric. Represent auditability harm through integrity impact to logs, records, and transaction evidence.                                    |
 | Information Disclosure | VC                    | VI                      | High        | Unauthorized exposure is directly a confidentiality impact. Integrity is usually indirect or downstream.                                                                         |
-| Denial of Service      | VA                    | VI                      | High        | Degradation or outage is directly an availability impact. Integrity can follow where inconsistent processing results.                                                            |
-| Elevation of Privilege | VI                    | VC, VA                  | Medium-High | Privilege gain enables unauthorized modification, access, and potentially shutdown or execution. Read access maps to `VC`, write access to `VI`, admin/execution access to `VA`. |
+| Denial Of Service      | VA                    | VI                      | High        | Degradation or outage is directly an availability impact. Integrity can follow where inconsistent processing results.                                                            |
+| Elevation Of Privilege | VI                    | VC, VA                  | Medium-High | Privilege gain enables unauthorized modification, access, and potentially shutdown or execution. Read access maps to `VC`, write access to `VI`, admin/execution access to `VA`. |
 
 ### 7.3. Subsequent System Impact Metrics
 
@@ -237,7 +236,6 @@ Categorize likelihood of exploit using BSI `Dringlichkeit / Eintrittspotenzial` 
 | Exploit Published | Medium | High      | Critical         |
 
 ## 9. Risk Matrix Mapping
-
 Combine `Likelihood of Exploit` and `CVSS v4.0 Severity` to determine `Risk Prioritization`.
 
 > [!NOTE]
