@@ -57,6 +57,7 @@ The core principles of Information Security (InfoSec) are confidentiality, integ
 | Confidentiality | Ensures that information is accessible only to authorized users, systems, or processes.               | Unauthorized access, data breaches, credential theft, eavesdropping, information disclosure.                      |
 | Integrity       | Ensures that information remains accurate, complete, and unaltered except through authorized actions. | Data tampering, unauthorized modification, malware, injection attacks, man-in-the-middle attacks, replay attacks. |
 | Availability    | Ensures that systems, services, and data remain accessible to authorized users when required.         | Denial-of-service (DoS/DDoS), ransomware, hardware failure, power outages, resource exhaustion.                   |
+
 ## 3. Diagram Depth Layers
 
 [Diagram depth layers](https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/1b-depth-layers) are used to decompose a system into hierarchical levels of detail, enabling threat modeling at varying levels of abstraction.
@@ -168,8 +169,8 @@ Metric abbreviations: `VC` = Vulnerable System Confidentiality Impact, `VI` = Vu
 | Tampering              | VI                    | VA, VC                  | High        | Unauthorized modification is directly an integrity impact. Availability and confidentiality may follow when tampering disrupts operation or alters protection controls.          |
 | Repudiation            | VI                    | VC                      | Medium-Low  | CVSS has no explicit non-repudiation metric. Represent auditability harm through integrity impact to logs, records, and transaction evidence.                                    |
 | Information Disclosure | VC                    | VI                      | High        | Unauthorized exposure is directly a confidentiality impact. Integrity is usually indirect or downstream.                                                                         |
-| Denial Of Service      | VA                    | VI                      | High        | Degradation or outage is directly an availability impact. Integrity can follow where inconsistent processing results.                                                            |
-| Elevation Of Privilege | VI                    | VC, VA                  | Medium-High | Privilege gain enables unauthorized modification, access, and potentially shutdown or execution. Read access maps to `VC`, write access to `VI`, admin/execution access to `VA`. |
+| Denial of Service      | VA                    | VI                      | High        | Degradation or outage is directly an availability impact. Integrity can follow where inconsistent processing results.                                                            |
+| Elevation of Privilege | VI                    | VC, VA                  | Medium-High | Privilege gain enables unauthorized modification, access, and potentially shutdown or execution. Read access maps to `VC`, write access to `VI`, admin/execution access to `VA`. |
 
 ### 7.3. Subsequent System Impact Metrics
 
@@ -236,6 +237,7 @@ Categorize likelihood of exploit using BSI `Dringlichkeit / Eintrittspotenzial` 
 | Exploit Published | Medium | High      | Critical         |
 
 ## 9. Risk Matrix Mapping
+
 Combine `Likelihood of Exploit` and `CVSS v4.0 Severity` to determine `Risk Prioritization`.
 
 > [!NOTE]
