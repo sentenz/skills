@@ -334,7 +334,7 @@ Save and integrate intermediate results after each step. When the objective is p
     **Mitigation Semantics:**
     - Treat TID-to-MID relationships as candidate mitigation guidance, not proof that the product implements a control or that the threat is fully mitigated.
     - Cite an MID only when it maps to at least one `EMB3D TID` in the row and that TID is source-backed by at least one `EMB3D PID` in the row.
-    - Classify verified controls by enforcement boundary. Use `Implemented controls` for controls enforced within the assessed product or device boundary and `Compensating controls` for controls enforced outside the vulnerable component or device boundary.
+    - Classify verified controls by enforcement boundary. Use `Implemented controls` for controls enforced within the assessed product or device boundary and `Compensating controls` for controls enforced outside the assessed product or device boundary.
     - An external gateway, firewall, segmentation mechanism, monitoring service, cabinet or site-access restriction, external workstation control, or procedure may reduce residual system risk but must not be presented as an EMB3D MID implemented by the embedded device unless the device itself implements the cited mechanism.
     - Preserve the MID's exact source level (`Foundational`, `Intermediate`, or `Leading`). Do not map EMB3D levels to IEC 62443 Security Levels or adversary capability.
     - Do not use `Basic mitigation` or `Basic controls` as a control category. `Basic` is not an EMB3D mitigation level and does not identify where a control is enforced.
