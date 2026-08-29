@@ -7,6 +7,18 @@
       "skillPath": "skills/dependabot/SKILL.md",
       "computedHash": "a7f64786f061e1ec9a513757a54f96e3c05b1f88d9d7e380222defbcd87a56e4"
     },
+    "github-actions-efficiency": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/github-actions-efficiency/SKILL.md",
+      "computedHash": "fc5bd3d39a52bc9c19a3c0ae0a83ed5baa7982639019e700b4ef9eba68f5bba1"
+    },
+    "github-actions-hardening": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/github-actions-hardening/SKILL.md",
+      "computedHash": "d550a44874f22494c8a7c7a025d61134e090bcc1a977643806977ac9e01155a1"
+    },
     "material-3": {
       "source": "hamen/material-3-skill",
       "sourceType": "github",

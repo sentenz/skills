@@ -177,6 +177,12 @@ Available skills:
 - [Dependabot](skills/dependabot/SKILL.md)
   > Configures and manages GitHub Dependabot version updates, security updates, grouped updates, monorepos, and pull requests.
 
+- [GitHub Actions Efficiency](skills/github-actions-efficiency/SKILL.md)
+  > Audits GitHub Actions workflow efficiency and recommends evidence-based changes that reduce CI runtime, redundant execution, and cost.
+
+- [GitHub Actions Hardening](skills/github-actions-hardening/SKILL.md)
+  > Reviews and hardens GitHub Actions workflows against unsafe privileged triggers, script injection, mutable action references, excessive token scopes, secret exposure, and runner risks.
+
 - [TM7 Threat Model](skills/tm7-threat-model/SKILL.md)
   > Generates valid Microsoft Threat Modeling Tool v7.3+ `.tm7` files with architecture diagrams, data flows, trust boundaries, and STRIDE threats.
 
