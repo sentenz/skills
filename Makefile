@@ -33,14 +33,15 @@ help:
 #
 ## Initialize a software development workspace with requisites
 bootstrap:
-	apt update && apt install -y nodejs
+	apt update && apt install -y \
+		npm \
+		curl
 .PHONY: bootstrap
 
 # NOTE May require elevated privileges (`sudo`) to install dependencies on the host system.
 #
 ## Install and configure all dependencies essential for development
 setup:
-	npm install -g skills
 	curl -LsSf https://astral.sh/uv/install.sh | sh
 .PHONY: setup
 
@@ -48,7 +49,9 @@ setup:
 #
 ## Remove development artifacts and restore the host to its pre-setup state
 teardown:
-	npm uninstall -g skills
+	apt remove -y \
+		npm \
+		curl
 .PHONY: teardown
 
 # ─── Git Hooks Manager ───────────────────────────────────────────────────────────────────────────
@@ -67,17 +70,17 @@ githooks-lefthook-deinitialize:
 
 ## Provision new Agent Skills into the project environment
 skills-agent-add:
-	skills add sentenz/skills
+	npx skills@v1.5.15 add sentenz/skills
 .PHONY: skills-agent-add
 
 ## Synchronize and update existing Agent Skills in the project environment
 skills-agent-update:
-	skills update sentenz/skills
+	npx skills@v1.5.15 update sentenz/skills --skill skills/dependabot
 .PHONY: skills-agent-update
 
 ## Restore Agent Skills in the project environment to a previous state
 skills-agent-restore:
-	skills experimental_install
+	npx skills@v1.5.15 experimental_install
 .PHONY: skills-agent-restore
 
 # ─── Dependency Manager ──────────────────────────────────────────────────────────────────────────
