@@ -61,13 +61,19 @@ Available skills can be activated by agents based on defined triggers and contex
 - [Dependency Management Skills](skills/README.md#14-dependency-management-skills)
   > GitHub Dependabot configuration and management for version updates, security updates, grouping, and monorepos.
 
-- [Threat Modeling Skills](skills/README.md#15-threat-modeling-skills)
+- [DevOps and Operations Skills](skills/README.md#15-devops-and-operations-skills)
+  > GitHub Actions workflow efficiency auditing and optimization for runtime, redundant execution, and runner cost.
+
+- [Threat Modeling Skills](skills/README.md#16-threat-modeling-skills)
   > Threat modeling for OT/ICS systems and Microsoft Threat Modeling Tool (`.tm7`) file generation.
 
-- [Documentation Skills](skills/README.md#16-documentation-skills)
+- [Security and Compliance Skills](skills/README.md#17-security-and-compliance-skills)
+  > GitHub Actions security review and hardening for trust boundaries, injection, permissions, credentials, supply chain, and runner exposure.
+
+- [Documentation Skills](skills/README.md#18-documentation-skills)
   > Architecture Decision Records (ADR) creation and maintenance skills.
 
-- [UI and Design Skills](skills/README.md#17-ui-and-design-skills)
+- [UI and Design Skills](skills/README.md#19-ui-and-design-skills)
   > Material Design 3 implementation guidance for components, design tokens, theming, adaptive layouts, accessibility, and compliance auditing.
 
 ## 2. Contribute

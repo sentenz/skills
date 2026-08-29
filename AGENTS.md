@@ -91,7 +91,7 @@ Standard project layout following community best practices for organizing code a
 ├── src/                # Source code directory
 ├── tests/              # Test files and test data
 ├── scripts/            # Scripts for build, setup, and deployment
-├── docs/               # Documentation files
+├── docs/               # Project documentation
 ├── README.md           # Project overview and getting started guide
 └── AGENTS.md           # AI agent instructions and guidelines
 ```
@@ -176,6 +176,12 @@ Available skills:
 
 - [Dependabot](skills/dependabot/SKILL.md)
   > Configures and manages GitHub Dependabot version updates, security updates, grouped updates, monorepos, and pull requests.
+
+- [GitHub Actions Efficiency](skills/github-actions-efficiency/SKILL.md)
+  > Audits GitHub Actions workflow efficiency and recommends measurement-driven fixes for CI runtime, redundant execution, and runner cost.
+
+- [GitHub Actions Hardening](skills/github-actions-hardening/SKILL.md)
+  > Reviews and hardens GitHub Actions workflows against untrusted-input injection, privileged-trigger abuse, over-scoped tokens, mutable action references, secret exposure, and runner risks.
 
 - [TM7 Threat Model](skills/tm7-threat-model/SKILL.md)
   > Generates valid Microsoft Threat Modeling Tool v7.3+ `.tm7` files with architecture diagrams, data flows, trust boundaries, and STRIDE threats.

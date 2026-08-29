@@ -7,9 +7,11 @@ Agent skills are modular capabilities that AI agents can utilize to perform spec
   - [1.2. Go Skills](#12-go-skills)
   - [1.3. Terraform Skills](#13-terraform-skills)
   - [1.4. Dependency Management Skills](#14-dependency-management-skills)
-  - [1.5. Threat Modeling Skills](#15-threat-modeling-skills)
-  - [1.6. Documentation Skills](#16-documentation-skills)
-  - [1.7. UI and Design Skills](#17-ui-and-design-skills)
+  - [1.5. DevOps and Operations Skills](#15-devops-and-operations-skills)
+  - [1.6. Threat Modeling Skills](#16-threat-modeling-skills)
+  - [1.7. Security and Compliance Skills](#17-security-and-compliance-skills)
+  - [1.8. Documentation Skills](#18-documentation-skills)
+  - [1.9. UI and Design Skills](#19-ui-and-design-skills)
 - [2. References](#2-references)
 
 ## 1. Agent Skills
@@ -57,7 +59,12 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 - [Dependabot](dependabot/SKILL.md)
   > External Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awesome-copilot) for [Dependabot](https://github.com/github/awesome-copilot/tree/main/skills/dependabot) configuration and management, including version updates, security updates, grouping, monorepos, and pull requests.
 
-### 1.5. Threat Modeling Skills
+### 1.5. DevOps and Operations Skills
+
+- [GitHub Actions Efficiency](github-actions-efficiency/SKILL.md)
+  > External Agent Skill from the MIT-licensed [GitHub Awesome-Copilot](https://github.com/github/awesome-copilot) collection for auditing [GitHub Actions efficiency](https://github.com/github/awesome-copilot/tree/main/skills/github-actions-efficiency), reducing CI runtime, redundant workflow execution, and runner cost through measurement-driven caching, concurrency, trigger, matrix, and job-shaping improvements.
+
+### 1.6. Threat Modeling Skills
 
 - [TM7 Threat Model](tm7-threat-model/SKILL.md)
   > External Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awesome-copilot) for generating valid [Microsoft Threat Modeling Tool (TMT)](https://github.com/github/awesome-copilot/tree/main/skills/tm7-threat-model) v7.3+ files with diagrams and STRIDE threats.
@@ -65,7 +72,12 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 - [Threat Modeling ICS](threat-modeling-ics/SKILL.md)
   > Threat modeling for OT/ICS systems using Microsoft TMT, STRIDE, MITRE ATT&CK for ICS, CWE, and CVSS v4.0.
 
-### 1.6. Documentation Skills
+### 1.7. Security and Compliance Skills
+
+- [GitHub Actions Hardening](github-actions-hardening/SKILL.md)
+  > External Agent Skill from the MIT-licensed [GitHub Awesome-Copilot](https://github.com/github/awesome-copilot) collection for security review and [hardening of GitHub Actions workflows](https://github.com/github/awesome-copilot/tree/main/skills/github-actions-hardening), including untrusted-input injection, privileged triggers, mutable action references, token scope, OIDC, secrets, artifacts, caches, and runner exposure.
+
+### 1.8. Documentation Skills
 
 - [Architecture Decision Records (ADR)](adr/SKILL.md)
   > Creates and maintains Architecture Decision Records following a structured format with State, Context, Decision, Considered, Consequences, Implementation, and References sections.
@@ -73,7 +85,7 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 - [Technical Article](technical-article/SKILL.md)
   > Creates, revises, and reviews convention-style technical articles using formal language, numbered Markdown structure, taxonomies, examples, and source-qualified references.
 
-### 1.7. UI and Design Skills
+### 1.9. UI and Design Skills
 
 - [Material Design 3](material-3/SKILL.md)
   > External Agent Skill from the MIT-licensed [hamen/material-3-skill](https://github.com/hamen/material-3-skill) for Material Design 3 implementation across Jetpack Compose, Flutter, and limited web, including design tokens, 30+ components, theming, adaptive layout, M3 Expressive guidance, accessibility, and compliance auditing.
