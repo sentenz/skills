@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.15.0](https://github.com/sentenz/skills/compare/v1.14.0...v1.15.0) (2026-08-29)
+
+
+### Features
+
+* add GitHub Actions agent skills ([#112](https://github.com/sentenz/skills/issues/112)) ([ef51369](https://github.com/sentenz/skills/commit/ef513692b7b46af6907b5d31d67f01997d858b93))
+
 # [1.14.0](https://github.com/sentenz/skills/compare/v1.13.1...v1.14.0) (2026-08-26)
 
 
