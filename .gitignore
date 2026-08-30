@@ -3,6 +3,7 @@
 ### Miscellaneous ###
 logs/*
 *.log.*
+
 public/
 
 ### Dotenv ###

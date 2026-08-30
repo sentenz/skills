@@ -31,17 +31,21 @@ help:
 
 # NOTE May require elevated privileges (`sudo`) to install dependencies on the host system.
 #
-## Initialize a software development workspace with requisites
+## Initialize a software development workspace with prerequisites
 bootstrap:
 	apt update && apt install -y \
-		npm \
-		curl
+		make \
+		git \
+		python3 \
+		curl \
+		npm
 .PHONY: bootstrap
 
 # NOTE May require elevated privileges (`sudo`) to install dependencies on the host system.
 #
 ## Install and configure all dependencies essential for development
 setup:
+	apt update && apt install -y poppler-utils
 	curl -LsSf https://astral.sh/uv/install.sh | sh
 .PHONY: setup
 
@@ -50,8 +54,12 @@ setup:
 ## Remove development artifacts and restore the host to its pre-setup state
 teardown:
 	apt remove -y \
+		make \
+		git \
+		python3 \
+		curl \
 		npm \
-		curl
+		poppler-utils
 .PHONY: teardown
 
 # ─── Git Hooks Manager ───────────────────────────────────────────────────────────────────────────
@@ -69,19 +77,22 @@ githooks-lefthook-deinitialize:
 # ─── Skills Manager ──────────────────────────────────────────────────────────────────────────────
 
 ## Provision new Agent Skills into the project environment
-skills-agent-add:
-	npx skills@v1.5.15 add sentenz/skills
-.PHONY: skills-agent-add
+agent-skills-add:
+	DISABLE_TELEMETRY=1 \
+	npx skills@1.5.15 add sentenz/skills
+.PHONY: agent-skills-add
 
 ## Synchronize and update existing Agent Skills in the project environment
-skills-agent-update:
-	npx skills@v1.5.15 update sentenz/skills --skill skills/dependabot
-.PHONY: skills-agent-update
+agent-skills-update:
+	DISABLE_TELEMETRY=1 \
+	npx skills@1.5.15 update sentenz/skills
+.PHONY: agent-skills-update
 
 ## Restore Agent Skills in the project environment to a previous state
-skills-agent-restore:
-	npx skills@v1.5.15 experimental_install
-.PHONY: skills-agent-restore
+agent-skills-restore:
+	DISABLE_TELEMETRY=1 \
+	npx skills@1.5.15 experimental_install
+.PHONY: agent-skills-restore
 
 # ─── Dependency Manager ──────────────────────────────────────────────────────────────────────────
 
@@ -471,7 +482,7 @@ sast-gitleaks-staged:
 	docker run --rm -v "${PWD}:/workspace" -w /workspace "$(SAST_IMAGE_GITLEAKS)" protect --redact --staged --source /workspace --report-format json --report-path logs/sast/gitleaks-protect.json 2>&1
 .PHONY: sast-gitleaks-staged
 
-SAST_IMAGE_TRUFFLEHOG ?= trufflesecurity/trufflehog:3.97.0@sha256:ff4c95e9df7d645daf2140e3ca1039031c63106268d5fbb25feb43ceca1bcc33
+SAST_IMAGE_TRUFFLEHOG ?= trufflesecurity/trufflehog:3.96.0@sha256:aa821cf4ace8861c7d096d83818cdf7bb9719028a52d37a52eaad44086a52577
 
 ## Scan local filesystem for leaked secrets using TruffleHog and generate a report
 sast-trufflehog-fs:
@@ -534,7 +545,7 @@ sast-cosign-verify:
 	docker run --rm -v "${HOME}/.docker/config.json:/root/.docker/config.json" -v "${PWD}:/workspace" -w /workspace "$(SAST_IMAGE_COSIGN)" verify-attestation --key cosign.pub --type cyclonedx "$(filter-out $@,$(MAKECMDGOALS))" > logs/sbom/sbom.cdx.intoto.jsonl 2> logs/sast/cosign-verify.log
 .PHONY: sast-cosign-verify
 
-# ─── Static Site Generator (SSG) ────────────────────────────────────────────────────────────────
+# ─── Static Site Generator (SSG) ─────────────────────────────────────────────────────────────────
 
 ### Setup documentation pages with MkDocs
 pages-mkdocs-setup:
@@ -567,3 +578,29 @@ pages-doxygen-serve:
 	echo "Serving $$OUTDIR at http://localhost:8000"; \
 	python3 -m http.server --directory "$$OUTDIR" 8000
 .PHONY: pages-doxygen-serve
+
+# ─── Risk Assessment ─────────────────────────────────────────────────────────────────────────────
+
+# Usage: make risk-validate-cvss <file>
+#
+## Validate CVSS scores in a CSV file
+risk-validate-cvss:
+	@if [ -z "$(filter-out $@,$(MAKECMDGOALS))" ]; then \
+		echo "usage: make risk-validate-cvss <file>" >&2; \
+		exit 1; \
+	fi
+
+	@python3 skills/threat-modeling-ics/scripts/validate_cvss.py --csv "$(filter-out $@,$(MAKECMDGOALS))"
+.PHONY: risk-validate-cvss
+
+# Usage: make risk-validate-csv <source> <artifact>
+#
+## Validate an entire generated OT/ICS threat-model CSV and report all findings.
+risk-validate-csv:
+	@if [ -z "$(filter-out $@,$(MAKECMDGOALS))" ]; then \
+		echo "usage: make risk-validate-csv <source> <artifact>" >&2; \
+		exit 1; \
+	fi
+
+	@python3 skills/threat-modeling-ics/scripts/validate_csv.py --source "$(word 1,$(filter-out $@,$(MAKECMDGOALS)))" --artifact "$(word 2,$(filter-out $@,$(MAKECMDGOALS)))"
+.PHONY: risk-validate-csv

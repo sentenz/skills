@@ -1362,7 +1362,7 @@ def main() -> int:
             "all findings with actual/expected diffs."
         )
     )
-    parser.add_argument("--csv", required=True, help="Generated threat-model CSV")
+    parser.add_argument("--artifact", required=True, help="Generated threat-model CSV")
     parser.add_argument(
         "--source",
         help="Optional raw TMT CSV used to verify the preserved row inventory",
@@ -1396,7 +1396,7 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    output_path = Path(args.csv).expanduser()
+    output_path = Path(args.artifact).expanduser()
     source_path = Path(args.source).expanduser() if args.source else None
     attack_path = args.attack.expanduser()
     cwe_path = args.cwe.expanduser()

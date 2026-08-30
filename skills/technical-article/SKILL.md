@@ -565,7 +565,6 @@ An article is complete only when all applicable gates pass.
 
 ## 8. References
 
-- Sentenz [Convention](https://github.com/sentenz/convention) repository.
 - GitHub [Basic writing and formatting syntax](https://docs.github.com/en/get-started/writing-on-github) documentation.
 - CommonMark [Specification](https://spec.commonmark.org/) specification.
 - Agent Skills [Specification](https://agentskills.io/specification) specification.

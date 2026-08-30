@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.29"
+  version: "1.7.32"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -113,10 +113,10 @@ STRIDE is a threat-classification model that categorizes threats into six types:
 
 ### 3.3. MITRE ATT&CK
 
-[MITRE ATT&CK (Adversarial Tactics, Techniques, and Common Knowledge)](https://attack.mitre.org/) for ICS (Industrial Control Systems) provides the technique taxonomy for threat enrichment.
+[MITRE ATT&CK (Adversarial Tactics, Techniques, and Common Knowledge)](https://attack.mitre.org/) for ICS (Industrial Control Systems) provides an adversary-behavior technique taxonomy, technique-specific mitigation relationships, and detection strategies and analytics for threat enrichment, control derivation, and telemetry requirements.
 
 > [!NOTE]
-> Apply [MITRE ATT&CK for ICS](https://attack.mitre.org/matrices/ics/) and validate every technique against the active, non-revoked, non-deprecated technique set in the review asset.
+> Apply [MITRE ATT&CK for ICS](https://attack.mitre.org/matrices/ics/) and validate every technique against the active, non-revoked, non-deprecated technique set in the assets.
 
 ### 3.4. MITRE EMB3D
 
@@ -127,7 +127,7 @@ STRIDE is a threat-classification model that categorizes threats into six types:
 
 ### 3.5. MITRE CWE
 
-[MITRE CWE (Common Weakness Enumeration)](https://cwe.mitre.org/) records the most specific root weakness supported by the threat statement and architecture evidence.
+[MITRE CWE (Common Weakness Enumeration)](https://cwe.mitre.org/) records the most specific root weakness supported by affirmative product, architecture, design, implementation, configuration, or verified behavioral evidence.
 
 > [!NOTE]
 > Apply [MITRE CWE Mapping Rules](references/mapping-rules.md#13-mitre-cwe-mapping-rules) and validate every weakness against the versioned CWE review asset.
@@ -275,7 +275,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
 4. Output Baseline
 
-    **Action:** Read [SERIAL_Threat_Model_Generated.csv](references/SERIAL_Threat_Model_Generated.csv) before starting the row-by-row review.
+    **Action:** Read [Example_Threat_Model_Generated.csv](references/Example_Threat_Model_Generated.csv) before starting the row-by-row review.
 
     - Use the completed example only as a schema, scoring, and narrative-quality baseline. Do not copy system-specific threats, mappings, scores, actors, treatments, or approvals.
     - Compare the planned output against the example's exact column order, semicolon delimiter, quoted `Description` and `Justification` fields, comma-decimal score format, and structured rationale pattern.
@@ -305,7 +305,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
 2. MITRE ATT&CK for ICS
 
-    **Action:** Populate `ATT&CK ID` when a concrete ATT&CK for ICS technique is supported by the TMT row and architecture evidence.
+    **Action:** Populate `ATT&CK ID` only when a concrete active ATT&CK for ICS technique matches the adversary behavior described by the TMT row and architecture evidence.
     - Record the most relevant technique ID(s) in `ATT&CK ID`.
     - Use `N/A` when no ICS-specific ATT&CK technique applies to a finalized row.
     - Apply Field Resolution Semantics.
@@ -334,10 +334,10 @@ Save and integrate intermediate results after each step. When the objective is p
 
 4. MITRE CWE
 
-    **Action:** Populate `CWE ID` when the root weakness is identifiable from the TMT row, architecture evidence, ATT&CK behavior, or EMB3D device-property threat.
+    **Action:** Populate `CWE ID` only when affirmative product, architecture, design, implementation, configuration, test, or verified behavioral evidence establishes the root weakness. STRIDE, ATT&CK, and EMB3D may nominate candidate weaknesses but SHALL NOT independently substantiate a CWE mapping.
     - Apply [MITRE CWE Mapping Rules](references/mapping-rules.md#13-mitre-cwe-mapping-rules) and select the most specific supported weakness.
     - Use comma-separated values when multiple concrete weaknesses are required.
-    - Use `N/A` when no underlying weakness applies to a finalized row.
+    - Use `N/A` when the finalized row has a concrete threat, attack path, or impact but no underlying product weakness can be defensibly identified.
     - Apply Field Resolution Semantics.
     - In `Justification`, prefer weakness name or exploit behavior wording unless repeating the ID is required for disambiguation.
 
@@ -468,8 +468,8 @@ Save and integrate intermediate results after each step. When the objective is p
     - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, residual risk posture, and threat actor selection decision.
 
     **Script Usage:**
-    - [scripts/validate_output.py](scripts/validate_output.py)
-      > Run `uv run ./scripts/validate_output.py --csv '<Device_Name>_Threat_Model_Generated.csv' --source '<Device_Name>_Threat_Model.csv'` to validate the complete CSV, active ATT&CK techniques, mappable CWE weaknesses, cited EMB3D mitigations, and source traceability, then print an actual-versus-expected diff for every finding.
+    - [scripts/validate_csv.py](scripts/validate_csv.py)
+      > Run `uv run ./scripts/validate_csv.py --source '<Device_Name>_Threat_Model.csv' --artifact '<Device_Name>_Threat_Model_Generated.csv'` to validate the complete CSV, active ATT&CK techniques, mappable CWE weaknesses, cited EMB3D mitigations, and source traceability, then print an actual-versus-expected diff for every finding.
     - [scripts/validate_cvss.py](scripts/validate_cvss.py)
       > Run `uv run ./scripts/validate_cvss.py --csv '<Device_Name>_Threat_Model_Generated.csv'` to validate all CVSS vectors in the `CVSS v4.0` columns and compare the calculated score with the stored score.
 

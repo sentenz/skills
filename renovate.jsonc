@@ -3,16 +3,15 @@
   "extends": [
     "config:recommended"
   ],
-  "rebaseWhen": "auto",
+  "rebaseWhen": "behind-base-branch",
   "minimumReleaseAge": "1 day",
   "minimumReleaseAgeBehaviour": "timestamp-optional",
   "internalChecksFilter": "strict",
   "dependencyDashboard": true,
   "prHourlyLimit": 0,
   "prConcurrentLimit": 0,
-  "commitBody": null,
-  "commitBodyTable": false,
   "ignorePaths": [
+    "**/vendor/**",
     "**/node_modules/**",
     "**/bower_components/**",
     "**/charts/**",
@@ -63,7 +62,7 @@
       "enabled": false
     },
     {
-      "description": "Introduces breaking changes or requires code adjustments due to changes in public APIs.",
+      "description": "Group major updates.",
       "matchUpdateTypes": [
         "major"
       ],
@@ -72,7 +71,7 @@
       "automerge": false
     },
     {
-      "description": "Introduces backward-compatible functionality improvements and feature additions.",
+      "description": "Group minor updates.",
       "matchUpdateTypes": [
         "minor"
       ],
@@ -81,7 +80,7 @@
       "automerge": false
     },
     {
-      "description": "Introduces backward-compatible bug fixes and small corrections.",
+      "description": "Group patch updates.",
       "matchUpdateTypes": [
         "patch"
       ],
@@ -90,7 +89,7 @@
       "automerge": false
     },
     {
-      "description": "Container image digest bumps across Dockerfiles and Containerfiles.",
+      "description": "Group container image digest bumps across Dockerfiles and Containerfiles.",
       "matchManagers": [
         "dockerfile",
         "containerfile"
@@ -104,6 +103,7 @@
         "patch",
         "digest"
       ],
+      "pinDigests": true,
       "groupName": "container digests",
       "groupSlug": "container-digests",
       "automerge": false

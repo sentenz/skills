@@ -8,7 +8,7 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
   - [1.1. Prerequisites](#11-prerequisites)
   - [1.2. Installation](#12-installation)
   - [1.3. Usage](#13-usage)
-- [2. Contribute](#2-contribute)
+- [2. Contribution](#2-contribution)
 - [3. Troubleshoot](#3-troubleshoot)
   - [3.1. Skill Invocation](#31-skill-invocation)
 - [4. References](#4-references)
@@ -25,6 +25,13 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
   sudo apt install -y nodejs
   ```
 
+- [NPM](https://www.npmjs.com/get-npm)
+  > NPM is required for managing dependencies and using the skills CLI for validation and integration.
+
+  ```bash
+  sudo apt install npm
+  ```
+
 - [Skills CLI](https://skills.sh/docs/cli)
   > CLI tool for managing AI agent skills in development projects.
 
@@ -34,15 +41,18 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
 
 ### 1.2. Installation
 
-- Install
+- CLI
   > Add skills to a project using Vercel [Skills](https://skills.sh/) CLI.
 
   ```bash
   # Add a skill from the skill registry repository
-  skills add sentenz/skills
+  skills add <skill-repo-url>
+  ```
 
-  # Restore from skills-lock.json
-  skills experimental_install
+- Tasks
+
+  ```bash
+  make agent-skills-add
   ```
 
 ### 1.3. Usage
@@ -73,9 +83,9 @@ Available skills can be activated by agents based on defined triggers and contex
 - [UI and Design Skills](skills/README.md#18-ui-and-design-skills)
   > Material Design 3 implementation guidance for components, design tokens, theming, adaptive layouts, accessibility, and compliance auditing.
 
-## 2. Contribute
+## 2. Contribution
 
-[CONTRIBUTING.md](CONTRIBUTING.md) provides guidelines and instructions for contributing to the project.
+[CONTRIBUTING.md](CONTRIBUTING.md) provides guidance and instructions for contributing to the project.
 
 ## 3. Troubleshoot
 
