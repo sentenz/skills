@@ -13,36 +13,35 @@ Use these templates after completing review steps 1–13. Select the template fr
 
 Use the completed SERIAL baseline as evidence for narrative shape, not as text to copy:
 
-- For `Mitigated` rows, move from the concrete scenario to the protocol or control limitation, required access and actor when material, applied controls, residual risk, and treatment.
+- For `Mitigated` rows, move from the concrete scenario to the protocol or control limitation, required access and actor when material, enforcement-boundary control categories, residual risk, and treatment.
 - For `Not Applicable` rows, use a shorter contradiction narrative that identifies the impossible or eliminated attack path.
-- Include only the EMB3D mitigation levels that apply. Do not emit empty Foundational, Intermediate, or Leading clauses.
-- Use `Implemented controls` for verified controls enforced within the assessed product or device boundary.
-- Use `Compensating controls` for verified controls enforced outside the assessed product or device boundary, including environmental, installation, network, monitoring, physical-access, or procedural measures.
-- Do not use `Basic mitigation` or `Basic controls`. `Basic` is not an EMB3D mitigation level and does not communicate the control enforcement boundary.
+- Classify verified controls as `Implemented controls` when enforced within the assessed product or device boundary and `Compensating controls` when enforced outside that boundary.
+- Include only the control categories and EMB3D source levels that apply. A compensating-only mitigated narrative is valid. Do not emit an empty or invented `Implemented controls` clause.
+- Keep `EMB3D Foundational mitigation`, `EMB3D Intermediate mitigation`, and `EMB3D Leading mitigation` clauses separate from the enforcement-boundary categories.
 
 Do not treat omissions in an example row as permission to omit evidence required by the current output contract or mapping rules.
 
 ## 2. Universal Rules
 
 - State the decision rationale before supporting framework details.
-- Describe behavior and evidence rather than repeating `ATT&CK ID`, `EMB3D PID`, `EMB3D TID`, `CWE ID`, the full CVSS vector, or other dedicated-column values.
-- For every populated `EMB3D TID`, describe the architecture or product evidence that makes at least one recorded `EMB3D PID` applicable. A source PID-to-TID relationship is necessary but does not by itself prove that the property exists in the assessed product.
+- Describe behavior and evidence rather than repeating `ATT&CK ID`, `EMB3D TID`, `CWE ID`, the full CVSS vector, or other dedicated-column values.
 - When retaining a CWE marked `Allowed-with-Review` or `Discouraged`, add `CWE mapping rationale: ...` with the supporting evidence and why no more-specific `Allowed` entry fits.
-- Classify controls by where they are enforced, not by perceived strength. A firmware, hardware, or product-integrated control verified inside the assessed product or device boundary is an `Implemented control`. A gateway, firewall, segmentation mechanism, monitoring service, cabinet or site-access restriction, external workstation control, or procedure enforced outside that same boundary is a `Compensating control`.
-- Include an MID only when row evidence supports the mitigation, the mitigation asset maps it to at least one TID in the row, and the row's PID-to-TID relationship is source-valid. Copy its exact source name and Foundational, Intermediate, or Leading level. Distinguish a source-backed recommendation from a control verified as implemented. Omit MIDs when `EMB3D TID` is `N/A`. No dedicated MID column exists.
-- Do not present an external gateway, network firewall, segmentation control, monitoring service, cabinet or site-access restriction, external workstation control, or procedure as an EMB3D mitigation implemented by the embedded device. Record such measures as compensating controls and describe the device-native residual exposure separately.
+- Define the assessed product or device boundary before classifying controls. If a control spans the boundary, split the narrative into separately evidenced within-boundary and outside-boundary parts.
+- Use `Implemented controls:` only for verified controls enforced inside the assessed boundary. Use `Compensating controls:` for external physical, network, workstation, installation, monitoring, or procedural controls.
+- Include an MID only when row evidence supports the mitigation and the mitigation asset maps it to at least one TID in the row. Copy its exact source name and Foundational, Intermediate, or Leading level under an `EMB3D <level> mitigation:` clause. Omit MIDs when `EMB3D TID` is `N/A`. No dedicated MID column exists.
+- Treat an MID as source-backed guidance unless device-specific evidence proves implementation. When claiming implementation, add `Device-specific evidence:` to the EMB3D clause and describe the verified within-boundary behavior separately under `Implemented controls:`.
 - Add attack vector, access requirements, minimum actor, CVSS severity, likelihood, or inherent risk only when they explain the decision.
 - End a finalized risk narrative with the treatment-specific evidence: remaining exposure, residual risk, owner or approving stakeholder, and approval mechanism where required.
 - Use no semicolons or embedded line breaks. Let the CSV writer enclose the complete cell in double quotes.
-- Never invent a device property, control, owner, approval, transfer mechanism, or architectural fact to complete a template.
+- Never invent a control, owner, approval, transfer mechanism, or architectural fact to complete a template.
 
 ## 3. Mitigated
 
 ```plaintext
-[Actor or failure mode] can [action] through [protocol, interface, or trust relationship], causing [effect]. [Protocol, component, or process] lacks [control] or relies on [validated limitation]. [Optional: EMB3D property evidence: [architecture or product fact] supports [property name].] [Optional: The path requires [access] and the minimum capable actor is [actor] because [capability evidence].] [Optional: Implemented controls include [confirmed controls enforced within the assessed product or device boundary].] [Optional: Compensating controls include [confirmed external, environmental, installation, network, monitoring, physical-access, workstation, or procedural controls enforced outside the assessed product or device boundary], while [remaining device-native exposure] remains.] [Optional: Foundational mitigation: [name] ([MID-NNN]). Intermediate mitigation: [name] ([MID-NNN]). Leading mitigation: [name] ([MID-NNN]).] Residual risk is [level] after [controls and remaining exposure]. Treatment is [Mitigation, Acceptance, or Transfer] because [decision rationale]. [Residual-risk owner or approving stakeholder] records approval through [mechanism or pending status].
+[Actor or failure mode] can [action] through [protocol, interface, or trust relationship], causing [effect]. [Protocol, component, or process] lacks [control] or relies on [validated limitation]. [Optional: The path requires [access] and the minimum capable actor is [actor] because [capability evidence].] [Optional: Implemented controls: [verified controls enforced within the assessed product or device boundary].] [Optional: Compensating controls: [controls enforced outside the assessed product or device boundary].] [Optional: EMB3D Foundational mitigation: [exact source name] ([MID-NNN]). EMB3D Intermediate mitigation: [exact source name] ([MID-NNN]). EMB3D Leading mitigation: [exact source name] ([MID-NNN]).] [When claiming MID implementation: Device-specific evidence: [design, configuration, test, or verified behavior evidence].] Residual risk is [level] after [controls and remaining exposure]. Treatment is [Mitigation, Acceptance, or Transfer] because [decision rationale]. [Residual-risk owner or approving stakeholder] records approval through [mechanism or pending status].
 ```
 
-For `Acceptance`, replace the control-focused treatment sentence with the business rationale, acceptance threshold, approving stakeholder, and explicit approval mechanism. For `Transfer`, identify the named third party, contract, SLA, warranty, insurance policy, or managed service and state which consequences remain with the product owner.
+Omit every optional category that lacks evidence. In particular, a mitigated narrative supported only by external controls should contain `Compensating controls:` and no `Implemented controls:` clause. For `Acceptance`, replace the control-focused treatment sentence with the business rationale, acceptance threshold, approving stakeholder, and explicit approval mechanism. For `Transfer`, identify the named third party, contract, SLA, warranty, insurance policy, or managed service and state which consequences remain with the product owner.
 
 ## 4. Not Applicable
 
@@ -58,7 +57,7 @@ Name the architectural record or design decision when `Risk Treatment = Avoidanc
 [Candidate scenario and affected interface]. The row remains Needs Investigation because [specific evidence gap or conflict]. The gap prevents a defensible decision for [affected mappings, score, actor, treatment, or approval]. Resolve it with [required artifact, test, owner decision, or architecture clarification].
 ```
 
-Leave unsupported review fields blank. For EMB3D, leave both `EMB3D PID` and `EMB3D TID` blank when device-property applicability is unresolved. When device-property applicability is established but the mapped threat's scenario relevance remains unresolved, retain the evidence-backed `EMB3D PID`, leave `EMB3D TID` blank, and keep the row in `Needs Investigation` until the threat can be confirmed or excluded. Do not convert missing evidence into `Not Applicable`, `Mitigated`, or a speculative governance decision.
+Leave unsupported review fields blank. Do not convert missing evidence into `Not Applicable`, `Mitigated`, or a speculative governance decision.
 
 ## 6. Not Started
 

@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.32"
+  version: "1.7.33"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -120,10 +120,10 @@ STRIDE is a threat-classification model that categorizes threats into six types:
 
 ### 3.4. MITRE EMB3D
 
-[MITRE EMB3D](https://emb3d.mitre.org/) for embedded-device properties, threats, and mitigations. Apply EMB3D property-first: establish architecture-supported device properties (`PID-*`), derive candidate threats (`TID-*`) from those properties, evaluate each candidate against the concrete threat scenario, and only then select source-backed mitigation candidates (`MID-*`).
+[MITRE EMB3D](https://emb3d.mitre.org/) for embedded-device properties, threats, and mitigations.
 
 > [!NOTE]
-> Apply the source-backed [EMB3D Mitigation Levels](references/mapping-rules.md#6-emb3d-mitigation-levels), never infer an EMB3D level from IEC 62443 SL, adversary capability, residual risk, or product-control maturity, and use EMB3D alongside—not instead of—ATT&CK when evidence supports both.
+> Apply [Control Classification and EMB3D Mitigations](references/mapping-rules.md#6-control-classification-and-emb3d-mitigations), classify controls by their enforcement boundary, never infer an EMB3D level from IEC 62443 SL or product-control maturity, and use EMB3D alongside—not instead of—ATT&CK when evidence supports both.
 
 ### 3.5. MITRE CWE
 
@@ -247,6 +247,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Action:** Record why the assessment is being performed and what product/system boundary it covers.
     - Identify whether the review is for EU CRA-aligned product risk assessment, general OT/ICS design review, supplier assurance, or another objective.
+    - Record the assessed product or device boundary before classifying controls. State whether enclosures, companion software, gateways, workstations, installation components, and operator procedures are inside or outside that boundary.
     - Record product name, intended use, deployment context, operational environment, trust boundaries, assumptions, exclusions, external dependencies, maintenance paths, and engineering interfaces.
 
 2. Input Contract
@@ -268,9 +269,9 @@ Save and integrate intermediate results after each step. When the objective is p
     - Retain native TMT columns in source order.
     - Preserve native source fields verbatim: `Id`, `Title`, `Category`, `Diagram`, `Interaction`, `Changed By`, `Description`, `Last Modified`.
     - Update native review fields only after analyst review: `State`, `Priority`, `Justification`.
-    - Append review columns in this exact order with these exact column names: `ATT&CK ID`, `EMB3D PID`, `EMB3D TID`, `CWE ID`, `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Threat Actor`, `Risk Treatment`, `Risk Approval`.
+    - Append review columns in this exact order with these exact column names: `ATT&CK ID`, `EMB3D TID`, `CWE ID`, `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Threat Actor`, `Risk Treatment`, `Risk Approval`.
     - Every output row must trace back to exactly one source row by native `Id`.
-    - If enrichment columns already exist, carry their values forward unchanged for already-reviewed rows unless the user explicitly requests re-review. Exception: an older reviewed row that contains `EMB3D TID` but predates `EMB3D PID` must have its EMB3D mapping revalidated property-first before it is considered finalized under this output contract; do not synthesize a PID from the TID without architecture evidence.
+    - If enrichment columns already exist, carry their values forward unchanged for already-reviewed rows unless the user explicitly requests re-review.
     - **Justification Quality:** Each justification must follow the narrative pattern defined in section [4.3. Review, Step 14](#43-review). Do not produce generic, short, or identifier-only justifications. Enclose the justification in double quotes. Avoid semicolons inside the justification text since the CSV is semicolon-delimited.
 
 4. Output Baseline
@@ -300,6 +301,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Use `Category` as the STRIDE anchor.
     - Use `Interaction` to determine attack vector, trust relationship, and applicable controls.
     - Use `Priority` and `State` only as initial TMT signals.
+    - Classify each confirmed control by its enforcement point using [Control Classification and EMB3D Mitigations](references/mapping-rules.md#6-control-classification-and-emb3d-mitigations).
     - Record assumptions and missing evidence in `Justification`.
     - When the assessment objective is compliance-oriented, treat each row as a traceable product risk statement tied to a concrete interface, trust relationship, or maintenance path.
 
@@ -318,34 +320,19 @@ Save and integrate intermediate results after each step. When the objective is p
 
 3. MITRE EMB3D
 
-    **Action:** Apply EMB3D property-first. Populate `EMB3D PID` from architecture or product evidence, derive candidate threats from those properties, and populate `EMB3D TID` only after the candidate threat is relevant to the concrete TMT scenario.
-    - Use EMB3D when the modeled asset is, contains, or depends on an embedded device such as a PLC, PAC, RTU, SIS controller, HMI appliance, gateway, edge node, drive, intelligent sensor, actuator, embedded communication module, firmware path, maintenance port, removable-media path, or device-identity mechanism.
-    - Enumerate the applicable device property or properties first. Record the most specific evidence-supported PID(s) in `EMB3D PID`, comma-separated when needed.
-    - For each selected PID, inspect its source-backed threat mappings. Treat those TIDs as candidates, not as confirmed vulnerabilities.
-    - Record a TID in `EMB3D TID` only when at least one recorded PID maps to it in the bundled EMB3D source and the threat's prerequisites, mechanism, and effect are supported by the row and architecture evidence.
-    - Do not assign an EMB3D TID solely because its title or description resembles a TMT/STRIDE threat. Keyword similarity is discovery evidence, not mapping evidence.
+    **Action:** Populate `EMB3D TID` when the modeled asset is, contains, or depends on an embedded device such as a PLC, PAC, RTU, SIS controller, HMI appliance, gateway, edge node, drive, intelligent sensor, actuator, embedded communication module, firmware path, maintenance port, removable-media path, or device-identity mechanism.
     - Use EMB3D in addition to ATT&CK when evidence supports both. Do not use EMB3D as a substitute for ATT&CK for ICS.
-    - Use `N/A` for both `EMB3D PID` and `EMB3D TID` when no EMB3D property/threat mapping applies to a finalized row.
-    - If property applicability is unresolved, leave both EMB3D fields blank and apply the mode-aware evidence-gap behavior rather than finalizing a speculative TID.
-    - When `Interaction` names JTAG, UART, RS-232, RS-485, SPI, I²C, GPIO, USB, Modbus RTU, proprietary serial, or a firmware update path, explicitly enumerate the relevant EMB3D properties before finalizing `EMB3D PID`, `EMB3D TID`, or an EMB3D-informed `CWE ID`.
+    - Record matched TID(s) in `EMB3D TID`, comma-separated when needed.
+    - Use `N/A` when no EMB3D threat mapping applies to a finalized row.
+    - When `Interaction` names JTAG, UART, RS-232, RS-485, SPI, I²C, GPIO, USB, Modbus RTU, proprietary serial, or a firmware update path, cross-reference the EMB3D Properties Mapper before finalizing `EMB3D TID` and `CWE ID`.
     - Apply Field Resolution Semantics.
-    - In `Justification`, describe the product fact that supports the selected PID and the scenario evidence that makes the mapped TID relevant without merely repeating identifiers.
-
-    **Mitigation Semantics:**
-    - Treat TID-to-MID relationships as candidate mitigation guidance, not proof that the product implements a control or that the threat is fully mitigated.
-    - Cite an MID only when it maps to at least one `EMB3D TID` in the row and that TID is source-backed by at least one `EMB3D PID` in the row.
-    - Classify verified controls by enforcement boundary. Use `Implemented controls` for controls enforced within the assessed product or device boundary and `Compensating controls` for controls enforced outside the assessed product or device boundary.
-    - An external gateway, firewall, segmentation mechanism, monitoring service, cabinet or site-access restriction, external workstation control, or procedure may reduce residual system risk but must not be presented as an EMB3D MID implemented by the embedded device unless the device itself implements the cited mechanism.
-    - Preserve the MID's exact source level (`Foundational`, `Intermediate`, or `Leading`). Do not map EMB3D levels to IEC 62443 Security Levels or adversary capability.
-    - Do not use `Basic mitigation` or `Basic controls` as a control category. `Basic` is not an EMB3D mitigation level and does not identify where a control is enforced.
+    - In `Justification`, describe the mapped device property or missing control without repeating TIDs.
 
     **Data Access:**
     - Do not read or print the [assets/emb3d/](assets/emb3d/) JSON files directly.
-    - Discover properties, threats, and mitigations with `uv run ./scripts/query_emb3d.py --search '<terms>' --top 5`; narrow discovery with `--kind property`, `--kind threat`, or `--kind mitigation` when needed.
-    - Inspect an architecture-supported property first with `uv run ./scripts/query_emb3d.py --pid 'PID-NN' --include threats,hierarchy`.
-    - Inspect a candidate threat with `uv run ./scripts/query_emb3d.py --tid 'TID-NNN' --include properties,mitigations` and verify that at least one returned property is recorded in `EMB3D PID`.
-    - Inspect a candidate mitigation with `uv run ./scripts/query_emb3d.py --mid 'MID-NNN' --include threats` and verify that at least one returned threat is recorded in `EMB3D TID`.
-    - Treat the mitigation-centric query result as authoritative for each MID's exact name, EMB3D level, and associated TIDs; treat `resolved: false` properties as evidence gaps, and do not treat a source match as proof of implementation.
+    - Discover threats, properties, and mitigations with `uv run ./scripts/query_emb3d.py --search '<terms>' --top 5`; narrow discovery with `--kind threat`, `--kind property`, or `--kind mitigation` when needed.
+    - Inspect one selected identifier with `--tid 'TID-NNN'`, `--pid 'PID-NN'`, or `--mid 'MID-NNN'`; request only applicable `--include properties,mitigations,threats,hierarchy` fields.
+    - Treat the mitigation-centric query result as authoritative for each MID's exact name, EMB3D level, and associated TIDs. Treat `resolved: false` properties as evidence gaps. A source match is not proof of implementation, and an MID may be claimed as implemented only when device-specific design, configuration, test, or verified behavior evidence demonstrates enforcement within the assessed product or device boundary.
 
 4. MITRE CWE
 
@@ -416,7 +403,7 @@ Save and integrate intermediate results after each step. When the objective is p
     | --------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
     | `Not Started`         | Row has not yet been reviewed.                                                                 | Leave enrichment and governance fields blank except preserved source values.                                             |
     | `Not Applicable`      | Attack path is architecturally impossible, outside scope, or structurally eliminated.          | Name the contradiction or eliminated element and explain why the minimum actor was considered before rejecting the path. |
-    | `Mitigated`           | Confirmed controls, compensating measures, or design changes reduce risk to an accepted level. | Identify the control, residual risk, remaining exposure, owner, and approval mechanism.                                  |
+    | `Mitigated`           | Confirmed implemented controls, compensating controls, or design changes reduce risk to an accepted level. | Classify controls by enforcement boundary and identify residual risk, remaining exposure, owner, and approval mechanism. |
     | `Needs Investigation` | Critical evidence is missing or a key assumption cannot be validated.                          | Name the evidence gap and whether it affects actor assignment, scoring, treatment, or approval.                          |
 
     Do not use `Not Applicable` to downgrade a real weakness that merely has compensating controls, environmental restrictions, or an accepted residual risk.
@@ -436,7 +423,7 @@ Save and integrate intermediate results after each step. When the objective is p
     **Action:** Populate residual risk in `Justification` after `State` and `Priority` are revised and before selecting governance treatment.
     - Use one of `None`, `Info`, `Low`, `Medium`, `High`, or `Critical`.
     - For `Not Applicable`, record `None` when the attack path is structurally eliminated or outside scope.
-    - For `Mitigated`, record the remaining risk after confirmed controls, compensating measures, environmental constraints, or design changes are applied.
+    - For `Mitigated`, record the remaining risk after confirmed implemented controls, compensating controls, environmental constraints, or design changes are applied.
     - For `Needs Investigation` or unresolved rows, leave blank and record the evidence gap in `Justification`.
     - Do not use residual risk to lower `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, or `Risk Prioritization`.
 
@@ -461,11 +448,10 @@ Save and integrate intermediate results after each step. When the objective is p
     **Action:** Read [Justification Templates](references/justification-template.md), select the pattern for the final `State`, and write one concise analyst paragraph after steps 1–13 are complete.
     - State the evidence-based rationale for `State` and the concrete scenario, architectural contradiction, or evidence gap.
     - Add protocol, trust relationship, validation behavior, access, actor, scoring, and mapping details only when they explain the decision.
-    - For every populated `EMB3D TID`, state the architecture or product fact that makes at least one recorded `EMB3D PID` applicable. The source PID-to-TID relationship is necessary but does not itself prove that the property exists in the assessed product.
     - For finalized risks, include the treatment evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
-    - Cite an MID only when row evidence supports the mitigation. Copy its exact name and Foundational, Intermediate, or Leading source level from the mitigation-centric EMB3D asset and confirm that it maps to at least one TID in the row and that the TID is source-backed by at least one PID in the row. A source match does not prove implementation. Omit MIDs when `EMB3D TID` is `N/A`; describe verified non-EMB3D controls enforced within the assessed product or device boundary as `Implemented controls`.
-    - Distinguish `Implemented controls` from `Compensating controls` by enforcement boundary. Do not claim an external gateway, firewall, segmentation mechanism, monitoring service, cabinet or site-access restriction, external workstation control, or procedure implements an EMB3D MID on the device.
-    - Do not use `Basic mitigation` or `Basic controls` in generated justifications.
+    - Use `Implemented controls:` only for verified controls enforced within the assessed product or device boundary. Use `Compensating controls:` only for controls enforced outside that boundary. A mitigated narrative may contain only compensating controls when that is what the evidence supports. Do not invent an `Implemented controls:` clause.
+    - Keep EMB3D mitigations separate from both enforcement-boundary categories. Cite an MID only when row evidence supports the mitigation, copy its exact name and Foundational, Intermediate, or Leading level from the mitigation-centric EMB3D asset, prefix the clause with `EMB3D`, and confirm that it maps to at least one TID in the row.
+    - A source-backed MID does not prove implementation. Claim an MID as implemented only when the narrative identifies device-specific design, configuration, test, or verified behavior evidence demonstrating enforcement within the assessed product or device boundary. Omit MIDs when `EMB3D TID` is `N/A`.
     - Explain intentional `N/A` or blank fields once. Never invent missing evidence to complete a template.
     - Avoid unqualified legal safe-harbor language. Frame compliance-oriented statements as technical-documentation support or product-specific evidence pending stakeholder review.
     - Use no semicolons or embedded line breaks. Let the CSV writer enclose the complete `Justification` cell in double quotes.
@@ -481,14 +467,13 @@ Save and integrate intermediate results after each step. When the objective is p
     - Verify each output row against its source row.
     - Keep identifiers and score artifacts in dedicated columns and keep `Justification` as narrative rationale.
     - Reject rows where `Justification` is only an identifier token or parenthetical code reference.
-    - Reject finalized rows where an `EMB3D TID` is not backed by at least one recorded, source-mapped `EMB3D PID`.
     - Reject rows where `State`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Risk Treatment`, or `Risk Approval` contradict [Risk Treatment Mapping](references/mapping-rules.md#11-risk-treatment-mapping).
     - Reject rows that use legal or regulatory shorthand as the sole rationale for acceptance, transfer, mitigation, or avoidance.
     - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, residual risk posture, and threat actor selection decision.
 
     **Script Usage:**
     - [scripts/validate_csv.py](scripts/validate_csv.py)
-      > Run `uv run ./scripts/validate_csv.py --source '<Device_Name>_Threat_Model.csv' --artifact '<Device_Name>_Threat_Model_Generated.csv'` to validate the complete CSV, active ATT&CK techniques, mappable CWE weaknesses, cited EMB3D mitigations, and source traceability, then print an actual-versus-expected diff for every finding.
+      > Run `uv run ./scripts/validate_csv.py --source '<Device_Name>_Threat_Model.csv' --artifact '<Device_Name>_Threat_Model_Generated.csv'` to validate the complete CSV, active ATT&CK techniques, mappable CWE weaknesses, enforcement-boundary terminology, cited EMB3D mitigations, and source traceability, then print an actual-versus-expected diff for every finding.
     - [scripts/validate_cvss.py](scripts/validate_cvss.py)
       > Run `uv run ./scripts/validate_cvss.py --csv '<Device_Name>_Threat_Model_Generated.csv'` to validate all CVSS vectors in the `CVSS v4.0` columns and compare the calculated score with the stored score.
 
