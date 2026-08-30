@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.15.1](https://github.com/sentenz/skills/compare/v1.15.0...v1.15.1) (2026-08-30)
+
+### Bug Fixes
+
+* cleanup Agent Skills ([88fa7d3](https://github.com/sentenz/skills/commit/88fa7d3ca3b5693c57f3f6c3f83ae987c072d6ab))
+
 # [1.15.0](https://github.com/sentenz/skills/compare/v1.14.0...v1.15.0) (2026-08-29)
 
 
