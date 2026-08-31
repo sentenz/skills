@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.15.2](https://github.com/sentenz/skills/compare/v1.15.1...v1.15.2) (2026-08-31)
+
+### Bug Fixes
+
+* **ci:** remove unsupported Dependabot auto-approval ([54547f1](https://github.com/sentenz/skills/commit/54547f1e7f046dfbbfad6c3e84adbcc3a761156c))
+
 ## [1.15.1](https://github.com/sentenz/skills/compare/v1.15.0...v1.15.1) (2026-08-30)
 
 ### Bug Fixes
