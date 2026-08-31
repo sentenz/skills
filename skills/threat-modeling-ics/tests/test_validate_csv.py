@@ -6,17 +6,17 @@ import unittest
 from pathlib import Path
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "validate_csv.py"
-SKILL_ROOT = SCRIPT_PATH.parent.parent
-SPEC = importlib.util.spec_from_file_location("validate_csv", SCRIPT_PATH)
-if SPEC is None or SPEC.loader is None:
-    raise RuntimeError(f"cannot import validator from {SCRIPT_PATH}")
-validate_csv = importlib.util.module_from_spec(SPEC)
-sys.modules[SPEC.name] = validate_csv
-SPEC.loader.exec_module(validate_csv)
+_SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "validate_csv.py"
+_SKILL_ROOT = _SCRIPT_PATH.parent.parent
+_SPEC = importlib.util.spec_from_file_location("validate_csv", _SCRIPT_PATH)
+if _SPEC is None or _SPEC.loader is None:
+    raise RuntimeError(f"cannot import validator from {_SCRIPT_PATH}")
+_validate_csv = importlib.util.module_from_spec(_SPEC)
+sys.modules[_SPEC.name] = _validate_csv
+_SPEC.loader.exec_module(_validate_csv)
 
 
-PRIORITY_INPUTS = {
+_PRIORITY_INPUTS = {
     "Info": ("Info", "None"),
     "Low": ("Info", "Medium"),
     "Medium": ("Info", "Critical"),
@@ -25,8 +25,9 @@ PRIORITY_INPUTS = {
 }
 
 
-def make_record(**overrides: str):
-    row = {column: "" for column in validate_csv.EXPECTED_COLUMNS}
+def _make_record(**overrides: str) -> _validate_csv.Record:
+    """Build a validator record with valid risk-governance defaults."""
+    row = {column: "" for column in _validate_csv.EXPECTED_COLUMNS}
     row.update(
         {
             "Id": "test-1",
@@ -70,19 +71,20 @@ def make_record(**overrides: str):
                 "exposure remaining. Treatment is Transfer to Example Vendor under the "
                 "named SLA for outage consequences."
             )
-    return validate_csv.Record(
+    return _validate_csv.Record(
         tuple(
-            validate_csv.Cell(
+            _validate_csv.Cell(
                 row[column],
-                column in validate_csv.QUOTED_COLUMNS,
+                column in _validate_csv.QUOTED_COLUMNS,
             )
-            for column in validate_csv.EXPECTED_COLUMNS
+            for column in _validate_csv.EXPECTED_COLUMNS
         )
     )
 
 
-def validate(record):
-    return validate_csv.validate_risk_governance(
+def _validate(record: _validate_csv.Record) -> list[_validate_csv.Finding]:
+    """Run risk-governance validation for a synthetic test row."""
+    return _validate_csv.validate_risk_governance(
         record,
         row_number=2,
         threat_id="test-1",
@@ -91,7 +93,7 @@ def validate(record):
 
 class RiskGovernanceValidationTests(unittest.TestCase):
     def test_accepts_every_risk_matrix_combination(self):
-        for likelihood, severity_map in validate_csv.RISK_MATRIX.items():
+        for likelihood, severity_map in _validate_csv.RISK_MATRIX.items():
             for severity, expected_priority in severity_map.items():
                 with self.subTest(likelihood=likelihood, severity=severity):
                     treatment = (
@@ -99,11 +101,11 @@ class RiskGovernanceValidationTests(unittest.TestCase):
                         if expected_priority in {"Info", "Low"}
                         else "Mitigation"
                     )
-                    approval = validate_csv.RISK_APPROVAL_MATRIX[
+                    approval = _validate_csv.RISK_APPROVAL_MATRIX[
                         expected_priority
                     ][treatment]
-                    findings = validate(
-                        make_record(
+                    findings = _validate(
+                        _make_record(
                             **{
                                 "CVSS v4.0 Severity": severity,
                                 "Likelihood of Exploit": likelihood,
@@ -116,8 +118,8 @@ class RiskGovernanceValidationTests(unittest.TestCase):
                     self.assertEqual([], findings)
 
     def test_reports_priority_that_differs_from_matrix(self):
-        findings = validate(
-            make_record(
+        findings = _validate(
+            _make_record(
                 **{
                     "CVSS v4.0 Severity": "Critical",
                     "Likelihood of Exploit": "High",
@@ -132,10 +134,10 @@ class RiskGovernanceValidationTests(unittest.TestCase):
         self.assertEqual("Critical", findings[0].expected)
 
     def test_unfinished_rows_require_blank_governance_fields(self):
-        for state in validate_csv.UNFINISHED_STATES:
+        for state in _validate_csv.UNFINISHED_STATES:
             with self.subTest(state=state):
-                findings = validate(
-                    make_record(
+                findings = _validate(
+                    _make_record(
                         **{
                             "State": state,
                             "Risk Prioritization": "Low",
@@ -189,17 +191,21 @@ class RiskGovernanceValidationTests(unittest.TestCase):
             with self.subTest(expected_message=expected_message):
                 treatment_findings = [
                     finding
-                    for finding in validate(make_record(**overrides))
+                    for finding in _validate(_make_record(**overrides))
                     if finding.column == "Risk Treatment"
                 ]
                 self.assertEqual(1, len(treatment_findings))
                 self.assertEqual(expected_message, treatment_findings[0].message)
 
     def test_enforces_approval_matrix_and_allows_escalation(self):
-        for priority, (likelihood, severity) in PRIORITY_INPUTS.items():
-            for treatment in validate_csv.RISK_TREATMENTS:
-                state = "Not Applicable" if treatment == "Avoidance" else "Mitigated"
-                minimum = validate_csv.RISK_APPROVAL_MATRIX[priority][treatment]
+        for priority, (likelihood, severity) in _PRIORITY_INPUTS.items():
+            for treatment in _validate_csv.RISK_TREATMENTS:
+                state = (
+                    "Not Applicable"
+                    if treatment == "Avoidance"
+                    else "Mitigated"
+                )
+                minimum = _validate_csv.RISK_APPROVAL_MATRIX[priority][treatment]
                 base = {
                     "State": state,
                     "CVSS v4.0 Severity": severity,
@@ -210,8 +216,8 @@ class RiskGovernanceValidationTests(unittest.TestCase):
                 with self.subTest(priority=priority, treatment=treatment):
                     minimum_findings = [
                         finding
-                        for finding in validate(
-                            make_record(**base, **{"Risk Approval": minimum})
+                        for finding in _validate(
+                            _make_record(**base, **{"Risk Approval": minimum})
                         )
                         if finding.column == "Risk Approval"
                     ]
@@ -219,22 +225,27 @@ class RiskGovernanceValidationTests(unittest.TestCase):
 
                     escalated_findings = [
                         finding
-                        for finding in validate(
-                            make_record(**base, **{"Risk Approval": "Executive"})
+                        for finding in _validate(
+                            _make_record(
+                                **base,
+                                **{"Risk Approval": "Executive"},
+                            )
                         )
                         if finding.column == "Risk Approval"
                     ]
                     self.assertEqual([], escalated_findings)
 
-                    minimum_index = validate_csv.RISK_APPROVAL_ROLES.index(minimum)
+                    minimum_index = _validate_csv.RISK_APPROVAL_ROLES.index(
+                        minimum
+                    )
                     if minimum_index:
-                        lower_role = validate_csv.RISK_APPROVAL_ROLES[
+                        lower_role = _validate_csv.RISK_APPROVAL_ROLES[
                             minimum_index - 1
                         ]
                         lower_findings = [
                             finding
-                            for finding in validate(
-                                make_record(
+                            for finding in _validate(
+                                _make_record(
                                     **base,
                                     **{"Risk Approval": lower_role},
                                 )
@@ -248,8 +259,8 @@ class RiskGovernanceValidationTests(unittest.TestCase):
                         )
 
     def test_finalized_rows_reject_missing_risk_fields(self):
-        findings = validate(
-            make_record(
+        findings = _validate(
+            _make_record(
                 **{
                     "CVSS v4.0 Severity": "",
                     "Likelihood of Exploit": "",
@@ -272,8 +283,8 @@ class RiskGovernanceValidationTests(unittest.TestCase):
         )
 
     def test_rejects_noncanonical_risk_values(self):
-        findings = validate(
-            make_record(
+        findings = _validate(
+            _make_record(
                 **{
                     "Risk Prioritization": "medium",
                     "Risk Treatment": "mitigate",
@@ -343,37 +354,40 @@ class RiskGovernanceValidationTests(unittest.TestCase):
         for overrides, expected_messages in cases:
             with self.subTest(treatment=overrides.get("Risk Treatment")):
                 messages = {
-                    finding.message for finding in validate(make_record(**overrides))
+                    finding.message
+                    for finding in _validate(_make_record(**overrides))
                 }
                 self.assertEqual(expected_messages, messages)
 
     def test_bundled_example_exposes_invalid_info_mitigation(self):
         findings = []
-        output_records = validate_csv.read_records(
-            SKILL_ROOT / "references" / "Example_Threat_Model_Generated.csv",
+        output_records = _validate_csv.read_records(
+            _SKILL_ROOT / "references" / "Example_Threat_Model_Generated.csv",
             origin="output",
             findings=findings,
         )
-        source_records = validate_csv.read_source_records(
-            SKILL_ROOT / "references" / "Example_Threat_Model.csv",
+        source_records = _validate_csv.read_source_records(
+            _SKILL_ROOT / "references" / "Example_Threat_Model.csv",
             findings,
         )
-        findings.extend(validate_csv.validate_header(output_records))
+        findings.extend(_validate_csv.validate_header(output_records))
         findings.extend(
-            validate_csv.validate_rows(
+            _validate_csv.validate_rows(
                 output_records,
-                technique_index=validate_csv.load_attack_techniques(
-                    validate_csv.DEFAULT_ATTACK_SOURCE
+                technique_index=_validate_csv.load_attack_techniques(
+                    _validate_csv.DEFAULT_ATTACK_SOURCE
                 ),
-                weakness_index=validate_csv.load_cwe_weaknesses(
-                    validate_csv.DEFAULT_CWE_SOURCE
+                weakness_index=_validate_csv.load_cwe_weaknesses(
+                    _validate_csv.DEFAULT_CWE_SOURCE
                 ),
-                mitigation_index=validate_csv.load_emb3d_mitigations(
-                    validate_csv.DEFAULT_EMB3D_MITIGATIONS
+                mitigation_index=_validate_csv.load_emb3d_mitigations(
+                    _validate_csv.DEFAULT_EMB3D_MITIGATIONS
                 ),
             )
         )
-        findings.extend(validate_csv.validate_source(output_records, source_records))
+        findings.extend(
+            _validate_csv.validate_source(output_records, source_records)
+        )
 
         self.assertEqual(
             [
