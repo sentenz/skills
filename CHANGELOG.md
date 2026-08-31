@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.15.3](https://github.com/sentenz/skills/compare/v1.15.2...v1.15.3) (2026-08-31)
+
+### Bug Fixes
+
+* **ci:** merge Dependabot updates without auto-merge setting ([8313456](https://github.com/sentenz/skills/commit/8313456a4f80a46af326d32c5e815ff8ec9401a0))
+
 ## [1.15.2](https://github.com/sentenz/skills/compare/v1.15.1...v1.15.2) (2026-08-31)
 
 ### Bug Fixes
