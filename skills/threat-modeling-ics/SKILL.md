@@ -123,7 +123,7 @@ STRIDE is a threat-classification model that categorizes threats into six types:
 [MITRE EMB3D](https://emb3d.mitre.org/) for embedded-device properties, threats, and mitigations.
 
 > [!NOTE]
-> Apply [Control Classification and EMB3D Mitigations](references/mapping-rules.md#6-control-classification-and-emb3d-mitigations), classify controls by their enforcement boundary, never infer an EMB3D level from IEC 62443 SL or product-control maturity, and use EMB3D alongside—not instead of—ATT&CK when evidence supports both.
+> Apply [Control Classification and EMB3D Mitigations](references/mapping-rules.md#6-control-classification-and-emb3d-mitigations) to classify controls by their enforcement boundary.
 
 ### 3.5. MITRE CWE
 
@@ -399,12 +399,12 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Action:** Revise `State` using the full analytical context: TMT row, ATT&CK technique, EMB3D exposure, CWE weakness, CVSS severity, inherent risk prioritization, and threat actor.
 
-    | State                 | Use When                                                                                       | Justification Requirement                                                                                                |
-    | --------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-    | `Not Started`         | Row has not yet been reviewed.                                                                 | Leave enrichment and governance fields blank except preserved source values.                                             |
-    | `Not Applicable`      | Attack path is architecturally impossible, outside scope, or structurally eliminated.          | Name the contradiction or eliminated element and explain why the minimum actor was considered before rejecting the path. |
+    | State                 | Use When                                                                                                   | Justification Requirement                                                                                                |
+    | --------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+    | `Not Started`         | Row has not yet been reviewed.                                                                             | Leave enrichment and governance fields blank except preserved source values.                                             |
+    | `Not Applicable`      | Attack path is architecturally impossible, outside scope, or structurally eliminated.                      | Name the contradiction or eliminated element and explain why the minimum actor was considered before rejecting the path. |
     | `Mitigated`           | Confirmed implemented controls, compensating controls, or design changes reduce risk to an accepted level. | Classify controls by enforcement boundary and identify residual risk, remaining exposure, owner, and approval mechanism. |
-    | `Needs Investigation` | Critical evidence is missing or a key assumption cannot be validated.                          | Name the evidence gap and whether it affects actor assignment, scoring, treatment, or approval.                          |
+    | `Needs Investigation` | Critical evidence is missing or a key assumption cannot be validated.                                      | Name the evidence gap and whether it affects actor assignment, scoring, treatment, or approval.                          |
 
     Do not use `Not Applicable` to downgrade a real weakness that merely has compensating controls, environmental restrictions, or an accepted residual risk.
 
