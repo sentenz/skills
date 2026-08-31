@@ -14,7 +14,7 @@ Use these templates after completing review steps 1–13. Select the template fr
 Use the completed SERIAL baseline as evidence for narrative shape, not as text to copy:
 
 - For `Mitigated` rows, move from the concrete scenario to the protocol or control limitation, required access and actor when material, enforcement-boundary control categories, residual risk, and treatment.
-- For `Not Applicable` rows, use a shorter contradiction narrative that identifies the impossible or eliminated attack path.
+- For `Not Applicable` rows, use a shorter contradiction narrative that distinguishes a candidate scenario that never formed an extant risk from an otherwise applicable risk eliminated by a documented decision or action.
 - Classify verified controls as `Implemented controls` when enforced within the assessed product or device boundary and `Compensating controls` when enforced outside that boundary.
 - Include only the control categories and EMB3D source levels that apply. A compensating-only mitigated narrative is valid. Do not emit an empty or invented `Implemented controls` clause.
 - Keep `EMB3D Foundational mitigation`, `EMB3D Intermediate mitigation`, and `EMB3D Leading mitigation` clauses separate from the enforcement-boundary categories.
@@ -49,7 +49,7 @@ Omit every optional category that lacks evidence. In particular, a mitigated nar
 [Candidate scenario] does not apply because [architectural contradiction, absent capability, removed element, or out-of-scope boundary]. [Evidence] confirms that [rejected precondition or unavailable effect]. [Optional: The related weakness remains covered by threat row [Id or title] through [applicable path].]
 ```
 
-Name the architectural record or design decision when `Risk Treatment = Avoidance`. Do not add mitigation tiers, residual-risk ownership, or approval prose when the row has no residual risk and `Risk Approval = Not Required`.
+When `Risk Treatment = N/A`, identify the architectural contradiction, absent capability, or out-of-scope boundary that confirms no extant risk exists; do not describe this as avoidance. When `Risk Treatment = Avoidance`, name the approved design or operational decision and the action that eliminated an otherwise applicable risk source, then record approval at the level required by the inherent prioritization. Do not add mitigation tiers or residual-risk ownership when no residual risk remains.
 
 ## 5. Needs Investigation
 

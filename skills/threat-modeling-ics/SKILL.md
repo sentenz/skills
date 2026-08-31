@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.33"
+  version: "1.7.34"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -157,7 +157,7 @@ Determine likelihood from exploitation method and vulnerability state based on t
 Risk treatment is the governance decision to mitigate, accept, transfer, or avoid the inherent risk.
 
 > [!NOTE]
-> Apply [Treatment Semantics](references/mapping-rules.md#111-treatment-semantics) and the linked decision, compatibility, evidence, and approval mappings in the review workflow. Keep treatment traceable to inherent prioritization, residual risk, controls, ownership, and approval evidence.
+> Apply [Treatment Semantics](references/mapping-rules.md#111-treatment-semantics) and the linked decision, compatibility, evidence, and approval mappings in the review workflow. Treat inherent prioritization as an urgency and governance input rather than an automatic treatment decision, and keep treatment traceable to risk tolerance, residual risk, controls, ownership, and approval evidence.
 
 ## 4. Workflow
 
@@ -177,11 +177,11 @@ Save and integrate intermediate results after each step. When the objective is p
 
     Apply these semantics consistently across all review steps and output fields.
 
-    | Value           | Meaning                                                                                                                          | Use                                                                         |
-    | --------------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-    | `N/A`           | The finalized reviewed row has no applicable framework identifier or mapping for that column.                                    | Use for non-applicable ATT&CK, EMB3D, or CWE mappings.                      |
-    | Blank           | The field remains unresolved because the review is incomplete, blocked, or intentionally carried forward from an unreviewed row. | Use in strict, best-effort, or batch mode when evidence is missing.         |
-    | Populated value | Evidence supports the mapping, score, exploit maturity, prioritization, residual risk, treatment, or approval decision.          | Use only after the relevant data source and mapping rule have been checked. |
+    | Value           | Meaning                                                                                                                          | Use                                                                                                                                                                                |
+    | --------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+    | `N/A`           | The finalized reviewed row has no applicable framework identifier, mapping, or governance treatment for that column.             | Use for non-applicable ATT&CK, EMB3D, or CWE mappings and for `Risk Treatment` when a `Not Applicable` candidate scenario never formed an extant risk.                             |
+    | Blank           | The field remains unresolved because the review is incomplete, blocked, or intentionally carried forward from an unreviewed row. | Use in strict, best-effort, or batch mode when evidence is missing.                                                                                                                |
+    | Populated value | Evidence supports the mapping, score, exploit maturity, prioritization, residual risk, treatment, or approval decision.          | Use only after the relevant data source and mapping rule have been checked. Use `Avoidance` only for a documented decision or action that eliminated an otherwise applicable risk. |
 
 2. Execution Mode
 
@@ -399,12 +399,12 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Action:** Revise `State` using the full analytical context: TMT row, ATT&CK technique, EMB3D exposure, CWE weakness, CVSS severity, inherent risk prioritization, and threat actor.
 
-    | State                 | Use When                                                                                                   | Justification Requirement                                                                                                |
-    | --------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-    | `Not Started`         | Row has not yet been reviewed.                                                                             | Leave enrichment and governance fields blank except preserved source values.                                             |
-    | `Not Applicable`      | Attack path is architecturally impossible, outside scope, or structurally eliminated.                      | Name the contradiction or eliminated element and explain why the minimum actor was considered before rejecting the path. |
-    | `Mitigated`           | Confirmed implemented controls, compensating controls, or design changes reduce risk to an accepted level. | Classify controls by enforcement boundary and identify residual risk, remaining exposure, owner, and approval mechanism. |
-    | `Needs Investigation` | Critical evidence is missing or a key assumption cannot be validated.                                      | Name the evidence gap and whether it affects actor assignment, scoring, treatment, or approval.                          |
+    | State                 | Use When                                                                                                   | Justification Requirement                                                                                                                                                        |
+    | --------------------- | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+    | `Not Started`         | Row has not yet been reviewed.                                                                             | Leave enrichment and governance fields blank except preserved source values.                                                                                                     |
+    | `Not Applicable`      | Attack path is architecturally impossible, outside scope, or structurally eliminated.                      | Distinguish a candidate that never formed an extant risk from an otherwise applicable risk eliminated by a documented decision or action, and explain why the path was rejected. |
+    | `Mitigated`           | Confirmed implemented controls, compensating controls, or design changes reduce risk to an accepted level. | Classify controls by enforcement boundary and identify residual risk, remaining exposure, owner, and approval mechanism.                                                         |
+    | `Needs Investigation` | Critical evidence is missing or a key assumption cannot be validated.                                      | Name the evidence gap and whether it affects actor assignment, scoring, treatment, or approval.                                                                                  |
 
     Do not use `Not Applicable` to downgrade a real weakness that merely has compensating controls, environmental restrictions, or an accepted residual risk.
 
@@ -430,7 +430,9 @@ Save and integrate intermediate results after each step. When the objective is p
 12. Risk Treatment
 
     **Action:** Populate `Risk Treatment` using [Risk Treatment Mapping](references/mapping-rules.md#11-risk-treatment-mapping).
-    - Select the default or an evidence-supported alternative using [Treatment Decision Guidance](references/mapping-rules.md#112-treatment-decision-guidance).
+    - Confirm that the row describes an extant risk before selecting treatment. For `Not Applicable`, use `N/A` when the candidate scenario never existed, is architecturally impossible, or is outside the assessed boundary. Use `Avoidance` only when a documented decision or action eliminated an otherwise applicable risk source.
+    - Apply [Treatment Decision Guidance](references/mapping-rules.md#112-treatment-decision-guidance) using documented risk appetite and tolerance, legal and contractual obligations, OT safety and reliability constraints, feasibility, cost, and expected residual risk. Use `Risk Prioritization` to set urgency and governance rigor, not to determine treatment automatically.
+    - When multiple responses apply, record the primary governance disposition in `Risk Treatment` and supporting treatments in `Justification`.
     - Verify the selected treatment against [State and Treatment Compatibility](references/mapping-rules.md#113-state-and-treatment-compatibility).
     - Record the evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
     - Do not use `Acceptance` or `Transfer` to work around missing technical evidence.
@@ -440,7 +442,8 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Action:** Populate `Risk Approval` using [Risk Approval Mapping](references/mapping-rules.md#12-risk-approval-mapping).
     - Record exactly one standardized role label.
-    - Base approval on `Risk Prioritization` and `Risk Treatment`, then escalate when residual risk evidence requires a stronger approver.
+    - Use `Not Required` only when `Risk Treatment = N/A`. Base all actual treatment approvals, including `Avoidance`, on `Risk Prioritization` and `Risk Treatment`, then escalate when residual risk, safety, operational, or stakeholder evidence requires stronger governance.
+    - Map standardized role labels to equivalent authorities in the assessed organization; do not assume that a title alone grants the required decision authority.
     - Apply Field Resolution Semantics.
 
 14. TMT Justification
@@ -473,7 +476,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Script Usage:**
     - [scripts/validate_csv.py](scripts/validate_csv.py)
-      > Run `uv run ./scripts/validate_csv.py --source '<Device_Name>_Threat_Model.csv' --artifact '<Device_Name>_Threat_Model_Generated.csv'` to validate the complete CSV, active ATT&CK techniques, mappable CWE weaknesses, enforcement-boundary terminology, cited EMB3D mitigations, and source traceability, then print an actual-versus-expected diff for every finding.
+      > Run `uv run ./scripts/validate_csv.py --source '<Device_Name>_Threat_Model.csv' --artifact '<Device_Name>_Threat_Model_Generated.csv'` to validate the complete CSV, risk-treatment and approval compatibility, active ATT&CK techniques, mappable CWE weaknesses, enforcement-boundary terminology, cited EMB3D mitigations, and source traceability, then print an actual-versus-expected diff for every finding.
     - [scripts/validate_cvss.py](scripts/validate_cvss.py)
       > Run `uv run ./scripts/validate_cvss.py --csv '<Device_Name>_Threat_Model_Generated.csv'` to validate all CVSS vectors in the `CVSS v4.0` columns and compare the calculated score with the stored score.
 
@@ -496,4 +499,7 @@ Save and integrate intermediate results after each step. When the objective is p
 - FIRST [CVSS v4.0 Specification](https://www.first.org/cvss/v4.0/specification-document) page.
 - FIRST [CVSS v4.0 Calculator](https://www.first.org/cvss/calculator/4.0) page.
 - BSI [Risk Prioritization](https://www.bsi.bund.de/DE/Service-Navi/Abonnements/Newsletter/Buerger-CERT-Abos/Buerger-CERT-Sicherheitshinweise/Risikostufen/risikostufen.html) page.
+- NIST [Prioritizing Cybersecurity Risk for Enterprise Risk Management](https://doi.org/10.6028/NIST.IR.8286B-upd1) report.
+- NIST [Cybersecurity Framework 2.0](https://doi.org/10.6028/NIST.CSWP.29) publication.
+- NIST [Guide to Operational Technology Security](https://doi.org/10.6028/NIST.SP.800-82r3) publication.
 - IEC [62443](https://www.iec.ch/cyber-security) standards.

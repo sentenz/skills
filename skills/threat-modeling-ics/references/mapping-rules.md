@@ -161,7 +161,7 @@ Categorize impact using CVSS v4.0 Base Metrics. Keep CVSS Base scoring intrinsic
 - Zero-Impact
   > Use a zero-impact CVSS outcome only when the finalized reviewed scenario leaves no modeled impact because the attack path or weakness is not real in the assessed design.
 
-  - `State = Not Applicable`: the attack path is impossible or structurally eliminated. Pair with `Risk Treatment = Avoidance`.
+  - `State = Not Applicable`: the attack path is impossible, outside the assessed boundary, or structurally eliminated. Use `Risk Treatment = N/A` when the candidate scenario never formed an extant risk. Use `Risk Treatment = Avoidance` only when a documented decision or action eliminated an otherwise applicable risk source.
   - `State = Mitigated`: do not reduce the CVSS Base score to zero solely because controls reduce residual exposure.
   - Zero-impact does not make `Likelihood of Exploit` or `Risk Prioritization` inapplicable. For finalized reviewed rows, populate these columns from the mapping tables.
   - When `State = Not Applicable`, treat vulnerability state as `Theoretical` unless stronger exploit-maturity evidence exists, then derive likelihood from CVSS exploitability metrics and inherent prioritization from the `None` severity row in the risk matrix.
@@ -304,23 +304,25 @@ Normalize `Threat Actor` from common OT/ICS threat-path characteristics. Always 
 
 ### 11.1. Treatment Semantics
 
-Risk treatment records the governance disposition for the inherent risk and the resulting residual risk after controls, transfer mechanisms, avoidance decisions, or acceptance decisions are applied.
+Risk treatment records the primary governance disposition for an extant risk and the resulting residual risk after controls, transfer mechanisms, avoidance decisions, or acceptance decisions are applied.
 
-| Treatment    | Purpose                                                         | Required Evidence or Condition                                                                                                         |
-| ------------ | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `Avoidance`  | Eliminate the risk source or make the threat inapplicable.      | Document the removed or restructured system element, function, interface, data flow, or attack path.                                   |
-| `Mitigation` | Reduce likelihood or impact through controls or design changes. | Document each control's enforcement-boundary category, remaining exposure, residual risk, residual-risk owner, and approval mechanism. |
-| `Acceptance` | Intentionally retain the risk without further treatment.        | Document the business rationale, acceptance threshold, responsible stakeholder, and explicit approval.                                 |
-| `Transfer`   | Shift part of the financial, operational, or legal consequence. | Identify the third party and the applicable contract, SLA, warranty, insurance policy, or managed service.                             |
+| Field Value  | Purpose                                                                     | Required Evidence or Condition                                                                                                                                                        |
+| ------------ | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `N/A`        | Record that no governance treatment exists because no extant risk exists.   | Use only for a `Not Applicable` row whose candidate scenario never existed, is architecturally impossible, or lies outside the assessed boundary.                                     |
+| `Avoidance`  | Take action to eliminate the activity or condition that gives rise to risk. | Document the decision or action that removed or restructured the system element, function, interface, data flow, or attack path. Do not use for a scenario that was never applicable. |
+| `Mitigation` | Reduce likelihood or impact through controls or design changes.             | Document each control's enforcement-boundary category, remaining exposure, residual risk, residual-risk owner, and approval mechanism.                                                |
+| `Acceptance` | Retain and monitor risk that is within documented risk tolerance.           | Document the business rationale, tolerance threshold, responsible stakeholder, explicit approval, and monitoring or review trigger.                                                   |
+| `Transfer`   | Share part of the financial, operational, or legal consequence.             | Identify the third party and applicable contract, SLA, warranty, insurance policy, or managed service, plus the consequences and accountability that remain.                          |
 
 > [!NOTE]
-> `State` records the technical review result. `Risk Prioritization` records the pre-treatment technical prioritization. `Risk Treatment` records the governance disposition. `Mitigated` may pair with `Acceptance` only when controls are in place and inherent residual risk is intentionally retained with documented approval.
+> `State` records the technical review result. `Risk Prioritization` records the pre-treatment technical prioritization and informs urgency and minimum approval authority; it does not uniquely determine treatment. `Risk Treatment` records the primary governance disposition. When multiple responses apply, record the primary treatment in `Risk Treatment` and the supporting responses in `Justification`. `Mitigated` may pair with `Acceptance` only when controls are in place and residual risk is intentionally retained with documented approval.
 
 - Defensibility Checks
 
   | Concern            | Check                                                                                                                                                                           |
   | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
   | Consistency        | `State`, CVSS severity, likelihood, inherent prioritization, residual risk, treatment, and approval describe a coherent risk posture.                                           |
+  | Risk Tolerance     | Select treatment against documented risk appetite and tolerance, obligations, safety and reliability constraints, feasibility, cost, and expected residual risk.                |
   | Overprescription   | Example rows are generalized patterns. Replace actor, score, treatment, and approval when product evidence differs.                                                             |
   | Defense Risk       | Do not cite regulation, deployment restrictions, or trusted-environment assumptions as standalone mitigations. Tie each claim to controls, architecture, and approval evidence. |
   | Identifier Hygiene | Do not populate ATT&CK, EMB3D, or CWE identifiers for `Not Applicable` rows unless the row explicitly documents a retained discrepancy.                                         |
@@ -328,15 +330,23 @@ Risk treatment records the governance disposition for the inherent risk and the 
 
 ### 11.2. Treatment Decision Guidance
 
-Select the default treatment for the row's `Risk Prioritization`. Deviate to an acceptable alternative only when documented evidence supports the deviation and the rationale is recorded in `Justification`.
+Apply this decision sequence instead of deriving treatment from `Risk Prioritization` alone:
 
-| Risk Prioritization | Default Treatment | Acceptable Alternatives          | Conditions and Constraints                                                                                                                   |
-| ------------------- | ----------------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Info                | Avoidance         | Acceptance                       | Attack path is impossible, structurally eliminated, or no longer present. Risk is negligible.                                                |
-| Low                 | Acceptance        | Avoidance, Mitigation            | Low-cost controls are encouraged. Transfer is not warranted. Risk may be intentionally retained.                                             |
-| Medium              | Mitigation        | Acceptance, Transfer             | Controls must address the root weakness. Transfer requires named SLA, policy, warranty, insurance, or equivalent mechanism.                  |
-| High                | Mitigation        | Avoidance, Transfer, Acceptance  | Acceptance is restricted to exceptional cases with CPSO approval and written justification.                                                  |
-| Critical            | Avoidance         | Mitigation, Transfer, Acceptance | Acceptance requires explicit executive risk acceptance and written rationale. Do not use acceptance as a substitute for unresolved evidence. |
+1. Confirm that the row describes an extant risk. Use `N/A` for a candidate scenario that never existed, is architecturally impossible, or is outside the assessed boundary. Use `Avoidance` only when a documented decision or action eliminated an otherwise applicable risk source.
+2. Evaluate legal, contractual, safety, reliability, and operational constraints together with documented organizational risk appetite and tolerance.
+3. If current exposure is already within tolerance, select `Acceptance` and define monitoring or review triggers.
+4. Otherwise, select `Avoidance`, `Mitigation`, `Transfer`, or a combination expected to bring residual exposure within tolerance. Transfer does not remove technical exposure or non-transferable safety, operational, legal, or reputational consequences.
+5. Record the primary treatment in `Risk Treatment`, supporting responses in `Justification`, and the decision rationale, owner, expected residual risk, and approval mechanism.
+
+Use prioritization to set response urgency and governance rigor:
+
+| Risk Prioritization | Typical Initial Posture           | Other Available Treatments      | Conditions and Constraints                                                                                                                                                                                                                                             |
+| ------------------- | --------------------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Info                | Acceptance                        | Avoidance, Mitigation, Transfer | Accept only when the extant risk is within documented tolerance and will be monitored. Use `N/A`, not treatment, when no extant risk exists. Avoidance requires a documented elimination action.                                                                       |
+| Low                 | Acceptance or Mitigation          | Avoidance, Transfer             | Acceptance depends on documented tolerance. Low-cost controls, legal duties, safety constraints, or aggregated exposure may justify another treatment.                                                                                                                 |
+| Medium              | Mitigation or Avoidance           | Acceptance, Transfer            | Select treatment expected to bring residual exposure within tolerance. Acceptance requires documented approval. Transfer requires a named mechanism and retained-consequence analysis.                                                                                 |
+| High                | Mitigation or Avoidance           | Acceptance, Transfer            | Act promptly. Acceptance is exceptional and requires CPSO or equivalent approval and written justification. Transfer normally supplements mitigation for OT safety and operational exposure.                                                                           |
+| Critical            | Avoidance or immediate Mitigation | Acceptance, Transfer            | Isolate or suspend affected functionality when necessary until residual risk is tolerable. Acceptance must be explicit, time-bounded, legally permissible, and approved by executive and applicable safety authority. Transfer is not a standalone technical response. |
 
 ### 11.3. State and Treatment Compatibility
 
@@ -344,38 +354,40 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 | --------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Not Started`         | Blank                     | Row has not yet been reviewed. Leave enrichment and governance fields blank except preserved source values.                                                                                                                                                                      |
 | `Needs Investigation` | Blank                     | Evidence gap remains. Do not assign treatment or approval until resolved.                                                                                                                                                                                                        |
-| `Not Applicable`      | Avoidance                 | Attack path or risk source is impossible, structurally eliminated, or outside scope. Identifier columns should normally be `N/A`.                                                                                                                                                |
+| `Not Applicable`      | N/A                       | Candidate scenario never formed an extant risk because the path is inherently impossible, absent, or outside the assessed boundary. Identifier columns should normally be `N/A`; `Risk Approval` is `Not Required`.                                                              |
+| `Not Applicable`      | Avoidance                 | A documented decision or action eliminated an otherwise applicable risk source or attack path. Identifier columns should normally be `N/A`; obtain approval at the level required by the inherent prioritization.                                                                |
 | `Mitigated`           | Mitigation                | Implemented controls, compensating controls, or both reduce risk to an accepted residual level. Classify each control by enforcement boundary and identify remaining exposure, owner, and approval mechanism. A compensating-only narrative is valid when supported by evidence. |
 | `Mitigated`           | Acceptance                | Use only when implemented controls, compensating controls, or both reduce exposure but residual risk is intentionally retained with documented approval.                                                                                                                         |
-| `Mitigated`           | Transfer                  | Use only when implemented controls, compensating controls, or both and a named third-party mechanism share or delegate residual consequence.                                                                                                                                     |
+| `Mitigated`           | Transfer                  | Use only when implemented controls, compensating controls, or both and a named third-party mechanism share or delegate residual consequence. Document non-transferable consequences and any supporting mitigation.                                                               |
 
 ### 11.4. Treatment Evidence Requirements
 
-| Risk Treatment | Minimum Evidence in `Justification`                                                                                                 |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Avoidance      | Architectural record or design decision confirming the risk source has been eliminated.                                             |
-| Mitigation     | Implemented and/or compensating control(s), enforcement boundary, residual risk level, residual-risk owner, and approval mechanism. |
-| Acceptance     | Business rationale for retention, approving stakeholder, and acceptance mechanism.                                                  |
-| Transfer       | Named third party, specific contract/SLA/warranty/insurance reference, and explicit risk scope.                                     |
+| Risk Treatment | Minimum Evidence in `Justification`                                                                                                                                       |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| N/A            | Architectural contradiction, absent capability, or out-of-scope boundary confirming that the candidate scenario never formed an extant risk.                              |
+| Avoidance      | Architectural record or approved design or operational decision confirming the action that eliminated the risk source.                                                    |
+| Mitigation     | Implemented and/or compensating control(s), enforcement boundary, residual risk level, residual-risk owner, and approval mechanism.                                       |
+| Acceptance     | Business rationale, documented tolerance threshold, approving stakeholder, explicit acceptance mechanism, and monitoring or review trigger.                               |
+| Transfer       | Named third party, specific contract/SLA/warranty/insurance reference, transferred scope, consequences that remain, and any supporting mitigation or acceptance decision. |
 
 ## 12. Risk Approval Mapping
 
-`Risk Approval` records the minimum required approver role label from the intersection of `Risk Prioritization` and `Risk Treatment`.
+`Risk Approval` records the minimum required approver role label from the intersection of `Risk Prioritization` and `Risk Treatment`. The labels are standardized output values for this skill and must be mapped to equivalent authorities in the assessed organization.
 
 > [!NOTE]
-> Escalate the approver when residual-risk evidence, product safety impact, or stakeholder policy requires stronger governance.
+> Escalate the approver when residual-risk evidence, product safety impact, operational consequences, or stakeholder policy requires stronger governance. `Avoidance` is a governance decision and may materially affect system functionality, so it requires the same prioritization-based approval as other treatments. Use `Not Required` only when `Risk Treatment = N/A` because no extant risk or treatment decision exists.
 
-| Prioritization / Treatment | Avoidance    | Mitigation       | Acceptance       | Transfer         |
-| -------------------------- | ------------ | ---------------- | ---------------- | ---------------- |
-| Info                       | Not Required | Product Security | Product Security | Product Security |
-| Low                        | Not Required | Product Security | Product Security | Product Security |
-| Medium                     | Not Required | Lead Security    | Lead Security    | Lead Security    |
-| High                       | Not Required | CPSO             | CPSO             | CPSO             |
-| Critical                   | Not Required | Executive        | Executive        | Executive        |
+| Prioritization / Treatment | N/A          | Avoidance        | Mitigation       | Acceptance       | Transfer         |
+| -------------------------- | ------------ | ---------------- | ---------------- | ---------------- | ---------------- |
+| Info                       | Not Required | Product Security | Product Security | Product Security | Product Security |
+| Low                        | Not Required | Product Security | Product Security | Product Security | Product Security |
+| Medium                     | Not Required | Lead Security    | Lead Security    | Lead Security    | Lead Security    |
+| High                       | Not Required | CPSO             | CPSO             | CPSO             | CPSO             |
+| Critical                   | Not Required | Executive        | Executive        | Executive        | Executive        |
 
 | Role Label       | Typical Title or Function                                                                        |
 | ---------------- | ------------------------------------------------------------------------------------------------ |
-| Not Required     | Risk structurally eliminated, no residual risk remains.                                          |
+| Not Required     | No extant risk or governance treatment exists; use only with `Risk Treatment = N/A`.             |
 | Product Security | Product security officer, security architect, or equivalent with cross-functional authority.     |
 | Lead Security    | Technical lead, security engineer, or equivalent responsible for the design area.                |
 | CPSO             | CPSO, or equivalent with organizational risk management authority.                               |
