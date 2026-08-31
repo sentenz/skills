@@ -8,14 +8,24 @@ on:
       - reopened
 
 permissions:
+  actions: read
   contents: write
   pull-requests: write
+
+concurrency:
+  group: dependabot-automerge-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   auto-merge:
     name: Auto-approve and auto-merge Dependabot Patch and Minor Updates
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'sentenz/skills'
+    env:
+      PR_URL: ${{ github.event.pull_request.html_url }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Get Dependabot metadata
         id: metadata
@@ -23,20 +33,65 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Wait for security checks
+        if: steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          wait_for_workflow() {
+            local workflow="$1"
+            local result status conclusion
+
+            for attempt in {1..90}; do
+              result="$(
+                gh run list \
+                  --repo "$GITHUB_REPOSITORY" \
+                  --workflow "$workflow" \
+                  --commit "$HEAD_SHA" \
+                  --event pull_request \
+                  --limit 1 \
+                  --json status,conclusion \
+                  --jq '.[0] | "\(.status)|\(.conclusion // "")"'
+              )"
+
+              if [[ -z "$result" ]]; then
+                echo "Waiting for $workflow to start ($attempt/90)"
+              else
+                status="${result%%|*}"
+                conclusion="${result#*|}"
+
+                if [[ "$status" == "completed" ]]; then
+                  if [[ "$conclusion" == "success" ]]; then
+                    echo "$workflow completed successfully"
+                    return 0
+                  fi
+
+                  echo "::error::$workflow completed with conclusion: $conclusion"
+                  return 1
+                fi
+
+                echo "Waiting for $workflow to complete; status=$status ($attempt/90)"
+              fi
+
+              sleep 10
+            done
+
+            echo "::error::Timed out waiting for $workflow on $HEAD_SHA"
+            return 1
+          }
+
+          wait_for_workflow semgrep.yml
+          wait_for_workflow trivy.yml
+
       - name: Auto-approve Patch and Minor Updates
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor'
         run: |
           gh pr review --approve "$PR_URL"
           echo "Auto-approved patch/minor update PR #${{ github.event.pull_request.number }}"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Enable Auto-merge for Patch and Minor Updates
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor'
         run: |
           gh pr merge --auto --squash "$PR_URL"
           echo "Enabled auto-merge for patch/minor update PR #${{ github.event.pull_request.number }}"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
