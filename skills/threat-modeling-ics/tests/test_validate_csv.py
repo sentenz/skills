@@ -6,7 +6,9 @@ import unittest
 from pathlib import Path
 
 
-_SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "validate_csv.py"
+_SCRIPT_PATH = (
+    Path(__file__).resolve().parents[1] / "scripts" / "validate_csv.py"
+)
 _SKILL_ROOT = _SCRIPT_PATH.parent.parent
 _SPEC = importlib.util.spec_from_file_location("validate_csv", _SCRIPT_PATH)
 if _SPEC is None or _SPEC.loader is None:
@@ -45,21 +47,27 @@ def _make_record(**overrides: str) -> _validate_csv.Record:
         approval = row["Risk Approval"]
         if treatment == "Avoidance":
             row["Justification"] = (
-                "The architecture decision records that the attack path is eliminated."
+                "The architecture decision records that the attack path "
+                "is eliminated."
             )
         elif treatment == "Mitigation":
             row["Justification"] = (
-                "Implemented controls: input validation within the device boundary. "
-                "Residual risk is Low after validation, with malformed input exposure "
+                "Implemented controls: input validation within the device "
+                "boundary. "
+                "Residual risk is Low after validation, with malformed input "
+                "exposure "
                 "remaining. Treatment is Mitigation through those controls. "
                 f"{approval} "
-                "owns the residual risk and records approval in the risk register."
+                "owns the residual risk and records approval in the risk "
+                "register."
             )
         elif treatment == "Acceptance":
             row["Justification"] = (
-                "Compensating controls: monitored access outside the device boundary. "
+                "Compensating controls: monitored access outside the device "
+                "boundary. "
                 "Residual risk is Low after monitoring, with limited exposure "
-                "remaining. Treatment is Acceptance because the business accepts the "
+                "remaining. Treatment is Acceptance because the business "
+                "accepts the "
                 "remaining risk below the documented Low threshold. "
                 f"{approval} owns the residual risk "
                 "and records approval through the risk register."
@@ -68,7 +76,8 @@ def _make_record(**overrides: str) -> _validate_csv.Record:
             row["Justification"] = (
                 "Compensating controls: provider monitoring outside the device "
                 "boundary. Residual risk is Low after monitoring, with service "
-                "exposure remaining. Treatment is Transfer to Example Vendor under the "
+                "exposure remaining. Treatment is Transfer to Example Vendor "
+                "under the "
                 "named SLA for outage consequences."
             )
     return _validate_csv.Record(
@@ -195,7 +204,9 @@ class RiskGovernanceValidationTests(unittest.TestCase):
                     if finding.column == "Risk Treatment"
                 ]
                 self.assertEqual(1, len(treatment_findings))
-                self.assertEqual(expected_message, treatment_findings[0].message)
+                self.assertEqual(
+                    expected_message, treatment_findings[0].message
+                )
 
     def test_enforces_approval_matrix_and_allows_escalation(self):
         for priority, (likelihood, severity) in _PRIORITY_INPUTS.items():
@@ -205,7 +216,9 @@ class RiskGovernanceValidationTests(unittest.TestCase):
                     if treatment == "Avoidance"
                     else "Mitigated"
                 )
-                minimum = _validate_csv.RISK_APPROVAL_MATRIX[priority][treatment]
+                minimum = _validate_csv.RISK_APPROVAL_MATRIX[priority][
+                    treatment
+                ]
                 base = {
                     "State": state,
                     "CVSS v4.0 Severity": severity,
@@ -312,8 +325,10 @@ class RiskGovernanceValidationTests(unittest.TestCase):
             (
                 {"Justification": ""},
                 {
-                    "Mitigated treatment lacks enforcement-boundary control evidence",
-                    "Mitigated treatment lacks a standardized residual-risk level",
+                    "Mitigated treatment lacks enforcement-boundary control "
+                    "evidence",
+                    "Mitigated treatment lacks a standardized residual-risk "
+                    "level",
                     "Risk Treatment lacks a documented decision rationale",
                     "Mitigation lacks a residual-risk owner",
                     "Mitigation lacks an approval mechanism",
@@ -326,8 +341,10 @@ class RiskGovernanceValidationTests(unittest.TestCase):
                     "Justification": "",
                 },
                 {
-                    "Mitigated treatment lacks enforcement-boundary control evidence",
-                    "Mitigated treatment lacks a standardized residual-risk level",
+                    "Mitigated treatment lacks enforcement-boundary control "
+                    "evidence",
+                    "Mitigated treatment lacks a standardized residual-risk "
+                    "level",
                     "alternative Acceptance lacks a business rationale",
                     "Acceptance lacks an acceptance threshold",
                     "Acceptance lacks an approving stakeholder",
@@ -341,9 +358,12 @@ class RiskGovernanceValidationTests(unittest.TestCase):
                     "Justification": "",
                 },
                 {
-                    "Mitigated treatment lacks enforcement-boundary control evidence",
-                    "Mitigated treatment lacks a standardized residual-risk level",
-                    "alternative Risk Treatment lacks a documented decision rationale",
+                    "Mitigated treatment lacks enforcement-boundary control "
+                    "evidence",
+                    "Mitigated treatment lacks a standardized residual-risk "
+                    "level",
+                    "alternative Risk Treatment lacks a documented decision "
+                    "rationale",
                     "Transfer lacks a named third party",
                     "Transfer lacks a specific transfer instrument",
                     "Transfer lacks an explicit risk scope",
