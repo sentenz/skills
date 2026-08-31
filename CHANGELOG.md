@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.15.4](https://github.com/sentenz/skills/compare/v1.15.3...v1.15.4) (2026-08-31)
+
+### Bug Fixes
+
+* **dependabot:** restore auto-approval and auto-merge support ([54cd99f](https://github.com/sentenz/skills/commit/54cd99fac6f841c33a494063f050b446d0ed89ba))
+
 ## [1.15.3](https://github.com/sentenz/skills/compare/v1.15.2...v1.15.3) (2026-08-31)
 
 ### Bug Fixes
