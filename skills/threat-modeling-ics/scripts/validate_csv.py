@@ -64,9 +64,22 @@ TID_PATTERN = re.compile(r"\bTID-\d{3}\b", re.IGNORECASE)
 ATTACK_ID_PATTERN = re.compile(r"T\d{4}(?:\.\d{3})?")
 CWE_ID_PATTERN = re.compile(r"CWE-\d+")
 CWE_RATIONALE_PATTERN = re.compile(r"\bCWE mapping rationale\s*:", re.IGNORECASE)
-MITIGATION_CLAUSE_PATTERN = re.compile(
-    r"\b(Basic|Foundational|Intermediate|Leading)(?:\s+mitigation)?\s*:",
+AMBIGUOUS_BASIC_CONTROL_PATTERN = re.compile(
+    r"\bBasic\s+(?:mitigation|controls?)\b|\bBasic\s*:", re.IGNORECASE
+)
+CONTROL_CLAUSE_PATTERN = re.compile(
+    r"\b(?:(?P<boundary>Implemented|Compensating)\s+controls?"
+    r"|EMB3D\s+(?P<level>Foundational|Intermediate|Leading)\s+mitigation)\s*:",
     re.IGNORECASE,
+)
+MID_IMPLEMENTATION_CLAIM_PATTERN = re.compile(
+    r"\b(?:is|are|was|were|has been|have been)\s+"
+    r"(?:implemented|enforced|enabled)\b"
+    r"|\bimplementation status\s*:\s*implemented\b",
+    re.IGNORECASE,
+)
+DEVICE_SPECIFIC_EVIDENCE_PATTERN = re.compile(
+    r"\bDevice-specific evidence\s*:", re.IGNORECASE
 )
 EMB3D_LEVELS = frozenset({"foundational", "intermediate", "leading"})
 CWE_MAPPING_USAGES = frozenset(
@@ -750,12 +763,15 @@ def load_emb3d_mitigations(path: Path) -> dict[str, Emb3dMitigation]:
 
 
 def _mitigation_clauses(text: str) -> list[tuple[str, int, int, str]]:
-    matches = list(MITIGATION_CLAUSE_PATTERN.finditer(text))
+    matches = list(CONTROL_CLAUSE_PATTERN.finditer(text))
     clauses: list[tuple[str, int, int, str]] = []
     for index, match in enumerate(matches):
+        level = match.group("level")
+        if level is None:
+            continue
         start = match.start()
         end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
-        clauses.append((match.group(1).casefold(), start, end, text[start:end].strip()))
+        clauses.append((level.casefold(), start, end, text[start:end].strip()))
     return clauses
 
 
@@ -773,7 +789,7 @@ def validate_mitigation_citations(
     row_tids = {match.group().upper() for match in TID_PATTERN.finditer(tid_value)}
 
     for level, _, _, clause_text in clauses:
-        if level != "basic" and not MID_PATTERN.search(clause_text):
+        if not MID_PATTERN.search(clause_text):
             label = level.title()
             findings.append(
                 Finding(
@@ -783,7 +799,9 @@ def validate_mitigation_citations(
                     column="Justification",
                     message="EMB3D mitigation clause has no MID",
                     actual=clause_text,
-                    expected=f"{label} mitigation: <exact source name> (MID-NNN)",
+                    expected=(
+                        f"EMB3D {label} mitigation: <exact source name> (MID-NNN)"
+                    ),
                 )
             )
 
@@ -838,29 +856,14 @@ def validate_mitigation_citations(
                     message="MID is not grouped under an EMB3D mitigation level",
                     actual=identifier,
                     expected=(
-                        f"{mitigation.level.title()} mitigation: "
+                        f"EMB3D {mitigation.level.title()} mitigation: "
                         f"{mitigation.name} ({identifier})"
                     ),
                 )
             )
         else:
             declared_level, _, _, clause_text = clause
-            if declared_level == "basic":
-                findings.append(
-                    Finding(
-                        origin="output",
-                        row_number=row_number,
-                        threat_id=threat_id,
-                        column="Justification",
-                        message="Basic is product-specific and must not cite an MID",
-                        actual=clause_text,
-                        expected=(
-                            f"{mitigation.level.title()} mitigation: "
-                            f"{mitigation.name} ({identifier})"
-                        ),
-                    )
-                )
-            elif declared_level != mitigation.level:
+            if declared_level != mitigation.level:
                 findings.append(
                     Finding(
                         origin="output",
@@ -868,9 +871,11 @@ def validate_mitigation_citations(
                         threat_id=threat_id,
                         column="Justification",
                         message="MID level differs from the EMB3D mitigation source",
-                        actual=f"{declared_level.title()} mitigation: {identifier}",
+                        actual=(
+                            f"EMB3D {declared_level.title()} mitigation: {identifier}"
+                        ),
                         expected=(
-                            f"{mitigation.level.title()} mitigation: {identifier}"
+                            f"EMB3D {mitigation.level.title()} mitigation: {identifier}"
                         ),
                     )
                 )
@@ -882,11 +887,32 @@ def validate_mitigation_citations(
                         row_number=row_number,
                         threat_id=threat_id,
                         column="Justification",
-                        message="MID exact source name is missing from its clause",
+                    message="MID exact source name is missing from its clause",
+                    actual=clause_text,
+                    expected=(
+                        f"EMB3D {mitigation.level.title()} mitigation: "
+                        f"{mitigation.name} ({identifier})"
+                    ),
+                )
+            )
+
+            if (
+                MID_IMPLEMENTATION_CLAIM_PATTERN.search(clause_text)
+                and not DEVICE_SPECIFIC_EVIDENCE_PATTERN.search(clause_text)
+            ):
+                findings.append(
+                    Finding(
+                        origin="output",
+                        row_number=row_number,
+                        threat_id=threat_id,
+                        column="Justification",
+                        message=(
+                            "MID implementation claim lacks device-specific evidence"
+                        ),
                         actual=clause_text,
                         expected=(
-                            f"{mitigation.level.title()} mitigation: "
-                            f"{mitigation.name} ({identifier})"
+                            "Device-specific evidence: <design, configuration, test, "
+                            "or verified behavior evidence>"
                         ),
                     )
                 )
@@ -1020,6 +1046,25 @@ def validate_rows(
                         message="Justification must not be identifier-only",
                         actual=justification,
                         expected="<structured narrative rationale>",
+                    )
+                )
+            basic_control_match = AMBIGUOUS_BASIC_CONTROL_PATTERN.search(justification)
+            if basic_control_match is not None:
+                findings.append(
+                    Finding(
+                        origin="output",
+                        row_number=row_number,
+                        threat_id=threat_id,
+                        column="Justification",
+                        message=(
+                            "ambiguous Basic control category does not identify the "
+                            "enforcement boundary"
+                        ),
+                        actual=basic_control_match.group(),
+                        expected=(
+                            "Implemented controls: <within-boundary controls> or "
+                            "Compensating controls: <outside-boundary controls>"
+                        ),
                     )
                 )
             if mitigation_index is not None:

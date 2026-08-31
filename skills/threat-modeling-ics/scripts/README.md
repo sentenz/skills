@@ -38,7 +38,7 @@
     ```
 
 - [validate_csv.py](validate_csv.py)
-  > Validates the complete generated CSV output contract, active MITRE ATT&CK techniques, mappable MITRE CWE weaknesses, cited EMB3D mitigations, and optional raw-TMT source traceability, then reports all findings with actual-versus-expected diffs.
+  > Validates the complete generated CSV output contract, enforcement-boundary terminology, active MITRE ATT&CK techniques, mappable MITRE CWE weaknesses, source-backed EMB3D mitigation citations, and optional raw-TMT source traceability, then reports all findings with actual-versus-expected diffs.
 
     ```bash
     uv run ./scripts/validate_csv.py --source 'input.csv' --artifact 'generated.csv'

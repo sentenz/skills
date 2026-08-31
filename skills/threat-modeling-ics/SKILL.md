@@ -6,7 +6,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.7.32"
+  version: "1.7.33"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -123,7 +123,7 @@ STRIDE is a threat-classification model that categorizes threats into six types:
 [MITRE EMB3D](https://emb3d.mitre.org/) for embedded-device properties, threats, and mitigations.
 
 > [!NOTE]
-> Apply the source-backed [EMB3D Mitigation Levels](references/mapping-rules.md#6-emb3d-mitigation-levels), never infer an EMB3D level from IEC 62443 SL or product-control maturity, and use EMB3D alongside—not instead of—ATT&CK when evidence supports both.
+> Apply [Control Classification and EMB3D Mitigations](references/mapping-rules.md#6-control-classification-and-emb3d-mitigations) to classify controls by their enforcement boundary.
 
 ### 3.5. MITRE CWE
 
@@ -247,6 +247,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Action:** Record why the assessment is being performed and what product/system boundary it covers.
     - Identify whether the review is for EU CRA-aligned product risk assessment, general OT/ICS design review, supplier assurance, or another objective.
+    - Record the assessed product or device boundary before classifying controls. State whether enclosures, companion software, gateways, workstations, installation components, and operator procedures are inside or outside that boundary.
     - Record product name, intended use, deployment context, operational environment, trust boundaries, assumptions, exclusions, external dependencies, maintenance paths, and engineering interfaces.
 
 2. Input Contract
@@ -300,6 +301,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Use `Category` as the STRIDE anchor.
     - Use `Interaction` to determine attack vector, trust relationship, and applicable controls.
     - Use `Priority` and `State` only as initial TMT signals.
+    - Classify each confirmed control by its enforcement point using [Control Classification and EMB3D Mitigations](references/mapping-rules.md#6-control-classification-and-emb3d-mitigations).
     - Record assumptions and missing evidence in `Justification`.
     - When the assessment objective is compliance-oriented, treat each row as a traceable product risk statement tied to a concrete interface, trust relationship, or maintenance path.
 
@@ -330,7 +332,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Do not read or print the [assets/emb3d/](assets/emb3d/) JSON files directly.
     - Discover threats, properties, and mitigations with `uv run ./scripts/query_emb3d.py --search '<terms>' --top 5`; narrow discovery with `--kind threat`, `--kind property`, or `--kind mitigation` when needed.
     - Inspect one selected identifier with `--tid 'TID-NNN'`, `--pid 'PID-NN'`, or `--mid 'MID-NNN'`; request only applicable `--include properties,mitigations,threats,hierarchy` fields.
-    - Treat the mitigation-centric query result as authoritative for each MID's exact name, EMB3D level, and associated TIDs; treat `resolved: false` properties as evidence gaps, and do not treat a source match as proof of implementation.
+    - Treat the mitigation-centric query result as authoritative for each MID's exact name, EMB3D level, and associated TIDs. Treat `resolved: false` properties as evidence gaps. A source match is not proof of implementation, and an MID may be claimed as implemented only when device-specific design, configuration, test, or verified behavior evidence demonstrates enforcement within the assessed product or device boundary.
 
 4. MITRE CWE
 
@@ -397,12 +399,12 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Action:** Revise `State` using the full analytical context: TMT row, ATT&CK technique, EMB3D exposure, CWE weakness, CVSS severity, inherent risk prioritization, and threat actor.
 
-    | State                 | Use When                                                                                       | Justification Requirement                                                                                                |
-    | --------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-    | `Not Started`         | Row has not yet been reviewed.                                                                 | Leave enrichment and governance fields blank except preserved source values.                                             |
-    | `Not Applicable`      | Attack path is architecturally impossible, outside scope, or structurally eliminated.          | Name the contradiction or eliminated element and explain why the minimum actor was considered before rejecting the path. |
-    | `Mitigated`           | Confirmed controls, compensating measures, or design changes reduce risk to an accepted level. | Identify the control, residual risk, remaining exposure, owner, and approval mechanism.                                  |
-    | `Needs Investigation` | Critical evidence is missing or a key assumption cannot be validated.                          | Name the evidence gap and whether it affects actor assignment, scoring, treatment, or approval.                          |
+    | State                 | Use When                                                                                                   | Justification Requirement                                                                                                |
+    | --------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+    | `Not Started`         | Row has not yet been reviewed.                                                                             | Leave enrichment and governance fields blank except preserved source values.                                             |
+    | `Not Applicable`      | Attack path is architecturally impossible, outside scope, or structurally eliminated.                      | Name the contradiction or eliminated element and explain why the minimum actor was considered before rejecting the path. |
+    | `Mitigated`           | Confirmed implemented controls, compensating controls, or design changes reduce risk to an accepted level. | Classify controls by enforcement boundary and identify residual risk, remaining exposure, owner, and approval mechanism. |
+    | `Needs Investigation` | Critical evidence is missing or a key assumption cannot be validated.                                      | Name the evidence gap and whether it affects actor assignment, scoring, treatment, or approval.                          |
 
     Do not use `Not Applicable` to downgrade a real weakness that merely has compensating controls, environmental restrictions, or an accepted residual risk.
 
@@ -421,7 +423,7 @@ Save and integrate intermediate results after each step. When the objective is p
     **Action:** Populate residual risk in `Justification` after `State` and `Priority` are revised and before selecting governance treatment.
     - Use one of `None`, `Info`, `Low`, `Medium`, `High`, or `Critical`.
     - For `Not Applicable`, record `None` when the attack path is structurally eliminated or outside scope.
-    - For `Mitigated`, record the remaining risk after confirmed controls, compensating measures, environmental constraints, or design changes are applied.
+    - For `Mitigated`, record the remaining risk after confirmed implemented controls, compensating controls, environmental constraints, or design changes are applied.
     - For `Needs Investigation` or unresolved rows, leave blank and record the evidence gap in `Justification`.
     - Do not use residual risk to lower `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, or `Risk Prioritization`.
 
@@ -447,7 +449,9 @@ Save and integrate intermediate results after each step. When the objective is p
     - State the evidence-based rationale for `State` and the concrete scenario, architectural contradiction, or evidence gap.
     - Add protocol, trust relationship, validation behavior, access, actor, scoring, and mapping details only when they explain the decision.
     - For finalized risks, include the treatment evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
-    - Cite an MID only when row evidence supports the mitigation. Copy its exact name and Foundational, Intermediate, or Leading level from the mitigation-centric EMB3D asset and confirm that it maps to at least one TID in the row. A source match does not prove implementation. Omit MIDs when `EMB3D TID` is `N/A`; Basic controls are product-specific and must not carry MIDs.
+    - Use `Implemented controls:` only for verified controls enforced within the assessed product or device boundary. Use `Compensating controls:` only for controls enforced outside that boundary. A mitigated narrative may contain only compensating controls when that is what the evidence supports. Do not invent an `Implemented controls:` clause.
+    - Keep EMB3D mitigations separate from both enforcement-boundary categories. Cite an MID only when row evidence supports the mitigation, copy its exact name and Foundational, Intermediate, or Leading level from the mitigation-centric EMB3D asset, prefix the clause with `EMB3D`, and confirm that it maps to at least one TID in the row.
+    - A source-backed MID does not prove implementation. Claim an MID as implemented only when the narrative identifies device-specific design, configuration, test, or verified behavior evidence demonstrating enforcement within the assessed product or device boundary. Omit MIDs when `EMB3D TID` is `N/A`.
     - Explain intentional `N/A` or blank fields once. Never invent missing evidence to complete a template.
     - Avoid unqualified legal safe-harbor language. Frame compliance-oriented statements as technical-documentation support or product-specific evidence pending stakeholder review.
     - Use no semicolons or embedded line breaks. Let the CSV writer enclose the complete `Justification` cell in double quotes.
@@ -469,7 +473,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Script Usage:**
     - [scripts/validate_csv.py](scripts/validate_csv.py)
-      > Run `uv run ./scripts/validate_csv.py --source '<Device_Name>_Threat_Model.csv' --artifact '<Device_Name>_Threat_Model_Generated.csv'` to validate the complete CSV, active ATT&CK techniques, mappable CWE weaknesses, cited EMB3D mitigations, and source traceability, then print an actual-versus-expected diff for every finding.
+      > Run `uv run ./scripts/validate_csv.py --source '<Device_Name>_Threat_Model.csv' --artifact '<Device_Name>_Threat_Model_Generated.csv'` to validate the complete CSV, active ATT&CK techniques, mappable CWE weaknesses, enforcement-boundary terminology, cited EMB3D mitigations, and source traceability, then print an actual-versus-expected diff for every finding.
     - [scripts/validate_cvss.py](scripts/validate_cvss.py)
       > Run `uv run ./scripts/validate_cvss.py --csv '<Device_Name>_Threat_Model_Generated.csv'` to validate all CVSS vectors in the `CVSS v4.0` columns and compare the calculated score with the stored score.
 
