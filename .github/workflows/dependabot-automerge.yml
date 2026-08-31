@@ -13,9 +13,9 @@ permissions:
 
 jobs:
   auto-merge:
-    name: Auto-merge Dependabot Patch and Minor Updates
+    name: Auto-approve and auto-merge Dependabot Patch and Minor Updates
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'sentenz/skills'
     steps:
       - name: Get Dependabot metadata
         id: metadata
@@ -23,11 +23,20 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Merge Patch and Minor Updates
+      - name: Auto-approve Patch and Minor Updates
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor'
         run: |
-          gh pr merge --squash "$PR_URL"
-          echo "Auto-merged patch/minor update PR #${{ github.event.pull_request.number }}"
+          gh pr review --approve "$PR_URL"
+          echo "Auto-approved patch/minor update PR #${{ github.event.pull_request.number }}"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable Auto-merge for Patch and Minor Updates
+        if: steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor'
+        run: |
+          gh pr merge --auto --squash "$PR_URL"
+          echo "Enabled auto-merge for patch/minor update PR #${{ github.event.pull_request.number }}"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
