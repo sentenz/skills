@@ -11,7 +11,7 @@ Use these rules only after reading the applicable workflow step in `SKILL.md`. T
 - [5. STRIDE Classification](#5-stride-classification)
 - [6. Control Classification and EMB3D Mitigations](#6-control-classification-and-emb3d-mitigations)
   - [6.1. Control Enforcement Boundary](#61-control-enforcement-boundary)
-  - [6.2. EMB3D Source-Backed Mitigations](#62-emb3d-source-backed-mitigations)
+  - [6.2. EMB3D Mitigations](#62-emb3d-mitigations)
 - [7. Impact Mapping](#7-impact-mapping)
   - [7.1. Exploitability Metrics](#71-exploitability-metrics)
   - [7.2. Vulnerable System Impact Metrics](#72-vulnerable-system-impact-metrics)
@@ -123,26 +123,25 @@ Classify confirmed controls by where they are enforced. Record source-backed EMB
 
 Define the assessed product or device boundary before classifying controls. Classification follows the enforcement point, not the control owner, deployment package, intended outcome, or perceived maturity.
 
-| Category | Enforcement Boundary | Evidence and Use |
-| -------- | -------------------- | ---------------- |
-| `Implemented controls` | Enforced within the assessed product or device boundary. | Require device-specific evidence such as hardware design records, firmware or boot-chain behavior, device configuration, inspection results, or product tests. These controls may support a claim about what the assessed product or device implements. |
+| Category                | Enforcement Boundary                                      | Evidence and Use                                                                                                                                                                                                                                                                                                                       |
+| ----------------------- | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Implemented controls`  | Enforced within the assessed product or device boundary.  | Require device-specific evidence such as hardware design records, firmware or boot-chain behavior, device configuration, inspection results, or product tests. These controls may support a claim about what the assessed product or device implements.                                                                                |
 | `Compensating controls` | Enforced outside the assessed product or device boundary. | Cite external network enforcement, cabinet or facility access restrictions, cable protection, workstation logging, installation configuration, monitoring, or operational procedures. These controls may reduce residual system risk but do not prove that the assessed product or device implements a control or an EMB3D mitigation. |
 
 - Split a control claim when enforcement spans both sides of the boundary. Classify and evidence each part separately.
 - Treat firmware validation, device watchdog behavior, secure boot enforcement, and hardware access control as `Implemented controls` only when product-specific evidence verifies the behavior within the assessed boundary.
 - Treat cabinet access restrictions, cable routing or protection, external gateways and network controls, workstation logging, installation measures, and maintenance or operating procedures as `Compensating controls` when they are outside the assessed boundary.
 - A `Mitigated` narrative may rely only on confirmed `Compensating controls` when those controls reduce residual system risk to the accepted level. Omit `Implemented controls` when no verified within-boundary control applies.
-- Do not use `Basic mitigation`, `Basic controls`, or `Basic` as a control category. The term does not identify an enforcement boundary and is not an EMB3D mitigation level.
 
-### 6.2. EMB3D Source-Backed Mitigations
+### 6.2. EMB3D Mitigations
 
-EMB3D Foundational, Intermediate, and Leading levels are source taxonomy values attached to `MID-*` mitigations. They are not product-control maturity ratings, enforcement-boundary categories, or an IEC 62443 Security Level crosswalk.
+EMB3D Foundational, Intermediate, and Leading levels are source taxonomy values attached to `MID-*` mitigations.
 
-| MITRE EMB3D Mitigation Level | Use in `Justification` |
-| ---------------------------- | ---------------------- |
+| MITRE EMB3D Mitigation Level | Use in `Justification`                                          |
+| ---------------------------- | --------------------------------------------------------------- |
 | Foundational                 | `EMB3D Foundational mitigation: <exact source name> (MID-NNN).` |
 | Intermediate                 | `EMB3D Intermediate mitigation: <exact source name> (MID-NNN).` |
-| Leading                      | `EMB3D Leading mitigation: <exact source name> (MID-NNN).` |
+| Leading                      | `EMB3D Leading mitigation: <exact source name> (MID-NNN).`      |
 
 - Cite an MID only when row evidence makes the mitigation applicable and the bounded EMB3D query maps it to at least one `EMB3D TID` recorded in the row.
 - Copy the mitigation's exact source name and group it under its exact source level with the `EMB3D` prefix in `Justification`.
@@ -307,12 +306,12 @@ Normalize `Threat Actor` from common OT/ICS threat-path characteristics. Always 
 
 Risk treatment records the governance disposition for the inherent risk and the resulting residual risk after controls, transfer mechanisms, avoidance decisions, or acceptance decisions are applied.
 
-| Treatment    | Purpose                                                         | Required Evidence or Condition                                                                                 |
-| ------------ | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `Avoidance`  | Eliminate the risk source or make the threat inapplicable.      | Document the removed or restructured system element, function, interface, data flow, or attack path.           |
+| Treatment    | Purpose                                                         | Required Evidence or Condition                                                                                                         |
+| ------------ | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `Avoidance`  | Eliminate the risk source or make the threat inapplicable.      | Document the removed or restructured system element, function, interface, data flow, or attack path.                                   |
 | `Mitigation` | Reduce likelihood or impact through controls or design changes. | Document each control's enforcement-boundary category, remaining exposure, residual risk, residual-risk owner, and approval mechanism. |
-| `Acceptance` | Intentionally retain the risk without further treatment.        | Document the business rationale, acceptance threshold, responsible stakeholder, and explicit approval.         |
-| `Transfer`   | Shift part of the financial, operational, or legal consequence. | Identify the third party and the applicable contract, SLA, warranty, insurance policy, or managed service.     |
+| `Acceptance` | Intentionally retain the risk without further treatment.        | Document the business rationale, acceptance threshold, responsible stakeholder, and explicit approval.                                 |
+| `Transfer`   | Shift part of the financial, operational, or legal consequence. | Identify the third party and the applicable contract, SLA, warranty, insurance policy, or managed service.                             |
 
 > [!NOTE]
 > `State` records the technical review result. `Risk Prioritization` records the pre-treatment technical prioritization. `Risk Treatment` records the governance disposition. `Mitigated` may pair with `Acceptance` only when controls are in place and inherent residual risk is intentionally retained with documented approval.
@@ -341,23 +340,23 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 
 ### 11.3. State and Treatment Compatibility
 
-| TMT State             | Compatible Risk Treatment | Consistency Requirements                                                                                                          |
-| --------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `Not Started`         | Blank                     | Row has not yet been reviewed. Leave enrichment and governance fields blank except preserved source values.                       |
-| `Needs Investigation` | Blank                     | Evidence gap remains. Do not assign treatment or approval until resolved.                                                         |
-| `Not Applicable`      | Avoidance                 | Attack path or risk source is impossible, structurally eliminated, or outside scope. Identifier columns should normally be `N/A`. |
+| TMT State             | Compatible Risk Treatment | Consistency Requirements                                                                                                                                                                                                                                                         |
+| --------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Not Started`         | Blank                     | Row has not yet been reviewed. Leave enrichment and governance fields blank except preserved source values.                                                                                                                                                                      |
+| `Needs Investigation` | Blank                     | Evidence gap remains. Do not assign treatment or approval until resolved.                                                                                                                                                                                                        |
+| `Not Applicable`      | Avoidance                 | Attack path or risk source is impossible, structurally eliminated, or outside scope. Identifier columns should normally be `N/A`.                                                                                                                                                |
 | `Mitigated`           | Mitigation                | Implemented controls, compensating controls, or both reduce risk to an accepted residual level. Classify each control by enforcement boundary and identify remaining exposure, owner, and approval mechanism. A compensating-only narrative is valid when supported by evidence. |
-| `Mitigated`           | Acceptance                | Use only when implemented controls, compensating controls, or both reduce exposure but residual risk is intentionally retained with documented approval. |
-| `Mitigated`           | Transfer                  | Use only when implemented controls, compensating controls, or both and a named third-party mechanism share or delegate residual consequence. |
+| `Mitigated`           | Acceptance                | Use only when implemented controls, compensating controls, or both reduce exposure but residual risk is intentionally retained with documented approval.                                                                                                                         |
+| `Mitigated`           | Transfer                  | Use only when implemented controls, compensating controls, or both and a named third-party mechanism share or delegate residual consequence.                                                                                                                                     |
 
 ### 11.4. Treatment Evidence Requirements
 
-| Risk Treatment | Minimum Evidence in `Justification`                                                             |
-| -------------- | ----------------------------------------------------------------------------------------------- |
-| Avoidance      | Architectural record or design decision confirming the risk source has been eliminated.         |
+| Risk Treatment | Minimum Evidence in `Justification`                                                                                                 |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Avoidance      | Architectural record or design decision confirming the risk source has been eliminated.                                             |
 | Mitigation     | Implemented and/or compensating control(s), enforcement boundary, residual risk level, residual-risk owner, and approval mechanism. |
-| Acceptance     | Business rationale for retention, approving stakeholder, and acceptance mechanism.              |
-| Transfer       | Named third party, specific contract/SLA/warranty/insurance reference, and explicit risk scope. |
+| Acceptance     | Business rationale for retention, approving stakeholder, and acceptance mechanism.                                                  |
+| Transfer       | Named third party, specific contract/SLA/warranty/insurance reference, and explicit risk scope.                                     |
 
 ## 12. Risk Approval Mapping
 
