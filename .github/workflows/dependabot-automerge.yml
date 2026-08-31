@@ -23,11 +23,11 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Enable Auto-merge for Patch and Minor Updates
+      - name: Merge Patch and Minor Updates
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor'
         run: |
-          gh pr merge --auto --squash "$PR_URL"
-          echo "Enabled auto-merge for patch/minor update PR #${{ github.event.pull_request.number }}"
+          gh pr merge --squash "$PR_URL"
+          echo "Auto-merged patch/minor update PR #${{ github.event.pull_request.number }}"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
