@@ -81,10 +81,165 @@ MID_IMPLEMENTATION_CLAIM_PATTERN = re.compile(
 DEVICE_SPECIFIC_EVIDENCE_PATTERN = re.compile(
     r"\bDevice-specific evidence\s*:", re.IGNORECASE
 )
+BOUNDARY_CONTROL_EVIDENCE_PATTERN = re.compile(
+    r"\b(?:Implemented|Compensating)\s+controls?\s*:\s*\S", re.IGNORECASE
+)
+RESIDUAL_RISK_EVIDENCE_PATTERN = re.compile(
+    r"\bResidual\s+risk\s+(?:is|remains?)\s+"
+    r"(?:None|Info|Low|Medium|High|Critical)\b",
+    re.IGNORECASE,
+)
+RISK_OWNER_EVIDENCE_PATTERN = re.compile(
+    r"\b(?:owns?\s+the\s+residual\s+risk|residual[- ]risk\s+owner|"
+    r"risk\s+owner|approving\s+stakeholder|responsible\s+stakeholder)\b",
+    re.IGNORECASE,
+)
+APPROVAL_MECHANISM_EVIDENCE_PATTERN = re.compile(
+    r"\b(?:records?|documents?|grants?|provides?)\s+(?:explicit\s+)?approval\b"
+    r"[^.]{0,160}\b(?:through|in|via|under|by)\b|\bapproval\s+mechanism\b",
+    re.IGNORECASE,
+)
+ACCEPTANCE_RATIONALE_EVIDENCE_PATTERN = re.compile(
+    r"\bTreatment\s+is\s+Acceptance\s+because\b", re.IGNORECASE
+)
+ACCEPTANCE_THRESHOLD_EVIDENCE_PATTERN = re.compile(
+    r"\b(?:(?:acceptance|risk|retention)\s+threshold|risk\s+appetite|"
+    r"risk\s+tolerance|"
+    r"documented\s+(?:None|Info|Low|Medium|High|Critical)\s+threshold)\b",
+    re.IGNORECASE,
+)
+TRANSFER_PARTY_EVIDENCE_PATTERN = re.compile(
+    r"\b(?:third\s+party|vendor|supplier|provider|insurer|contractor|"
+    r"managed\s+service)\b|\bTreatment\s+is\s+Transfer\s+(?:to|with)\s+"
+    r"[A-Z][\w&.-]+(?:\s+[A-Z][\w&.-]+){0,3}\b",
+    re.IGNORECASE,
+)
+TRANSFER_INSTRUMENT_EVIDENCE_PATTERN = re.compile(
+    r"\b(?:contract|SLA|warranty|insurance(?:\s+policy)?|managed\s+service)\b",
+    re.IGNORECASE,
+)
+TRANSFER_SCOPE_EVIDENCE_PATTERN = re.compile(
+    r"\b(?:transfer(?:red|s)?|shift(?:ed|s)?|share(?:d|s)?|delegat(?:ed|es)?)\b"
+    r"[^.]{0,160}\b(?:risk|exposure|impact|consequence|scope)\b|"
+    r"\b(?:risk|exposure|impact|consequence|scope)\b[^.]{0,160}"
+    r"\b(?:transfer(?:red|s)?|shift(?:ed|s)?|share(?:d|s)?|delegat(?:ed|es)?)\b",
+    re.IGNORECASE,
+)
+AVOIDANCE_CONTEXT_EVIDENCE_PATTERN = re.compile(
+    r"\b(?:architectur(?:al|e)|design|record|decision|interface|element|"
+    r"component|capability|function|data\s+flow|attack\s+path|risk\s+source|"
+    r"mechanism)\b",
+    re.IGNORECASE,
+)
+AVOIDANCE_OUTCOME_EVIDENCE_PATTERN = re.compile(
+    r"\b(?:eliminat(?:e|ed|es)|remov(?:e|ed)|impossible|absent|"
+    r"unavailable|no\s+longer\s+present|outside(?:\s+the)?\s+scope|"
+    r"does\s+not\s+apply|no\s+(?:mechanism|network\s+stack|attack\s+path))\b",
+    re.IGNORECASE,
+)
 EMB3D_LEVELS = frozenset({"foundational", "intermediate", "leading"})
 CWE_MAPPING_USAGES = frozenset(
     {"Allowed", "Allowed-with-Review", "Discouraged", "Prohibited"}
 )
+RISK_LEVELS = ("Info", "Low", "Medium", "High", "Critical")
+CVSS_SEVERITIES = ("None", "Low", "Medium", "High", "Critical")
+RISK_MATRIX = {
+    "Info": {
+        "None": "Info",
+        "Low": "Info",
+        "Medium": "Low",
+        "High": "Low",
+        "Critical": "Medium",
+    },
+    "Low": {
+        "None": "Info",
+        "Low": "Low",
+        "Medium": "Low",
+        "High": "Medium",
+        "Critical": "High",
+    },
+    "Medium": {
+        "None": "Low",
+        "Low": "Low",
+        "Medium": "Medium",
+        "High": "High",
+        "Critical": "High",
+    },
+    "High": {
+        "None": "Low",
+        "Low": "Medium",
+        "Medium": "High",
+        "High": "High",
+        "Critical": "Critical",
+    },
+    "Critical": {
+        "None": "Medium",
+        "Low": "High",
+        "Medium": "High",
+        "High": "Critical",
+        "Critical": "Critical",
+    },
+}
+RISK_TREATMENTS = ("Avoidance", "Mitigation", "Acceptance", "Transfer")
+RISK_TREATMENT_GUIDANCE = {
+    "Info": ("Avoidance", "Acceptance"),
+    "Low": ("Acceptance", "Avoidance", "Mitigation"),
+    "Medium": ("Mitigation", "Acceptance", "Transfer"),
+    "High": ("Mitigation", "Avoidance", "Transfer", "Acceptance"),
+    "Critical": ("Avoidance", "Mitigation", "Transfer", "Acceptance"),
+}
+DEFAULT_RISK_TREATMENTS = {
+    "Info": "Avoidance",
+    "Low": "Acceptance",
+    "Medium": "Mitigation",
+    "High": "Mitigation",
+    "Critical": "Avoidance",
+}
+STATE_RISK_TREATMENTS = {
+    "Not Applicable": ("Avoidance",),
+    "Mitigated": ("Mitigation", "Acceptance", "Transfer"),
+}
+RISK_APPROVAL_ROLES = (
+    "Not Required",
+    "Product Security",
+    "Lead Security",
+    "CPSO",
+    "Executive",
+)
+RISK_APPROVAL_MATRIX = {
+    "Info": {
+        "Avoidance": "Not Required",
+        "Mitigation": "Product Security",
+        "Acceptance": "Product Security",
+        "Transfer": "Product Security",
+    },
+    "Low": {
+        "Avoidance": "Not Required",
+        "Mitigation": "Product Security",
+        "Acceptance": "Product Security",
+        "Transfer": "Product Security",
+    },
+    "Medium": {
+        "Avoidance": "Not Required",
+        "Mitigation": "Lead Security",
+        "Acceptance": "Lead Security",
+        "Transfer": "Lead Security",
+    },
+    "High": {
+        "Avoidance": "Not Required",
+        "Mitigation": "CPSO",
+        "Acceptance": "CPSO",
+        "Transfer": "CPSO",
+    },
+    "Critical": {
+        "Avoidance": "Not Required",
+        "Mitigation": "Executive",
+        "Acceptance": "Executive",
+        "Transfer": "Executive",
+    },
+}
+UNFINISHED_STATES = frozenset({"Not Started", "Needs Investigation"})
+FINALIZED_STATES = frozenset(STATE_RISK_TREATMENTS)
 DEFAULT_ATTACK_SOURCE = (
     Path(__file__).resolve().parent.parent
     / "assets"
@@ -948,6 +1103,369 @@ def validate_mitigation_citations(
     return findings
 
 
+def _option_list(options: tuple[str, ...]) -> str:
+    if len(options) == 1:
+        return options[0]
+    return f"{', '.join(options[:-1])}, or {options[-1]}"
+
+
+def validate_treatment_evidence(
+    justification: str,
+    *,
+    state: str,
+    treatment: str,
+    prioritization: Optional[str],
+    row_number: int,
+    threat_id: str,
+) -> list[Finding]:
+    """Validate explicit treatment-evidence markers in Justification."""
+
+    findings: list[Finding] = []
+
+    def require(pattern: re.Pattern[str], message: str, expected: str) -> None:
+        if pattern.search(justification) is None:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Justification",
+                    message=message,
+                    actual=justification,
+                    expected=expected,
+                )
+            )
+
+    if treatment == "Avoidance":
+        if not (
+            AVOIDANCE_CONTEXT_EVIDENCE_PATTERN.search(justification)
+            and AVOIDANCE_OUTCOME_EVIDENCE_PATTERN.search(justification)
+        ):
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Justification",
+                    message="Avoidance lacks an architectural elimination decision",
+                    actual=justification,
+                    expected=(
+                        "<architectural record or design decision identifying the "
+                        "eliminated risk source or attack path>"
+                    ),
+                )
+            )
+        return findings
+
+    if state != "Mitigated":
+        return findings
+
+    require(
+        BOUNDARY_CONTROL_EVIDENCE_PATTERN,
+        "Mitigated treatment lacks enforcement-boundary control evidence",
+        (
+            "Implemented controls: <within-boundary controls> or "
+            "Compensating controls: <outside-boundary controls>"
+        ),
+    )
+    require(
+        RESIDUAL_RISK_EVIDENCE_PATTERN,
+        "Mitigated treatment lacks a standardized residual-risk level",
+        "Residual risk is <None, Info, Low, Medium, High, or Critical>",
+    )
+
+    default_treatment = (
+        DEFAULT_RISK_TREATMENTS.get(prioritization)
+        if prioritization is not None
+        else None
+    )
+    decision_kind = "alternative " if treatment != default_treatment else ""
+    if treatment != "Acceptance":
+        decision_pattern = re.compile(
+            rf"\bTreatment\s+is\s+{re.escape(treatment)}\s+"
+            rf"(?:because|through|via|under|to)\b",
+            re.IGNORECASE,
+        )
+        require(
+            decision_pattern,
+            f"{decision_kind}Risk Treatment lacks a documented decision rationale",
+            f"Treatment is {treatment} <because or through supporting evidence>",
+        )
+
+    if treatment == "Mitigation":
+        require(
+            RISK_OWNER_EVIDENCE_PATTERN,
+            "Mitigation lacks a residual-risk owner",
+            "<stakeholder> owns the residual risk",
+        )
+        require(
+            APPROVAL_MECHANISM_EVIDENCE_PATTERN,
+            "Mitigation lacks an approval mechanism",
+            "<stakeholder> records approval through <mechanism>",
+        )
+    elif treatment == "Acceptance":
+        require(
+            ACCEPTANCE_RATIONALE_EVIDENCE_PATTERN,
+            f"{decision_kind}Acceptance lacks a business rationale",
+            "Treatment is Acceptance because <business rationale>",
+        )
+        require(
+            ACCEPTANCE_THRESHOLD_EVIDENCE_PATTERN,
+            "Acceptance lacks an acceptance threshold",
+            "<documented risk threshold, appetite, or tolerance>",
+        )
+        require(
+            RISK_OWNER_EVIDENCE_PATTERN,
+            "Acceptance lacks an approving stakeholder",
+            "<approving stakeholder> owns the residual risk",
+        )
+        require(
+            APPROVAL_MECHANISM_EVIDENCE_PATTERN,
+            "Acceptance lacks an explicit approval mechanism",
+            "<stakeholder> records approval through <mechanism>",
+        )
+    elif treatment == "Transfer":
+        require(
+            TRANSFER_PARTY_EVIDENCE_PATTERN,
+            "Transfer lacks a named third party",
+            "<named third party responsible for the transferred risk scope>",
+        )
+        require(
+            TRANSFER_INSTRUMENT_EVIDENCE_PATTERN,
+            "Transfer lacks a specific transfer instrument",
+            "<contract, SLA, warranty, insurance policy, or managed service>",
+        )
+        require(
+            TRANSFER_SCOPE_EVIDENCE_PATTERN,
+            "Transfer lacks an explicit risk scope",
+            "<risk, exposure, impact, or consequence shifted to the third party>",
+        )
+
+    return findings
+
+
+def validate_risk_governance(
+    record: Record,
+    *,
+    row_number: int,
+    threat_id: str,
+) -> list[Finding]:
+    """Validate risk priority, treatment, and approval mapping rules for a row."""
+
+    findings: list[Finding] = []
+    row_values = {
+        column: (cell.value.strip() if (cell := _cell(record, column)) else "")
+        for column in (
+            "State",
+            "CVSS v4.0 Severity",
+            "Likelihood of Exploit",
+            "Risk Prioritization",
+            "Risk Treatment",
+            "Risk Approval",
+            "Justification",
+        )
+    }
+    state = row_values["State"]
+    severity = row_values["CVSS v4.0 Severity"]
+    likelihood = row_values["Likelihood of Exploit"]
+    prioritization = row_values["Risk Prioritization"]
+    treatment = row_values["Risk Treatment"]
+    approval = row_values["Risk Approval"]
+    justification = row_values["Justification"]
+
+    if state in UNFINISHED_STATES:
+        for column, value in (
+            ("Risk Prioritization", prioritization),
+            ("Risk Treatment", treatment),
+            ("Risk Approval", approval),
+        ):
+            if value:
+                findings.append(
+                    Finding(
+                        origin="output",
+                        row_number=row_number,
+                        threat_id=threat_id,
+                        column=column,
+                        message=f"{state} requires blank {column}",
+                        actual=value,
+                        expected="<blank>",
+                    )
+                )
+        return findings
+
+    requires_completed_risk = state in FINALIZED_STATES
+    severity_valid = severity in CVSS_SEVERITIES
+    likelihood_valid = likelihood in RISK_LEVELS
+
+    if requires_completed_risk and not severity_valid:
+        findings.append(
+            Finding(
+                origin="output",
+                row_number=row_number,
+                threat_id=threat_id,
+                column="CVSS v4.0 Severity",
+                message="finalized row has no valid risk-matrix impact",
+                actual=severity,
+                expected=_option_list(CVSS_SEVERITIES),
+            )
+        )
+    if requires_completed_risk and not likelihood_valid:
+        findings.append(
+            Finding(
+                origin="output",
+                row_number=row_number,
+                threat_id=threat_id,
+                column="Likelihood of Exploit",
+                message="finalized row has no valid risk-matrix probability",
+                actual=likelihood,
+                expected=_option_list(RISK_LEVELS),
+            )
+        )
+
+    expected_priority: Optional[str] = None
+    if severity_valid and likelihood_valid:
+        expected_priority = RISK_MATRIX[likelihood][severity]
+        if prioritization != expected_priority:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Risk Prioritization",
+                    message="Risk Prioritization differs from the risk matrix",
+                    actual=prioritization,
+                    expected=expected_priority,
+                )
+            )
+    elif prioritization not in RISK_LEVELS and (
+        prioritization or requires_completed_risk
+    ):
+        findings.append(
+            Finding(
+                origin="output",
+                row_number=row_number,
+                threat_id=threat_id,
+                column="Risk Prioritization",
+                message="Risk Prioritization is not a standardized risk level",
+                actual=prioritization,
+                expected=_option_list(RISK_LEVELS),
+            )
+        )
+
+    if expected_priority is not None:
+        effective_priority = expected_priority
+    elif prioritization in RISK_LEVELS:
+        effective_priority = prioritization
+    else:
+        effective_priority = None
+    treatment_valid = treatment in RISK_TREATMENTS
+    state_compatible = True
+    priority_compatible = True
+    if not treatment_valid:
+        if treatment or requires_completed_risk:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Risk Treatment",
+                    message="Risk Treatment is not a standardized treatment",
+                    actual=treatment,
+                    expected=_option_list(RISK_TREATMENTS),
+                )
+            )
+    else:
+        compatible_treatments = STATE_RISK_TREATMENTS.get(state)
+        if compatible_treatments is not None and treatment not in compatible_treatments:
+            state_compatible = False
+            if state == "Not Applicable":
+                message = "Not Applicable requires Avoidance treatment"
+            else:
+                message = "Mitigated uses an incompatible treatment"
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Risk Treatment",
+                    message=message,
+                    actual=treatment,
+                    expected=_option_list(compatible_treatments),
+                )
+            )
+
+        # Not Applicable has an explicit Avoidance requirement that takes precedence
+        # over the general prioritization guidance.
+        if state != "Not Applicable" and effective_priority is not None:
+            guided_treatments = RISK_TREATMENT_GUIDANCE[effective_priority]
+            if treatment not in guided_treatments:
+                priority_compatible = False
+                findings.append(
+                    Finding(
+                        origin="output",
+                        row_number=row_number,
+                        threat_id=threat_id,
+                        column="Risk Treatment",
+                        message=(
+                            "Risk Treatment is incompatible with Risk Prioritization"
+                        ),
+                        actual=treatment,
+                        expected=_option_list(guided_treatments),
+                    )
+                )
+
+    approval_valid = approval in RISK_APPROVAL_ROLES
+    if not approval_valid:
+        if approval or requires_completed_risk:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Risk Approval",
+                    message="Risk Approval is not a standardized role label",
+                    actual=approval,
+                    expected=_option_list(RISK_APPROVAL_ROLES),
+                )
+            )
+    elif effective_priority is not None and treatment_valid:
+        minimum_approval = RISK_APPROVAL_MATRIX[effective_priority][treatment]
+        actual_rank = RISK_APPROVAL_ROLES.index(approval)
+        minimum_rank = RISK_APPROVAL_ROLES.index(minimum_approval)
+        if actual_rank < minimum_rank:
+            acceptable_roles = RISK_APPROVAL_ROLES[minimum_rank:]
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Risk Approval",
+                    message="Risk Approval is below the minimum required role",
+                    actual=approval,
+                    expected=_option_list(acceptable_roles),
+                )
+            )
+
+    if (
+        requires_completed_risk
+        and treatment_valid
+        and state_compatible
+        and priority_compatible
+    ):
+        findings.extend(
+            validate_treatment_evidence(
+                justification,
+                state=state,
+                treatment=treatment,
+                prioritization=effective_priority,
+                row_number=row_number,
+                threat_id=threat_id,
+            )
+        )
+
+    return findings
+
+
 def validate_rows(
     records: list[Record],
     technique_index: Optional[dict[str, AttackTechnique]] = None,
@@ -1125,51 +1643,17 @@ def validate_rows(
                     )
                 )
 
-        state_cell = _cell(record, "State")
-        treatment_cell = _cell(record, "Risk Treatment")
-        approval_cell = _cell(record, "Risk Approval")
-        state = state_cell.value.strip() if state_cell is not None else ""
-        treatment = treatment_cell.value.strip() if treatment_cell is not None else ""
-        approval = approval_cell.value.strip() if approval_cell is not None else ""
+        findings.extend(
+            validate_risk_governance(
+                record,
+                row_number=row_number,
+                threat_id=threat_id,
+            )
+        )
 
-        if state in {"Not Started", "Needs Investigation"}:
-            if treatment_cell is not None and treatment:
-                findings.append(
-                    Finding(
-                        origin="output",
-                        row_number=row_number,
-                        threat_id=threat_id,
-                        column="Risk Treatment",
-                        message=f"{state} requires blank Risk Treatment",
-                        actual=treatment,
-                        expected="<blank>",
-                    )
-                )
-            if approval_cell is not None and approval:
-                findings.append(
-                    Finding(
-                        origin="output",
-                        row_number=row_number,
-                        threat_id=threat_id,
-                        column="Risk Approval",
-                        message=f"{state} requires blank Risk Approval",
-                        actual=approval,
-                        expected="<blank>",
-                    )
-                )
-        elif state == "Not Applicable":
-            if treatment_cell is not None and treatment != "Avoidance":
-                findings.append(
-                    Finding(
-                        origin="output",
-                        row_number=row_number,
-                        threat_id=threat_id,
-                        column="Risk Treatment",
-                        message="Not Applicable requires Avoidance treatment",
-                        actual=treatment,
-                        expected="Avoidance",
-                    )
-                )
+        state_cell = _cell(record, "State")
+        state = state_cell.value.strip() if state_cell is not None else ""
+        if state == "Not Applicable":
             for column in IDENTIFIER_COLUMNS:
                 cell = _cell(record, column)
                 if cell is not None and cell.value.strip() != "N/A":
@@ -1184,22 +1668,6 @@ def validate_rows(
                             expected="N/A",
                         )
                     )
-        elif (
-            state == "Mitigated"
-            and treatment_cell is not None
-            and treatment not in {"Mitigation", "Acceptance", "Transfer"}
-        ):
-            findings.append(
-                Finding(
-                    origin="output",
-                    row_number=row_number,
-                    threat_id=threat_id,
-                    column="Risk Treatment",
-                    message="Mitigated uses an incompatible treatment",
-                    actual=treatment,
-                    expected="Mitigation, Acceptance, or Transfer",
-                )
-            )
 
     return findings
 
