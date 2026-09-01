@@ -177,11 +177,11 @@ Save and integrate intermediate results after each step. When the objective is p
 
     Apply these semantics consistently across all review steps and output fields.
 
-    | Value           | Meaning                                                                                                                          | Use                                                                                                                                                                                |
-    | --------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-    | `N/A`           | The finalized reviewed row has no applicable framework identifier, mapping, or governance treatment for that column.             | Use for non-applicable ATT&CK, EMB3D, or CWE mappings and for `Risk Treatment` when a `Not Applicable` candidate scenario never formed an extant risk.                             |
-    | Blank           | The field remains unresolved because the review is incomplete, blocked, or intentionally carried forward from an unreviewed row. | Use in strict, best-effort, or batch mode when evidence is missing.                                                                                                                |
-    | Populated value | Evidence supports the mapping, score, exploit maturity, prioritization, residual risk, treatment, or approval decision.          | Use only after the relevant data source and mapping rule have been checked. Use `Avoidance` only for a documented decision or action that eliminated an otherwise applicable risk. |
+    | Value           | Meaning                                                                                                                          | Use                                                                                                        |
+    | --------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+    | `N/A`           | The finalized reviewed row has no applicable value for that column.                                                              | Use only when the field-specific mapping permits `N/A`.                                                    |
+    | Blank           | The field remains unresolved because the review is incomplete, blocked, or intentionally carried forward from an unreviewed row. | Use in strict, best-effort, or batch mode when evidence is missing.                                        |
+    | Populated value | Evidence supports the mapping, score, exploit maturity, prioritization, residual risk, treatment, or approval decision.          | Use only after the relevant data source and field-specific mapping rule have been checked.                 |
 
 2. Execution Mode
 
@@ -272,7 +272,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Append review columns in this exact order with these exact column names: `ATT&CK ID`, `EMB3D TID`, `CWE ID`, `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Threat Actor`, `Risk Treatment`, `Risk Approval`.
     - Every output row must trace back to exactly one source row by native `Id`.
     - If enrichment columns already exist, carry their values forward unchanged for already-reviewed rows unless the user explicitly requests re-review.
-    - **Justification Quality:** Each justification must follow the narrative pattern defined in section [4.3. Review, Step 14](#43-review). Do not produce generic, short, or identifier-only justifications. Enclose the justification in double quotes. Avoid semicolons inside the justification text since the CSV is semicolon-delimited.
+    - **Justification Quality:** Each justification must follow the applicable [Justification Templates](references/justification-template.md). Do not produce generic, short, or identifier-only justifications. Enclose the justification in double quotes. Avoid semicolons inside the justification text since the CSV is semicolon-delimited.
 
 4. Output Baseline
 
@@ -290,8 +290,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
 > [!NOTE]
 > Perform steps 1–14 for every row before proceeding to section [4.4. Deliverables](#44-deliverables).
-
-> [!NOTE]
+>
 > Local framework assets availability are gating inputs. If the required ATT&CK, EMB3D, CWE, or CVSS asset file is unavailable, inaccessible, stale, or missing, do not invent identifiers, exploit maturity, scores, or mappings. In strict mode, stop and request updated assets. In best-effort or batch mode, leave unsupported fields blank, mark the row `Needs Investigation` when the missing asset affects the decision, and record the evidence gap in `Justification` and the summary.
 
 1. Row-by-Row Analysis
@@ -402,7 +401,7 @@ Save and integrate intermediate results after each step. When the objective is p
     | State                 | Use When                                                                                                   | Justification Requirement                                                                                                                                                        |
     | --------------------- | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
     | `Not Started`         | Row has not yet been reviewed.                                                                             | Leave enrichment and governance fields blank except preserved source values.                                                                                                     |
-    | `Not Applicable`      | Attack path is architecturally impossible, outside scope, or structurally eliminated.                      | Distinguish a candidate that never formed an extant risk from an otherwise applicable risk eliminated by a documented decision or action, and explain why the path was rejected. |
+    | `Not Applicable`      | Attack path is architecturally impossible, outside the assessed boundary, or structurally eliminated.      | Explain the architectural evidence for rejecting the path; apply the risk-treatment distinction in step 12.                                                                      |
     | `Mitigated`           | Confirmed implemented controls, compensating controls, or design changes reduce risk to an accepted level. | Classify controls by enforcement boundary and identify residual risk, remaining exposure, owner, and approval mechanism.                                                         |
     | `Needs Investigation` | Critical evidence is missing or a key assumption cannot be validated.                                      | Name the evidence gap and whether it affects actor assignment, scoring, treatment, or approval.                                                                                  |
 
@@ -422,17 +421,14 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Action:** Populate residual risk in `Justification` after `State` and `Priority` are revised and before selecting governance treatment.
     - Use one of `None`, `Info`, `Low`, `Medium`, `High`, or `Critical`.
-    - For `Not Applicable`, record `None` when the attack path is structurally eliminated or outside scope.
+    - For `Not Applicable`, record `None` when the attack path is structurally eliminated or outside the assessed boundary.
     - For `Mitigated`, record the remaining risk after confirmed implemented controls, compensating controls, environmental constraints, or design changes are applied.
     - For `Needs Investigation` or unresolved rows, leave blank and record the evidence gap in `Justification`.
     - Do not use residual risk to lower `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, or `Risk Prioritization`.
 
 12. Risk Treatment
 
-    **Action:** Populate `Risk Treatment` using [Risk Treatment Mapping](references/mapping-rules.md#11-risk-treatment-mapping).
-    - Confirm that the row describes an extant risk before selecting treatment. For `Not Applicable`, use `N/A` when the candidate scenario never existed, is architecturally impossible, or is outside the assessed boundary. Use `Avoidance` only when a documented decision or action eliminated an otherwise applicable risk source.
-    - Apply [Treatment Decision Guidance](references/mapping-rules.md#112-treatment-decision-guidance) using documented risk appetite and tolerance, legal and contractual obligations, OT safety and reliability constraints, feasibility, cost, and expected residual risk. Use `Risk Prioritization` to set urgency and governance rigor, not to determine treatment automatically.
-    - When multiple responses apply, record the primary governance disposition in `Risk Treatment` and supporting treatments in `Justification`.
+    **Action:** Populate `Risk Treatment` after applying [Treatment Semantics](references/mapping-rules.md#111-treatment-semantics) and [Treatment Decision Guidance](references/mapping-rules.md#112-treatment-decision-guidance).
     - Verify the selected treatment against [State and Treatment Compatibility](references/mapping-rules.md#113-state-and-treatment-compatibility).
     - Record the evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
     - Do not use `Acceptance` or `Transfer` to work around missing technical evidence.
@@ -440,24 +436,13 @@ Save and integrate intermediate results after each step. When the objective is p
 
 13. Risk Approval
 
-    **Action:** Populate `Risk Approval` using [Risk Approval Mapping](references/mapping-rules.md#12-risk-approval-mapping).
-    - Record exactly one standardized role label.
-    - Use `Not Required` only when `Risk Treatment = N/A`. Base all actual treatment approvals, including `Avoidance`, on `Risk Prioritization` and `Risk Treatment`, then escalate when residual risk, safety, operational, or stakeholder evidence requires stronger governance.
-    - Map standardized role labels to equivalent authorities in the assessed organization; do not assume that a title alone grants the required decision authority.
+    **Action:** Populate `Risk Approval` using [Risk Approval Mapping](references/mapping-rules.md#12-risk-approval-mapping) after selecting `Risk Treatment`.
+    - Record exactly one standardized role label and map it to an equivalent authority in the assessed organization.
     - Apply Field Resolution Semantics.
 
 14. TMT Justification
 
-    **Action:** Read [Justification Templates](references/justification-template.md), select the pattern for the final `State`, and write one concise analyst paragraph after steps 1–13 are complete.
-    - State the evidence-based rationale for `State` and the concrete scenario, architectural contradiction, or evidence gap.
-    - Add protocol, trust relationship, validation behavior, access, actor, scoring, and mapping details only when they explain the decision.
-    - For finalized risks, include the treatment evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
-    - Use `Implemented controls:` only for verified controls enforced within the assessed product or device boundary. Use `Compensating controls:` only for controls enforced outside that boundary. A mitigated narrative may contain only compensating controls when that is what the evidence supports. Do not invent an `Implemented controls:` clause.
-    - Keep EMB3D mitigations separate from both enforcement-boundary categories. Cite an MID only when row evidence supports the mitigation, copy its exact name and Foundational, Intermediate, or Leading level from the mitigation-centric EMB3D asset, prefix the clause with `EMB3D`, and confirm that it maps to at least one TID in the row.
-    - A source-backed MID does not prove implementation. Claim an MID as implemented only when the narrative identifies device-specific design, configuration, test, or verified behavior evidence demonstrating enforcement within the assessed product or device boundary. Omit MIDs when `EMB3D TID` is `N/A`.
-    - Explain intentional `N/A` or blank fields once. Never invent missing evidence to complete a template.
-    - Avoid unqualified legal safe-harbor language. Frame compliance-oriented statements as technical-documentation support or product-specific evidence pending stakeholder review.
-    - Use no semicolons or embedded line breaks. Let the CSV writer enclose the complete `Justification` cell in double quotes.
+    **Action:** After steps 1–13, read [Justification Templates](references/justification-template.md), apply its universal rules and the pattern for the final `State`, and write one concise analyst paragraph. The template governs expression; the applicable mapping-rule sections linked from it remain authoritative for classifications, decisions, and evidence requirements.
 
 ### 4.4. Deliverables
 
