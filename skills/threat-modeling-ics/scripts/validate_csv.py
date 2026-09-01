@@ -1178,6 +1178,20 @@ def validate_rows(
                 )
             continue
 
+        minimum_approval = MINIMUM_APPROVAL_BY_PRIORITY.get(priority)
+        if priority_cell is not None and minimum_approval is None:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Risk Prioritization",
+                    message="finalized row uses an unsupported risk priority",
+                    actual=priority or "<blank>",
+                    expected=", ".join(MINIMUM_APPROVAL_BY_PRIORITY),
+                )
+            )
+
         if treatment_cell is not None and treatment not in RISK_TREATMENTS:
             findings.append(
                 Finding(
@@ -1277,7 +1291,6 @@ def validate_rows(
                     )
                 )
         elif treatment in RISK_TREATMENTS:
-            minimum_approval = MINIMUM_APPROVAL_BY_PRIORITY.get(priority)
             if (
                 minimum_approval is not None
                 and approval in RISK_APPROVAL_RANK
