@@ -581,26 +581,32 @@ pages-doxygen-serve:
 
 # ─── Risk Assessment ─────────────────────────────────────────────────────────────────────────────
 
-# Usage: make risk-validate-cvss <file>
+RISK_CVSS_ARTIFACT = $(if $(ARTIFACT),$(ARTIFACT),$(word 1,$(filter-out $@,$(MAKECMDGOALS))))
+RISK_CSV_SOURCE = $(if $(SOURCE),$(SOURCE),$(word 1,$(filter-out $@,$(MAKECMDGOALS))))
+RISK_CSV_ARTIFACT = $(if $(ARTIFACT),$(ARTIFACT),$(word 2,$(filter-out $@,$(MAKECMDGOALS))))
+
+# Usage: make risk-validate-cvss ARTIFACT=<file>
+#        make risk-validate-cvss <file>
 #
 ## Validate CVSS scores in a CSV file
 risk-validate-cvss:
-	@if [ -z "$(filter-out $@,$(MAKECMDGOALS))" ]; then \
-		echo "usage: make risk-validate-cvss <file>" >&2; \
+	@if [ -z "$(RISK_CVSS_ARTIFACT)" ]; then \
+		echo "usage: make risk-validate-cvss ARTIFACT=<file>" >&2; \
 		exit 1; \
 	fi
 
-	@uv run skills/threat-modeling-ics/scripts/validate_cvss.py --csv "$(filter-out $@,$(MAKECMDGOALS))"
+	@uv run --with 'cvss==3.6' skills/threat-modeling-ics/scripts/validate_cvss.py --csv "$(RISK_CVSS_ARTIFACT)"
 .PHONY: risk-validate-cvss
 
-# Usage: make risk-validate-csv <source> <artifact>
+# Usage: make risk-validate-csv SOURCE=<source> ARTIFACT=<artifact>
+#        make risk-validate-csv <source> <artifact>
 #
 ## Validate an entire generated OT/ICS threat-model CSV and report all findings.
 risk-validate-csv:
-	@if [ -z "$(filter-out $@,$(MAKECMDGOALS))" ]; then \
-		echo "usage: make risk-validate-csv <source> <artifact>" >&2; \
+	@if [ -z "$(RISK_CSV_SOURCE)" ] || [ -z "$(RISK_CSV_ARTIFACT)" ]; then \
+		echo "usage: make risk-validate-csv SOURCE=<source> ARTIFACT=<artifact>" >&2; \
 		exit 1; \
 	fi
 
-	@python3 skills/threat-modeling-ics/scripts/validate_csv.py --source "$(word 1,$(filter-out $@,$(MAKECMDGOALS)))" --artifact "$(word 2,$(filter-out $@,$(MAKECMDGOALS)))"
+	@python3 skills/threat-modeling-ics/scripts/validate_csv.py --source "$(RISK_CSV_SOURCE)" --artifact "$(RISK_CSV_ARTIFACT)"
 .PHONY: risk-validate-csv

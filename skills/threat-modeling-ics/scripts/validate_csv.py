@@ -104,6 +104,23 @@ DEFAULT_EMB3D_MITIGATIONS = (
     / "mitigations_threat_mappings_2.0.1.json"
 )
 MAX_DIFF_LENGTH = 500
+RISK_TREATMENTS = frozenset(
+    {"N/A", "Avoidance", "Mitigation", "Acceptance", "Transfer"}
+)
+RISK_APPROVAL_RANK = {
+    "Not Required": 0,
+    "Product Security": 1,
+    "Lead Security": 2,
+    "CPSO": 3,
+    "Executive": 4,
+}
+MINIMUM_APPROVAL_BY_PRIORITY = {
+    "Info": "Product Security",
+    "Low": "Product Security",
+    "Medium": "Lead Security",
+    "High": "CPSO",
+    "Critical": "Executive",
+}
 
 
 @dataclass(frozen=True)
@@ -1126,9 +1143,11 @@ def validate_rows(
                 )
 
         state_cell = _cell(record, "State")
+        priority_cell = _cell(record, "Risk Prioritization")
         treatment_cell = _cell(record, "Risk Treatment")
         approval_cell = _cell(record, "Risk Approval")
         state = state_cell.value.strip() if state_cell is not None else ""
+        priority = priority_cell.value.strip() if priority_cell is not None else ""
         treatment = treatment_cell.value.strip() if treatment_cell is not None else ""
         approval = approval_cell.value.strip() if approval_cell is not None else ""
 
@@ -1157,17 +1176,62 @@ def validate_rows(
                         expected="<blank>",
                     )
                 )
-        elif state == "Not Applicable":
-            if treatment_cell is not None and treatment != "Avoidance":
+            continue
+
+        minimum_approval = MINIMUM_APPROVAL_BY_PRIORITY.get(priority)
+        if priority_cell is not None and minimum_approval is None:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Risk Prioritization",
+                    message="finalized row uses an unsupported risk priority",
+                    actual=priority or "<blank>",
+                    expected=", ".join(MINIMUM_APPROVAL_BY_PRIORITY),
+                )
+            )
+
+        if treatment_cell is not None and treatment not in RISK_TREATMENTS:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Risk Treatment",
+                    message="finalized row uses an unsupported treatment value",
+                    actual=treatment,
+                    expected=", ".join(sorted(RISK_TREATMENTS)),
+                )
+            )
+        if approval_cell is not None and approval not in RISK_APPROVAL_RANK:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Risk Approval",
+                    message="finalized row uses an unsupported approval role",
+                    actual=approval,
+                    expected=", ".join(RISK_APPROVAL_RANK),
+                )
+            )
+
+        if state == "Not Applicable":
+            if treatment_cell is not None and treatment not in {"N/A", "Avoidance"}:
                 findings.append(
                     Finding(
                         origin="output",
                         row_number=row_number,
                         threat_id=threat_id,
                         column="Risk Treatment",
-                        message="Not Applicable requires Avoidance treatment",
+                        message=(
+                            "Not Applicable requires N/A for a scenario that never "
+                            "formed an extant risk or Avoidance for a documented "
+                            "elimination action"
+                        ),
                         actual=treatment,
-                        expected="Avoidance",
+                        expected="N/A or Avoidance",
                     )
                 )
             for column in IDENTIFIER_COLUMNS:
@@ -1200,6 +1264,53 @@ def validate_rows(
                     expected="Mitigation, Acceptance, or Transfer",
                 )
             )
+
+        if treatment == "N/A":
+            if state != "Not Applicable":
+                findings.append(
+                    Finding(
+                        origin="output",
+                        row_number=row_number,
+                        threat_id=threat_id,
+                        column="Risk Treatment",
+                        message="N/A treatment is only compatible with Not Applicable",
+                        actual=f"{state or '<blank>'} with N/A",
+                        expected="Not Applicable with N/A",
+                    )
+                )
+            if approval in RISK_APPROVAL_RANK and approval != "Not Required":
+                findings.append(
+                    Finding(
+                        origin="output",
+                        row_number=row_number,
+                        threat_id=threat_id,
+                        column="Risk Approval",
+                        message="N/A treatment does not require governance approval",
+                        actual=approval,
+                        expected="Not Required",
+                    )
+                )
+        elif treatment in RISK_TREATMENTS:
+            if (
+                minimum_approval is not None
+                and approval in RISK_APPROVAL_RANK
+                and RISK_APPROVAL_RANK[approval]
+                < RISK_APPROVAL_RANK[minimum_approval]
+            ):
+                findings.append(
+                    Finding(
+                        origin="output",
+                        row_number=row_number,
+                        threat_id=threat_id,
+                        column="Risk Approval",
+                        message=(
+                            f"{priority} {treatment} treatment requires stronger "
+                            "approval"
+                        ),
+                        actual=approval,
+                        expected=f"{minimum_approval} or a higher-authority role",
+                    )
+                )
 
     return findings
 
