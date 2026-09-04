@@ -74,13 +74,16 @@ Available skills can be activated by agents based on defined triggers and contex
 - [GitHub Actions Skills](skills/README.md#15-github-actions-skills)
   > GitHub Actions workflow efficiency auditing and security hardening guidance.
 
-- [Threat Modeling Skills](skills/README.md#16-threat-modeling-skills)
+- [Container Skills](skills/README.md#16-container-skills)
+  > Multi-stage Dockerfile guidance for runtime images, efficient caching, reproducible builds, and security hardening.
+
+- [Threat Modeling Skills](skills/README.md#17-threat-modeling-skills)
   > Threat modeling for OT/ICS systems and Microsoft Threat Modeling Tool (`.tm7`) file generation.
 
-- [Documentation Skills](skills/README.md#17-documentation-skills)
+- [Documentation Skills](skills/README.md#18-documentation-skills)
   > Architecture Decision Records (ADR) creation and maintenance skills.
 
-- [UI and Design Skills](skills/README.md#18-ui-and-design-skills)
+- [UI and Design Skills](skills/README.md#19-ui-and-design-skills)
   > Material Design 3 implementation guidance for components, design tokens, theming, adaptive layouts, accessibility, and compliance auditing.
 
 ## 2. Contribution
