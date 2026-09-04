@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.16.0](https://github.com/sentenz/skills/compare/v1.15.4...v1.16.0) (2026-09-04)
+
+### Features
+
+* add multi-stage Dockerfile agent skill ([#118](https://github.com/sentenz/skills/issues/118)) ([9f4d01c](https://github.com/sentenz/skills/commit/9f4d01c113c54214018358cf3d44ff06240f78e3))
+
 ## [1.15.4](https://github.com/sentenz/skills/compare/v1.15.3...v1.15.4) (2026-08-31)
 
 ### Bug Fixes
