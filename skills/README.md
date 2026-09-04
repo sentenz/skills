@@ -70,7 +70,7 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 ### 1.6. Container Skills
 
 - [Multi-Stage Dockerfile](multi-stage-dockerfile/SKILL.md)
-  > External MIT-licensed Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awesome-copilot) for creating optimized [multi-stage Dockerfiles](https://github.com/github/awesome-copilot/tree/main/skills/multi-stage-dockerfile) with smaller runtime images, improved caching, reproducible builds, and security hardening.
+  > External Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awesome-copilot) for creating optimized [multi-stage Dockerfiles](https://github.com/github/awesome-copilot/tree/main/skills/multi-stage-dockerfile) with smaller runtime images, improved caching, reproducible builds, and security hardening.
 
 ### 1.7. Threat Modeling Skills
 
