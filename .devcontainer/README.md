@@ -8,7 +8,7 @@ The `.devcontainer/` directory contains configuration files for setting up a [De
 ## 1. Dev Containers
 
 - `python/`
-  > Develop [Python 3](https://github.com/devcontainers/images/tree/main/src/python) applications.
+  > Development environment for [Python 3](https://github.com/devcontainers/images/tree/main/src/python) applications.
 
 > [!NOTE]
 > The `devcontainer.json` runs the `bootstrap` and `setup` tasks to initialize and configure the development environment.
