@@ -26,7 +26,7 @@ dependency-tree: false
 exit-code: 0
 exit-on-eol: 0
 ignore-policy: ""
-ignorefile: .trivyignore
+ignorefile: .trivyignore.yaml
 image:
   docker:
     host: ""
