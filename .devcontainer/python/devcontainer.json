@@ -1,0 +1,45 @@
+{
+  "name": "Python",
+  "build": {
+    "dockerfile": "./Dockerfile",
+    "context": "."
+  },
+  "runArgs": [
+    "--name=python-devcontainer"
+  ],
+  "mounts": [
+    "source=python-workspace-volume,target=/workspaces,type=volume"
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:": {
+      "installZsh": "true",
+      "username": "vscode",
+      "userUid": "1000",
+      "userGid": "1000",
+      "upgradePackages": "true"
+    },
+    "ghcr.io/devcontainers/features/python:": "none",
+    "ghcr.io/devcontainers/features/node:": "none",
+    "ghcr.io/devcontainers/features/git:": {
+      "version": "latest",
+      "ppa": "false"
+    }
+  },
+  // Configure tool-specific properties.
+  "customizations": {
+    // Configure properties specific to VS Code.
+    "vscode": {
+      // Set *default* container specific settings.json values on container create.
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python"
+      }
+    }
+  },
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // "forwardPorts": [],
+  // Use 'postCreateCommand' to run commands after the container is created.
+  // "postCreateCommand": "pip3 install --user -r requirements.txt",
+  "postCreateCommand": "sudo make bootstrap && sudo make setup",
+  // Set `remoteUser` to `root` to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+  "remoteUser": "vscode"
+}
