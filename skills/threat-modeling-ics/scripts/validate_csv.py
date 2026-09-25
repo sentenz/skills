@@ -104,6 +104,9 @@ DEFAULT_EMB3D_MITIGATIONS = (
     / "mitigations_threat_mappings_2.0.1.json"
 )
 MAX_DIFF_LENGTH = 500
+TMT_STATES = frozenset(
+    {"Not Started", "Needs Investigation", "Not Applicable", "Mitigated"}
+)
 RISK_TREATMENTS = frozenset(
     {"N/A", "Avoidance", "Mitigation", "Acceptance", "Transfer"}
 )
@@ -1150,6 +1153,19 @@ def validate_rows(
         priority = priority_cell.value.strip() if priority_cell is not None else ""
         treatment = treatment_cell.value.strip() if treatment_cell is not None else ""
         approval = approval_cell.value.strip() if approval_cell is not None else ""
+
+        if state_cell is not None and state not in TMT_STATES:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="State",
+                    message="row uses an unsupported review state",
+                    actual=state or "<blank>",
+                    expected=", ".join(sorted(TMT_STATES)),
+                )
+            )
 
         if state in {"Not Started", "Needs Investigation"}:
             if treatment_cell is not None and treatment:

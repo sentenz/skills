@@ -49,6 +49,8 @@ Omit every optional category that lacks evidence. Adapt the closing sentence to 
 
 Use [Treatment Semantics](mapping-rules.md#111-treatment-semantics) to distinguish `N/A` from `Avoidance`, then include the corresponding [Treatment Evidence Requirements](mapping-rules.md#114-treatment-evidence-requirements) and [Risk Approval Mapping](mapping-rules.md#12-risk-approval-mapping). Do not add mitigation tiers or residual-risk ownership when no residual risk remains.
 
+For `Avoidance`, identify the elimination action and its verification, retain the pre-treatment scoring basis under [Impact Mapping](mapping-rules.md#7-impact-mapping), and record residual risk `None` and the approval mechanism. Elimination does not turn a documented treatment decision into `N/A`.
+
 ## 5. Needs Investigation
 
 ```plaintext

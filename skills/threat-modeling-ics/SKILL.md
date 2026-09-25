@@ -154,7 +154,7 @@ Determine likelihood from exploitation method and vulnerability state based on t
 
 ### 3.8. Risk Treatment
 
-Risk treatment is the governance decision to mitigate, accept, transfer, or avoid the inherent risk.
+`Risk Treatment` records the governance decision to mitigate, accept, transfer, or avoid an extant risk. Use `N/A` when the candidate scenario never formed an extant risk, and retain `Avoidance` when a documented action eliminated a previously applicable risk.
 
 > [!NOTE]
 > Apply [Treatment Semantics](references/mapping-rules.md#111-treatment-semantics) and the linked decision, compatibility, evidence, and approval mappings in the review workflow. Treat inherent prioritization as an urgency and governance input rather than an automatic treatment decision, and keep treatment traceable to risk tolerance, residual risk, controls, ownership, and approval evidence.
@@ -384,7 +384,7 @@ Save and integrate intermediate results after each step. When the objective is p
     **Action:** Populate `Risk Prioritization` by combining `CVSS v4.0 Severity` and `Likelihood of Exploit` using [Risk Matrix Mapping](references/mapping-rules.md#9-risk-matrix-mapping).
     - Do not record `N/A` for finalized reviewed rows.
     - When `CVSS v4.0 Severity = None`, still evaluate the risk matrix using the derived likelihood value.
-    - Treat this value as inherent technical prioritization before risk treatment, compensating controls, acceptance, transfer, or residual-risk ownership.
+    - Treat this value as inherent technical prioritization before risk treatment, compensating controls, acceptance, transfer, or residual-risk ownership. For `Avoidance`, retain the pre-treatment scoring and likelihood basis under [Impact Mapping](references/mapping-rules.md#7-impact-mapping), even when the final `State` is `Not Applicable`.
     - Apply Field Resolution Semantics.
 
 8. Threat Actor
