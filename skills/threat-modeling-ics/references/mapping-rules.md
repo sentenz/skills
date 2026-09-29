@@ -1,6 +1,6 @@
 # Mapping Rules
 
-Use these rules only after reading the applicable workflow step in `SKILL.md`. Treat `SKILL.md` as authoritative if a workflow instruction conflicts with this reference.
+Use these analytical rules only after reading the applicable workflow step in [SKILL.md](../SKILL.md). Keep workflow order, execution modes, and input/output contracts there; use this reference for decision criteria and [Justification Templates](justification-template.md) for narrative composition. Treat `SKILL.md` as authoritative if a workflow instruction conflicts with this reference.
 
 - [1. Connection-Path Scope Classification](#1-connection-path-scope-classification)
 - [2. CIA Impact Reference](#2-cia-impact-reference)
@@ -204,44 +204,29 @@ Use `SC`, `SI`, and `SA` to capture cascading effects on the physical process, s
 
 Categorize likelihood of exploit using BSI `Dringlichkeit / Eintrittspotenzial` logic. Combine exploitation method with vulnerability state.
 
-- Exploitation Method
-  > The exploitation method describes the degree of attacker interaction and automation required to perform the attack.
-
-  | Method           | Description                                                                                                |
-  | ---------------- | ---------------------------------------------------------------------------------------------------------- |
-  | Manual           | Requires target-specific, non-automatable steps, specialized knowledge, or direct attacker interaction.    |
-  | Automated        | The exploit be executed repeatedly against eligible targets using a script, tool, or repeatable procedure. |
-  | Self-Replicating | Propagates autonomously from compromised systems to additional targets without continued attacker action.  |
-
-- Vulnerability State
-  > The vulnerability state describes the maturity, availability, and observed use of the exploitation method.
-
-  | Method            | Description                                                                                                    |
-  | ----------------- | -------------------------------------------------------------------------------------------------------------- |
-  | Theoretical       | The weakness is conceptually exploitable, but no concrete or reproducible exploitation method is known.        |
-  | Exploitable       | A proof of concept, reproducible procedure, or otherwise reliable exploitation method exists.                  |
-  | Active            | Credible evidence indicates that the vulnerability or equivalent attack method is being exploited in practice. |
-  | Exploit Published | Publicly available exploit code or tooling materially reduces the effort required to perform the attack.       |
-
 ### 8.1. Exploitation Method
 
-| Method           | CVSS Exploitability Metrics                                      | Description                                                                                                                                      |
-| ---------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Manual           | `AV:P`                                                           | Direct physical device access. Any `AV:P` attack qualifies as Manual regardless of other metrics.                                                |
-| Automated        | `AV:A` or `AV:L`, `AC:L`, `AT:N`, `UI:N`                         | Adjacent or local exploitation with low complexity and no user interaction. Also use for `AV:N` threats without autonomous propagation behavior. |
-| Self-Replicating | `AV:N`, `AC:L`, `AT:N`, `PR:N`, `UI:N` plus propagation behavior | Network-reachable, low-friction, and scenario describes autonomous spread.                                                                       |
+Classify the degree of attacker interaction and automation required to perform the attack.
+
+| Method | Definition | CVSS Exploitability Metrics | Metric Interpretation |
+| ------ | ---------- | -------------------------- | --------------------- |
+| Manual | Requires target-specific, non-automatable steps, specialized knowledge, or direct attacker interaction. | `AV:P` | Direct physical device access. Any `AV:P` attack qualifies as Manual regardless of other metrics. |
+| Automated | The exploit can be executed repeatedly against eligible targets using a script, tool, or repeatable procedure. | `AV:A` or `AV:L`, `AC:L`, `AT:N`, `UI:N` | Adjacent or local exploitation with low complexity and no user interaction. Also use for `AV:N` threats without autonomous propagation behavior. |
+| Self-Replicating | Propagates autonomously from compromised systems to additional targets without continued attacker action. | `AV:N`, `AC:L`, `AT:N`, `PR:N`, `UI:N` plus propagation behavior | Network-reachable, low-friction, and scenario describes autonomous spread. |
 
 > [!NOTE]
 > `PR` (Privileges Required) is independent of exploitation method in most cases. Do not change method classification based on `PR` alone.
 
 ### 8.2. Vulnerability State
 
-| State             | CVSS Threat Metrics | Description                                                                                                   |
-| ----------------- | ------------------- | ------------------------------------------------------------------------------------------------------------- |
-| Theoretical       | `E:U`               | No known exploit. Attack is conceptually possible but unverified.                                             |
-| Exploitable       | `E:P`               | Proof-of-concept exists or the technique is documented and reproducible.                                      |
-| Active            | `E:A`               | Active exploitation observed in the wild or targeted campaigns.                                               |
-| Exploit Published | `E:A`               | Public exploit code or tooling is freely available. Prefer over Active when a public tool is directly usable. |
+Classify the maturity, availability, and observed use of the exploitation method.
+
+| State | CVSS Threat Metrics | Evidence and Selection |
+| ----- | ------------------- | ---------------------- |
+| Theoretical | `E:U` | The weakness is conceptually exploitable but unverified, with no known concrete or reproducible exploitation method. |
+| Exploitable | `E:P` | A proof of concept, documented and reproducible technique, reproducible procedure, or otherwise reliable exploitation method exists. |
+| Active | `E:A` | Credible evidence indicates that the vulnerability or equivalent attack method is being exploited in practice, in the wild or targeted campaigns. |
+| Exploit Published | `E:A` | Public exploit code or tooling is freely available and materially reduces the effort required to perform the attack. Prefer over Active when a public tool is directly usable. |
 
 ### 8.3. Likelihood Matrix
 
@@ -306,12 +291,14 @@ Normalize `Threat Actor` from common OT/ICS threat-path characteristics. Always 
 
 Risk treatment records the governance disposition for the inherent risk and the resulting residual risk after controls, transfer mechanisms, avoidance decisions, or acceptance decisions are applied.
 
-| Treatment    | Purpose                                                         | Required Evidence or Condition                                                                                                         |
-| ------------ | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `Avoidance`  | Eliminate the risk source or make the threat inapplicable.      | Document the removed or restructured system element, function, interface, data flow, or attack path.                                   |
-| `Mitigation` | Reduce likelihood or impact through controls or design changes. | Document each control's enforcement-boundary category, remaining exposure, residual risk, residual-risk owner, and approval mechanism. |
-| `Acceptance` | Intentionally retain the risk without further treatment.        | Document the business rationale, acceptance threshold, responsible stakeholder, and explicit approval.                                 |
-| `Transfer`   | Shift part of the financial, operational, or legal consequence. | Identify the third party and the applicable contract, SLA, warranty, insurance policy, or managed service.                             |
+| Treatment | Purpose |
+| --------- | ------- |
+| `Avoidance` | Eliminate the risk source or make the threat inapplicable. |
+| `Mitigation` | Reduce likelihood or impact through controls or design changes. |
+| `Acceptance` | Intentionally retain the risk without further treatment. |
+| `Transfer` | Shift part of the financial, operational, or legal consequence. |
+
+Record the supporting evidence specified in [Treatment Evidence Requirements](#114-treatment-evidence-requirements).
 
 > [!NOTE]
 > `State` records the technical review result. `Risk Prioritization` records the pre-treatment technical prioritization. `Risk Treatment` records the governance disposition. `Mitigated` may pair with `Acceptance` only when controls are in place and inherent residual risk is intentionally retained with documented approval.
@@ -351,12 +338,12 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 
 ### 11.4. Treatment Evidence Requirements
 
-| Risk Treatment | Minimum Evidence in `Justification`                                                                                                 |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Avoidance      | Architectural record or design decision confirming the risk source has been eliminated.                                             |
-| Mitigation     | Implemented and/or compensating control(s), enforcement boundary, residual risk level, residual-risk owner, and approval mechanism. |
-| Acceptance     | Business rationale for retention, approving stakeholder, and acceptance mechanism.                                                  |
-| Transfer       | Named third party, specific contract/SLA/warranty/insurance reference, and explicit risk scope.                                     |
+| Risk Treatment | Minimum Evidence in `Justification` |
+| -------------- | ----------------------------------- |
+| Avoidance | Architectural record or design decision confirming elimination of the risk source. Identify the removed or restructured system element, function, interface, data flow, or attack path. |
+| Mitigation | Implemented and/or compensating controls, each control's enforcement boundary, remaining exposure, residual risk level, residual-risk owner, and approval mechanism. |
+| Acceptance | Business rationale for retention, acceptance threshold, responsible stakeholder, approving stakeholder, and explicit approval through the acceptance mechanism. |
+| Transfer | Named third party, specific contract, SLA, warranty, insurance policy, or managed service reference, and explicit risk scope. |
 
 ## 12. Risk Approval Mapping
 

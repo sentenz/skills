@@ -15,6 +15,17 @@ allowed-tools: Bash(python:*) Bash(uv:*)
 
 Instructions for AI security agents reviewing Microsoft Threat Modeling Tool threat-list exports.
 
+Use each resource for its defined responsibility:
+
+| Resource | Responsibility |
+| -------- | -------------- |
+| This file | Workflow order, execution modes, blocking gates, and input/output contracts. |
+| [Mapping Rules](references/mapping-rules.md) | Analytical criteria, control classification, framework mappings, scoring, treatment, and approval decisions. Load the applicable subsection when linked by the current step. |
+| [Justification Templates](references/justification-template.md) | Narrative rules and state-specific patterns, applied after analytical decisions. |
+| [Threat Depth Layers](references/threat-depth-layers.md) | Diagram examples using the depth classifications in Mapping Rules. |
+| [Scripts](scripts/README.md) and [assets](assets/README.md) | Bounded data lookup, calculation, validation, and versioned framework evidence. Run script commands from this skill directory. |
+| [Completed example](references/Example_Threat_Model_Generated.csv) | Schema, scoring, and narrative-quality baseline, not product-specific evidence. |
+
 - [1. Benefits](#1-benefits)
 - [2. Principles](#2-principles)
   - [2.1. Scope Classification](#21-scope-classification)
@@ -40,23 +51,7 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
 
 ## 1. Benefits
 
-- Proactive Defense
-  > Identify and mitigate threats before they are exploited in the field.
-
-- Residual Risk
-  > Quantify the remaining risk after controls, compensating measures, and design changes are applied.
-
-- Compliance Alignment
-  > Record assumptions, threats, controls, decisions, and residual risk for risk-assessment and technical-documentation obligations.
-
-- Evidence-Based Assessment
-  > Ground likelihood, impact, and prioritization in architecture, attack paths, asset characteristics, and verified controls.
-
-- Treatment Traceability
-  > Link every risk treatment decision to the inherent prioritization, residual risk, controls, ownership, and approval evidence.
-
-- Adversary-Informed Analysis
-  > Use MITRE ATT&CK for ICS and MITRE EMB3D to map concrete adversary behavior and embedded-device threats to the modeled architecture.
+Identify and mitigate threats before field exploitation, map adversary behavior and embedded-device threats with ATT&CK for ICS and EMB3D, and quantify residual risk after controls, compensating measures, and design changes. Ground likelihood, impact, and prioritization in architecture, attack paths, asset characteristics, and verified controls. Record assumptions, threats, controls, decisions, and residual risk for risk-assessment and technical-documentation obligations, linking each treatment to inherent prioritization, residual risk, ownership, and approval evidence.
 
 ## 2. Principles
 
@@ -265,14 +260,15 @@ Save and integrate intermediate results after each step. When the objective is p
     The generated review artifact is `<Device_Name>_Threat_Model_Generated.csv`.
 
     - **Delimiter:** Semicolon `;` mandatory. Do not use commas `,` or other delimiters.
-    - **CSV-B Score Decimal Format:** Use comma as decimal separator (`5,2`, `7,0`, `0,0`), not period (`5.2`).
+    - **CVSS-B Score Decimal Format:** Record `CVSS-B v4.0 Score` with exactly one decimal digit and comma as decimal separator, e.g., `0,0`, `2,4`, `5,2`, `7,0`, `10,0`.
+    - **Quoting:** Enclose `Description` and `Justification` in double quotes.
     - Retain native TMT columns in source order.
     - Preserve native source fields verbatim: `Id`, `Title`, `Category`, `Diagram`, `Interaction`, `Changed By`, `Description`, `Last Modified`.
     - Update native review fields only after analyst review: `State`, `Priority`, `Justification`.
     - Append review columns in this exact order with these exact column names: `ATT&CK ID`, `EMB3D TID`, `CWE ID`, `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Threat Actor`, `Risk Treatment`, `Risk Approval`.
     - Every output row must trace back to exactly one source row by native `Id`.
     - If enrichment columns already exist, carry their values forward unchanged for already-reviewed rows unless the user explicitly requests re-review.
-    - **Justification Quality:** Each justification must follow the narrative pattern defined in section [4.3. Review, Step 14](#43-review). Do not produce generic, short, or identifier-only justifications. Enclose the justification in double quotes. Avoid semicolons inside the justification text since the CSV is semicolon-delimited.
+    - **Justification Quality:** Apply the [Justification Templates](references/justification-template.md) in [4.3. Review, Step 14](#43-review) for narrative content and cell formatting.
 
 4. Output Baseline
 
@@ -289,10 +285,10 @@ Save and integrate intermediate results after each step. When the objective is p
 ### 4.3. Review
 
 > [!NOTE]
-> Perform steps 1–14 for every row before proceeding to section [4.4. Deliverables](#44-deliverables).
+> Perform steps 1–14 for every row before proceeding to section [4.4. Deliverables](#44-deliverables). Apply the Field Resolution Semantics and Mode-aware Blocking Gates in [4.1. Foundation](#41-foundation) throughout.
 
 > [!NOTE]
-> Local framework assets availability are gating inputs. If the required ATT&CK, EMB3D, CWE, or CVSS asset file is unavailable, inaccessible, stale, or missing, do not invent identifiers, exploit maturity, scores, or mappings. In strict mode, stop and request updated assets. In best-effort or batch mode, leave unsupported fields blank, mark the row `Needs Investigation` when the missing asset affects the decision, and record the evidence gap in `Justification` and the summary.
+> Apply the framework-asset gate to required ATT&CK, EMB3D, CWE, and CVSS assets. In best-effort or batch mode, mark the row `Needs Investigation` when a missing asset affects the decision and record the evidence gap in `Justification` and the summary.
 
 1. Row-by-Row Analysis
 
@@ -310,8 +306,6 @@ Save and integrate intermediate results after each step. When the objective is p
     **Action:** Populate `ATT&CK ID` only when a concrete active ATT&CK for ICS technique matches the adversary behavior described by the TMT row and architecture evidence.
     - Record the most relevant technique ID(s) in `ATT&CK ID`.
     - Use `N/A` when no ICS-specific ATT&CK technique applies to a finalized row.
-    - Apply Field Resolution Semantics.
-    - In `Justification`, describe the behavior that supports the mapping without repeating IDs.
 
     **Data Access:**
     - Do not read or print [assets/attack/ics-attack-19.2.json](assets/attack/ics-attack-19.2.json) directly.
@@ -325,14 +319,12 @@ Save and integrate intermediate results after each step. When the objective is p
     - Record matched TID(s) in `EMB3D TID`, comma-separated when needed.
     - Use `N/A` when no EMB3D threat mapping applies to a finalized row.
     - When `Interaction` names JTAG, UART, RS-232, RS-485, SPI, I²C, GPIO, USB, Modbus RTU, proprietary serial, or a firmware update path, cross-reference the EMB3D Properties Mapper before finalizing `EMB3D TID` and `CWE ID`.
-    - Apply Field Resolution Semantics.
-    - In `Justification`, describe the mapped device property or missing control without repeating TIDs.
 
     **Data Access:**
     - Do not read or print the [assets/emb3d/](assets/emb3d/) JSON files directly.
     - Discover threats, properties, and mitigations with `uv run ./scripts/query_emb3d.py --search '<terms>' --top 5`; narrow discovery with `--kind threat`, `--kind property`, or `--kind mitigation` when needed.
     - Inspect one selected identifier with `--tid 'TID-NNN'`, `--pid 'PID-NN'`, or `--mid 'MID-NNN'`; request only applicable `--include properties,mitigations,threats,hierarchy` fields.
-    - Treat the mitigation-centric query result as authoritative for each MID's exact name, EMB3D level, and associated TIDs. Treat `resolved: false` properties as evidence gaps. A source match is not proof of implementation, and an MID may be claimed as implemented only when device-specific design, configuration, test, or verified behavior evidence demonstrates enforcement within the assessed product or device boundary.
+    - Treat the mitigation-centric query result as authoritative for each MID's exact name, EMB3D level, and associated TIDs. Treat `resolved: false` properties as evidence gaps. Apply [EMB3D Mitigations](references/mapping-rules.md#62-emb3d-mitigations) to distinguish source-backed mappings from device-specific implementation evidence.
 
 4. MITRE CWE
 
@@ -340,8 +332,6 @@ Save and integrate intermediate results after each step. When the objective is p
     - Apply [MITRE CWE Mapping Rules](references/mapping-rules.md#13-mitre-cwe-mapping-rules) and select the most specific supported weakness.
     - Use comma-separated values when multiple concrete weaknesses are required.
     - Use `N/A` when the finalized row has a concrete threat, attack path, or impact but no underlying product weakness can be defensibly identified.
-    - Apply Field Resolution Semantics.
-    - In `Justification`, prefer weakness name or exploit behavior wording unless repeating the ID is required for disambiguation.
 
     **Data Access:**
     - Do not read or print [assets/cwe/cwe-4.20.json](assets/cwe/cwe-4.20.json) directly.
@@ -350,14 +340,10 @@ Save and integrate intermediate results after each step. When the objective is p
 
 5. FIRST CVSS v4.0
 
-    **Action:** Populate `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, and `CVSS v4.0 Severity` together.
-    - Do not record a severity without a vector and score.
-    - Do not record a vector without a score and severity.
-    - Record `CVSS-B v4.0 Score` with exactly one decimal digit and comma as decimal separator, e.g., `0,0`, `2,4`, `5,2`, `7,0`, `10,0`.
+    **Action:** Populate `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, and `CVSS v4.0 Severity` as a complete trio using the score format in the [Output Contract](#42-preparation). Leave the trio blank only when scoring remains unresolved.
     - Select `AV` using [Exploitability Metrics](references/mapping-rules.md#71-exploitability-metrics), then derive the remaining exploitability metrics from the row and architecture evidence.
     - Map `VC`, `VI`, and `VA` using [Vulnerable System Impact Metrics](references/mapping-rules.md#72-vulnerable-system-impact-metrics).
     - Map `SC`, `SI`, and `SA` using [Subsequent System Impact Metrics](references/mapping-rules.md#73-subsequent-system-impact-metrics).
-    - Leave the trio blank only when scoring remains unresolved.
     - Derive the score with the [CVSS v4.0 calculator](https://www.first.org/cvss/calculator/4.0) using the native TMT row, ATT&CK technique, EMB3D exposure, and OT/ICS impact context.
     - Base Severity vs. Residual Risk
       > Apply the zero-impact and residual-risk scoring policy defined in [Impact Mapping](references/mapping-rules.md#7-impact-mapping). Do not lower the intrinsic CVSS Base score solely because compensating controls or risk-acceptance decisions reduce residual business exposure.
@@ -378,7 +364,6 @@ Save and integrate intermediate results after each step. When the objective is p
     - Combine both classifications using [Likelihood Matrix](references/mapping-rules.md#83-likelihood-matrix).
     - Do not record `N/A` for finalized reviewed rows.
     - Zero-impact outcomes still require a mapped likelihood value.
-    - Apply Field Resolution Semantics.
 
 7. Risk Prioritization
 
@@ -386,14 +371,11 @@ Save and integrate intermediate results after each step. When the objective is p
     - Do not record `N/A` for finalized reviewed rows.
     - When `CVSS v4.0 Severity = None`, still evaluate the risk matrix using the derived likelihood value.
     - Treat this value as inherent technical prioritization before risk treatment, compensating controls, acceptance, transfer, or residual-risk ownership.
-    - Apply Field Resolution Semantics.
 
 8. Threat Actor
 
     **Action:** Populate `Threat Actor` with exactly one standardized label using [Threat Actor Mapping](references/mapping-rules.md#10-threat-actor-mapping).
-    - Record the minimum required actor, not the most severe or most newsworthy actor.
-    - Base the decision on access path, capability, and operational knowledge.
-    - If several actors could plausibly perform the attack, record the minimum actor that can realistically achieve the described effect.
+    - Select the minimum actor that can realistically achieve the described effect based on required access, capability, and operational knowledge, not severity or notoriety.
 
 9. TMT State
 
@@ -434,36 +416,23 @@ Save and integrate intermediate results after each step. When the objective is p
     - Verify the selected treatment against [State and Treatment Compatibility](references/mapping-rules.md#113-state-and-treatment-compatibility).
     - Record the evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
     - Do not use `Acceptance` or `Transfer` to work around missing technical evidence.
-    - Apply Field Resolution Semantics.
 
 13. Risk Approval
 
     **Action:** Populate `Risk Approval` using [Risk Approval Mapping](references/mapping-rules.md#12-risk-approval-mapping).
     - Record exactly one standardized role label.
     - Base approval on `Risk Prioritization` and `Risk Treatment`, then escalate when residual risk evidence requires a stronger approver.
-    - Apply Field Resolution Semantics.
 
 14. TMT Justification
 
     **Action:** Read [Justification Templates](references/justification-template.md), select the pattern for the final `State`, and write one concise analyst paragraph after steps 1–13 are complete.
-    - State the evidence-based rationale for `State` and the concrete scenario, architectural contradiction, or evidence gap.
-    - Add protocol, trust relationship, validation behavior, access, actor, scoring, and mapping details only when they explain the decision.
-    - For finalized risks, include the treatment evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
-    - Use `Implemented controls:` only for verified controls enforced within the assessed product or device boundary. Use `Compensating controls:` only for controls enforced outside that boundary. A mitigated narrative may contain only compensating controls when that is what the evidence supports. Do not invent an `Implemented controls:` clause.
-    - Keep EMB3D mitigations separate from both enforcement-boundary categories. Cite an MID only when row evidence supports the mitigation, copy its exact name and Foundational, Intermediate, or Leading level from the mitigation-centric EMB3D asset, prefix the clause with `EMB3D`, and confirm that it maps to at least one TID in the row.
-    - A source-backed MID does not prove implementation. Claim an MID as implemented only when the narrative identifies device-specific design, configuration, test, or verified behavior evidence demonstrating enforcement within the assessed product or device boundary. Omit MIDs when `EMB3D TID` is `N/A`.
-    - Explain intentional `N/A` or blank fields once. Never invent missing evidence to complete a template.
-    - Avoid unqualified legal safe-harbor language. Frame compliance-oriented statements as technical-documentation support or product-specific evidence pending stakeholder review.
-    - Use no semicolons or embedded line breaks. Let the CSV writer enclose the complete `Justification` cell in double quotes.
+    - Apply the template's [Universal Rules](references/justification-template.md#2-universal-rules) and the linked control-classification, EMB3D, and treatment-evidence requirements.
 
 ### 4.4. Deliverables
 
 1. Generate CSV
 
-    **Action:** Validate analyst decisions, then write `<Device_Name>_Threat_Model_Generated.csv`.
-    - Use semicolon-delimited CSV.
-    - Enclose `Description` and `Justification` in double quotes.
-    - Retain native TMT columns in source order and append review columns in the order defined in section [4.2. Preparation](#42-preparation).
+    **Action:** Validate analyst decisions, then write `<Device_Name>_Threat_Model_Generated.csv` according to the [Output Contract](#42-preparation).
     - Verify each output row against its source row.
     - Keep identifiers and score artifacts in dedicated columns and keep `Justification` as narrative rationale.
     - Reject rows where `Justification` is only an identifier token or parenthetical code reference.
