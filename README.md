@@ -86,6 +86,9 @@ Available skills can be activated by agents based on defined triggers and contex
 - [UI and Design Skills](skills/README.md#19-ui-and-design-skills)
   > Material Design 3 implementation guidance for components, design tokens, theming, adaptive layouts, accessibility, and compliance auditing.
 
+- [Python Skills](skills/README.md#110-python-skills)
+  > Python unit testing, mock testing, property-based and fuzz testing, and benchmark testing skills.
+
 ## 2. Contribution
 
 [CONTRIBUTING.md](CONTRIBUTING.md) provides guidance and instructions for contributing to the project.

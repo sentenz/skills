@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python Mock Testing"
+  short_description: "Create reliable Python mock tests"
+  default_prompt: "Use $python-mock-testing to create and validate tests for this Python project."

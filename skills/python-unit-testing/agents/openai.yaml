@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python Unit Testing"
+  short_description: "Create reliable Python unit tests"
+  default_prompt: "Use $python-unit-testing to create and validate tests for this Python project."
