@@ -1,6 +1,26 @@
 ---
 name: python-fuzz-testing
 description: Create and review Python property-based tests with Hypothesis and coverage-guided fuzz targets with Atheris. Use for generated inputs, invariants, parser robustness, malformed data, shrinking failures, seed corpora, crash reproduction, or fuzz regression tests.
+metadata:
+  version: "1.0.0"
+  activation:
+    implicit: true
+    priority: 1
+    triggers:
+      - "fuzz test"
+      - "property-based test"
+      - "hypothesis"
+      - "atheris"
+      - "fuzzing"
+      - "create fuzz test"
+      - "add fuzz test"
+    match:
+      languages: ["python"]
+      paths: ["**/test*.py", "**/*_test.py", "tests/**/*.py"]
+      prompt_regex: '(?i)(fuzz test|property-based test|hypothesis|atheris|fuzzing|create fuzz test|add fuzz test)'
+    usage:
+      load_on_prompt: true
+      autodispatch: true
 ---
 
 # Fuzz Testing

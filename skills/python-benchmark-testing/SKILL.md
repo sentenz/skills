@@ -1,6 +1,25 @@
 ---
 name: python-benchmark-testing
 description: Create and review Python performance benchmarks using pytest-benchmark, pyperf, and standard-library profiling tools. Use for microbenchmarks, performance regressions, baseline comparisons, timing, allocation analysis, profiling, or validating optimizations.
+metadata:
+  version: "1.0.0"
+  activation:
+    implicit: true
+    priority: 1
+    triggers:
+      - "benchmark test"
+      - "pytest-benchmark"
+      - "python benchmark"
+      - "benchmarking"
+      - "performance test"
+      - "profile code"
+    match:
+      languages: ["python"]
+      paths: ["**/test*.py", "**/*_test.py", "tests/**/*.py"]
+      prompt_regex: '(?i)(benchmark test|pytest-benchmark|python benchmark|benchmarking|performance test|profile code|profiling)'
+    usage:
+      load_on_prompt: true
+      autodispatch: true
 ---
 
 # Benchmark Testing

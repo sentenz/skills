@@ -1,6 +1,26 @@
 ---
 name: python-mock-testing
 description: Create and review Python tests with unittest.mock, autospec, AsyncMock, pytest monkeypatch, and test doubles. Use for mocked dependencies, patch targets, stubs, fakes, interaction assertions, failure injection, async collaborators, or isolating network, filesystem, clock, and environment boundaries.
+metadata:
+  version: "1.0.0"
+  activation:
+    implicit: true
+    priority: 1
+    triggers:
+      - "mock test"
+      - "python mock"
+      - "unittest.mock"
+      - "patch object"
+      - "create mock"
+      - "mocking"
+      - "stub"
+    match:
+      languages: ["python"]
+      paths: ["**/test*.py", "**/*_test.py", "tests/**/*.py"]
+      prompt_regex: '(?i)(mock test|python mock|unittest\.mock|patch object|create mock|mocking|stub|fake)'
+    usage:
+      load_on_prompt: true
+      autodispatch: true
 ---
 
 # Mock Testing

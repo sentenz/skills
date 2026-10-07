@@ -1,6 +1,27 @@
 ---
 name: python-unit-testing
 description: Create, modify, and review Python unit tests using pytest or an existing unittest suite, with In-Got-Want, table-driven testing, AAA, fixtures, and branch coverage. Use for Python unit tests, regression tests, test isolation, parametrization, exception assertions, async tests, or test coverage.
+metadata:
+  version: "1.0.0"
+  activation:
+    implicit: true
+    priority: 1
+    triggers:
+      - "unit test"
+      - "pytest"
+      - "python test"
+      - "python testing"
+      - "create test"
+      - "add test"
+      - "write test"
+      - "test coverage"
+    match:
+      languages: ["python"]
+      paths: ["**/test*.py", "**/*_test.py", "tests/**/*.py"]
+      prompt_regex: '(?i)(unit test|pytest|python test|python testing|create test|add test|write test|test coverage|testing)'
+    usage:
+      load_on_prompt: true
+      autodispatch: true
 ---
 
 # Unit Testing
