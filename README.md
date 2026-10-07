@@ -65,6 +65,9 @@ Available skills can be activated by agents based on defined triggers and contex
 - [Go Skills](skills/README.md#12-go-skills)
   > Go unit testing, fuzz testing, benchmark testing, and API documentation skills.
 
+- [Python Skills](skills/README.md#110-python-skills)
+  > Python unit testing, mock testing, property-based and fuzz testing, and benchmark testing skills.
+
 - [Terraform Skills](skills/README.md#13-terraform-skills)
   > Terraform and OpenTofu module design, testing, CI/CD, security, compliance, and state management skills.
 
@@ -85,9 +88,6 @@ Available skills can be activated by agents based on defined triggers and contex
 
 - [UI and Design Skills](skills/README.md#19-ui-and-design-skills)
   > Material Design 3 implementation guidance for components, design tokens, theming, adaptive layouts, accessibility, and compliance auditing.
-
-- [Python Skills](skills/README.md#110-python-skills)
-  > Python unit testing, mock testing, property-based and fuzz testing, and benchmark testing skills.
 
 ## 2. Contribution
 
