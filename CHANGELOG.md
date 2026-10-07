@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.17.0](https://github.com/sentenz/skills/compare/v1.16.0...v1.17.0) (2026-10-07)
+
+### Features
+
+* **skills:** add Python software testing skills ([#129](https://github.com/sentenz/skills/issues/129)) ([1ad89b9](https://github.com/sentenz/skills/commit/1ad89b9ffd1ece116ac021291851969e95eb4955))
+
 ## [1.16.0](https://github.com/sentenz/skills/compare/v1.15.4...v1.16.0) (2026-09-04)
 
 ### Features
