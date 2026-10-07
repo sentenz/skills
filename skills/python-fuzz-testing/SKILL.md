@@ -47,14 +47,17 @@ This skill covers structured property-based tests with [Hypothesis](https://hypo
 
 Generated tests extend the input cases covered by deterministic examples and retain reproducible evidence of failures.
 
-- Input Exploration
-  > Generated combinations and boundary values exercise behavior absent from hand-written examples.
+1. Input Exploration
 
-- Failure Reduction
-  > Shrinking or corpus minimization reduces failing inputs to cases that support diagnosis and regression testing.
+    Generated combinations and boundary values exercise behavior absent from hand-written examples.
 
-- Branch Exploration
-  > Coverage-guided mutation uses a seed corpus, a collection of initial inputs, to explore parser and decoder branches.
+2. Failure Reduction
+
+    Shrinking or corpus minimization reduces failing inputs to cases that support diagnosis and regression testing.
+
+3. Branch Exploration
+
+    Coverage-guided mutation uses a seed corpus, a collection of initial inputs, to explore parser and decoder branches.
 
 ## 2. Principles
 
@@ -64,20 +67,25 @@ Generated tests require bounded execution and an oracle whose domain matches the
 
 FIRST groups five test-design properties: Fast, Independent, Repeatable, Self-Validating, and Timely. These properties apply to each generated example as well as the enclosing campaign.
 
-- Fast
-  > Bounded input sizes and operations separate short continuous integration (CI) runs from longer campaigns.
+1. Fast
 
-- Independent
-  > State resets between inputs prevent earlier examples or external services from determining later results.
+    Bounded input sizes and operations separate short continuous integration (CI) runs from longer campaigns.
 
-- Repeatable
-  > Retained failing inputs, environment details, and dependency versions support reproduction.
+2. Independent
 
-- Self-Validating
-  > A stated invariant or independently computed result determines whether each input exposes a defect.
+    State resets between inputs prevent earlier examples or external services from determining later results.
 
-- Timely
-  > Generated properties accompany deterministic unit tests at input boundaries with significant failure consequences.
+3. Repeatable
+
+    Retained failing inputs, environment details, and dependency versions support reproduction.
+
+4. Self-Validating
+
+    A stated invariant or independently computed result determines whether each input exposes a defect.
+
+5. Timely
+
+    Generated properties accompany deterministic unit tests at input boundaries with significant failure consequences.
 
 ## 3. Patterns
 
@@ -107,14 +115,37 @@ The following oracles evaluate equality, agreement between implementations, rela
 
 The workflow defines the input domain and oracle before selecting an engine, executing a campaign, and preserving regression cases.
 
-1. Inspect runtime versions, dependency constraints, CI budgets, existing fuzz targets, and corpus conventions. Verify Atheris platform/interpreter support before selecting it; do not silently replace a required coverage-guided campaign with property tests.
-2. Identify an input boundary and write down its valid domain, expected rejection types, and oracle. Include empty input, boundaries, encodings, and state transitions that matter to that boundary.
-3. Choose Hypothesis for structured data or Atheris for coverage feedback. Keep the target small and deterministic. Instrument imports before loading the code under test; native-extension sanitizer coverage requires a compatible instrumented build.
-4. Generate valid cases by construction. Create separate malformed-input cases where needed; avoid excessive `assume` or filtering that discards most generated examples.
-5. Bound input sizes, recursion, allocations, and campaign runtime. Keep assertions outside the exception handler for expected parsing failures. Never catch `Exception` or `BaseException` around the whole target.
-6. Run a bounded smoke test, reproduce any failure, and retain its minimal input. Distinguish a defect in the oracle from a defect in production code before changing either.
-7. Add a deterministic regression test or Hypothesis `@example` for confirmed bugs; preserve useful Atheris seeds. Cache Hypothesis's example database when appropriate, but do not rely on that cache as the sole permanent regression record.
-8. Report the engine, versions, target, budget, explored cases or coverage when available, reproduction command, and retained artifacts. A clean finite campaign is not proof that all inputs are safe.
+1. Inspect Environment
+
+    Inspect runtime versions, dependency constraints, CI budgets, existing fuzz targets, and corpus conventions. Verify Atheris platform/interpreter support before selecting it; do not silently replace a required coverage-guided campaign with property tests.
+
+2. Define Input Contract
+
+    Identify an input boundary and write down its valid domain, expected rejection types, and oracle. Include empty input, boundaries, encodings, and state transitions that matter to that boundary.
+
+3. Select Engine
+
+    Choose Hypothesis for structured data or Atheris for coverage feedback. Keep the target small and deterministic. Instrument imports before loading the code under test; native-extension sanitizer coverage requires a compatible instrumented build.
+
+4. Construct Inputs
+
+    Generate valid cases by construction. Create separate malformed-input cases where needed; avoid excessive `assume` or filtering that discards most generated examples.
+
+5. Bound Execution
+
+    Bound input sizes, recursion, allocations, and campaign runtime. Keep assertions outside the exception handler for expected parsing failures. Never catch `Exception` or `BaseException` around the whole target.
+
+6. Reproduce Failures
+
+    Run a bounded smoke test, reproduce any failure, and retain its minimal input. Distinguish a defect in the oracle from a defect in production code before changing either.
+
+7. Retain Regressions
+
+    Add a deterministic regression test or Hypothesis `@example` for confirmed bugs; preserve useful Atheris seeds. Cache Hypothesis's example database when appropriate, but do not rely on that cache as the sole permanent regression record.
+
+8. Report Campaign
+
+    Report the engine, versions, target, budget, explored cases or coverage when available, reproduction command, and retained artifacts. A clean finite campaign is not proof that all inputs are safe.
 
 ## 5. Commands
 
@@ -134,29 +165,37 @@ Atheris forwards [libFuzzer options](https://llvm.org/docs/LibFuzzer.html#option
 
 These conventions preserve meaningful exploration, visible failures, and reproducible inputs.
 
-- Naming
-  > Name Hypothesis tests `test_<property>` and Atheris entry points `fuzz_<target>.py`; avoid naming standalone fuzz launchers `test_*.py`.
+1. Naming
 
-- Boundary Examples
-  > Include explicit examples of critical boundaries even when strategies may generate them.
+    Name Hypothesis tests `test_<property>` and Atheris entry points `fuzz_<target>.py`; avoid naming standalone fuzz launchers `test_*.py`.
 
-- Numeric Domains
-  > Exclude not-a-number (NaN) and infinity only when outside the contract. Equality is not a valid oracle for NaN, and floating-point round trips may need specified tolerances.
+2. Boundary Examples
 
-- Strategy Composition
-  > Avoid `.example()` inside tests; draw through `@given`, composite strategies, or `st.data()` so failures remain shrinkable.
+    Include explicit examples of critical boundaries even when strategies may generate them.
 
-- Example State
-  > Do not suppress Hypothesis health checks to hide poor strategy design or shared-state defects. Function-scoped pytest fixtures are not recreated for each Hypothesis example; initialize or reset mutable state inside the generated test body.
+3. Numeric Domains
 
-- Exploration and Reproduction
-  > Do not set a global fixed seed solely to make CI results repeatable. Retain stored examples and reproduction details while allowing ongoing exploration.
+    Exclude not-a-number (NaN) and infinity only when outside the contract. Equality is not a valid oracle for NaN, and floating-point round trips may need specified tolerances.
 
-- Exception Handling
-  > Catch only expected input-rejection exceptions around the parser call. Let assertion failures, unexpected exceptions, and crashes fail the run.
+4. Strategy Composition
 
-- Corpus Retention
-  > Keep corpora small, representative, and free of credentials or sensitive production data. Minimize and review newly retained inputs.
+    Avoid `.example()` inside tests; draw through `@given`, composite strategies, or `st.data()` so failures remain shrinkable.
+
+5. Example State
+
+    Do not suppress Hypothesis health checks to hide poor strategy design or shared-state defects. Function-scoped pytest fixtures are not recreated for each Hypothesis example; initialize or reset mutable state inside the generated test body.
+
+6. Exploration and Reproduction
+
+    Do not set a global fixed seed solely to make CI results repeatable. Retain stored examples and reproduction details while allowing ongoing exploration.
+
+7. Exception Handling
+
+    Catch only expected input-rejection exceptions around the parser call. Let assertion failures, unexpected exceptions, and crashes fail the run.
+
+8. Corpus Retention
+
+    Keep corpora small, representative, and free of credentials or sensitive production data. Minimize and review newly retained inputs.
 
 ## 7. Templates
 

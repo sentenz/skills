@@ -47,14 +47,17 @@ This skill guides workload design, correctness validation, and baseline comparis
 
 Benchmarks provide comparative evidence when the workload, environment, and measured boundary remain consistent.
 
-- Optimization Evidence
-  > Recorded execution costs inform optimization decisions for the measured workload.
+1. Optimization Evidence
 
-- Regression Detection
-  > Comparable workloads and retained baselines expose changes in execution cost.
+    Recorded execution costs inform optimization decisions for the measured workload.
 
-- Cost Attribution
-  > Explicit measurement boundaries distinguish algorithmic work from setup, cache effects, and instrumentation overhead.
+2. Regression Detection
+
+    Comparable workloads and retained baselines expose changes in execution cost.
+
+3. Cost Attribution
+
+    Explicit measurement boundaries distinguish algorithmic work from setup, cache effects, and instrumentation overhead.
 
 ## 2. Principles
 
@@ -64,20 +67,25 @@ Benchmark design combines repeatable work with sufficient sampling and independe
 
 FIRST groups five test-design properties: Fast, Independent, Repeatable, Self-Validating, and Timely. Benchmark design applies these properties to the workload and the measurement process.
 
-- Fast
-  > A bounded suite collects enough repeated samples to assess variation within the available execution budget.
+1. Fast
 
-- Independent
-  > Mutable inputs reset between invocations, and benchmark workers avoid competing workloads.
+    A bounded suite collects enough repeated samples to assess variation within the available execution budget.
 
-- Repeatable
-  > Recorded interpreter, dependencies, hardware, runtime settings, and input data support comparable measurements.
+2. Independent
 
-- Self-Validating
-  > Correctness assertions outside the measured operation verify the workload's result.
+    Mutable inputs reset between invocations, and benchmark workers avoid competing workloads.
 
-- Timely
-  > Baseline measurements precede implementation changes intended to improve performance.
+3. Repeatable
+
+    Recorded interpreter, dependencies, hardware, runtime settings, and input data support comparable measurements.
+
+4. Self-Validating
+
+    Correctness assertions outside the measured operation verify the workload's result.
+
+5. Timely
+
+    Baseline measurements precede implementation changes intended to improve performance.
 
 ## 3. Patterns
 
@@ -109,14 +117,37 @@ Timing samples quantify elapsed cost; CPU and allocation profiles attribute cost
 
 The workflow establishes a correct workload and baseline before measuring a candidate change under comparable conditions.
 
-1. Inspect the project's supported interpreters, dependency manager, benchmark suite, continuous integration (CI) runners, and existing baselines. Select the existing tool where possible; add optional development dependencies only as needed.
-2. Define the operation, unit of work, input distribution, size range, cache state, and metric. Decide whether startup, imports, serialization, input/output (I/O), and cleanup belong inside the measured boundary.
-3. Establish correctness with unit tests before timing. Construct representative deterministic inputs and independently known expected results.
-4. Record the baseline commit and environment. Run benchmarks without coverage, a debugger, profiling, or pytest-xdist. Check background load and warmup behavior.
-5. Use the [templates](#7-templates), ensuring repeated calls perform equivalent work. Rebuild exhausted iterators and mutated collections between calls. Make warm-cache and cold-cache measurements separate workloads.
-6. Compare repeated before/after runs with the same tool, inputs, interpreter build, machine, and settings. Inspect dispersion and tool warnings; rerun unstable measurements before claiming an improvement.
-7. Apply only established project regression thresholds. Avoid a one-shot elapsed-time assertion in a correctness test. Use dedicated stable runners for performance gates.
-8. Report workload, commands, versions, baseline/candidate commits, sample statistics, relative change, and uncertainty. Retain result files as benchmark artifacts; distinguish unmeasured hypotheses from findings.
+1. Inspect Infrastructure
+
+    Inspect the project's supported interpreters, dependency manager, benchmark suite, continuous integration (CI) runners, and existing baselines. Select the existing tool where possible; add optional development dependencies only as needed.
+
+2. Define Workload
+
+    Define the operation, unit of work, input distribution, size range, cache state, and metric. Decide whether startup, imports, serialization, input/output (I/O), and cleanup belong inside the measured boundary.
+
+3. Validate Correctness
+
+    Establish correctness with unit tests before timing. Construct representative deterministic inputs and independently known expected results.
+
+4. Establish Baseline
+
+    Record the baseline commit and environment. Run benchmarks without coverage, a debugger, profiling, or pytest-xdist. Check background load and warmup behavior.
+
+5. Apply Templates
+
+    Use the [templates](#7-templates), ensuring repeated calls perform equivalent work. Rebuild exhausted iterators and mutated collections between calls. Make warm-cache and cold-cache measurements separate workloads.
+
+6. Compare Measurements
+
+    Compare repeated before/after runs with the same tool, inputs, interpreter build, machine, and settings. Inspect dispersion and tool warnings; rerun unstable measurements before claiming an improvement.
+
+7. Evaluate Regressions
+
+    Apply only established project regression thresholds. Avoid a one-shot elapsed-time assertion in a correctness test. Use dedicated stable runners for performance gates.
+
+8. Report Results
+
+    Report workload, commands, versions, baseline/candidate commits, sample statistics, relative change, and uncertainty. Retain result files as benchmark artifacts; distinguish unmeasured hypotheses from findings.
 
 ## 5. Commands
 
@@ -138,32 +169,41 @@ For a changed application callable, use the same import/setup and statement on t
 
 These conventions preserve equivalent work across repeated invocations and make measurement limits explicit.
 
-- Naming
-  > Use `test_<operation>` under the existing benchmark directory so pytest discovers the benchmark fixture.
+1. Naming
 
-- Callable Invocation
-  > Pass a callable and its arguments to `benchmark`; do not call the operation before passing it. Assert the returned result outside the measured callable.
+    Use `test_<operation>` under the existing benchmark directory so pytest discovers the benchmark fixture.
 
-- Measurement Boundary
-  > Keep input generation, unrelated validation, printing, and logging outside timing unless they are part of the defined workload.
+2. Callable Invocation
 
-- Mutable State
-  > Use `benchmark.pedantic` with a setup callback and `iterations=1` so each measured invocation receives fresh state.
+    Pass a callable and its arguments to `benchmark`; do not call the operation before passing it. Assert the returned result outside the measured callable.
 
-- Garbage Collection
-  > Explicitly choose and record garbage collection (GC) behavior; defaults differ between tools. Do not disable GC merely to improve reported numbers when collection is part of the production workload.
+3. Measurement Boundary
 
-- Environment Metadata
-  > Record the Python implementation and version, build mode, operating system, CPU, and relevant native-library thread counts. Do not attribute differences across interpreter versions or machines solely to a code change.
+    Keep input generation, unrelated validation, printing, and logging outside timing unless they are part of the defined workload.
 
-- Asynchronous Completion
-  > Do not pass a coroutine directly to a synchronous benchmark fixture: that measures coroutine creation. Use an async-aware harness or a documented wrapper that awaits completion, declaring whether event-loop startup is included.
+4. Mutable State
 
-- Memory Scope
-  > Profile memory separately from latency. `tracemalloc` measures traced allocations, not all native memory or total resident set size. Use an appropriate process-memory tool for those questions.
+    Use `benchmark.pedantic` with a setup callback and `iterations=1` so each measured invocation receives fresh state.
 
-- Result Interpretation
-  > Treat differences within measurement noise as inconclusive. Report distributions and practical effect sizes instead of selecting only the fastest run.
+5. Garbage Collection
+
+    Explicitly choose and record garbage collection (GC) behavior; defaults differ between tools. Do not disable GC merely to improve reported numbers when collection is part of the production workload.
+
+6. Environment Metadata
+
+    Record the Python implementation and version, build mode, operating system, CPU, and relevant native-library thread counts. Do not attribute differences across interpreter versions or machines solely to a code change.
+
+7. Asynchronous Completion
+
+    Do not pass a coroutine directly to a synchronous benchmark fixture: that measures coroutine creation. Use an async-aware harness or a documented wrapper that awaits completion, declaring whether event-loop startup is included.
+
+8. Memory Scope
+
+    Profile memory separately from latency. `tracemalloc` measures traced allocations, not all native memory or total resident set size. Use an appropriate process-memory tool for those questions.
+
+9. Result Interpretation
+
+    Treat differences within measurement noise as inconclusive. Report distributions and practical effect sizes instead of selecting only the fastest run.
 
 ## 7. Templates
 

@@ -49,14 +49,17 @@ This skill guides dependency isolation and contract verification. Use pytest-moc
 
 Controlled collaborators expose dependency behavior that is difficult to reproduce reliably through live services.
 
-- Failure-Path Coverage
-  > Configured exceptions and responses exercise error handling without depending on service availability.
+1. Failure-Path Coverage
 
-- Interaction Verification
-  > Call and await assertions verify contractual retries, persistence, and notifications.
+    Configured exceptions and responses exercise error handling without depending on service availability.
 
-- Interface Conformance
-  > Constrained test doubles detect calls that diverge from the specified collaborator interface.
+2. Interaction Verification
+
+    Call and await assertions verify contractual retries, persistence, and notifications.
+
+3. Interface Conformance
+
+    Constrained test doubles detect calls that diverge from the specified collaborator interface.
 
 ## 2. Principles
 
@@ -66,20 +69,25 @@ Mock-test design applies isolation to both the unit under test and the lifetime 
 
 FIRST groups five test-design properties: Fast, Independent, Repeatable, Self-Validating, and Timely.
 
-- Fast
-  > Test doubles replace costly external operations with bounded local behavior.
+1. Fast
 
-- Independent
-  > Each case owns its test doubles, and every patch has an explicit lifetime.
+    Test doubles replace costly external operations with bounded local behavior.
 
-- Repeatable
-  > Configured return values, exceptions, and clocks reproduce the intended dependency behavior.
+2. Independent
 
-- Self-Validating
-  > Assertions verify the result and the interactions required by the contract.
+    Each case owns its test doubles, and every patch has an explicit lifetime.
 
-- Timely
-  > Failure-path coverage accompanies the introduction of each dependency.
+3. Repeatable
+
+    Configured return values, exceptions, and clocks reproduce the intended dependency behavior.
+
+4. Self-Validating
+
+    Assertions verify the result and the interactions required by the contract.
+
+5. Timely
+
+    Failure-path coverage accompanies the introduction of each dependency.
 
 ## 3. Patterns
 
@@ -109,13 +117,33 @@ The following techniques preserve signatures, inject failures, and verify asynch
 
 The workflow identifies the dependency boundary, configures its substitute, and verifies the unit's observable behavior.
 
-1. Read the target module, its imports, dependency interfaces, and nearby tests. Identify the observable contract and the narrowest external boundary.
-2. Choose a real lightweight dependency, fake, stub, or mock based on the behavior needed. Do not mock the function being tested.
-3. Resolve the lookup location before patching. For `from app.transport import fetch` inside `app.service`, patch `app.service.fetch`. Patch where the consumer looks up the symbol, not automatically where it was defined.
-4. Specify representative return values and expected exceptions. Prefer autospec or `spec_set` when practical; account for attributes created only in `__init__` and descriptors that introspection may evaluate.
-5. Exercise success, failure, and relevant retry/cancellation paths. For retries, inject a clock or patch the lookup of sleep; avoid wall-clock delays.
-6. Verify returned values or state first, then required interactions. Test restoration by running the surrounding suite, not only the isolated test.
-7. Report the boundary replaced, scenarios covered, commands run, and remaining integration coverage. Mocks alone do not verify compatibility with a real service.
+1. Inspect Dependencies
+
+    Read the target module, its imports, dependency interfaces, and nearby tests. Identify the observable contract and the narrowest external boundary.
+
+2. Select Test Double
+
+    Choose a real lightweight dependency, fake, stub, or mock based on the behavior needed. Do not mock the function being tested.
+
+3. Resolve Patch Target
+
+    Resolve the lookup location before patching. For `from app.transport import fetch` inside `app.service`, patch `app.service.fetch`. Patch where the consumer looks up the symbol, not automatically where it was defined.
+
+4. Configure Behavior
+
+    Specify representative return values and expected exceptions. Prefer autospec or `spec_set` when practical; account for attributes created only in `__init__` and descriptors that introspection may evaluate.
+
+5. Exercise Scenarios
+
+    Exercise success, failure, and relevant retry/cancellation paths. For retries, inject a clock or patch the lookup of sleep; avoid wall-clock delays.
+
+6. Verify Contract
+
+    Verify returned values or state first, then required interactions. Test restoration by running the surrounding suite, not only the isolated test.
+
+7. Report Coverage
+
+    Report the boundary replaced, scenarios covered, commands run, and remaining integration coverage. Mocks alone do not verify compatibility with a real service.
 
 ## 5. Commands
 
@@ -132,32 +160,41 @@ Use the project's environment and existing test task; replace example paths with
 
 These conventions constrain patch scope and prevent mock behavior from obscuring a production defect.
 
-- Patch Lifetime
-  > Use `patch` as a context manager, a managed fixture, or a decorator. If `patcher.start()` is required in unittest setup, immediately register `self.addCleanup(patcher.stop)`.
+1. Patch Lifetime
 
-- Environment and Filesystem State
-  > Use [pytest monkeypatch](https://docs.pytest.org/en/stable/how-to/monkeypatch.html) through `monkeypatch.setenv` and `delenv` for environment state; use `tmp_path` for real temporary files when file semantics matter.
+    Use `patch` as a context manager, a managed fixture, or a decorator. If `patcher.start()` is required in unittest setup, immediately register `self.addCleanup(patcher.stop)`.
 
-- Return Values
-  > Configure concrete values that represent the expected dependency response. An unconfigured `MagicMock` can satisfy truthiness checks or propagate through production logic without exercising the intended path.
+2. Environment and Filesystem State
 
-- Call Assertions
-  > Use `assert_called_once_with` and `assert_not_called` for contractual interactions. Do not write `assert mock.assert_called_once_with(...)`; assertion helpers return `None` on success.
+    Use [pytest monkeypatch](https://docs.pytest.org/en/stable/how-to/monkeypatch.html) through `monkeypatch.setenv` and `delenv` for environment state; use `tmp_path` for real temporary files when file semantics matter.
 
-- Call Sequences
-  > Use `assert_has_calls` only when a sequence matters. It allows extra calls before and after the sequence; compare `call_args_list` when the exact sequence and count are required.
+3. Return Values
 
-- Context Managers
-  > Configure context-manager results through `return_value.__enter__.return_value`, or `__aenter__` for asynchronous contexts, only when the real application programming interface (API) has those methods.
+    Configure concrete values that represent the expected dependency response. An unconfigured `MagicMock` can satisfy truthiness checks or propagate through production logic without exercising the intended path.
 
-- Await Assertions
-  > Use `assert_awaited_once_with` for asynchronous work. A call assertion alone does not prove a coroutine was awaited.
+4. Call Assertions
 
-- Mock State
-  > Prefer fresh mocks over resetting shared ones. `reset_mock()` does not clear configured return values or side effects by default.
+    Use `assert_called_once_with` and `assert_not_called` for contractual interactions. Do not write `assert mock.assert_called_once_with(...)`; assertion helpers return `None` on success.
 
-- Integration Coverage
-  > Avoid patching private implementation chains or copying a collaborator's implementation into a fake. Add separate integration tests for essential real boundary behavior.
+5. Call Sequences
+
+    Use `assert_has_calls` only when a sequence matters. It allows extra calls before and after the sequence; compare `call_args_list` when the exact sequence and count are required.
+
+6. Context Managers
+
+    Configure context-manager results through `return_value.__enter__.return_value`, or `__aenter__` for asynchronous contexts, only when the real application programming interface (API) has those methods.
+
+7. Await Assertions
+
+    Use `assert_awaited_once_with` for asynchronous work. A call assertion alone does not prove a coroutine was awaited.
+
+8. Mock State
+
+    Prefer fresh mocks over resetting shared ones. `reset_mock()` does not clear configured return values or side effects by default.
+
+9. Integration Coverage
+
+    Avoid patching private implementation chains or copying a collaborator's implementation into a fake. Add separate integration tests for essential real boundary behavior.
 
 ## 7. Templates
 
