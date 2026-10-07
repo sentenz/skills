@@ -24,48 +24,93 @@ metadata:
 
 # Benchmark Testing
 
-Measure a defined Python workload, validate its result, and compare repeated measurements under controlled conditions. Preserve existing benchmark infrastructure and distinguish latency, throughput, Python allocations, and total process memory.
+Benchmark testing measures the execution cost of a defined workload under recorded conditions. Python benchmarks use [pytest-benchmark](https://pytest-benchmark.readthedocs.io/en/latest/usage.html) for callable measurements within pytest suites and [pyperf](https://pyperf.readthedocs.io/en/latest/cli.html) for calibrated measurements across worker processes.
+
+This skill guides workload design, correctness validation, and baseline comparison. Latency measures elapsed time per operation; throughput measures completed work per unit time. Traced Python allocations and total process memory are distinct measurements.
 
 - [1. Benefits](#1-benefits)
 - [2. Principles](#2-principles)
+  - [2.1. FIRST](#21-first)
 - [3. Patterns](#3-patterns)
+  - [3.1. Workload Design](#31-workload-design)
+  - [3.2. Measurement Techniques](#32-measurement-techniques)
 - [4. Workflow](#4-workflow)
 - [5. Commands](#5-commands)
 - [6. Style Guide](#6-style-guide)
 - [7. Templates](#7-templates)
+  - [7.1. Table-Driven Benchmark](#71-table-driven-benchmark)
+  - [7.2. Mutating Operation](#72-mutating-operation)
+  - [7.3. Separate Allocation Measurement](#73-separate-allocation-measurement)
 - [8. References](#8-references)
 
 ## 1. Benefits
 
-- Establish evidence before making optimization decisions.
-- Detect regressions using comparable workloads and recorded baselines.
-- Separate algorithmic cost from setup, cache effects, and instrumentation overhead.
+Benchmarks provide comparative evidence when the workload, environment, and measured boundary remain consistent.
+
+- Optimization Evidence
+  > Recorded execution costs inform optimization decisions for the measured workload.
+
+- Regression Detection
+  > Comparable workloads and retained baselines expose changes in execution cost.
+
+- Cost Attribution
+  > Explicit measurement boundaries distinguish algorithmic work from setup, cache effects, and instrumentation overhead.
 
 ## 2. Principles
 
-Apply FIRST to benchmark design:
+Benchmark design combines repeatable work with sufficient sampling and independent correctness checks.
 
-- **Fast:** Bound the suite while collecting enough repeated samples to assess variation.
-- **Independent:** Reset mutable inputs and avoid concurrent benchmark workers.
-- **Repeatable:** Record interpreter, dependencies, hardware, runtime settings, and workload.
-- **Self-Validating:** Verify correctness outside the measured operation.
-- **Timely:** Measure the baseline before changing the implementation.
+### 2.1. FIRST
+
+FIRST groups five test-design properties: Fast, Independent, Repeatable, Self-Validating, and Timely. Benchmark design applies these properties to the workload and the measurement process.
+
+- Fast
+  > A bounded suite collects enough repeated samples to assess variation within the available execution budget.
+
+- Independent
+  > Mutable inputs reset between invocations, and benchmark workers avoid competing workloads.
+
+- Repeatable
+  > Recorded interpreter, dependencies, hardware, runtime settings, and input data support comparable measurements.
+
+- Self-Validating
+  > Correctness assertions outside the measured operation verify the workload's result.
+
+- Timely
+  > Baseline measurements precede implementation changes intended to improve performance.
 
 ## 3. Patterns
 
+Workload-design patterns specify the operation and its inputs. Measurement techniques determine how execution cost is sampled or attributed.
+
+### 3.1. Workload Design
+
+The following patterns vary workload scope, comparison, input distribution, or state ownership.
+
 | Pattern | Application |
 | --- | --- |
-| Microbenchmark | Use pytest-benchmark for an isolated callable within an existing pytest suite. |
-| Process-isolated measurement | Use pyperf for calibrated runs across worker processes. |
-| Comparative benchmark | Measure the same workload and environment before and after a change. |
-| Table-driven workload | Parametrize representative sizes, shapes, and distributions with stable IDs. |
-| Stateful operation | Recreate state outside timing for each measured invocation, or explicitly measure setup as part of the workload. |
-| Profiling | Use cProfile to locate CPU costs and tracemalloc for traced Python allocations in separate runs. |
+| Microbenchmark | Measure a small, isolated operation with a defined boundary. |
+| Comparative Benchmark | Measure the same workload and environment before and after a change. |
+| Table-Driven Workload | Parametrize representative sizes, shapes, and distributions with stable case identifiers. |
+| Stateful Operation | Recreate state outside timing for each measured invocation, or explicitly measure setup as part of the workload. |
+
+### 3.2. Measurement Techniques
+
+Timing samples quantify elapsed cost; CPU and allocation profiles attribute costs in separate instrumented runs. CPU denotes the central processing unit.
+
+| Technique | Application |
+| --- | --- |
+| Callable Timing | Use pytest-benchmark for an isolated callable within an existing pytest suite. |
+| Process-Isolated Timing | Use pyperf for calibrated runs across worker processes. |
+| CPU Profiling | Use [cProfile](https://docs.python.org/3/library/profile.html) to locate execution costs separately from latency measurements. |
+| Allocation Tracing | Use [tracemalloc](https://docs.python.org/3/library/tracemalloc.html) to inspect traced Python allocations separately from latency measurements. |
 
 ## 4. Workflow
 
-1. Inspect the project's supported interpreters, dependency manager, benchmark suite, CI runners, and existing baselines. Select the existing tool where possible; add optional development dependencies only as needed.
-2. Define the operation, unit of work, input distribution, size range, cache state, and metric. Decide whether startup, imports, serialization, I/O, and cleanup belong inside the measured boundary.
+The workflow establishes a correct workload and baseline before measuring a candidate change under comparable conditions.
+
+1. Inspect the project's supported interpreters, dependency manager, benchmark suite, continuous integration (CI) runners, and existing baselines. Select the existing tool where possible; add optional development dependencies only as needed.
+2. Define the operation, unit of work, input distribution, size range, cache state, and metric. Decide whether startup, imports, serialization, input/output (I/O), and cleanup belong inside the measured boundary.
 3. Establish correctness with unit tests before timing. Construct representative deterministic inputs and independently known expected results.
 4. Record the baseline commit and environment. Run benchmarks without coverage, a debugger, profiling, or pytest-xdist. Check background load and warmup behavior.
 5. Use the [templates](#7-templates), ensuring repeated calls perform equivalent work. Rebuild exhausted iterators and mutated collections between calls. Make warm-cache and cold-cache measurements separate workloads.
@@ -91,15 +136,34 @@ For a changed application callable, use the same import/setup and statement on t
 
 ## 6. Style Guide
 
-- Use `test_<operation>` under the existing benchmark directory so pytest discovers the benchmark fixture.
-- Pass a callable and its arguments to `benchmark`; do not call the operation before passing it. Assert the returned result outside the measured callable.
-- Keep input generation, unrelated validation, printing, and logging outside timing unless they are part of the defined workload.
-- For mutable operations, use `benchmark.pedantic` with a setup callback and `iterations=1` so each measured invocation receives fresh state.
-- Explicitly choose and record garbage-collection behavior; defaults differ between tools. Do not disable GC merely to improve reported numbers when collection is part of the production workload.
-- Record Python implementation/version, build mode, OS, CPU, and relevant native-library thread counts. Do not attribute differences across interpreter versions or machines solely to a code change.
-- Do not pass a coroutine directly to a synchronous benchmark fixture: that measures coroutine creation. Use an async-aware harness or a documented wrapper that awaits completion, declaring whether event-loop startup is included.
-- Profile memory separately from latency. `tracemalloc` measures traced allocations, not all native memory or total resident set size. Use an appropriate process-memory tool for those questions.
-- Treat tiny differences within measurement noise as inconclusive. Report distributions and practical effect sizes instead of selecting only the fastest run.
+These conventions preserve equivalent work across repeated invocations and make measurement limits explicit.
+
+- Naming
+  > Use `test_<operation>` under the existing benchmark directory so pytest discovers the benchmark fixture.
+
+- Callable Invocation
+  > Pass a callable and its arguments to `benchmark`; do not call the operation before passing it. Assert the returned result outside the measured callable.
+
+- Measurement Boundary
+  > Keep input generation, unrelated validation, printing, and logging outside timing unless they are part of the defined workload.
+
+- Mutable State
+  > Use `benchmark.pedantic` with a setup callback and `iterations=1` so each measured invocation receives fresh state.
+
+- Garbage Collection
+  > Explicitly choose and record garbage collection (GC) behavior; defaults differ between tools. Do not disable GC merely to improve reported numbers when collection is part of the production workload.
+
+- Environment Metadata
+  > Record the Python implementation and version, build mode, operating system, CPU, and relevant native-library thread counts. Do not attribute differences across interpreter versions or machines solely to a code change.
+
+- Asynchronous Completion
+  > Do not pass a coroutine directly to a synchronous benchmark fixture: that measures coroutine creation. Use an async-aware harness or a documented wrapper that awaits completion, declaring whether event-loop startup is included.
+
+- Memory Scope
+  > Profile memory separately from latency. `tracemalloc` measures traced allocations, not all native memory or total resident set size. Use an appropriate process-memory tool for those questions.
+
+- Result Interpretation
+  > Treat differences within measurement noise as inconclusive. Report distributions and practical effect sizes instead of selecting only the fastest run.
 
 ## 7. Templates
 
@@ -107,7 +171,9 @@ These runnable examples use sorting to demonstrate immutable and mutable workloa
 
 ### 7.1. Table-Driven Benchmark
 
-Save as `benchmarks/test_sort.py`.
+The benchmark holds immutable inputs constant across invocations and validates each returned result outside timing. Save the example as `benchmarks/test_sort.py`.
+
+Example:
 
 ```python
 import pytest
@@ -129,6 +195,8 @@ def test_sorted_descending(benchmark, size):
 ### 7.2. Mutating Operation
 
 Do not repeatedly sort the same list; later invocations would measure already-sorted data. Use setup to create fresh input for every round and return it for validation without timing validation itself.
+
+Example:
 
 ```python
 def test_sort_in_place(benchmark):
@@ -152,6 +220,8 @@ The wrapper's return is part of this measured workload. For very small operation
 
 Run as a standalone script so tracing ownership is unambiguous. Replace the demonstrated operation with the target workload; do not run this instrumentation inside a latency benchmark.
 
+Example:
+
 ```python
 import tracemalloc
 
@@ -171,6 +241,10 @@ print(f"traced_current_bytes={current}, traced_peak_bytes={peak}")
 
 ## 8. References
 
-- pytest-benchmark [Usage](https://pytest-benchmark.readthedocs.io/en/latest/usage.html) and [Pedantic mode](https://pytest-benchmark.readthedocs.io/en/latest/pedantic.html).
-- pyperf [Commands](https://pyperf.readthedocs.io/en/latest/cli.html) and [Running benchmarks](https://pyperf.readthedocs.io/en/latest/run_benchmark.html).
-- Python [Profiling](https://docs.python.org/3/library/profile.html), [tracemalloc](https://docs.python.org/3/library/tracemalloc.html), and [timeit](https://docs.python.org/3/library/timeit.html).
+- pytest-benchmark [Usage](https://pytest-benchmark.readthedocs.io/en/latest/usage.html) documentation.
+- pytest-benchmark [Pedantic Mode](https://pytest-benchmark.readthedocs.io/en/latest/pedantic.html) documentation.
+- pyperf [Commands](https://pyperf.readthedocs.io/en/latest/cli.html) documentation.
+- pyperf [Running Benchmarks](https://pyperf.readthedocs.io/en/latest/run_benchmark.html) documentation.
+- Python Software Foundation [Profiling](https://docs.python.org/3/library/profile.html) documentation.
+- Python Software Foundation [tracemalloc](https://docs.python.org/3/library/tracemalloc.html) documentation.
+- Python Software Foundation [timeit](https://docs.python.org/3/library/timeit.html) documentation.

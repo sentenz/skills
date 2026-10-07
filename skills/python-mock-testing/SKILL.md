@@ -25,45 +25,88 @@ metadata:
 
 # Mock Testing
 
-Isolate Python collaborators while preserving the behavior of the unit under test. Use the standard-library `unittest.mock` with pytest or unittest; use pytest-mock only when the project already provides it.
+Mock testing verifies a unit's behavior when controlled test doubles replace its collaborators. Python's standard-library [unittest.mock](https://docs.python.org/3/library/unittest.mock.html) provides configurable return values, exception injection, and interaction assertions for use with [pytest](https://docs.pytest.org/en/stable/) or unittest.
+
+This skill guides dependency isolation and contract verification. Use pytest-mock only when the project already provides it; the standard-library examples require no additional mocking package.
 
 - [1. Benefits](#1-benefits)
 - [2. Principles](#2-principles)
+  - [2.1. FIRST](#21-first)
 - [3. Patterns](#3-patterns)
+  - [3.1. Test Double Categories](#31-test-double-categories)
+  - [3.2. Configuration and Verification](#32-configuration-and-verification)
 - [4. Workflow](#4-workflow)
 - [5. Commands](#5-commands)
 - [6. Style Guide](#6-style-guide)
 - [7. Templates](#7-templates)
+  - [7.1. Lookup-Site Patch and Failure Injection](#71-lookup-site-patch-and-failure-injection)
+  - [7.2. Bounded Retry](#72-bounded-retry)
+  - [7.3. Async Dependency](#73-async-dependency)
 - [8. References](#8-references)
 
 ## 1. Benefits
 
-- Exercise failure paths without depending on unavailable services.
-- Verify contractual interactions such as retries, persistence, and notifications.
-- Detect drift in collaborator signatures with constrained test doubles.
+Controlled collaborators expose dependency behavior that is difficult to reproduce reliably through live services.
+
+- Failure-Path Coverage
+  > Configured exceptions and responses exercise error handling without depending on service availability.
+
+- Interaction Verification
+  > Call and await assertions verify contractual retries, persistence, and notifications.
+
+- Interface Conformance
+  > Constrained test doubles detect calls that diverge from the specified collaborator interface.
 
 ## 2. Principles
 
-Apply FIRST:
+Mock-test design applies isolation to both the unit under test and the lifetime of each substituted dependency.
 
-- **Fast:** Replace costly external boundaries with focused doubles.
-- **Independent:** Create new doubles per case and scope every patch.
-- **Repeatable:** Configure return values, exceptions, and time explicitly.
-- **Self-Validating:** Assert the result and only interactions required by the contract.
-- **Timely:** Add failure-path coverage when introducing a dependency.
+### 2.1. FIRST
+
+FIRST groups five test-design properties: Fast, Independent, Repeatable, Self-Validating, and Timely.
+
+- Fast
+  > Test doubles replace costly external operations with bounded local behavior.
+
+- Independent
+  > Each case owns its test doubles, and every patch has an explicit lifetime.
+
+- Repeatable
+  > Configured return values, exceptions, and clocks reproduce the intended dependency behavior.
+
+- Self-Validating
+  > Assertions verify the result and the interactions required by the contract.
+
+- Timely
+  > Failure-path coverage accompanies the introduction of each dependency.
 
 ## 3. Patterns
 
-| Pattern | Application |
+Test doubles are classified by their role in a test. Configuration and verification techniques constrain how those doubles represent a collaborator.
+
+### 3.1. Test Double Categories
+
+Stubs supply responses, mocks verify interactions, and fakes implement a bounded substitute for stateful behavior.
+
+| Category | Application |
 | --- | --- |
 | Stub | Return a known value when the interaction itself is unimportant. |
 | Mock | Verify externally meaningful calls and arguments. |
 | Fake | Use a small in-memory implementation when stateful behavior would make mocks brittle. |
+
+### 3.2. Configuration and Verification
+
+The following techniques preserve signatures, inject failures, and verify asynchronous execution.
+
+| Technique | Application |
+| --- | --- |
 | Autospec | Constrain calls to the real callable signature with `autospec=True` or `create_autospec`. |
-| Failure injection | Use `side_effect` for a specific exception or a bounded retry sequence. |
-| Async collaborator | Use an async-aware autospec or `AsyncMock`; assert awaits as well as results. |
+| Failure Injection | Use `side_effect` for a specific exception or a bounded retry sequence. |
+| Asynchronous Verification | Use an async-aware autospec or `AsyncMock`; assert awaits as well as results. |
 
 ## 4. Workflow
+
+The workflow identifies the dependency boundary, configures its substitute, and verifies the unit's observable behavior.
 
 1. Read the target module, its imports, dependency interfaces, and nearby tests. Identify the observable contract and the narrowest external boundary.
 2. Choose a real lightweight dependency, fake, stub, or mock based on the behavior needed. Do not mock the function being tested.
@@ -86,21 +129,44 @@ Use the project's environment and existing test task; replace example paths with
 
 ## 6. Style Guide
 
-- Use `patch` as a context manager, a managed fixture, or a decorator. If `patcher.start()` is required in unittest setup, immediately register `self.addCleanup(patcher.stop)`.
-- Use `monkeypatch.setenv` and `delenv` for environment state; use `tmp_path` for real temporary files when file semantics matter.
-- Configure meaningful concrete return values. An unconfigured `MagicMock` can accidentally satisfy truthiness checks or propagate through production logic.
-- Use `assert_called_once_with` and `assert_not_called` for contractual interactions. Do not write `assert mock.assert_called_once_with(...)`; assertion helpers return `None` on success.
-- Use `assert_has_calls` only when a sequence matters. It allows extra calls before and after the sequence; compare `call_args_list` when the exact sequence and count are required.
-- Configure context-manager results through `return_value.__enter__.return_value`, or `__aenter__` for async contexts, only when the real API has those methods.
-- Use `assert_awaited_once_with` for async work. A call assertion alone does not prove a coroutine was awaited.
-- Prefer fresh mocks over resetting shared ones. `reset_mock()` does not clear configured return values or side effects by default.
-- Avoid patching private implementation chains or copying a collaborator's implementation into a fake. Add separate integration tests for essential real boundary behavior.
+These conventions constrain patch scope and prevent mock behavior from obscuring a production defect.
+
+- Patch Lifetime
+  > Use `patch` as a context manager, a managed fixture, or a decorator. If `patcher.start()` is required in unittest setup, immediately register `self.addCleanup(patcher.stop)`.
+
+- Environment and Filesystem State
+  > Use [pytest monkeypatch](https://docs.pytest.org/en/stable/how-to/monkeypatch.html) through `monkeypatch.setenv` and `delenv` for environment state; use `tmp_path` for real temporary files when file semantics matter.
+
+- Return Values
+  > Configure concrete values that represent the expected dependency response. An unconfigured `MagicMock` can satisfy truthiness checks or propagate through production logic without exercising the intended path.
+
+- Call Assertions
+  > Use `assert_called_once_with` and `assert_not_called` for contractual interactions. Do not write `assert mock.assert_called_once_with(...)`; assertion helpers return `None` on success.
+
+- Call Sequences
+  > Use `assert_has_calls` only when a sequence matters. It allows extra calls before and after the sequence; compare `call_args_list` when the exact sequence and count are required.
+
+- Context Managers
+  > Configure context-manager results through `return_value.__enter__.return_value`, or `__aenter__` for asynchronous contexts, only when the real application programming interface (API) has those methods.
+
+- Await Assertions
+  > Use `assert_awaited_once_with` for asynchronous work. A call assertion alone does not prove a coroutine was awaited.
+
+- Mock State
+  > Prefer fresh mocks over resetting shared ones. `reset_mock()` does not clear configured return values or side effects by default.
+
+- Integration Coverage
+  > Avoid patching private implementation chains or copying a collaborator's implementation into a fake. Add separate integration tests for essential real boundary behavior.
 
 ## 7. Templates
 
 Adapt the following contracts to existing application code. The illustrative `app.service` module imports `fetch` using `from app.transport import fetch`; `get_name(user_id)` returns `fetch(user_id)["name"]` and propagates `TimeoutError`. Its `get_name_with_retry` retries once after a timeout.
 
 ### 7.1. Lookup-Site Patch and Failure Injection
+
+The patch replaces the symbol resolved by `app.service`, and autospec constrains the call signature.
+
+Example:
 
 ```python
 from unittest.mock import patch
@@ -137,6 +203,10 @@ def test_get_name_propagates_timeout():
 
 ### 7.2. Bounded Retry
 
+The side-effect sequence represents one timeout followed by a successful response. The call list verifies the exact retry count.
+
+Example:
+
 ```python
 from unittest.mock import call, patch
 
@@ -157,7 +227,9 @@ Also test exhausted retries and non-retryable errors according to the applicatio
 
 ### 7.3. Async Dependency
 
-For a project using pytest-asyncio, assume `get_name_async` awaits the async `fetch_async` imported into `app.service`. Async autospec creates an async-aware mock. Use the project's existing async runner if different.
+For a project using [pytest-asyncio](https://pytest-asyncio.readthedocs.io/en/stable/concepts.html), the example assumes `get_name_async` awaits the asynchronous `fetch_async` imported into `app.service`. Autospec creates an async-aware mock for that collaborator. Use the project's existing asynchronous runner if different.
+
+Example:
 
 ```python
 from unittest.mock import patch
@@ -180,6 +252,7 @@ async def test_get_name_async():
 
 ## 8. References
 
-- Python [unittest.mock](https://docs.python.org/3/library/unittest.mock.html) and [Mock examples](https://docs.python.org/3/library/unittest.mock-examples.html).
-- pytest [Monkeypatch](https://docs.pytest.org/en/stable/how-to/monkeypatch.html).
-- pytest-asyncio [Concepts](https://pytest-asyncio.readthedocs.io/en/stable/concepts.html).
+- Python Software Foundation [unittest.mock](https://docs.python.org/3/library/unittest.mock.html) documentation.
+- Python Software Foundation [Mock Examples](https://docs.python.org/3/library/unittest.mock-examples.html) documentation.
+- pytest [Monkeypatch](https://docs.pytest.org/en/stable/how-to/monkeypatch.html) documentation.
+- pytest-asyncio [Concepts](https://pytest-asyncio.readthedocs.io/en/stable/concepts.html) documentation.
