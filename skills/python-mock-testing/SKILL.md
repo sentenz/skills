@@ -7,6 +7,7 @@ metadata:
     implicit: true
     priority: 1
     triggers:
+      - "test double"
       - "mock test"
       - "python mock"
       - "unittest.mock"
