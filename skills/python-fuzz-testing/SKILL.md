@@ -47,15 +47,15 @@ This skill covers structured property-based tests with [Hypothesis](https://hypo
 
 Generated tests extend the input cases covered by deterministic examples and retain reproducible evidence of failures.
 
-1. Input Exploration
+- Input Exploration
 
     Generated combinations and boundary values exercise behavior absent from hand-written examples.
 
-2. Failure Reduction
+- Failure Reduction
 
     Shrinking or corpus minimization reduces failing inputs to cases that support diagnosis and regression testing.
 
-3. Branch Exploration
+- Branch Exploration
 
     Coverage-guided mutation uses a seed corpus, a collection of initial inputs, to explore parser and decoder branches.
 
@@ -67,23 +67,23 @@ Generated tests require bounded execution and an oracle whose domain matches the
 
 FIRST groups five test-design properties: Fast, Independent, Repeatable, Self-Validating, and Timely. These properties apply to each generated example as well as the enclosing campaign.
 
-1. Fast
+- Fast
 
     Bounded input sizes and operations separate short continuous integration (CI) runs from longer campaigns.
 
-2. Independent
+- Independent
 
     State resets between inputs prevent earlier examples or external services from determining later results.
 
-3. Repeatable
+- Repeatable
 
     Retained failing inputs, environment details, and dependency versions support reproduction.
 
-4. Self-Validating
+- Self-Validating
 
     A stated invariant or independently computed result determines whether each input exposes a defect.
 
-5. Timely
+- Timely
 
     Generated properties accompany deterministic unit tests at input boundaries with significant failure consequences.
 
@@ -165,35 +165,35 @@ Atheris forwards [libFuzzer options](https://llvm.org/docs/LibFuzzer.html#option
 
 These conventions preserve meaningful exploration, visible failures, and reproducible inputs.
 
-1. Naming
+- Naming
 
     Name Hypothesis tests `test_<property>` and Atheris entry points `fuzz_<target>.py`; avoid naming standalone fuzz launchers `test_*.py`.
 
-2. Boundary Examples
+- Boundary Examples
 
     Include explicit examples of critical boundaries even when strategies may generate them.
 
-3. Numeric Domains
+- Numeric Domains
 
     Exclude not-a-number (NaN) and infinity only when outside the contract. Equality is not a valid oracle for NaN, and floating-point round trips may need specified tolerances.
 
-4. Strategy Composition
+- Strategy Composition
 
     Avoid `.example()` inside tests; draw through `@given`, composite strategies, or `st.data()` so failures remain shrinkable.
 
-5. Example State
+- Example State
 
     Do not suppress Hypothesis health checks to hide poor strategy design or shared-state defects. Function-scoped pytest fixtures are not recreated for each Hypothesis example; initialize or reset mutable state inside the generated test body.
 
-6. Exploration and Reproduction
+- Exploration and Reproduction
 
     Do not set a global fixed seed solely to make CI results repeatable. Retain stored examples and reproduction details while allowing ongoing exploration.
 
-7. Exception Handling
+- Exception Handling
 
     Catch only expected input-rejection exceptions around the parser call. Let assertion failures, unexpected exceptions, and crashes fail the run.
 
-8. Corpus Retention
+- Corpus Retention
 
     Keep corpora small, representative, and free of credentials or sensitive production data. Minimize and review newly retained inputs.
 

@@ -50,15 +50,15 @@ This skill guides test creation and review within the project's supported Python
 
 Unit tests provide evidence about defined behavior and expose failures at a focused boundary.
 
-1. Behavioral Documentation
+- Behavioral Documentation
 
     Descriptively named cases record the expected results and failure conditions of a public contract.
 
-2. Regression Detection
+- Regression Detection
 
     Focused tests identify behavior changes near the affected function, class, or module.
 
-3. Coverage Analysis
+- Coverage Analysis
 
     Coverage gaps identify unexecuted statements and decisions. A coverage percentage alone does not establish correctness.
 
@@ -70,23 +70,23 @@ Test design balances execution cost, isolation, reproducibility, and the strengt
 
 FIRST groups five test-design properties: Fast, Independent, Repeatable, Self-Validating, and Timely.
 
-1. Fast
+- Fast
 
     Unit tests exclude live services and unnecessary sleeps to provide prompt feedback.
 
-2. Independent
+- Independent
 
     Each test owns fresh mutable state and restores any changed process state.
 
-3. Repeatable
+- Repeatable
 
     Controlled clocks, randomness, environment variables, and filesystem paths make results reproducible.
 
-4. Self-Validating
+- Self-Validating
 
     Explicit assertions determine whether results, exceptions, and visible effects satisfy the contract.
 
-5. Timely
+- Timely
 
     A reproducing test accompanies each behavior change or defect fix.
 
@@ -164,35 +164,35 @@ Run from the project root in its configured environment. Adapt paths to the actu
 
 These conventions keep failures attributable to a specific behavior and make test state explicit.
 
-1. Naming
+- Naming
 
     Name pytest files `test_*.py` or `*_test.py` and functions `test_<behavior>`. Keep distinct contracts in separate tests.
 
-2. Value Assertions
+- Value Assertions
 
     Use plain `assert` for pytest diagnostics. Use `pytest.approx` with contract-appropriate tolerances for floating-point results; assert not-a-number (NaN) and infinity explicitly where allowed.
 
-3. Exception Assertions
+- Exception Assertions
 
     Match the expected exception type with `pytest.raises`; check message fragments only when stable. Keep only the operation expected to raise inside the context manager.
 
-4. Mutable Inputs
+- Mutable Inputs
 
     Create or copy mutable parametrized inputs per case before mutation. Do not reuse mutable module-level state across tests.
 
-5. Observable Effects
+- Observable Effects
 
     Use `monkeypatch`, `capsys`, `caplog`, and `pytest.warns` for environment, output, logging, and warning behavior when relevant.
 
-6. Resource Cleanup
+- Resource Cleanup
 
     Close files, connections, and background tasks even after assertion failures. Prefer context managers and fixture finalizers to teardown dependent on test success.
 
-7. Asynchronous Execution
+- Asynchronous Execution
 
     Use the project's configured plugin and event-loop policy, or `unittest.IsolatedAsyncioTestCase`. Await the operation and test cancellation and cleanup where relevant. An unconfigured `async def` test does not establish successful asynchronous execution.
 
-8. Failure Visibility
+- Failure Visibility
 
     Avoid arbitrary sleeps, assertions on private implementation details, blanket `xfail`, and disabling warnings to conceal failures. Use strict expected failures with a tracked reason when necessary.
 
