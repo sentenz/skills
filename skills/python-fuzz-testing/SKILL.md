@@ -48,16 +48,13 @@ This skill covers structured property-based tests with [Hypothesis](https://hypo
 Generated tests extend the input cases covered by deterministic examples and retain reproducible evidence of failures.
 
 - Input Exploration
-
-    Generated combinations and boundary values exercise behavior absent from hand-written examples.
+  > Generated combinations and boundary values exercise behavior absent from hand-written examples.
 
 - Failure Reduction
-
-    Shrinking or corpus minimization reduces failing inputs to cases that support diagnosis and regression testing.
+  > Shrinking or corpus minimization reduces failing inputs to cases that support diagnosis and regression testing.
 
 - Branch Exploration
-
-    Coverage-guided mutation uses a seed corpus, a collection of initial inputs, to explore parser and decoder branches.
+  > Coverage-guided mutation uses a seed corpus, a collection of initial inputs, to explore parser and decoder branches.
 
 ## 2. Principles
 
@@ -68,24 +65,19 @@ Generated tests require bounded execution and an oracle whose domain matches the
 FIRST groups five test-design properties: Fast, Independent, Repeatable, Self-Validating, and Timely. These properties apply to each generated example as well as the enclosing campaign.
 
 - Fast
-
-    Bounded input sizes and operations separate short continuous integration (CI) runs from longer campaigns.
+  > Bounded input sizes and operations separate short continuous integration (CI) runs from longer campaigns.
 
 - Independent
-
-    State resets between inputs prevent earlier examples or external services from determining later results.
+  > State resets between inputs prevent earlier examples or external services from determining later results.
 
 - Repeatable
-
-    Retained failing inputs, environment details, and dependency versions support reproduction.
+  > Retained failing inputs, environment details, and dependency versions support reproduction.
 
 - Self-Validating
-
-    A stated invariant or independently computed result determines whether each input exposes a defect.
+  > A stated invariant or independently computed result determines whether each input exposes a defect.
 
 - Timely
-
-    Generated properties accompany deterministic unit tests at input boundaries with significant failure consequences.
+  > Generated properties accompany deterministic unit tests at input boundaries with significant failure consequences.
 
 ## 3. Patterns
 
@@ -166,36 +158,28 @@ Atheris forwards [libFuzzer options](https://llvm.org/docs/LibFuzzer.html#option
 These conventions preserve meaningful exploration, visible failures, and reproducible inputs.
 
 - Naming
-
-    Name Hypothesis tests `test_<property>` and Atheris entry points `fuzz_<target>.py`; avoid naming standalone fuzz launchers `test_*.py`.
+  > Name Hypothesis tests `test_<property>` and Atheris entry points `fuzz_<target>.py`; avoid naming standalone fuzz launchers `test_*.py`.
 
 - Boundary Examples
-
-    Include explicit examples of critical boundaries even when strategies may generate them.
+  > Include explicit examples of critical boundaries even when strategies may generate them.
 
 - Numeric Domains
-
-    Exclude not-a-number (NaN) and infinity only when outside the contract. Equality is not a valid oracle for NaN, and floating-point round trips may need specified tolerances.
+  > Exclude not-a-number (NaN) and infinity only when outside the contract. Equality is not a valid oracle for NaN, and floating-point round trips may need specified tolerances.
 
 - Strategy Composition
-
-    Avoid `.example()` inside tests; draw through `@given`, composite strategies, or `st.data()` so failures remain shrinkable.
+  > Avoid `.example()` inside tests; draw through `@given`, composite strategies, or `st.data()` so failures remain shrinkable.
 
 - Example State
-
-    Do not suppress Hypothesis health checks to hide poor strategy design or shared-state defects. Function-scoped pytest fixtures are not recreated for each Hypothesis example; initialize or reset mutable state inside the generated test body.
+  > Do not suppress Hypothesis health checks to hide poor strategy design or shared-state defects. Function-scoped pytest fixtures are not recreated for each Hypothesis example; initialize or reset mutable state inside the generated test body.
 
 - Exploration and Reproduction
-
-    Do not set a global fixed seed solely to make CI results repeatable. Retain stored examples and reproduction details while allowing ongoing exploration.
+  > Do not set a global fixed seed solely to make CI results repeatable. Retain stored examples and reproduction details while allowing ongoing exploration.
 
 - Exception Handling
-
-    Catch only expected input-rejection exceptions around the parser call. Let assertion failures, unexpected exceptions, and crashes fail the run.
+  > Catch only expected input-rejection exceptions around the parser call. Let assertion failures, unexpected exceptions, and crashes fail the run.
 
 - Corpus Retention
-
-    Keep corpora small, representative, and free of credentials or sensitive production data. Minimize and review newly retained inputs.
+  > Keep corpora small, representative, and free of credentials or sensitive production data. Minimize and review newly retained inputs.
 
 ## 7. Templates
 
