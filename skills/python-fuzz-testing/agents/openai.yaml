@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python Fuzz Testing"
+  short_description: "Create reliable Python fuzz tests"
+  default_prompt: "Use $python-fuzz-testing to create and validate tests for this Python project."

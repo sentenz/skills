@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python Benchmark Testing"
+  short_description: "Create reliable Python benchmark tests"
+  default_prompt: "Use $python-benchmark-testing to create and validate tests for this Python project."

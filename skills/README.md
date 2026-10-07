@@ -12,6 +12,7 @@ Agent skills are modular capabilities that AI agents can utilize to perform spec
   - [1.7. Threat Modeling Skills](#17-threat-modeling-skills)
   - [1.8. Documentation Skills](#18-documentation-skills)
   - [1.9. UI and Design Skills](#19-ui-and-design-skills)
+  - [1.10. Python Skills](#110-python-skills)
 - [2. References](#2-references)
 
 ## 1. Agent Skills
@@ -92,6 +93,20 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 
 - [Material Design 3](material-3/SKILL.md)
   > External Agent Skill from the MIT-licensed [hamen/material-3-skill](https://github.com/hamen/material-3-skill) for Material Design 3 implementation across Jetpack Compose, Flutter, and limited web, including design tokens, 30+ components, theming, adaptive layout, M3 Expressive guidance, accessibility, and compliance auditing.
+
+### 1.10. Python Skills
+
+- [Python Unit Testing](python-unit-testing/SKILL.md)
+  > Unit and regression test creation with pytest or unittest using FIRST, In-Got-Want, table-driven testing, AAA, fixtures, and branch coverage.
+
+- [Python Mock Testing](python-mock-testing/SKILL.md)
+  > Dependency isolation and interaction verification using unittest.mock, autospec, async mocks, and pytest monkeypatch.
+
+- [Python Fuzz Testing](python-fuzz-testing/SKILL.md)
+  > Property-based tests with Hypothesis and coverage-guided fuzz targets with Atheris, including bounded campaigns and reproducible regressions.
+
+- [Python Benchmark Testing](python-benchmark-testing/SKILL.md)
+  > Performance measurement with pytest-benchmark and pyperf, including baseline comparisons, mutable workloads, and separate profiling.
 
 ## 2. References
 
