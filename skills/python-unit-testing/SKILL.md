@@ -51,13 +51,16 @@ This skill guides test creation and review within the project's supported Python
 Unit tests provide evidence about defined behavior and expose failures at a focused boundary.
 
 - Behavioral Documentation
-  > Descriptively named cases record the expected results and failure conditions of a public contract.
+
+    Descriptively named cases record the expected results and failure conditions of a public contract.
 
 - Regression Detection
-  > Focused tests identify behavior changes near the affected function, class, or module.
+
+    Focused tests identify behavior changes near the affected function, class, or module.
 
 - Coverage Analysis
-  > Coverage gaps identify unexecuted statements and decisions. A coverage percentage alone does not establish correctness.
+
+    Coverage gaps identify unexecuted statements and decisions. A coverage percentage alone does not establish correctness.
 
 ## 2. Principles
 
@@ -68,19 +71,24 @@ Test design balances execution cost, isolation, reproducibility, and the strengt
 FIRST groups five test-design properties: Fast, Independent, Repeatable, Self-Validating, and Timely.
 
 - Fast
-  > Unit tests exclude live services and unnecessary sleeps to provide prompt feedback.
+
+    Unit tests exclude live services and unnecessary sleeps to provide prompt feedback.
 
 - Independent
-  > Each test owns fresh mutable state and restores any changed process state.
+
+    Each test owns fresh mutable state and restores any changed process state.
 
 - Repeatable
-  > Controlled clocks, randomness, environment variables, and filesystem paths make results reproducible.
+
+    Controlled clocks, randomness, environment variables, and filesystem paths make results reproducible.
 
 - Self-Validating
-  > Explicit assertions determine whether results, exceptions, and visible effects satisfy the contract.
+
+    Explicit assertions determine whether results, exceptions, and visible effects satisfy the contract.
 
 - Timely
-  > A reproducing test accompanies each behavior change or defect fix.
+
+    A reproducing test accompanies each behavior change or defect fix.
 
 ## 3. Patterns
 
@@ -137,28 +145,36 @@ Run from the project root in its configured environment. Adapt paths to the actu
 These conventions keep failures attributable to a specific behavior and make test state explicit.
 
 - Naming
-  > Name pytest files `test_*.py` or `*_test.py` and functions `test_<behavior>`. Keep distinct contracts in separate tests.
+
+    Name pytest files `test_*.py` or `*_test.py` and functions `test_<behavior>`. Keep distinct contracts in separate tests.
 
 - Value Assertions
-  > Use plain `assert` for pytest diagnostics. Use `pytest.approx` with contract-appropriate tolerances for floating-point results; assert not-a-number (NaN) and infinity explicitly where allowed.
+
+    Use plain `assert` for pytest diagnostics. Use `pytest.approx` with contract-appropriate tolerances for floating-point results; assert not-a-number (NaN) and infinity explicitly where allowed.
 
 - Exception Assertions
-  > Match the expected exception type with `pytest.raises`; check message fragments only when stable. Keep only the operation expected to raise inside the context manager.
+
+    Match the expected exception type with `pytest.raises`; check message fragments only when stable. Keep only the operation expected to raise inside the context manager.
 
 - Mutable Inputs
-  > Create or copy mutable parametrized inputs per case before mutation. Do not reuse mutable module-level state across tests.
+
+    Create or copy mutable parametrized inputs per case before mutation. Do not reuse mutable module-level state across tests.
 
 - Observable Effects
-  > Use `monkeypatch`, `capsys`, `caplog`, and `pytest.warns` for environment, output, logging, and warning behavior when relevant.
+
+    Use `monkeypatch`, `capsys`, `caplog`, and `pytest.warns` for environment, output, logging, and warning behavior when relevant.
 
 - Resource Cleanup
-  > Close files, connections, and background tasks even after assertion failures. Prefer context managers and fixture finalizers to teardown dependent on test success.
+
+    Close files, connections, and background tasks even after assertion failures. Prefer context managers and fixture finalizers to teardown dependent on test success.
 
 - Asynchronous Execution
-  > Use the project's configured plugin and event-loop policy, or `unittest.IsolatedAsyncioTestCase`. Await the operation and test cancellation and cleanup where relevant. An unconfigured `async def` test does not establish successful asynchronous execution.
+
+    Use the project's configured plugin and event-loop policy, or `unittest.IsolatedAsyncioTestCase`. Await the operation and test cancellation and cleanup where relevant. An unconfigured `async def` test does not establish successful asynchronous execution.
 
 - Failure Visibility
-  > Avoid arbitrary sleeps, assertions on private implementation details, blanket `xfail`, and disabling warnings to conceal failures. Use strict expected failures with a tracked reason when necessary.
+
+    Avoid arbitrary sleeps, assertions on private implementation details, blanket `xfail`, and disabling warnings to conceal failures. Use strict expected failures with a tracked reason when necessary.
 
 ## 7. Templates
 

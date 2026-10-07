@@ -48,13 +48,16 @@ This skill guides workload design, correctness validation, and baseline comparis
 Benchmarks provide comparative evidence when the workload, environment, and measured boundary remain consistent.
 
 - Optimization Evidence
-  > Recorded execution costs inform optimization decisions for the measured workload.
+
+    Recorded execution costs inform optimization decisions for the measured workload.
 
 - Regression Detection
-  > Comparable workloads and retained baselines expose changes in execution cost.
+
+    Comparable workloads and retained baselines expose changes in execution cost.
 
 - Cost Attribution
-  > Explicit measurement boundaries distinguish algorithmic work from setup, cache effects, and instrumentation overhead.
+
+    Explicit measurement boundaries distinguish algorithmic work from setup, cache effects, and instrumentation overhead.
 
 ## 2. Principles
 
@@ -65,19 +68,24 @@ Benchmark design combines repeatable work with sufficient sampling and independe
 FIRST groups five test-design properties: Fast, Independent, Repeatable, Self-Validating, and Timely. Benchmark design applies these properties to the workload and the measurement process.
 
 - Fast
-  > A bounded suite collects enough repeated samples to assess variation within the available execution budget.
+
+    A bounded suite collects enough repeated samples to assess variation within the available execution budget.
 
 - Independent
-  > Mutable inputs reset between invocations, and benchmark workers avoid competing workloads.
+
+    Mutable inputs reset between invocations, and benchmark workers avoid competing workloads.
 
 - Repeatable
-  > Recorded interpreter, dependencies, hardware, runtime settings, and input data support comparable measurements.
+
+    Recorded interpreter, dependencies, hardware, runtime settings, and input data support comparable measurements.
 
 - Self-Validating
-  > Correctness assertions outside the measured operation verify the workload's result.
+
+    Correctness assertions outside the measured operation verify the workload's result.
 
 - Timely
-  > Baseline measurements precede implementation changes intended to improve performance.
+
+    Baseline measurements precede implementation changes intended to improve performance.
 
 ## 3. Patterns
 
@@ -139,31 +147,40 @@ For a changed application callable, use the same import/setup and statement on t
 These conventions preserve equivalent work across repeated invocations and make measurement limits explicit.
 
 - Naming
-  > Use `test_<operation>` under the existing benchmark directory so pytest discovers the benchmark fixture.
+
+    Use `test_<operation>` under the existing benchmark directory so pytest discovers the benchmark fixture.
 
 - Callable Invocation
-  > Pass a callable and its arguments to `benchmark`; do not call the operation before passing it. Assert the returned result outside the measured callable.
+
+    Pass a callable and its arguments to `benchmark`; do not call the operation before passing it. Assert the returned result outside the measured callable.
 
 - Measurement Boundary
-  > Keep input generation, unrelated validation, printing, and logging outside timing unless they are part of the defined workload.
+
+    Keep input generation, unrelated validation, printing, and logging outside timing unless they are part of the defined workload.
 
 - Mutable State
-  > Use `benchmark.pedantic` with a setup callback and `iterations=1` so each measured invocation receives fresh state.
+
+    Use `benchmark.pedantic` with a setup callback and `iterations=1` so each measured invocation receives fresh state.
 
 - Garbage Collection
-  > Explicitly choose and record garbage collection (GC) behavior; defaults differ between tools. Do not disable GC merely to improve reported numbers when collection is part of the production workload.
+
+    Explicitly choose and record garbage collection (GC) behavior; defaults differ between tools. Do not disable GC merely to improve reported numbers when collection is part of the production workload.
 
 - Environment Metadata
-  > Record the Python implementation and version, build mode, operating system, CPU, and relevant native-library thread counts. Do not attribute differences across interpreter versions or machines solely to a code change.
+
+    Record the Python implementation and version, build mode, operating system, CPU, and relevant native-library thread counts. Do not attribute differences across interpreter versions or machines solely to a code change.
 
 - Asynchronous Completion
-  > Do not pass a coroutine directly to a synchronous benchmark fixture: that measures coroutine creation. Use an async-aware harness or a documented wrapper that awaits completion, declaring whether event-loop startup is included.
+
+    Do not pass a coroutine directly to a synchronous benchmark fixture: that measures coroutine creation. Use an async-aware harness or a documented wrapper that awaits completion, declaring whether event-loop startup is included.
 
 - Memory Scope
-  > Profile memory separately from latency. `tracemalloc` measures traced allocations, not all native memory or total resident set size. Use an appropriate process-memory tool for those questions.
+
+    Profile memory separately from latency. `tracemalloc` measures traced allocations, not all native memory or total resident set size. Use an appropriate process-memory tool for those questions.
 
 - Result Interpretation
-  > Treat differences within measurement noise as inconclusive. Report distributions and practical effect sizes instead of selecting only the fastest run.
+
+    Treat differences within measurement noise as inconclusive. Report distributions and practical effect sizes instead of selecting only the fastest run.
 
 ## 7. Templates
 
