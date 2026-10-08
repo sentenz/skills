@@ -115,7 +115,7 @@ Instructions for troubleshooting skill invocation issues, including checking tri
 
 ## 4. References
 
-- [AGENTS.md](https://agents.md/) specification.
+- Agent [Instructions (AGENTS.md)](https://agents.md/) page.
+- Agent [Skills (SKILL.md)](https://agentskills.io/specification) specification.
 - Vercel [Skills](https://skills.sh/) page.
-- Vercel [Skills](https://skills.sh/docs/cli) documentation.
-- Agent [Skills](https://agentskills.io/specification) specification.
+- Vercel [Skills CLI](https://skills.sh/docs/cli) documentation.
