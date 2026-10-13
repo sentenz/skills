@@ -1,6 +1,6 @@
 # Mapping Rules
 
-Use these rules only after reading the applicable workflow step in `SKILL.md`. Treat `SKILL.md` as authoritative if a workflow instruction conflicts with this reference.
+Canonical analytical rules and decision tables for the [workflow](../SKILL.md). Workflow authority remains in `SKILL.md`; artifact representation and narrative requirements are defined in [Artifact Contract](artifact-contract.md) and [Justification Templates](justification-template.md).
 
 - [1. Connection-Path Scope Classification](#1-connection-path-scope-classification)
 - [2. CIA Impact Reference](#2-cia-impact-reference)
@@ -62,21 +62,11 @@ The core principles of Information Security (InfoSec) are confidentiality, integ
 
 ## 3. Diagram Depth Layers
 
-[Diagram depth layers](https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/1b-depth-layers) are used to decompose a system into hierarchical levels of detail, enabling threat modeling at varying levels of abstraction.
-
-| Layer | Title       | Components                                                                                                                                                                                                                                                                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| ----- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0     | System      | Embedded Device, PLC, HMI/Engineering Station, Maintenance Workstation, Debug/Flash Probe, Managed UPS, Sensors, Actuators, Remote I/O, Protocol Gateway/Serial Server, USB Host or Service Laptop                                                                                  | Mandatory initial view of the systems major parts. Represents the Embedded Device as a single process within its trust boundary and shows all relevant external entities, intermediary systems, data flows, and physical or logical connection paths. Establishes the system context and identifies the Layer 0 processes that may require further decomposition. ([Microsoft Layer 0][1])                                                                                                                                                                     |
-| 1     | Process     | Controller/MCU, RS-485 Transceiver, RS-232 Transceiver, USB Interface, JTAG/SWD Interface, RJ-12/RJ-45 Connectors, GPIO Interface, Digital I/O, Analog I/O, Power Monitoring, Flash, EEPROM                                                                                         | Decomposes the Embedded Device process from Layer 0 into its principal board-level processes, interfaces, data stores, and trust boundaries. Identifies the products external physical and logical attack surfaces while retaining the Controller/MCU as a single process. Generally the appropriate minimum decomposition for evaluating an embedded product’s communication ports, field I/O, debug interface, storage, and service interfaces. ([Microsoft Layer 1][2])                                                                                     |
-| 2     | Subprocess  | Application and Control Logic, Modbus RTU Stack, GPIO Driver, UART Driver, SPI Driver, I²C Driver, Digital-I/O Driver, ADC/DAC Driver, Scheduler/Interrupt Dispatch, Configuration Manager, Bootloader, Secure Boot, Firmware-Update Manager, Debug-Access Control, Memory Manager  | Decomposes the Controller/MCU process from Layer 1 into security-relevant firmware subprocesses and data flows. Focuses on protocol parsing, control decisions, privilege boundaries, interrupt handling, secure startup, firmware updates, debug authorization, configuration processing, and non-volatile-memory access. Appropriate where compromise of an internal controller function could affect device integrity, availability, process control, or connected systems. ([Microsoft Layer 2][3])                                                        |
-| 3     | Lower-Level | Modbus RTU Frame Parser and Function Handlers, Boot Verification Chain, Firmware-Update State Machine, Signature Verification, Anti-Rollback Logic, UART ISR/DMA and Buffers, GPIO Interrupt/Debounce Logic, SPI/I²C Transaction State Machines, MPU Regions, Key-Handling Routines | Provides minute implementation detail for a selected critical Layer 2 subprocess rather than automatically decomposing the entire controller. Examines parser memory safety, input-validation branches, state transitions, buffer ownership, concurrency, cryptographic verification, privilege changes, key exposure, fault injection, and side-channel behavior. Reserved for security-critical, kernel-level, privileged, cryptographic, or timing-sensitive functions where Layer 2 does not provide sufficient analytical depth. ([Microsoft Layer 3][4]) |
-
-[1]: https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/2-layer-0-the-system-layer "Layer 0 | The System Layer Training | Microsoft Learn"
-[2]: https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/3-layer-1-the-process-layer "Layer 1 | The Process Layer Training | Microsoft Learn"
-[3]: https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/4-layer-2-the-sub-process-layer "Layer 2 | The Subprocess Layer Training | Microsoft Learn"
-[4]: https://learn.microsoft.com/en-us/training/modules/tm-provide-context-with-the-right-depth-layer/5-layer-3-the-lower-level-layer "Layer 3 | The Lower-Level Layer Training | Microsoft Learn"
+Use the canonical [Depth Layers](threat-depth-layers.md#1-depth-layers) table and [diagram examples](threat-depth-layers.md#2-diagram-layers) for architecture classification.
 
 ## 4. Purdue Model Mapping
+
+The Purdue Model (ISA-95 / IEC 62264) partitions industrial automation environments into hierarchical zones with distinct trust boundaries and characteristic attack surfaces.
 
 ### 4.1. Purdue Zone Reference
 
@@ -121,7 +111,7 @@ Classify confirmed controls by where they are enforced. Record source-backed EMB
 
 ### 6.1. Control Enforcement Boundary
 
-Define the assessed product or device boundary before classifying controls. Classification follows the enforcement point, not the control owner, deployment package, intended outcome, or perceived maturity.
+Use the assessed product or device boundary recorded under [Assessment Context](analysis-guidance.md#1-assessment-context). Classification follows the enforcement point, not the control owner, deployment package, intended outcome, or perceived maturity.
 
 | Category                | Enforcement Boundary                                      | Evidence and Use                                                                                                                                                                                                                                                                                                                       |
 | ----------------------- | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -131,32 +121,25 @@ Define the assessed product or device boundary before classifying controls. Clas
 - Split a control claim when enforcement spans both sides of the boundary. Classify and evidence each part separately.
 - Treat firmware validation, device watchdog behavior, secure boot enforcement, and hardware access control as `Implemented controls` only when product-specific evidence verifies the behavior within the assessed boundary.
 - Treat cabinet access restrictions, cable routing or protection, external gateways and network controls, workstation logging, installation measures, and maintenance or operating procedures as `Compensating controls` when they are outside the assessed boundary.
-- A `Mitigated` narrative may rely only on confirmed `Compensating controls` when those controls reduce residual system risk to the accepted level. Omit `Implemented controls` when no verified within-boundary control applies.
+- A `Mitigated` narrative may rely only on confirmed `Compensating controls` when those controls reduce residual system risk to the accepted level. Narrative labels and omissions follow [Justification Templates](justification-template.md#2-universal-rules).
 
 ### 6.2. EMB3D Mitigations
 
 EMB3D Foundational, Intermediate, and Leading levels are source taxonomy values attached to `MID-*` mitigations.
 
-| MITRE EMB3D Mitigation Level | Use in `Justification`                                          |
-| ---------------------------- | --------------------------------------------------------------- |
-| Foundational                 | `EMB3D Foundational mitigation: <exact source name> (MID-NNN).` |
-| Intermediate                 | `EMB3D Intermediate mitigation: <exact source name> (MID-NNN).` |
-| Leading                      | `EMB3D Leading mitigation: <exact source name> (MID-NNN).`      |
+Citation format is defined in [EMB3D Citation Format](justification-template.md#7-emb3d-citation-format).
 
-- Cite an MID only when row evidence makes the mitigation applicable and the bounded EMB3D query maps it to at least one `EMB3D TID` recorded in the row.
-- Copy the mitigation's exact source name and group it under its exact source level with the `EMB3D` prefix in `Justification`.
+- Cite an MID only when row evidence makes the mitigation applicable and the mitigation-centric source maps it to at least one `EMB3D TID` recorded in the row.
 - Treat source validation and implementation evidence separately. A valid MID, name, level, and TID association proves only the source-backed mapping.
-- Claim an MID as implemented only when device-specific design, configuration, test, or verified behavior evidence demonstrates the mitigation's enforcement within the assessed product or device boundary. Introduce that evidence with `Device-specific evidence:` and describe the verified behavior under `Implemented controls:`.
+- Claim an MID as implemented only when device-specific design, configuration, test, or verified behavior evidence demonstrates the mitigation's enforcement within the assessed product or device boundary. Use the [citation format](justification-template.md#7-emb3d-citation-format) to present that evidence.
 - An external compensating control may reduce residual system risk or operationalize part of an EMB3D recommendation, but it does not prove that the assessed product or device implements the MID.
-- Omit MIDs when `EMB3D TID` is `N/A`. Describe verified controls using the applicable enforcement-boundary category without adding an EMB3D label.
 - Do not derive, raise, or lower an EMB3D level from implementation maturity, adversary capability, control coverage, or an IEC 62443 Security Level.
 
-> [!NOTE]
-> Use the bundled mitigation snapshot as the offline source of record through [`query_emb3d.py`](../scripts/query_emb3d.py) and [`validate_csv.py`](../scripts/validate_csv.py). Do not read or print the raw JSON.
+The mitigation-centric snapshot is authoritative for each MID's exact name, level, and associated TIDs. The [asset catalog](../assets/README.md) records provenance.
 
 ## 7. Impact Mapping
 
-Categorize impact using CVSS v4.0 Base Metrics. Keep CVSS Base scoring intrinsic. Document compensating controls, residual exposure, treatment, and approval outside the Base vector.
+Categorize impact using CVSS v4.0 Base Metrics, the native TMT row, ATT&CK technique, EMB3D exposure, and OT/ICS impact context. Select `AV` from [Exploitability Metrics](#71-exploitability-metrics), derive the remaining exploitability metrics from row and architecture evidence, and map `VC`, `VI`, `VA`, `SC`, `SI`, and `SA` with the impact tables below. Keep CVSS Base scoring intrinsic to the vulnerability and attack scenario, without regard to compensating controls, environmental constraints, or residual risk acceptance. Document compensating controls, residual exposure, treatment, and approval outside the Base vector.
 
 - Zero-Impact
   > Use a zero-impact CVSS outcome only when the finalized reviewed scenario leaves no modeled impact because the attack path or weakness is not real in the assessed design.
@@ -202,7 +185,7 @@ Use `SC`, `SI`, and `SA` to capture cascading effects on the physical process, s
 
 ## 8. Probability Mapping
 
-Categorize likelihood of exploit using BSI `Dringlichkeit / Eintrittspotenzial` logic. Combine exploitation method with vulnerability state.
+Categorize likelihood of exploit using BSI `Dringlichkeit / Eintrittspotenzial` logic from the [BSI Urgency Model](https://www.bsi.bund.de/DE/Service-Navi/Abonnements/Newsletter/Buerger-CERT-Abos/Buerger-CERT-Sicherheitshinweise/Risikostufen/risikostufen.html). Combine exploitation method with vulnerability state. Finalized reviewed rows require a mapped `Likelihood of Exploit`, including zero-impact outcomes; do not use `N/A`.
 
 - Exploitation Method
   > The exploitation method describes the degree of attacker interaction and automation required to perform the attack.
@@ -210,13 +193,13 @@ Categorize likelihood of exploit using BSI `Dringlichkeit / Eintrittspotenzial` 
   | Method           | Description                                                                                                |
   | ---------------- | ---------------------------------------------------------------------------------------------------------- |
   | Manual           | Requires target-specific, non-automatable steps, specialized knowledge, or direct attacker interaction.    |
-  | Automated        | The exploit be executed repeatedly against eligible targets using a script, tool, or repeatable procedure. |
+  | Automated        | The exploit can be executed repeatedly against eligible targets using a script, tool, or repeatable procedure. |
   | Self-Replicating | Propagates autonomously from compromised systems to additional targets without continued attacker action.  |
 
 - Vulnerability State
   > The vulnerability state describes the maturity, availability, and observed use of the exploitation method.
 
-  | Method            | Description                                                                                                    |
+  | State             | Description                                                                                                    |
   | ----------------- | -------------------------------------------------------------------------------------------------------------- |
   | Theoretical       | The weakness is conceptually exploitable, but no concrete or reproducible exploitation method is known.        |
   | Exploitable       | A proof of concept, reproducible procedure, or otherwise reliable exploitation method exists.                  |
@@ -254,7 +237,7 @@ Categorize likelihood of exploit using BSI `Dringlichkeit / Eintrittspotenzial` 
 
 ## 9. Risk Matrix Mapping
 
-Combine `Likelihood of Exploit` and `CVSS v4.0 Severity` to determine `Risk Prioritization`.
+Combine `Likelihood of Exploit` and `CVSS v4.0 Severity` to determine `Risk Prioritization`. Finalized reviewed rows require a mapped value, not `N/A`; evaluate the matrix using the derived likelihood even when severity is `None`.
 
 > [!NOTE]
 > `Risk Prioritization` values are the pre-treatment technical prioritization and must not be lowered by compensating controls, acceptance, transfer, or residual-risk ownership.
@@ -269,6 +252,8 @@ Combine `Likelihood of Exploit` and `CVSS v4.0 Severity` to determine `Risk Prio
 
 ## 10. Threat Actor Mapping
 
+Threat actors are individuals, groups, or organizations with the motivation and capability to attack systems, data, or infrastructure.
+
 ### 10.1. Capability Boundaries
 
 | Threat Actor       | Typical Capability Boundary                                                                                                       |
@@ -281,7 +266,7 @@ Combine `Likelihood of Exploit` and `CVSS v4.0 Severity` to determine `Risk Prio
 
 ### 10.2. Scenario Mapping
 
-Normalize `Threat Actor` from common OT/ICS threat-path characteristics. Always select the minimum actor that satisfies required access, capability, and process knowledge. Reassess upward only when the modeled path requires capabilities beyond the selected label.
+Normalize `Threat Actor` from common OT/ICS threat-path characteristics. Always select the minimum actor that satisfies required access, capability, and process knowledge. Reassess upward only when the modeled path requires capabilities beyond the selected label. Do not select by severity or notoriety. If several actors are plausible, select the minimum actor that can realistically achieve the described effect.
 
 > [!NOTE]
 > Actor capability order from lowest to highest: `Thrill Seeker` → `Hacktivist` → `Cybercriminal` → `Insider Threat` → `Nation-State Actor`.
@@ -306,12 +291,14 @@ Normalize `Threat Actor` from common OT/ICS threat-path characteristics. Always 
 
 Risk treatment records the governance disposition for the inherent risk and the resulting residual risk after controls, transfer mechanisms, avoidance decisions, or acceptance decisions are applied.
 
-| Treatment    | Purpose                                                         | Required Evidence or Condition                                                                                                         |
-| ------------ | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `Avoidance`  | Eliminate the risk source or make the threat inapplicable.      | Document the removed or restructured system element, function, interface, data flow, or attack path.                                   |
-| `Mitigation` | Reduce likelihood or impact through controls or design changes. | Document each control's enforcement-boundary category, remaining exposure, residual risk, residual-risk owner, and approval mechanism. |
-| `Acceptance` | Intentionally retain the risk without further treatment.        | Document the business rationale, acceptance threshold, responsible stakeholder, and explicit approval.                                 |
-| `Transfer`   | Shift part of the financial, operational, or legal consequence. | Identify the third party and the applicable contract, SLA, warranty, insurance policy, or managed service.                             |
+| Treatment | Purpose |
+| --- | --- |
+| `Avoidance` | Eliminate the risk source or make the threat inapplicable. |
+| `Mitigation` | Reduce likelihood or impact through controls or design changes. |
+| `Acceptance` | Intentionally retain the risk without further treatment. |
+| `Transfer` | Shift part of the financial, operational, or legal consequence. |
+
+Supporting evidence for each disposition is specified in [Treatment Evidence](justification-template.md#8-treatment-evidence).
 
 > [!NOTE]
 > `State` records the technical review result. `Risk Prioritization` records the pre-treatment technical prioritization. `Risk Treatment` records the governance disposition. `Mitigated` may pair with `Acceptance` only when controls are in place and inherent residual risk is intentionally retained with documented approval.
@@ -323,7 +310,7 @@ Risk treatment records the governance disposition for the inherent risk and the 
   | Consistency        | `State`, CVSS severity, likelihood, inherent prioritization, residual risk, treatment, and approval describe a coherent risk posture.                                           |
   | Overprescription   | Example rows are generalized patterns. Replace actor, score, treatment, and approval when product evidence differs.                                                             |
   | Defense Risk       | Do not cite regulation, deployment restrictions, or trusted-environment assumptions as standalone mitigations. Tie each claim to controls, architecture, and approval evidence. |
-  | Identifier Hygiene | Do not populate ATT&CK, EMB3D, or CWE identifiers for `Not Applicable` rows unless the row explicitly documents a retained discrepancy.                                         |
+  | Identifier Hygiene | Apply the `Not Applicable` identifier requirements and retained-discrepancy exception in [Field Resolution](artifact-contract.md#3-field-resolution).                                         |
   | CVSS Defensibility | Keep CVSS Base scoring intrinsic. Document compensating controls and acceptance decisions outside the Base vector.                                                              |
 
 ### 11.2. Treatment Decision Guidance
@@ -338,25 +325,22 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 | High                | Mitigation        | Avoidance, Transfer, Acceptance  | Acceptance is restricted to exceptional cases with CPSO approval and written justification.                                                  |
 | Critical            | Avoidance         | Mitigation, Transfer, Acceptance | Acceptance requires explicit executive risk acceptance and written rationale. Do not use acceptance as a substitute for unresolved evidence. |
 
+Do not use `Acceptance` or `Transfer` to work around missing technical evidence.
+
 ### 11.3. State and Treatment Compatibility
 
 | TMT State             | Compatible Risk Treatment | Consistency Requirements                                                                                                                                                                                                                                                         |
 | --------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Not Started`         | Blank                     | Row has not yet been reviewed. Leave enrichment and governance fields blank except preserved source values.                                                                                                                                                                      |
+| `Not Started`         | Blank                     | Row has not yet been reviewed. Field handling follows [Field Resolution](artifact-contract.md#3-field-resolution).                                                                                                                                                                      |
 | `Needs Investigation` | Blank                     | Evidence gap remains. Do not assign treatment or approval until resolved.                                                                                                                                                                                                        |
-| `Not Applicable`      | Avoidance                 | Attack path or risk source is impossible, structurally eliminated, or outside scope. Identifier columns should normally be `N/A`.                                                                                                                                                |
-| `Mitigated`           | Mitigation                | Implemented controls, compensating controls, or both reduce risk to an accepted residual level. Classify each control by enforcement boundary and identify remaining exposure, owner, and approval mechanism. A compensating-only narrative is valid when supported by evidence. |
+| `Not Applicable`      | Avoidance                 | Attack path or risk source is impossible, structurally eliminated, or outside scope. Identifier handling follows [Field Resolution](artifact-contract.md#3-field-resolution).                                                                                                                                                |
+| `Mitigated`           | Mitigation                | Implemented controls, compensating controls, or both reduce risk to an accepted residual level. Apply [Control Enforcement Boundary](#61-control-enforcement-boundary) and [Treatment Evidence](justification-template.md#8-treatment-evidence). |
 | `Mitigated`           | Acceptance                | Use only when implemented controls, compensating controls, or both reduce exposure but residual risk is intentionally retained with documented approval.                                                                                                                         |
 | `Mitigated`           | Transfer                  | Use only when implemented controls, compensating controls, or both and a named third-party mechanism share or delegate residual consequence.                                                                                                                                     |
 
 ### 11.4. Treatment Evidence Requirements
 
-| Risk Treatment | Minimum Evidence in `Justification`                                                                                                 |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Avoidance      | Architectural record or design decision confirming the risk source has been eliminated.                                             |
-| Mitigation     | Implemented and/or compensating control(s), enforcement boundary, residual risk level, residual-risk owner, and approval mechanism. |
-| Acceptance     | Business rationale for retention, approving stakeholder, and acceptance mechanism.                                                  |
-| Transfer       | Named third party, specific contract/SLA/warranty/insurance reference, and explicit risk scope.                                     |
+Required narrative evidence is defined in [Treatment Evidence](justification-template.md#8-treatment-evidence).
 
 ## 12. Risk Approval Mapping
 
@@ -383,7 +367,9 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 
 ## 13. MITRE CWE Mapping Rules
 
-Use the bundled CWE 4.20 projection as the offline source of record through `scripts/query_cwe.py` and `scripts/validate_csv.py`. Do not read or print the raw JSON. The projection contains all weakness entries from the upstream snapshot, including status, abstraction, mapping notes, relationships, candidate mitigations, and the Software Development, Research Concepts, and Hardware Design discovery views.
+The bundled CWE 4.20 projection is the offline source of record; provenance is recorded in the [asset catalog](../assets/README.md). The projection contains all weakness entries from the upstream snapshot, including status, abstraction, mapping notes, relationships, candidate mitigations, and the Software Development, Research Concepts, and Hardware Design discovery views.
+
+Populate `CWE ID` only when affirmative product, architecture, design, implementation, configuration, test, or verified behavioral evidence establishes the root weakness. STRIDE, ATT&CK, and EMB3D may nominate candidates but must not independently substantiate a CWE mapping. Select the most specific supported weakness; multiple concrete weaknesses may be recorded when required.
 
 - **Active set:** weakness entries whose `status` is not `Deprecated`.
 - **Mappable set:** active weakness entries whose `mapping_notes.usage` is not `Prohibited`.
