@@ -2,7 +2,7 @@
 name: python-unit-testing
 description: Create, modify, and review Python unit tests using pytest or an existing unittest suite, with In-Got-Want, table-driven testing, AAA, fixtures, and branch coverage. Use for Python unit tests, regression tests, test isolation, parametrization, exception assertions, async tests, or test coverage.
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   activation:
     implicit: true
     priority: 1
@@ -33,18 +33,19 @@ This skill guides test creation and review within the project's supported Python
 - [1. Benefits](#1-benefits)
 - [2. Principles](#2-principles)
   - [2.1. FIRST](#21-first)
-- [3. Patterns](#3-patterns)
+- [3. Testing Patterns](#3-testing-patterns)
   - [3.1. Test Structure](#31-test-structure)
   - [3.2. Test Data and Isolation](#32-test-data-and-isolation)
-- [4. Workflow](#4-workflow)
-- [5. Commands](#5-commands)
-- [6. Style Guide](#6-style-guide)
-- [7. Templates](#7-templates)
-  - [7.1. Table-Driven Test](#71-table-driven-test)
-  - [7.2. Error and Boundary Cases](#72-error-and-boundary-cases)
-  - [7.3. Resource Fixture](#73-resource-fixture)
-  - [7.4. Existing unittest Suite](#74-existing-unittest-suite)
-- [8. References](#8-references)
+- [4. Test Design](#4-test-design)
+- [5. Workflow](#5-workflow)
+- [6. Commands](#6-commands)
+- [7. Style Guide](#7-style-guide)
+- [8. Templates](#8-templates)
+  - [8.1. Table-Driven Test](#81-table-driven-test)
+  - [8.2. Error and Boundary Cases](#82-error-and-boundary-cases)
+  - [8.3. Resource Fixture](#83-resource-fixture)
+  - [8.4. Existing unittest Suite](#84-existing-unittest-suite)
+- [9. References](#9-references)
 
 ## 1. Benefits
 
@@ -82,7 +83,7 @@ FIRST groups five test-design properties: Fast, Independent, Repeatable, Self-Va
 - Timely
   > A reproducing test accompanies each behavior change or defect fix.
 
-## 3. Patterns
+## 3. Testing Patterns
 
 Test-structure patterns organize execution and assertions. Data and isolation patterns determine how cases obtain inputs and manage dependencies.
 
@@ -106,7 +107,20 @@ Fixtures manage test state and cleanup; data-driven cases separate inputs from t
 | Data-Driven Testing | Load versioned JavaScript Object Notation (JSON) or comma-separated values (CSV) cases relative to `Path(__file__)`, validate their schema, and parametrize each case. |
 | Test Doubles | Isolate external boundaries; use [Python Mock Testing](../python-mock-testing/SKILL.md) for interaction contracts. |
 
-## 4. Workflow
+## 4. Test Design
+
+Select cases from the public contract before choosing a test-structure pattern. Derive expected results independently of the implementation.
+
+| Technique | Application |
+| --- | --- |
+| Boundary Value Analysis | Exercise limits and adjacent values, empty inputs, and relevant size or numeric thresholds. |
+| Negative Testing | Assert documented rejection of invalid inputs, including the expected error and observable state. |
+| Regression Testing | Preserve a minimal reproducer for each confirmed defect and verify the corrected behavior. |
+| Coverage Analysis | Use uncovered branches to identify missing scenarios; do not treat a percentage as proof of correctness. |
+
+Use table-driven or external data-driven cases to express these choices. FIRST describes quality principles, not input-selection techniques. Add property-based or fuzz tests when a contract supplies a meaningful invariant; do not invent properties merely to increase coverage.
+
+## 5. Workflow
 
 The workflow connects contract analysis, test implementation, and verification within the existing project environment.
 
@@ -128,7 +142,7 @@ The workflow connects contract analysis, test implementation, and verification w
 
 5. Apply Templates
 
-    Use the appropriate [template](#7-templates). Reuse fixtures when they clarify ownership; avoid broad autouse fixtures that obscure dependencies.
+    Use the appropriate [template](#8-templates). Reuse fixtures when they clarify ownership; avoid broad autouse fixtures that obscure dependencies.
 
 6. Execute Tests
 
@@ -138,7 +152,7 @@ The workflow connects contract analysis, test implementation, and verification w
 
     Report changed tests, exact commands, outcomes, and any unexecuted checks. Diagnose collection failures and unexpected skips; do not report them as passing tests.
 
-## 5. Commands
+## 6. Commands
 
 Run from the project root in its configured environment. Adapt paths to the actual suite; use an existing Make, tox, nox, uv, or Poetry task when provided. Do not assume a Make target exists.
 
@@ -152,7 +166,7 @@ Run from the project root in its configured environment. Adapt paths to the actu
 | `python -m coverage report -m` | Inspect missing statements and branches. |
 | `python -m unittest discover -s tests -v` | Run an existing unittest suite. |
 
-## 6. Style Guide
+## 7. Style Guide
 
 These conventions keep failures attributable to a specific behavior and make test state explicit.
 
@@ -180,11 +194,11 @@ These conventions keep failures attributable to a specific behavior and make tes
 - Failure Visibility
   > Avoid arbitrary sleeps, assertions on private implementation details, blanket `xfail`, and disabling warnings to conceal failures. Use strict expected failures with a tracked reason when necessary.
 
-## 7. Templates
+## 8. Templates
 
 Adapt the illustrative imports and contracts to the project; these examples expect `app.parser.parse_port(text)` to accept decimal ports 1–65535 and raise `ValueError` otherwise.
 
-### 7.1. Table-Driven Test
+### 8.1. Table-Driven Test
 
 Each parametrized case represents one input and expected result.
 
@@ -212,7 +226,7 @@ def test_parse_port(input_value, want):
     assert got == want
 ```
 
-### 7.2. Error and Boundary Cases
+### 8.2. Error and Boundary Cases
 
 The rejection cases assert the exception type defined by the parser contract.
 
@@ -230,7 +244,7 @@ def test_parse_port_rejects_invalid_input(input_value):
         parse_port(input_value)
 ```
 
-### 7.3. Resource Fixture
+### 8.3. Resource Fixture
 
 Use this standalone pattern when testing code that consumes a database connection. Replace the demonstrated query with the project's operation.
 
@@ -257,7 +271,7 @@ def test_connection_starts_empty(connection):
     assert got == (0,)
 ```
 
-### 7.4. Existing unittest Suite
+### 8.4. Existing unittest Suite
 
 The `subTest` context identifies individual cases without replacing the existing test framework.
 
@@ -276,7 +290,7 @@ class TestParsePort(unittest.TestCase):
                 self.assertEqual(parse_port(input_value), want)
 ```
 
-## 8. References
+## 9. References
 
 - Sentenz [Python Mock Testing](../python-mock-testing/SKILL.md) skill.
 - pytest [Parametrization](https://docs.pytest.org/en/stable/how-to/parametrize.html) documentation.

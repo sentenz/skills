@@ -2,7 +2,7 @@
 name: cpp-unit-testing
 description: Automates unit test creation for C++ projects using GoogleTest (GTest) framework with consistent software testing patterns including In-Got-Want, Table-Driven Testing, and AAA patterns. Use when creating, modifying, or reviewing unit tests, or when the user mentions unit tests, test coverage, or GTest.
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
   activation:
     implicit: true
     priority: 1
@@ -30,24 +30,25 @@ Instructions for AI coding agents on automating unit test creation using consist
 - [1. Benefits](#1-benefits)
 - [2. Principles](#2-principles)
   - [2.1. FIRST](#21-first)
-- [3. Patterns](#3-patterns)
+- [3. Testing Patterns](#3-testing-patterns)
   - [3.1. In-Got-Want](#31-in-got-want)
   - [3.2. Table-Driven Testing](#32-table-driven-testing)
   - [3.3. Data-Driven Testing (DDT)](#33-data-driven-testing-ddt)
   - [3.4. Arrange, Act, Assert (AAA)](#34-arrange-act-assert-aaa)
   - [3.5. Test Fixtures](#35-test-fixtures)
   - [3.6. Test Doubles](#36-test-doubles)
-- [4. Workflow](#4-workflow)
-- [5. Commands](#5-commands)
-- [6. Style Guide](#6-style-guide)
-- [7. Template](#7-template)
-  - [7.1. File Header Template](#71-file-header-template)
-  - [7.2. Table-Driven Test Template](#72-table-driven-test-template)
-  - [7.3. Test Fixture Template](#73-test-fixture-template)
-  - [7.4. Exception Test Template](#74-exception-test-template)
-  - [7.5. Boundary Value Test Template](#75-boundary-value-test-template)
-  - [7.6. Data-Driven Test Template (JSON)](#76-data-driven-test-template-json)
-- [8. References](#8-references)
+- [4. Test Design](#4-test-design)
+- [5. Workflow](#5-workflow)
+- [6. Commands](#6-commands)
+- [7. Style Guide](#7-style-guide)
+- [8. Template](#8-template)
+  - [8.1. File Header Template](#81-file-header-template)
+  - [8.2. Table-Driven Test Template](#82-table-driven-test-template)
+  - [8.3. Test Fixture Template](#83-test-fixture-template)
+  - [8.4. Exception Test Template](#84-exception-test-template)
+  - [8.5. Boundary Value Test Template](#85-boundary-value-test-template)
+  - [8.6. Data-Driven Test Template (JSON)](#86-data-driven-test-template-json)
+- [9. References](#9-references)
 
 ## 1. Benefits
 
@@ -84,7 +85,7 @@ The `FIRST` principles for unit testing focus on creating effective and maintain
 - Timely
   > Unit tests should be written and executed early in the development process to catch issues as soon as possible.
 
-## 3. Patterns
+## 3. Testing Patterns
 
 ### 3.1. In-Got-Want
 
@@ -155,7 +156,20 @@ Test doubles (e.g., mocks, stubs, fakes) are simplified versions of complex obje
 - Fakes
   > Implement simplified versions of real objects with limited functionality.
 
-## 4. Workflow
+## 4. Test Design
+
+Select cases from the public contract before choosing a test-structure pattern. Derive expected results independently of the implementation.
+
+| Technique | Application |
+| --- | --- |
+| Boundary Value Analysis | Exercise limits and adjacent values, empty inputs, and relevant size or numeric thresholds. |
+| Negative Testing | Assert documented rejection of invalid inputs, including the expected error and observable state. |
+| Regression Testing | Preserve a minimal reproducer for each confirmed defect and verify the corrected behavior. |
+| Coverage Analysis | Use uncovered branches to identify missing scenarios; do not treat a percentage as proof of correctness. |
+
+Use table-driven or external data-driven cases to express these choices. FIRST describes quality principles, not input-selection techniques. Add property-based or fuzz tests when a contract supplies a meaningful invariant; do not invent properties merely to increase coverage.
+
+## 5. Workflow
 
 1. Identify
 
@@ -199,7 +213,9 @@ Test doubles (e.g., mocks, stubs, fakes) are simplified versions of complex obje
 
     Structure all tests using the template pattern below.
 
-## 5. Commands
+## 6. Commands
+
+Verify that the listed Make targets exist in the current project. Reuse its configured build and test tasks; do not assume these example targets are available.
 
 | Command                             | Description                                           |
 | ----------------------------------- | ----------------------------------------------------- |
@@ -207,7 +223,7 @@ Test doubles (e.g., mocks, stubs, fakes) are simplified versions of complex obje
 | `make cmake-gcc-test-unit-run`      | Execute tests via ctest                               |
 | `make cmake-gcc-test-unit-coverage` | Execute tests via ctest and generate coverage reports |
 
-## 6. Style Guide
+## 7. Style Guide
 
 - Test Framework
   > Use [GoogleTest (GTest)](https://google.github.io/googletest/) framework via `#include <gtest/gtest.h>`.
@@ -243,13 +259,13 @@ Test doubles (e.g., mocks, stubs, fakes) are simplified versions of complex obje
   > Employ [`SCOPED_TRACE(tc.label)`](https://google.github.io/googletest/reference/testing.html#SCOPED_TRACE) for traceable failures in table-driven tests.
 
 - Assertions
-  > Use `EXPECT_*` macros (not `ASSERT_*`) to allow all test cases to run.
+  > Use `EXPECT_*` for independent checks. Use `ASSERT_*` when a failed precondition would make later operations unsafe, such as dereferencing a null pointer or indexing an undersized container.
 
-## 7. Template
+## 8. Template
 
 Use these templates for new unit tests. Replace placeholders with actual values.
 
-### 7.1. File Header Template
+### 8.1. File Header Template
 
 ```cpp
 #include <gtest/gtest.h>
@@ -262,7 +278,7 @@ Use these templates for new unit tests. Replace placeholders with actual values.
 using namespace <namespace>;
 ```
 
-### 7.2. Table-Driven Test Template
+### 8.2. Table-Driven Test Template
 
 ```cpp
 TEST(<Module>Test, <FunctionName>)
@@ -305,7 +321,7 @@ TEST(<Module>Test, <FunctionName>)
 }
 ```
 
-### 7.3. Test Fixture Template
+### 8.3. Test Fixture Template
 
 ```cpp
 class <Module>Test : public ::testing::Test
@@ -337,7 +353,7 @@ TEST_F(<Module>Test, <FunctionName>)
 }
 ```
 
-### 7.4. Exception Test Template
+### 8.4. Exception Test Template
 
 ```cpp
 TEST(<Module>Test, <FunctionName>ThrowsOnInvalidInput)
@@ -351,7 +367,7 @@ TEST(<Module>Test, <FunctionName>ThrowsOnInvalidInput)
 }
 ```
 
-### 7.5. Boundary Value Test Template
+### 8.5. Boundary Value Test Template
 
 ```cpp
 TEST(<Module>Test, <FunctionName>BoundaryValues)
@@ -397,7 +413,7 @@ TEST(<Module>Test, <FunctionName>BoundaryValues)
 }
 ```
 
-### 7.6. Data-Driven Test Template (JSON)
+### 8.6. Data-Driven Test Template (JSON)
 
 ```cpp
 #include <nlohmann/json.hpp>
@@ -429,7 +445,7 @@ TEST(<Module>Test, <FunctionName>DataDriven)
 }
 ```
 
-## 8. References
+## 9. References
 
 - GoogleTest [Primer](https://google.github.io/googletest/primer.html) guide.
 - GoogleTest [Advanced](https://google.github.io/googletest/advanced.html) guide.
