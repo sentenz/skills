@@ -29,6 +29,7 @@ Input mutation explores the input space; mutation testing changes production cod
 
 - [1. Benefits](#1-benefits)
 - [2. Principles](#2-principles)
+  - [2.1. FIRST](#21-first)
 - [3. Testing Patterns](#3-testing-patterns)
 - [4. Test Design](#4-test-design)
 - [5. Workflow](#5-workflow)
@@ -39,46 +40,109 @@ Input mutation explores the input space; mutation testing changes production cod
 
 ## 1. Benefits
 
-Explore input-dependent behavior beyond hand-written examples and retain discovered failures as regression cases. Use sanitizer instrumentation to expose memory errors and undefined behavior in executed C/C++ paths.
+- Input Exploration
+  > Explore input-dependent behavior beyond hand-written examples.
+
+- Regression Prevention
+  > Retain discovered failures as regression cases.
+
+- Runtime Defect Detection
+  > Use sanitizer instrumentation to expose memory errors and undefined behavior in executed C/C++ paths.
 
 ## 2. Principles
 
-Apply FIRST as quality principles: keep targets fast, isolated, reproducible for a given input, self-validating, and developed alongside the affected code. Bound input size and execution cost. A completed campaign is evidence about explored behavior, not proof of vulnerability absence.
+### 2.1. FIRST
+
+The `FIRST` principles for fuzz testing focus on effective and reproducible tests.
+
+- Fast
+  > Keep targets fast by bounding input size and execution cost.
+
+- Independent
+  > Keep each target isolated from shared state and other tests.
+
+- Repeatable
+  > Make target execution reproducible for a given input.
+
+- Self-Validating
+  > Use explicit assertions to evaluate the target contract.
+
+- Timely
+  > Develop fuzz tests alongside the affected code.
+
+A completed campaign is evidence about explored behavior, not proof of vulnerability absence.
 
 ## 3. Testing Patterns
 
-| Pattern | Application |
-| --- | --- |
-| Arrange-Act-Assert (AAA) | Initialize fresh state, invoke the boundary, and evaluate its result. |
-| In-Got-Want | Distinguish generated inputs, actual results, and independently derived expectations. |
-| Table-Driven Seeds | Supply representative valid, boundary, malformed, and regression cases. |
-| Test Fixtures | Reset state on each invocation; join threads and release resources before returning. |
+- Arrange-Act-Assert (AAA)
+  > Initialize fresh state, invoke the boundary, and evaluate its result.
+
+- In-Got-Want
+  > Distinguish generated inputs, actual results, and independently derived expectations.
+
+- Table-Driven Seeds
+  > Supply representative valid, boundary, malformed, and regression cases.
+
+- Test Fixtures
+  > Reset state on each invocation; join threads and release resources before returning.
 
 ## 4. Test Design
 
 Define the supported input domain and a meaningful oracle before selecting an engine.
 
-| Technique | Application |
-| --- | --- |
-| Property-Based Testing | Assert an invariant required by the contract over generated inputs. |
-| Boundary Value Analysis | Include empty inputs, limits, and values adjacent to thresholds. |
-| Negative Testing | Exercise malformed inputs and check specified rejection behavior. |
-| Round-Trip Testing | Check encode/decode consistency and add independent known-answer cases. |
-| Differential Testing | Compare independent implementations only on shared semantics. |
-| Metamorphic Testing | Check guaranteed relations such as idempotence or permutation invariance. |
+- Property-Based Testing
+  > Assert an invariant required by the contract over generated inputs.
+
+- Boundary Value Analysis
+  > Include empty inputs, limits, and values adjacent to thresholds.
+
+- Negative Testing
+  > Exercise malformed inputs and check specified rejection behavior.
+
+- Round-Trip Testing
+  > Check encode/decode consistency and add independent known-answer cases.
+
+- Differential Testing
+  > Compare independent implementations only on shared semantics.
+
+- Metamorphic Testing
+  > Check guaranteed relations such as idempotence or permutation invariance.
 
 Treat coverage feedback and corpus mutation as input-generation techniques. Specify resource limits separately from validity constraints; do not discard malformed inputs the API is required to handle. Instrumentation detects defects on executed paths and does not replace semantic assertions.
 
 ## 5. Workflow
 
-1. Inspect the existing framework, compiler support, CMake targets, and CI budgets. Verify requirements against the pinned FuzzTest revision.
-2. Choose one external-input boundary. Document valid inputs, rejection behavior, state ownership, and the oracle.
-3. Construct bounded domains and representative seeds. Use a property function returning `void`; avoid harness arithmetic that itself invokes undefined behavior.
-4. Integrate the target using the project's build conventions. With FuzzTest's CMake integration, load FuzzTest before applying `fuzztest_setup_fuzzing_flags()` to the code under test and link the executable with `link_fuzztest(target)`. Do not add a competing test main.
-5. Run the normal test mode first. Build a separate instrumented configuration for coverage-guided fuzzing; instrument the target code and relevant libraries, not only the harness. Check sanitizer compatibility rather than combining every sanitizer in one binary.
-6. Execute a bounded campaign. Verify duration flags against the installed binary's help. Do not silently substitute ordinary property-test execution for a requested coverage-guided run.
-7. Reproduce and minimize each failure. Preserve the reproducing input and add a deterministic regression assertion; distinguish a faulty oracle from a production defect.
-8. Report exact commands, framework/compiler revisions, instrumentation, campaign budget, results, and retained regressions. Report unavailable checks explicitly.
+1. Inspect Project
+
+    Inspect the existing framework, compiler support, CMake targets, and CI budgets. Verify requirements against the pinned FuzzTest revision.
+
+2. Define Input Contract
+
+    Choose one external-input boundary. Document valid inputs, rejection behavior, state ownership, and the oracle.
+
+3. Construct Inputs
+
+    Construct bounded domains and representative seeds. Use a property function returning `void`; avoid harness arithmetic that itself invokes undefined behavior.
+
+4. Register with CMake
+
+    Integrate the target using the project's build conventions. With FuzzTest's CMake integration, load FuzzTest before applying `fuzztest_setup_fuzzing_flags()` to the code under test and link the executable with `link_fuzztest(target)`. Do not add a competing test main.
+
+5. Configure Instrumentation
+
+    Run the normal test mode first. Build a separate instrumented configuration for coverage-guided fuzzing; instrument the target code and relevant libraries, not only the harness. Check sanitizer compatibility rather than combining every sanitizer in one binary.
+
+6. Execute Campaign
+
+    Execute a bounded campaign. Verify duration flags against the installed binary's help. Do not silently substitute ordinary property-test execution for a requested coverage-guided run.
+
+7. Retain Regressions
+
+    Reproduce and minimize each failure. Preserve the reproducing input and add a deterministic regression assertion; distinguish a faulty oracle from a production defect.
+
+8. Report Results
+
+    Report exact commands, framework/compiler revisions, instrumentation, campaign budget, results, and retained regressions. Report unavailable checks explicitly.
 
 ## 6. Commands
 
@@ -95,11 +159,20 @@ Select the registered property with `--fuzz=Suite.Property` and the bounded-dura
 
 ## 7. Style Guide
 
-- Restrict the expected-exception try block to the parser call; evaluate assertions afterward. Do not catch every exception or suppress sanitizer failures.
-- Avoid network access, persistent global state, uncontrolled clocks, and unbounded allocations in the target.
-- Keep valid and malformed-input domains explicit. Prefer direct construction to excessive filtering.
-- Use host-mode execution for supported C/C++ targets; host success does not validate hardware-specific behavior.
-- Keep seed data small and free of credentials or sensitive production data.
+- Exception Handling
+  > Restrict the expected-exception try block to the parser call; evaluate assertions afterward. Do not catch every exception or suppress sanitizer failures.
+
+- Target Isolation
+  > Avoid network access, persistent global state, uncontrolled clocks, and unbounded allocations in the target.
+
+- Input Domains
+  > Keep valid and malformed-input domains explicit. Prefer direct construction to excessive filtering.
+
+- Target Platform
+  > Use host-mode execution for supported C/C++ targets; host success does not validate hardware-specific behavior.
+
+- Corpus Retention
+  > Keep seed data small and free of credentials or sensitive production data.
 
 ## 8. Template
 

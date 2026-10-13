@@ -28,6 +28,7 @@ Create C++ performance benchmarks with Google Benchmark. Inspect existing build 
 
 - [1. Benefits](#1-benefits)
 - [2. Principles](#2-principles)
+  - [2.1. FIRST](#21-first)
 - [3. Testing Patterns](#3-testing-patterns)
 - [4. Test Design](#4-test-design)
 - [5. Workflow](#5-workflow)
@@ -38,44 +39,106 @@ Create C++ performance benchmarks with Google Benchmark. Inspect existing build 
 
 ## 1. Benefits
 
-Measure representative operation costs, compare implementation changes, and detect performance regressions. Establish correctness with unit tests before interpreting timing results.
+- Performance Measurement
+  > Measure representative operation costs.
+
+- Comparative Analysis
+  > Compare implementation changes.
+
+- Regression Detection
+  > Detect performance regressions.
+
+- Correctness Baseline
+  > Establish correctness with unit tests before interpreting timing results.
 
 ## 2. Principles
 
-Apply FIRST as measurement-quality principles: keep setup bounded, workloads isolated, conditions repeatable, results checked independently, and baselines established before optimization. Do not turn an unstable one-shot timing measurement into a correctness assertion.
+### 2.1. FIRST
+
+The `FIRST` principles for benchmark testing focus on reliable and meaningful measurements.
+
+- Fast
+  > Keep setup bounded to support practical measurement runs.
+
+- Independent
+  > Keep workloads isolated from shared state and other measurements.
+
+- Repeatable
+  > Keep measurement conditions repeatable across runs.
+
+- Self-Validating
+  > Check results independently before interpreting measurements.
+
+- Timely
+  > Establish baselines before optimization.
+
+Do not turn an unstable one-shot timing measurement into a correctness assertion.
 
 ## 3. Testing Patterns
 
-| Pattern | Application |
-| --- | --- |
-| Table-Driven Workloads | Register named sizes, shapes, distributions, and relevant cache states. |
-| Benchmark Fixtures | Manage shared setup and cleanup explicitly; restore equivalent state for each operation. |
-| Grouped Benchmarks | Keep comparable variants discoverable and retain separate results. |
+- Table-Driven Workloads
+  > Register named sizes, shapes, distributions, and relevant cache states.
+
+- Benchmark Fixtures
+  > Manage shared setup and cleanup explicitly; restore equivalent state for each operation.
+
+- Grouped Benchmarks
+  > Keep comparable variants discoverable and retain separate results.
 
 Use Arrange-Act-Assert in companion correctness tests. In the benchmark, distinguish setup, measured work, and result consumption; do not automatically time all three.
 
 ## 4. Test Design
 
-| Technique | Application |
-| --- | --- |
-| Microbenchmarking | Measure one focused operation with an explicit unit of work. |
-| Comparative Benchmarking | Compare baseline and candidate with identical workloads and settings. |
-| Boundary Workloads | Include representative small, typical, and large inputs with explicit resource limits. |
-| Repeated Measurements | Inspect variation across repetitions before interpreting a change. |
-| Performance Regression Analysis | Apply established project thresholds to comparable measurements. |
+- Microbenchmarking
+  > Measure one focused operation with an explicit unit of work.
+
+- Comparative Benchmarking
+  > Compare baseline and candidate with identical workloads and settings.
+
+- Boundary Workloads
+  > Include representative small, typical, and large inputs with explicit resource limits.
+
+- Repeated Measurements
+  > Inspect variation across repetitions before interpreting a change.
+
+- Performance Regression Analysis
+  > Apply established project thresholds to comparable measurements.
 
 Measure CPU cost, elapsed latency, and memory behavior according to the question. Run profiling separately when instrumentation would distort timing. Decide whether allocation, copying, setup, and cleanup belong to the measured operation before writing the harness.
 
 ## 5. Workflow
 
-1. Inspect the project toolchain, Google Benchmark revision, build tasks, and available benchmark runners.
-2. Define the operation, input distribution, size range, cache state, metric, and measured boundary.
-3. Verify correctness independently. Avoid benchmarking an implementation whose output is not checked elsewhere.
-4. Add a target using the existing dependency setup. For a standalone CMake target, link `benchmark::benchmark_main`; if supplying a custom main, link `benchmark::benchmark` instead. Do not provide both mains.
-5. Build with representative optimization settings. Keep sanitizers, coverage collection, debugging, and profiling out of ordinary comparison runs unless their overhead is the explicit subject.
-6. Run a short harness check, then collect repeated baseline and candidate measurements under comparable conditions. Retain raw results and environment details.
-7. Examine dispersion, background load, and anomalies. Investigate unstable results before claiming a speedup or applying a performance gate.
-8. Report commands, commit IDs, compiler flags, workload, machine details, measurement units, variation, and limitations.
+1. Inspect Infrastructure
+
+    Inspect the project toolchain, Google Benchmark revision, build tasks, and available benchmark runners.
+
+2. Define Workload
+
+    Define the operation, input distribution, size range, cache state, metric, and measured boundary.
+
+3. Validate Correctness
+
+    Verify correctness independently. Avoid benchmarking an implementation whose output is not checked elsewhere.
+
+4. Register with CMake
+
+    Add a target using the existing dependency setup. For a standalone CMake target, link `benchmark::benchmark_main`; if supplying a custom main, link `benchmark::benchmark` instead. Do not provide both mains.
+
+5. Configure Build
+
+    Build with representative optimization settings. Keep sanitizers, coverage collection, debugging, and profiling out of ordinary comparison runs unless their overhead is the explicit subject.
+
+6. Collect Measurements
+
+    Run a short harness check, then collect repeated baseline and candidate measurements under comparable conditions. Retain raw results and environment details.
+
+7. Evaluate Results
+
+    Examine dispersion, background load, and anomalies. Investigate unstable results before claiming a speedup or applying a performance gate.
+
+8. Report Results
+
+    Report commands, commit IDs, compiler flags, workload, machine details, measurement units, variation, and limitations.
 
 ## 6. Commands
 
@@ -93,11 +156,20 @@ Run the same workload on the baseline and candidate builds, with distinct output
 
 ## 7. Style Guide
 
-- Exclude setup only when it is outside the stated operation; use `PauseTiming()` and `ResumeTiming()` around per-iteration resets where appropriate.
-- Recreate mutated inputs before every measured invocation; repeatedly sorting an already sorted vector changes the workload.
-- Make results observable with `DoNotOptimize` and use `ClobberMemory` where applicable. These helpers do not guarantee that the intended operation cannot be optimized; inspect suspicious measurements.
-- Account for harness overhead on very small operations. Keep input preparation deterministic.
-- Do not infer embedded-target timing from host measurements; state the measured platform.
+- Timing Boundaries
+  > Exclude setup only when it is outside the stated operation; use `PauseTiming()` and `ResumeTiming()` around per-iteration resets where appropriate.
+
+- Mutable Inputs
+  > Recreate mutated inputs before every measured invocation; repeatedly sorting an already sorted vector changes the workload.
+
+- Result Observability
+  > Make results observable with `DoNotOptimize` and use `ClobberMemory` where applicable. These helpers do not guarantee that the intended operation cannot be optimized; inspect suspicious measurements.
+
+- Harness Overhead
+  > Account for harness overhead on very small operations. Keep input preparation deterministic.
+
+- Target Platform
+  > Do not infer embedded-target timing from host measurements; state the measured platform.
 
 ## 8. Template
 
