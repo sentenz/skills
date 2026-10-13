@@ -76,35 +76,27 @@ Do not turn an unstable one-shot timing measurement into a correctness assertion
 
 ## 3. Testing Patterns
 
-- Table-Driven Workloads
-  > Register named sizes, shapes, distributions, and relevant cache states.
+| Pattern                | Application                                                                              |
+| ---------------------- | ---------------------------------------------------------------------------------------- |
+| Table-Driven Workloads | Register named sizes, shapes, distributions, and relevant cache states.                  |
+| Benchmark Fixtures     | Manage shared setup and cleanup explicitly; restore equivalent state for each operation. |
+| Grouped Benchmarks     | Keep comparable variants discoverable and retain separate results.                       |
 
-- Benchmark Fixtures
-  > Manage shared setup and cleanup explicitly; restore equivalent state for each operation.
-
-- Grouped Benchmarks
-  > Keep comparable variants discoverable and retain separate results.
-
-Use Arrange-Act-Assert in companion correctness tests. In the benchmark, distinguish setup, measured work, and result consumption; do not automatically time all three.
+> [!NOTE]
+> Use Arrange-Act-Assert in companion correctness tests. In the benchmark, distinguish setup, measured work, and result consumption; do not automatically time all three.
 
 ## 4. Test Design
 
-- Microbenchmarking
-  > Measure one focused operation with an explicit unit of work.
+| Technique                       | Application                                                                            |
+| ------------------------------- | -------------------------------------------------------------------------------------- |
+| Microbenchmarking               | Measure one focused operation with an explicit unit of work.                           |
+| Comparative Benchmarking        | Compare baseline and candidate with identical workloads and settings.                  |
+| Boundary Workloads              | Include representative small, typical, and large inputs with explicit resource limits. |
+| Repeated Measurements           | Inspect variation across repetitions before interpreting a change.                     |
+| Performance Regression Analysis | Apply established project thresholds to comparable measurements.                       |
 
-- Comparative Benchmarking
-  > Compare baseline and candidate with identical workloads and settings.
-
-- Boundary Workloads
-  > Include representative small, typical, and large inputs with explicit resource limits.
-
-- Repeated Measurements
-  > Inspect variation across repetitions before interpreting a change.
-
-- Performance Regression Analysis
-  > Apply established project thresholds to comparable measurements.
-
-Measure CPU cost, elapsed latency, and memory behavior according to the question. Run profiling separately when instrumentation would distort timing. Decide whether allocation, copying, setup, and cleanup belong to the measured operation before writing the harness.
+> [!NOTE]
+> Measure CPU cost, elapsed latency, and memory behavior according to the question. Run profiling separately when instrumentation would distort timing. Decide whether allocation, copying, setup, and cleanup belong to the measured operation before writing the harness.
 
 ## 5. Workflow
 

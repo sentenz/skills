@@ -89,12 +89,12 @@ Input mutation in fuzzing is distinct from mutation testing, which changes produ
 
 Use patterns to organize the target; use Test Design to choose input domains and oracles.
 
-| Pattern | Application |
-| --- | --- |
-| Arrange-Act-Assert (AAA) | Construct fresh state, exercise one boundary, and check its contract. |
-| In-Got-Want | Keep generated input, actual output, and independently derived expectations distinct. |
-| Table-Driven Seeds | Name representative valid, boundary, malformed, and regression inputs. |
-| Test Fixtures | Reset mutable state for every invocation; release resources even on failure. |
+| Pattern                  | Application                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------------- |
+| Arrange-Act-Assert (AAA) | Construct fresh state, exercise one boundary, and check its contract.                 |
+| In-Got-Want              | Keep generated input, actual output, and independently derived expectations distinct. |
+| Table-Driven Seeds       | Name representative valid, boundary, malformed, and regression inputs.                |
+| Test Fixtures            | Reset mutable state for every invocation; release resources even on failure.          |
 
 Keep each target deterministic for a given input while allowing the engine to explore new inputs. FIRST describes test quality; coverage feedback and corpus mutation describe input generation.
 
@@ -124,12 +124,12 @@ Crash Detection is the process of identifying inputs that cause panics, runtime 
 
 Select an oracle from the documented contract, independently of the input-generation engine.
 
-| Technique | Application |
-| --- | --- |
-| Round-Trip Testing | Check decode-after-encode on the supported domain and add independent known-answer cases. |
-| Differential Testing | Compare independent implementations only where their specified semantics agree. |
-| Metamorphic Testing | Check guaranteed relations such as idempotence or permutation invariance. |
-| Negative Testing | Verify the specified rejection of malformed inputs; do not discard all invalid inputs. |
+| Technique            | Application                                                                               |
+| -------------------- | ----------------------------------------------------------------------------------------- |
+| Round-Trip Testing   | Check decode-after-encode on the supported domain and add independent known-answer cases. |
+| Differential Testing | Compare independent implementations only where their specified semantics agree.           |
+| Metamorphic Testing  | Check guaranteed relations such as idempotence or permutation invariance.                 |
+| Negative Testing     | Verify the specified rejection of malformed inputs; do not discard all invalid inputs.    |
 
 Minimize confirmed failures and retain deterministic regression cases. Matching encoder/decoder defects can cancel out, so a round trip alone is insufficient. A finite fuzz campaign does not prove safety for every input.
 
@@ -164,10 +164,18 @@ Minimize confirmed failures and retain deterministic regression cases. Matching 
 
 Use an existing project task when available. Otherwise, adapt `go test ./path/to/pkg -run='^FuzzName$'` for seed replay and `go test ./path/to/pkg -run='^$' -fuzz='^FuzzName$' -fuzztime=30s` for a bounded campaign. Select one fuzz target per campaign; retain minimized failures under `testdata/fuzz/`.
 
-| Command                                | Description                                  |
-| -------------------------------------- | -------------------------------------------- |
-| `make go-test-fuzz`                    | Execute fuzz tests for a specified duration  |
-| `ls -la testdata/fuzz/<FuzzTestName>/` | Inspect the seed corpus and generated inputs |
+1. Make Tasks
+
+    | Task                                   | Description                                  |
+    | -------------------------------------- | -------------------------------------------- |
+    | `make go-test-fuzz`                    | Execute fuzz tests for a specified duration  |
+    | `ls -la testdata/fuzz/<FuzzTestName>/` | Inspect the seed corpus and generated inputs |
+
+2. Command Instructions
+
+    > TODO: Provide detailed command instructions for executing the Make tasks listed above.
+
+    | Instructions                                                    | Description                                        |
 
 ## 7. Style Guide
 

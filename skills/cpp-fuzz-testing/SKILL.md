@@ -74,41 +74,28 @@ A completed campaign is evidence about explored behavior, not proof of vulnerabi
 
 ## 3. Testing Patterns
 
-- Arrange-Act-Assert (AAA)
-  > Initialize fresh state, invoke the boundary, and evaluate its result.
-
-- In-Got-Want
-  > Distinguish generated inputs, actual results, and independently derived expectations.
-
-- Table-Driven Seeds
-  > Supply representative valid, boundary, malformed, and regression cases.
-
-- Test Fixtures
-  > Reset state on each invocation; join threads and release resources before returning.
+| Pattern                  | Application                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------------- |
+| Arrange-Act-Assert (AAA) | Initialize fresh state, invoke the boundary, and evaluate its result.                 |
+| In-Got-Want              | Distinguish generated inputs, actual results, and independently derived expectations. |
+| Table-Driven Seeds       | Supply representative valid, boundary, malformed, and regression cases.               |
+| Test Fixtures            | Reset state on each invocation; join threads and release resources before returning.  |
 
 ## 4. Test Design
 
 Define the supported input domain and a meaningful oracle before selecting an engine.
 
-- Property-Based Testing
-  > Assert an invariant required by the contract over generated inputs.
+| Technique               | Application                                                               |
+| ----------------------- | ------------------------------------------------------------------------- |
+| Property-Based Testing  | Assert an invariant required by the contract over generated inputs.       |
+| Boundary Value Analysis | Include empty inputs, limits, and values adjacent to thresholds.          |
+| Negative Testing        | Exercise malformed inputs and check specified rejection behavior.         |
+| Round-Trip Testing      | Check encode/decode consistency and add independent known-answer cases.   |
+| Differential Testing    | Compare independent implementations only on shared semantics.             |
+| Metamorphic Testing     | Check guaranteed relations such as idempotence or permutation invariance. |
 
-- Boundary Value Analysis
-  > Include empty inputs, limits, and values adjacent to thresholds.
-
-- Negative Testing
-  > Exercise malformed inputs and check specified rejection behavior.
-
-- Round-Trip Testing
-  > Check encode/decode consistency and add independent known-answer cases.
-
-- Differential Testing
-  > Compare independent implementations only on shared semantics.
-
-- Metamorphic Testing
-  > Check guaranteed relations such as idempotence or permutation invariance.
-
-Treat coverage feedback and corpus mutation as input-generation techniques. Specify resource limits separately from validity constraints; do not discard malformed inputs the API is required to handle. Instrumentation detects defects on executed paths and does not replace semantic assertions.
+> [!NOTE]
+> Treat coverage feedback and corpus mutation as input-generation techniques. Specify resource limits separately from validity constraints; do not discard malformed inputs the API is required to handle. Instrumentation detects defects on executed paths and does not replace semantic assertions.
 
 ## 5. Workflow
 

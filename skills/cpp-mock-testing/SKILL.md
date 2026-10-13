@@ -94,12 +94,12 @@ The `FIRST` principles for mock testing focus on creating effective and maintain
 
 Choose scenarios from the dependency contract, then select the least complex test double that can reproduce them.
 
-| Technique | Application |
-| --- | --- |
-| Failure Injection | Configure specific exceptions, failures, or bounded retry sequences and verify recovery or propagation. |
-| Negative Testing | Exercise rejected requests and verify that prohibited side effects do not occur. |
-| Boundary Value Analysis | Cover relevant argument limits and retry thresholds, including exhaustion. |
-| Interaction Verification | Check arguments, counts, and ordering only when required by the observable contract. |
+| Technique                | Application                                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------------------------------- |
+| Failure Injection        | Configure specific exceptions, failures, or bounded retry sequences and verify recovery or propagation. |
+| Negative Testing         | Exercise rejected requests and verify that prohibited side effects do not occur.                        |
+| Boundary Value Analysis  | Cover relevant argument limits and retry thresholds, including exhaustion.                              |
+| Interaction Verification | Check arguments, counts, and ordering only when required by the observable contract.                    |
 
 Assert returned values or state as well as contractual interactions. Keep real-boundary integration tests separate: a passing mock test does not establish compatibility with a live dependency. FIRST governs isolation and reproducibility; it is not an additional testing pattern.
 
@@ -153,11 +153,19 @@ Assert returned values or state as well as contractual interactions. Keep real-b
 
 Verify that the listed Make targets exist in the current project. Reuse its configured build and test tasks; do not assume these example targets are available.
 
-| Command                             | Description                                                                         |
-| ----------------------------------- | ----------------------------------------------------------------------------------- |
-| `make cmake-gcc-test-unit-build`    | CMake preset configuration with GMock support and Compile with Ninja                |
-| `make cmake-gcc-test-unit-run`      | Execute tests via ctest (mock tests are part of unit tests)                         |
-| `make cmake-gcc-test-unit-coverage` | Execute tests via ctest  and generate coverage reports including mock test coverage |
+1. Make Tasks
+
+    | Tasks                               | Description                                                                         |
+    | ----------------------------------- | ----------------------------------------------------------------------------------- |
+    | `make cmake-gcc-test-unit-build`    | CMake preset configuration with GMock support and Compile with Ninja                |
+    | `make cmake-gcc-test-unit-run`      | Execute tests via ctest (mock tests are part of unit tests)                         |
+    | `make cmake-gcc-test-unit-coverage` | Execute tests via ctest  and generate coverage reports including mock test coverage |
+
+2. Command Instructions
+
+    > TODO: Provide detailed command instructions for executing the Make tasks listed above.
+
+    | Instructions                                                    | Description                                        |
 
 ## 7. Style Guide
 

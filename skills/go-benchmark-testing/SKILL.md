@@ -87,11 +87,11 @@ The `FIRST` principles for benchmark testing focus on creating reliable and mean
 
 Use patterns to organize repeated measurements; use Test Design to define the workload, measurement boundary, and comparison.
 
-| Pattern | Application |
-| --- | --- |
-| Table-Driven Workloads | Reuse benchmark logic across named input sizes, shapes, and distributions. |
-| Benchmark Fixtures | Own setup and cleanup explicitly; restore equivalent state for each measured operation. |
-| Grouped Benchmarks | Keep related workload variants discoverable without mixing their results. |
+| Pattern                | Application                                                                             |
+| ---------------------- | --------------------------------------------------------------------------------------- |
+| Table-Driven Workloads | Reuse benchmark logic across named input sizes, shapes, and distributions.              |
+| Benchmark Fixtures     | Own setup and cleanup explicitly; restore equivalent state for each measured operation. |
+| Grouped Benchmarks     | Keep related workload variants discoverable without mixing their results.               |
 
 FIRST describes isolation and repeatability. Microbenchmarks, comparative measurements, and profiling answer performance questions rather than define assertion structure.
 
@@ -144,14 +144,21 @@ Statistical Benchmarking uses multiple iterations to calculate statistical measu
 
 Verify that the listed Make targets exist in the current project. Reuse its configured build and test tasks; do not assume these example targets are available.
 
-| Command                                                         | Description                                        |
-| --------------------------------------------------------------- | -------------------------------------------------- |
-| `make go-test-bench`                                            | Execute all benchmarks with memory statistics      |
-| `go test -bench=BenchmarkPercent -benchmem ./pkg/percent`       | Execute a specific benchmark function              |
-| `go test -bench=. -benchmem -cpuprofile=cpu.prof ./pkg/percent` | Generate CPU profile for performance analysis      |
-| `go test -bench=. -benchmem -memprofile=mem.prof ./pkg/percent` | Generate memory profile for allocation analysis    |
-| `go test -bench=. -benchtime=10s ./pkg/percent`                 | Run benchmarks for a specific duration             |
-| `benchstat old.txt new.txt`                                     | Compare benchmark results before and after changes |
+1. Make Tasks
+
+    | Tasks                | Description                                   |
+    | -------------------- | --------------------------------------------- |
+    | `make go-test-bench` | Execute all benchmarks with memory statistics |
+
+2. Command Instructions
+
+    | Instructions                                                    | Description                                        |
+    | --------------------------------------------------------------- | -------------------------------------------------- |
+    | `go test -bench=BenchmarkPercent -benchmem ./pkg/percent`       | Execute a specific benchmark function              |
+    | `go test -bench=. -benchmem -cpuprofile=cpu.prof ./pkg/percent` | Generate CPU profile for performance analysis      |
+    | `go test -bench=. -benchmem -memprofile=mem.prof ./pkg/percent` | Generate memory profile for allocation analysis    |
+    | `go test -bench=. -benchtime=10s ./pkg/percent`                 | Run benchmarks for a specific duration             |
+    | `benchstat old.txt new.txt`                                     | Compare benchmark results before and after changes |
 
 ## 7. Style Guide
 

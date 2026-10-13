@@ -146,12 +146,12 @@ Test fixtures provide a consistent and reusable setup and teardown mechanism for
 
 Select cases from the public contract before choosing a test-structure pattern. Derive expected results independently of the implementation.
 
-| Technique | Application |
-| --- | --- |
-| Boundary Value Analysis | Exercise limits and adjacent values, empty inputs, and relevant size or numeric thresholds. |
-| Negative Testing | Assert documented rejection of invalid inputs, including the expected error and observable state. |
-| Regression Testing | Preserve a minimal reproducer for each confirmed defect and verify the corrected behavior. |
-| Coverage Analysis | Use uncovered branches to identify missing scenarios; do not treat a percentage as proof of correctness. |
+| Technique               | Application                                                                                              |
+| ----------------------- | -------------------------------------------------------------------------------------------------------- |
+| Boundary Value Analysis | Exercise limits and adjacent values, empty inputs, and relevant size or numeric thresholds.              |
+| Negative Testing        | Assert documented rejection of invalid inputs, including the expected error and observable state.        |
+| Regression Testing      | Preserve a minimal reproducer for each confirmed defect and verify the corrected behavior.               |
+| Coverage Analysis       | Use uncovered branches to identify missing scenarios; do not treat a percentage as proof of correctness. |
 
 Use table-driven or external data-driven cases to express these choices. FIRST describes quality principles, not input-selection techniques. Add property-based or fuzz tests when a contract supplies a meaningful invariant; do not invent properties merely to increase coverage.
 
@@ -183,10 +183,18 @@ Use table-driven or external data-driven cases to express these choices. FIRST d
 
 Verify that the listed Make targets exist in the current project. Reuse its configured build and test tasks; do not assume these example targets are available.
 
-| Command                 | Description                                        |
-| ----------------------- | -------------------------------------------------- |
-| `make go-test-unit`     | Execute tests with race detection and JUnit report |
-| `make go-test-coverage` | Generate coverage reports (HTML and XML)           |
+1. Make Tasks
+
+    | Tasks                   | Description                                        |
+    | ----------------------- | -------------------------------------------------- |
+    | `make go-test-unit`     | Execute tests with race detection and JUnit report |
+    | `make go-test-coverage` | Generate coverage reports (HTML and XML)           |
+
+2. Command Instructions
+
+    > TODO: Provide detailed command instructions for executing the Make tasks listed above.
+
+    | Instructions                                                    | Description                                        |
 
 ## 7. Style Guide
 
