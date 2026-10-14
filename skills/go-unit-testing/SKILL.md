@@ -185,16 +185,22 @@ Verify that the listed Make targets exist in the current project. Reuse its conf
 
 1. Make Tasks
 
-    | Tasks                   | Description                                        |
-    | ----------------------- | -------------------------------------------------- |
-    | `make go-test-unit`     | Execute tests with race detection and JUnit report |
-    | `make go-test-coverage` | Generate coverage reports (HTML and XML)           |
+    | Tasks                   | Description                                          |
+    | ----------------------- | ---------------------------------------------------- |
+    | `make go-test-unit`     | Execute tests with race detection and a JUnit report |
+    | `make go-test-coverage` | Generate coverage reports (HTML and XML)             |
 
 2. Command Instructions
 
-    > TODO: Provide detailed command instructions for executing the Make tasks listed above.
+    Run from the module root and adapt package paths and test names. Use the project's supported race-detector platform and configured reporting tools. JUnit and XML examples require [gotestsum](https://github.com/gotestyourself/gotestsum) and [gocover-cobertura](https://github.com/boumenot/gocover-cobertura), respectively. Generate coverage reports only after successful test execution; preserve test failures when integrating commands into Make tasks.
 
-    | Instructions                                                    | Description                                        |
+    | Instructions                                                       | Description                                                                    |
+    | ------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+    | `go test -run='^TestName$' -v ./path/to/pkg`                       | Execute a specific test with verbose output                                    |
+    | `gotestsum --junitfile junit.xml -- -race -count=1 ./...`          | Execute tests with race detection and generate a JUnit XML report              |
+    | `go test -race -coverprofile=coverage.out -covermode=atomic ./...` | Collect concurrency-safe coverage data while running tests with race detection |
+    | `go tool cover -html=coverage.out -o coverage.html`                | Generate an HTML coverage report                                               |
+    | `gocover-cobertura < coverage.out > coverage.xml`                  | Convert the Go coverage profile to Cobertura XML                               |
 
 ## 7. Style Guide
 

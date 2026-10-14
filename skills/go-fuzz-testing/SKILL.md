@@ -162,20 +162,24 @@ Minimize confirmed failures and retain deterministic regression cases. Matching 
 
 ## 6. Commands
 
-Use an existing project task when available. Otherwise, adapt `go test ./path/to/pkg -run='^FuzzName$'` for seed replay and `go test ./path/to/pkg -run='^$' -fuzz='^FuzzName$' -fuzztime=30s` for a bounded campaign. Select one fuzz target per campaign; retain minimized failures under `testdata/fuzz/`.
+Verify that the listed Make target exists in the current project and inspect its duration and target configuration. Use an existing project task when available; otherwise, adapt the commands below.
 
 1. Make Tasks
 
-    | Task                                   | Description                                  |
-    | -------------------------------------- | -------------------------------------------- |
-    | `make go-test-fuzz`                    | Execute fuzz tests for a specified duration  |
-    | `ls -la testdata/fuzz/<FuzzTestName>/` | Inspect the seed corpus and generated inputs |
+    | Tasks               | Description                                                        |
+    | ------------------- | ------------------------------------------------------------------ |
+    | `make go-test-fuzz` | Execute fuzz tests for the duration configured by the project task |
 
 2. Command Instructions
 
-    > TODO: Provide detailed command instructions for executing the Make tasks listed above.
+    Run from the module root. Replace `./path/to/pkg`, `FuzzName`, and `<hash>` with the package, fuzz function, and saved failure identifier. Select one fuzz target in one package per campaign. Retain minimized failures under the package's `testdata/fuzz/FuzzName/` directory; exploratory inputs may remain in the Go build cache.
 
-    | Instructions                                                    | Description                                        |
+    | Instructions                                                       | Description                                                                      |
+    | ------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+    | `go test ./path/to/pkg -run='^FuzzName$'`                          | Replay the seed corpus and saved regressions without starting a fuzzing campaign |
+    | `go test ./path/to/pkg -run='^$' -fuzz='^FuzzName$' -fuzztime=30s` | Run a bounded 30-second fuzzing campaign for one target                          |
+    | `go test ./path/to/pkg -run='FuzzName/<hash>'`                     | Reproduce a specific saved failing input                                         |
+    | `ls -la path/to/pkg/testdata/fuzz/FuzzName/`                       | Inspect retained corpus files when the directory exists                          |
 
 ## 7. Style Guide
 

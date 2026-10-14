@@ -155,17 +155,26 @@ Verify that the listed Make targets exist in the current project. Reuse its conf
 
 1. Make Tasks
 
-    | Tasks                               | Description                                                                         |
-    | ----------------------------------- | ----------------------------------------------------------------------------------- |
-    | `make cmake-gcc-test-unit-build`    | CMake preset configuration with GMock support and Compile with Ninja                |
-    | `make cmake-gcc-test-unit-run`      | Execute tests via ctest (mock tests are part of unit tests)                         |
-    | `make cmake-gcc-test-unit-coverage` | Execute tests via ctest  and generate coverage reports including mock test coverage |
+    | Tasks                               | Description                                                                        |
+    | ----------------------------------- | ---------------------------------------------------------------------------------- |
+    | `make cmake-gcc-test-unit-build`    | Configure CMake presets with Google Mock support and compile with Ninja            |
+    | `make cmake-gcc-test-unit-run`      | Execute tests via CTest (mock tests are part of unit tests)                        |
+    | `make cmake-gcc-test-unit-coverage` | Execute tests via CTest and generate coverage reports including mock test coverage |
 
 2. Command Instructions
 
-    > TODO: Provide detailed command instructions for executing the Make tasks listed above.
+    Run from the project root. Replace angle-bracket placeholders with values from the project's Makefile and CMake presets before execution. These examples illustrate the underlying operations; retain project-specific flags and targets. Coverage requires a clean build with GCC coverage instrumentation, a matching gcov tool, and successful test execution before reporting. Use the project's configured coverage tool and filters; the report examples assume [gcovr](https://gcovr.com/en/stable/) is installed.
 
-    | Instructions                                                    | Description                                        |
+    | Instructions                                                                      | Description                                                                       |
+    | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+    | `cmake --list-presets`                                                            | List available configure presets and select the project's unit-test configuration |
+    | `cmake --preset <unit-configure-preset>`                                          | Configure the existing GCC/Ninja unit-test build with Google Mock support         |
+    | `cmake --build --list-presets`                                                    | List build presets and select one using the configured unit-test directory        |
+    | `cmake --build --preset <unit-build-preset>`                                      | Compile the configured unit-test targets                                          |
+    | `ctest --test-dir <unit-build-dir> --output-on-failure`                           | Execute registered unit tests, including mock tests, and display failure output   |
+    | `ctest --test-dir <unit-build-dir> -R '<test-regex>' --output-on-failure`         | Execute CTest entries matching a test-name regular expression                     |
+    | `gcovr --root . --object-directory <unit-build-dir> --html-details coverage.html` | Generate a detailed HTML report from instrumented test execution                  |
+    | `gcovr --root . --object-directory <unit-build-dir> --xml coverage.xml`           | Generate a Cobertura XML report from the same coverage data                       |
 
 ## 7. Style Guide
 
