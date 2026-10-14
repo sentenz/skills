@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.18.0](https://github.com/sentenz/skills/compare/v1.17.0...v1.18.0) (2026-10-14)
+
+### Features
+
+* **skills:** separate testing patterns from test design ([#134](https://github.com/sentenz/skills/issues/134)) ([dc7ffad](https://github.com/sentenz/skills/commit/dc7ffad9b86bff51806c07fed5d2d9d75d8f3799))
+
 ## [1.17.0](https://github.com/sentenz/skills/compare/v1.16.0...v1.17.0) (2026-10-07)
 
 ### Features
