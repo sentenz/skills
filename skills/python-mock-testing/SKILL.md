@@ -2,7 +2,7 @@
 name: python-mock-testing
 description: Create and review Python tests with unittest.mock, autospec, AsyncMock, pytest monkeypatch, and test doubles. Use for mocked dependencies, patch targets, stubs, fakes, interaction assertions, failure injection, async collaborators, or isolating network, filesystem, clock, and environment boundaries.
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   activation:
     implicit: true
     priority: 1
@@ -33,17 +33,18 @@ This skill guides dependency isolation and contract verification. Use pytest-moc
 - [1. Benefits](#1-benefits)
 - [2. Principles](#2-principles)
   - [2.1. FIRST](#21-first)
-- [3. Patterns](#3-patterns)
+- [3. Testing Patterns](#3-testing-patterns)
   - [3.1. Test Double Categories](#31-test-double-categories)
   - [3.2. Configuration and Verification](#32-configuration-and-verification)
-- [4. Workflow](#4-workflow)
-- [5. Commands](#5-commands)
-- [6. Style Guide](#6-style-guide)
-- [7. Templates](#7-templates)
-  - [7.1. Lookup-Site Patch and Failure Injection](#71-lookup-site-patch-and-failure-injection)
-  - [7.2. Bounded Retry](#72-bounded-retry)
-  - [7.3. Async Dependency](#73-async-dependency)
-- [8. References](#8-references)
+- [4. Test Design](#4-test-design)
+- [5. Workflow](#5-workflow)
+- [6. Commands](#6-commands)
+- [7. Style Guide](#7-style-guide)
+- [8. Templates](#8-templates)
+  - [8.1. Lookup-Site Patch and Failure Injection](#81-lookup-site-patch-and-failure-injection)
+  - [8.2. Bounded Retry](#82-bounded-retry)
+  - [8.3. Async Dependency](#83-async-dependency)
+- [9. References](#9-references)
 
 ## 1. Benefits
 
@@ -81,7 +82,7 @@ FIRST groups five test-design properties: Fast, Independent, Repeatable, Self-Va
 - Timely
   > Failure-path coverage accompanies the introduction of each dependency.
 
-## 3. Patterns
+## 3. Testing Patterns
 
 Test doubles are classified by their role in a test. Configuration and verification techniques constrain how those doubles represent a collaborator.
 
@@ -97,15 +98,27 @@ Stubs supply responses, mocks verify interactions, and fakes implement a bounded
 
 ### 3.2. Configuration and Verification
 
-The following techniques preserve signatures, inject failures, and verify asynchronous execution.
+The following techniques preserve signatures and verify asynchronous execution.
 
 | Technique | Application |
 | --- | --- |
 | Autospec | Constrain calls to the real callable signature with `autospec=True` or `create_autospec`. |
-| Failure Injection | Use `side_effect` for a specific exception or a bounded retry sequence. |
 | Asynchronous Verification | Use an async-aware autospec or `AsyncMock`; assert awaits as well as results. |
 
-## 4. Workflow
+## 4. Test Design
+
+Choose scenarios from the dependency contract, then select the least complex test double that can reproduce them.
+
+| Technique | Application |
+| --- | --- |
+| Failure Injection | Configure specific exceptions, failures, or bounded retry sequences and verify recovery or propagation. |
+| Negative Testing | Exercise rejected requests and verify that prohibited side effects do not occur. |
+| Boundary Value Analysis | Cover relevant argument limits and retry thresholds, including exhaustion. |
+| Interaction Verification | Check arguments, counts, and ordering only when required by the observable contract. |
+
+Assert returned values or state as well as contractual interactions. Keep real-boundary integration tests separate: a passing mock test does not establish compatibility with a live dependency. FIRST governs isolation and reproducibility; it is not an additional testing pattern.
+
+## 5. Workflow
 
 The workflow identifies the dependency boundary, configures its substitute, and verifies the unit's observable behavior.
 
@@ -137,7 +150,7 @@ The workflow identifies the dependency boundary, configures its substitute, and 
 
     Report the boundary replaced, scenarios covered, commands run, and remaining integration coverage. Mocks alone do not verify compatibility with a real service.
 
-## 5. Commands
+## 6. Commands
 
 Use the project's environment and existing test task; replace example paths with actual ones. `unittest.mock` needs no additional package.
 
@@ -148,7 +161,7 @@ Use the project's environment and existing test task; replace example paths with
 | `python -m pytest tests -q` | Check interactions with the surrounding suite. |
 | `python -m unittest discover -s tests -v` | Run existing unittest-based mocks. |
 
-## 6. Style Guide
+## 7. Style Guide
 
 These conventions constrain patch scope and prevent mock behavior from obscuring a production defect.
 
@@ -179,11 +192,11 @@ These conventions constrain patch scope and prevent mock behavior from obscuring
 - Integration Coverage
   > Avoid patching private implementation chains or copying a collaborator's implementation into a fake. Add separate integration tests for essential real boundary behavior.
 
-## 7. Templates
+## 8. Templates
 
 Adapt the following contracts to existing application code. The illustrative `app.service` module imports `fetch` using `from app.transport import fetch`; `get_name(user_id)` returns `fetch(user_id)["name"]` and propagates `TimeoutError`. Its `get_name_with_retry` retries once after a timeout.
 
-### 7.1. Lookup-Site Patch and Failure Injection
+### 8.1. Lookup-Site Patch and Failure Injection
 
 The patch replaces the symbol resolved by `app.service`, and autospec constrains the call signature.
 
@@ -222,7 +235,7 @@ def test_get_name_propagates_timeout():
         fetch.assert_called_once_with("user-1")
 ```
 
-### 7.2. Bounded Retry
+### 8.2. Bounded Retry
 
 The side-effect sequence represents one timeout followed by a successful response. The call list verifies the exact retry count.
 
@@ -246,7 +259,7 @@ def test_get_name_retries_once():
 
 Also test exhausted retries and non-retryable errors according to the application contract; do not hide unlimited retries with an endlessly successful stub.
 
-### 7.3. Async Dependency
+### 8.3. Async Dependency
 
 For a project using [pytest-asyncio](https://pytest-asyncio.readthedocs.io/en/stable/concepts.html), the example assumes `get_name_async` awaits the asynchronous `fetch_async` imported into `app.service`. Autospec creates an async-aware mock for that collaborator. Use the project's existing asynchronous runner if different.
 
@@ -271,7 +284,7 @@ async def test_get_name_async():
         fetch.assert_awaited_once_with("user-1")
 ```
 
-## 8. References
+## 9. References
 
 - Python Software Foundation [unittest.mock](https://docs.python.org/3/library/unittest.mock.html) documentation.
 - Python Software Foundation [Mock Examples](https://docs.python.org/3/library/unittest.mock-examples.html) documentation.

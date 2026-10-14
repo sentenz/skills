@@ -2,7 +2,7 @@
 name: go-unit-testing
 description: Automates unit test creation for Go projects using the standard testing package with consistent software testing patterns including In-Got-Want, Table-Driven Testing, and AAA patterns. Use when creating, modifying, or reviewing unit tests, or when the user mentions unit tests, test coverage, or Go testing.
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   activation:
     implicit: true
     priority: 1
@@ -30,23 +30,24 @@ Instructions for AI coding agents on automating unit test creation using consist
 - [1. Benefits](#1-benefits)
 - [2. Principles](#2-principles)
   - [2.1. FIRST](#21-first)
-- [3. Patterns](#3-patterns)
+- [3. Testing Patterns](#3-testing-patterns)
   - [3.1. In-Got-Want](#31-in-got-want)
   - [3.2. Table-Driven Testing](#32-table-driven-testing)
   - [3.3. Data-Driven Testing (DDT)](#33-data-driven-testing-ddt)
   - [3.4. Arrange, Act, Assert (AAA)](#34-arrange-act-assert-aaa)
   - [3.5. Test Fixtures](#35-test-fixtures)
-- [4. Workflow](#4-workflow)
-- [5. Commands](#5-commands)
-- [6. Style Guide](#6-style-guide)
-- [7. Template](#7-template)
-  - [7.1. File Header Template](#71-file-header-template)
-  - [7.2. Table-Driven Test Template](#72-table-driven-test-template)
-  - [7.3. Test Fixture Template](#73-test-fixture-template)
-  - [7.4. Error Test Template](#74-error-test-template)
-  - [7.5. Boundary Value Test Template](#75-boundary-value-test-template)
-  - [7.6. Data-Driven Test Template (JSON)](#76-data-driven-test-template-json)
-- [8. References](#8-references)
+- [4. Test Design](#4-test-design)
+- [5. Workflow](#5-workflow)
+- [6. Commands](#6-commands)
+- [7. Style Guide](#7-style-guide)
+- [8. Template](#8-template)
+  - [8.1. File Header Template](#81-file-header-template)
+  - [8.2. Table-Driven Test Template](#82-table-driven-test-template)
+  - [8.3. Test Fixture Template](#83-test-fixture-template)
+  - [8.4. Error Test Template](#84-error-test-template)
+  - [8.5. Boundary Value Test Template](#85-boundary-value-test-template)
+  - [8.6. Data-Driven Test Template (JSON)](#86-data-driven-test-template-json)
+- [9. References](#9-references)
 
 ## 1. Benefits
 
@@ -83,7 +84,7 @@ The `FIRST` principles for unit testing focus on creating effective and maintain
 - Timely
   > Unit tests should be written and executed early in the development process to catch issues as soon as possible.
 
-## 3. Patterns
+## 3. Testing Patterns
 
 ### 3.1. In-Got-Want
 
@@ -141,7 +142,20 @@ Test fixtures provide a consistent and reusable setup and teardown mechanism for
 - Teardown
   > Clean up resources or reset state after each test.
 
-## 4. Workflow
+## 4. Test Design
+
+Select cases from the public contract before choosing a test-structure pattern. Derive expected results independently of the implementation.
+
+| Technique               | Application                                                                                              |
+| ----------------------- | -------------------------------------------------------------------------------------------------------- |
+| Boundary Value Analysis | Exercise limits and adjacent values, empty inputs, and relevant size or numeric thresholds.              |
+| Negative Testing        | Assert documented rejection of invalid inputs, including the expected error and observable state.        |
+| Regression Testing      | Preserve a minimal reproducer for each confirmed defect and verify the corrected behavior.               |
+| Coverage Analysis       | Use uncovered branches to identify missing scenarios; do not treat a percentage as proof of correctness. |
+
+Use table-driven or external data-driven cases to express these choices. FIRST describes quality principles, not input-selection techniques. Add property-based or fuzz tests when a contract supplies a meaningful invariant; do not invent properties merely to increase coverage.
+
+## 5. Workflow
 
 1. Identify
 
@@ -163,16 +177,32 @@ Test fixtures provide a consistent and reusable setup and teardown mechanism for
 
 4. Apply Templates
 
-    Structure all tests using the [template](#7-template) pattern.
+    Structure all tests using the [template](#8-template) pattern.
 
-## 5. Commands
+## 6. Commands
 
-| Command                 | Description                                        |
-| ----------------------- | -------------------------------------------------- |
-| `make go-test-unit`     | Execute tests with race detection and JUnit report |
-| `make go-test-coverage` | Generate coverage reports (HTML and XML)           |
+Verify that the listed Make targets exist in the current project. Reuse its configured build and test tasks; do not assume these example targets are available.
 
-## 6. Style Guide
+1. Make Tasks
+
+    | Tasks                   | Description                                          |
+    | ----------------------- | ---------------------------------------------------- |
+    | `make go-test-unit`     | Execute tests with race detection and a JUnit report |
+    | `make go-test-coverage` | Generate coverage reports (HTML and XML)             |
+
+2. Command Instructions
+
+    Run from the module root and adapt package paths and test names. Use the project's supported race-detector platform and configured reporting tools. JUnit and XML examples require [gotestsum](https://github.com/gotestyourself/gotestsum) and [gocover-cobertura](https://github.com/boumenot/gocover-cobertura), respectively. Generate coverage reports only after successful test execution; preserve test failures when integrating commands into Make tasks.
+
+    | Instructions                                                       | Description                                                                    |
+    | ------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+    | `go test -run='^TestName$' -v ./path/to/pkg`                       | Execute a specific test with verbose output                                    |
+    | `gotestsum --junitfile junit.xml -- -race -count=1 ./...`          | Execute tests with race detection and generate a JUnit XML report              |
+    | `go test -race -coverprofile=coverage.out -covermode=atomic ./...` | Collect concurrency-safe coverage data while running tests with race detection |
+    | `go tool cover -html=coverage.out -o coverage.html`                | Generate an HTML coverage report                                               |
+    | `gocover-cobertura < coverage.out > coverage.xml`                  | Convert the Go coverage profile to Cobertura XML                               |
+
+## 7. Style Guide
 
 - Test Framework
   > Use the standard Go `testing` package.
@@ -195,11 +225,11 @@ Test fixtures provide a consistent and reusable setup and teardown mechanism for
 - Assertions
   > Use `cmp.Equal` for value comparisons and `errors.Is` for error checking.
 
-## 7. Template
+## 8. Template
 
 Use these templates for new unit tests. Replace placeholders with actual values.
 
-### 7.1. File Header Template
+### 8.1. File Header Template
 
 ```go
 // SPDX-License-Identifier: Apache-2.0
@@ -214,7 +244,7 @@ import (
 )
 ```
 
-### 7.2. Table-Driven Test Template
+### 8.2. Table-Driven Test Template
 
 ```go
 func Test<FunctionName>(t *testing.T) {
@@ -279,7 +309,7 @@ func Test<FunctionName>(t *testing.T) {
 }
 ```
 
-### 7.3. Test Fixture Template
+### 8.3. Test Fixture Template
 
 ```go
 // testFixture holds common test state and provides setup/teardown.
@@ -332,7 +362,7 @@ func Test<FunctionName>WithFixture(t *testing.T) {
 }
 ```
 
-### 7.4. Error Test Template
+### 8.4. Error Test Template
 
 ```go
 func Test<FunctionName>Error(t *testing.T) {
@@ -390,7 +420,7 @@ func Test<FunctionName>Error(t *testing.T) {
 }
 ```
 
-### 7.5. Boundary Value Test Template
+### 8.5. Boundary Value Test Template
 
 ```go
 func Test<FunctionName>BoundaryValues(t *testing.T) {
@@ -459,99 +489,11 @@ func Test<FunctionName>BoundaryValues(t *testing.T) {
 }
 ```
 
-### 7.6. Data-Driven Test Template (JSON)
+### 8.6. Data-Driven Test Template (JSON)
 
-```go
-import (
-	"encoding/json"
-	"os"
-	"path/filepath"
-	"testing"
+Read [Data-Driven Testing](references/data-driven-testing.md) when loading external JSON cases. The template keeps data loading separate from test logic and uses named subtests for traceable failures.
 
-	"github.com/google/go-cmp/cmp"
-)
-
-// testCase represents a single test case loaded from JSON.
-type testCase struct {
-	Name string `json:"name"`
-	In   struct {
-		Input <input_type> `json:"input"`
-	} `json:"in"`
-	Want struct {
-		Expected <output_type> `json:"expected"`
-	} `json:"want"`
-}
-
-// testData represents the JSON test data structure.
-type testData struct {
-	Tests []testCase `json:"tests"`
-}
-
-func Test<FunctionName>DataDriven(t *testing.T) {
-	t.Parallel()
-
-	// Load test data from JSON file
-	testdataPath := filepath.Join("testdata", "<function>_test.json")
-	data, err := os.ReadFile(testdataPath)
-	if err != nil {
-		t.Fatalf("failed to read test data: %v", err)
-	}
-
-	var td testData
-	if err := json.Unmarshal(data, &td); err != nil {
-		t.Fatalf("failed to parse test data: %v", err)
-	}
-
-	for _, tc := range td.Tests {
-		t.Run(tc.Name, func(t *testing.T) {
-			// Arrange
-			input := tc.In.Input
-			expected := tc.Want.Expected
-
-			// Act
-			got, err := <Function>(input)
-
-			// Assert
-			if err != nil {
-				t.Errorf("<Function>() unexpected error: %v", err)
-			}
-			if !cmp.Equal(got, expected) {
-				t.Errorf("<Function>(%v) = %v, want %v", input, got, expected)
-			}
-		})
-	}
-}
-```
-
-- `tests/data/<function>_test.json`
-  > JSON file containing test cases.
-
-  ```json
-  {
-    "tests": [
-      {
-        "name": "case-description-1",
-        "in": {
-          "input": <value>
-        },
-        "want": {
-          "expected": <value>
-        }
-      },
-      {
-        "name": "case-description-2",
-        "in": {
-          "input": <value>
-        },
-        "want": {
-          "expected": <value>
-        }
-      }
-    ]
-  }
-  ```
-
-## 8. References
+## 9. References
 
 - Go [Testing](https://pkg.go.dev/testing) package documentation.
 - Google [go-cmp](https://github.com/google/go-cmp) package documentation.

@@ -2,7 +2,7 @@
 name: python-benchmark-testing
 description: Create and review Python performance benchmarks using pytest-benchmark, pyperf, and standard-library profiling tools. Use for microbenchmarks, performance regressions, baseline comparisons, timing, allocation analysis, profiling, or validating optimizations.
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   activation:
     implicit: true
     priority: 1
@@ -31,17 +31,18 @@ This skill guides workload design, correctness validation, and baseline comparis
 - [1. Benefits](#1-benefits)
 - [2. Principles](#2-principles)
   - [2.1. FIRST](#21-first)
-- [3. Patterns](#3-patterns)
-  - [3.1. Workload Design](#31-workload-design)
-  - [3.2. Measurement Techniques](#32-measurement-techniques)
-- [4. Workflow](#4-workflow)
-- [5. Commands](#5-commands)
-- [6. Style Guide](#6-style-guide)
-- [7. Templates](#7-templates)
-  - [7.1. Table-Driven Benchmark](#71-table-driven-benchmark)
-  - [7.2. Mutating Operation](#72-mutating-operation)
-  - [7.3. Separate Allocation Measurement](#73-separate-allocation-measurement)
-- [8. References](#8-references)
+- [3. Testing Patterns](#3-testing-patterns)
+- [4. Test Design](#4-test-design)
+  - [4.1. Workload Design](#41-workload-design)
+  - [4.2. Measurement Techniques](#42-measurement-techniques)
+- [5. Workflow](#5-workflow)
+- [6. Commands](#6-commands)
+- [7. Style Guide](#7-style-guide)
+- [8. Templates](#8-templates)
+  - [8.1. Table-Driven Benchmark](#81-table-driven-benchmark)
+  - [8.2. Mutating Operation](#82-mutating-operation)
+  - [8.3. Separate Allocation Measurement](#83-separate-allocation-measurement)
+- [9. References](#9-references)
 
 ## 1. Benefits
 
@@ -79,11 +80,23 @@ FIRST groups five test-design properties: Fast, Independent, Repeatable, Self-Va
 - Timely
   > Baseline measurements precede implementation changes intended to improve performance.
 
-## 3. Patterns
+## 3. Testing Patterns
+
+Use patterns to organize repeated measurements; use Test Design to define the workload, measurement boundary, and comparison.
+
+| Pattern | Application |
+| --- | --- |
+| Table-Driven Workloads | Reuse benchmark logic across named input sizes, shapes, and distributions. |
+| Benchmark Fixtures | Own setup and cleanup explicitly; restore equivalent state for each measured operation. |
+| Grouped Benchmarks | Keep related workload variants discoverable without mixing their results. |
+
+FIRST describes isolation and repeatability. Microbenchmarks, comparative measurements, and profiling answer performance questions rather than define assertion structure.
+
+## 4. Test Design
 
 Workload-design patterns specify the operation and its inputs. Measurement techniques determine how execution cost is sampled or attributed.
 
-### 3.1. Workload Design
+### 4.1. Workload Design
 
 The following patterns vary workload scope, comparison, input distribution, or state ownership.
 
@@ -94,7 +107,7 @@ The following patterns vary workload scope, comparison, input distribution, or s
 | Table-Driven Workload | Parametrize representative sizes, shapes, and distributions with stable case identifiers. |
 | Stateful Operation | Recreate state outside timing for each measured invocation, or explicitly measure setup as part of the workload. |
 
-### 3.2. Measurement Techniques
+### 4.2. Measurement Techniques
 
 Timing samples quantify elapsed cost; CPU and allocation profiles attribute costs in separate instrumented runs. CPU denotes the central processing unit.
 
@@ -105,7 +118,7 @@ Timing samples quantify elapsed cost; CPU and allocation profiles attribute cost
 | CPU Profiling | Use [cProfile](https://docs.python.org/3/library/profile.html) to locate execution costs separately from latency measurements. |
 | Allocation Tracing | Use [tracemalloc](https://docs.python.org/3/library/tracemalloc.html) to inspect traced Python allocations separately from latency measurements. |
 
-## 4. Workflow
+## 5. Workflow
 
 The workflow establishes a correct workload and baseline before measuring a candidate change under comparable conditions.
 
@@ -127,7 +140,7 @@ The workflow establishes a correct workload and baseline before measuring a cand
 
 5. Apply Templates
 
-    Use the [templates](#7-templates), ensuring repeated calls perform equivalent work. Rebuild exhausted iterators and mutated collections between calls. Make warm-cache and cold-cache measurements separate workloads.
+    Use the [templates](#8-templates), ensuring repeated calls perform equivalent work. Rebuild exhausted iterators and mutated collections between calls. Make warm-cache and cold-cache measurements separate workloads.
 
 6. Compare Measurements
 
@@ -141,7 +154,7 @@ The workflow establishes a correct workload and baseline before measuring a cand
 
     Report workload, commands, versions, baseline/candidate commits, sample statistics, relative change, and uncertainty. Retain result files as benchmark artifacts; distinguish unmeasured hypotheses from findings.
 
-## 5. Commands
+## 6. Commands
 
 Run in the project environment with pytest-benchmark or pyperf installed. Replace illustrative paths and output names; do not compare unrelated runners or overwrite the baseline with the candidate run.
 
@@ -157,7 +170,7 @@ Run in the project environment with pytest-benchmark or pyperf installed. Replac
 
 For a changed application callable, use the same import/setup and statement on the baseline and candidate revisions, writing `before.json` and `after.json` respectively. `timeit` alone is useful for local exploration, but does not replace a controlled regression experiment.
 
-## 6. Style Guide
+## 7. Style Guide
 
 These conventions preserve equivalent work across repeated invocations and make measurement limits explicit.
 
@@ -188,11 +201,11 @@ These conventions preserve equivalent work across repeated invocations and make 
 - Result Interpretation
   > Treat differences within measurement noise as inconclusive. Report distributions and practical effect sizes instead of selecting only the fastest run.
 
-## 7. Templates
+## 8. Templates
 
 These runnable examples use sorting to demonstrate immutable and mutable workloads. Replace sorting with the actual hot path and preserve meaningful validation.
 
-### 7.1. Table-Driven Benchmark
+### 8.1. Table-Driven Benchmark
 
 The benchmark holds immutable inputs constant across invocations and validates each returned result outside timing. Save the example as `benchmarks/test_sort.py`.
 
@@ -215,7 +228,7 @@ def test_sorted_descending(benchmark, size):
     assert got == want
 ```
 
-### 7.2. Mutating Operation
+### 8.2. Mutating Operation
 
 Do not repeatedly sort the same list; later invocations would measure already-sorted data. Use setup to create fresh input for every round and return it for validation without timing validation itself.
 
@@ -239,7 +252,7 @@ def test_sort_in_place(benchmark):
 
 The wrapper's return is part of this measured workload. For very small operations, account for wrapper overhead when interpreting results.
 
-### 7.3. Separate Allocation Measurement
+### 8.3. Separate Allocation Measurement
 
 Run as a standalone script so tracing ownership is unambiguous. Replace the demonstrated operation with the target workload; do not run this instrumentation inside a latency benchmark.
 
@@ -262,7 +275,7 @@ assert got == list(range(1, 1001))
 print(f"traced_current_bytes={current}, traced_peak_bytes={peak}")
 ```
 
-## 8. References
+## 9. References
 
 - pytest-benchmark [Usage](https://pytest-benchmark.readthedocs.io/en/latest/usage.html) documentation.
 - pytest-benchmark [Pedantic Mode](https://pytest-benchmark.readthedocs.io/en/latest/pedantic.html) documentation.

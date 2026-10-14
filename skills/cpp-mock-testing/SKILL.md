@@ -2,7 +2,7 @@
 name: cpp-mock-testing
 description: Automates mock test creation for C++ projects using Google Mock (GMock) framework with consistent software testing patterns. Use when creating tests with mocked dependencies, interface mocking, behavior verification, or when the user mentions mocks, stubs, fakes, or GMock.
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
   activation:
     implicit: true
     priority: 1
@@ -30,18 +30,19 @@ Instructions for AI coding agents on automating mock test creation using Google 
 - [1. Benefits](#1-benefits)
 - [2. Principles](#2-principles)
   - [2.1. FIRST](#21-first)
-- [3. Patterns](#3-patterns)
-- [4. Workflow](#4-workflow)
-- [5. Commands](#5-commands)
-- [6. Style Guide](#6-style-guide)
-- [7. Template](#7-template)
-  - [7.1. File Header Template](#71-file-header-template)
-  - [7.2. Mock Class Template](#72-mock-class-template)
-  - [7.3. Table-Driven Mock Test Template](#73-table-driven-mock-test-template)
-  - [7.4. Sequence Verification Template](#74-sequence-verification-template)
-  - [7.5. Exception Testing Template](#75-exception-testing-template)
-  - [7.6. NiceMock Template](#76-nicemock-template)
-- [8. References](#8-references)
+- [3. Testing Patterns](#3-testing-patterns)
+- [4. Test Design](#4-test-design)
+- [5. Workflow](#5-workflow)
+- [6. Commands](#6-commands)
+- [7. Style Guide](#7-style-guide)
+- [8. Template](#8-template)
+  - [8.1. File Header Template](#81-file-header-template)
+  - [8.2. Mock Class Template](#82-mock-class-template)
+  - [8.3. Table-Driven Mock Test Template](#83-table-driven-mock-test-template)
+  - [8.4. Sequence Verification Template](#84-sequence-verification-template)
+  - [8.5. Exception Testing Template](#85-exception-testing-template)
+  - [8.6. NiceMock Template](#86-nicemock-template)
+- [9. References](#9-references)
 
 ## 1. Benefits
 
@@ -78,7 +79,7 @@ The `FIRST` principles for mock testing focus on creating effective and maintain
 - Timely
   > Mock tests should be written alongside production code to validate the interaction contracts between components.
 
-## 3. Patterns
+## 3. Testing Patterns
 
 - Mock Objects
   > Simulated objects that mimic the behavior of real objects in controlled ways. They verify interactions between the unit under test and its dependencies.
@@ -86,16 +87,23 @@ The `FIRST` principles for mock testing focus on creating effective and maintain
 - Interface Mocking
   > Creating mock implementations of abstract interfaces or base classes to isolate the unit under test from concrete implementations.
 
-- Behavior Verification
-  > Verifying that methods are called with expected arguments and in the correct order, rather than just checking return values.
-
 - Return Value Stubbing
   > Configuring mock objects to return specific values when their methods are called, allowing control over dependency behavior during tests.
 
-- Exception Injection
-  > Using mocks to simulate error conditions by throwing exceptions, enabling tests to verify error handling logic.
+## 4. Test Design
 
-## 4. Workflow
+Choose scenarios from the dependency contract, then select the least complex test double that can reproduce them.
+
+| Technique                | Application                                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------------------------------- |
+| Failure Injection        | Configure specific exceptions, failures, or bounded retry sequences and verify recovery or propagation. |
+| Negative Testing         | Exercise rejected requests and verify that prohibited side effects do not occur.                        |
+| Boundary Value Analysis  | Cover relevant argument limits and retry thresholds, including exhaustion.                              |
+| Interaction Verification | Check arguments, counts, and ordering only when required by the observable contract.                    |
+
+Assert returned values or state as well as contractual interactions. Keep real-boundary integration tests separate: a passing mock test does not establish compatibility with a live dependency. FIRST governs isolation and reproducibility; it is not an additional testing pattern.
+
+## 5. Workflow
 
 1. Identify Dependencies
 
@@ -141,15 +149,34 @@ The `FIRST` principles for mock testing focus on creating effective and maintain
 
     Structure all tests using the template pattern below.
 
-## 5. Commands
+## 6. Commands
 
-| Command                             | Description                                                                         |
-| ----------------------------------- | ----------------------------------------------------------------------------------- |
-| `make cmake-gcc-test-unit-build`    | CMake preset configuration with GMock support and Compile with Ninja                |
-| `make cmake-gcc-test-unit-run`      | Execute tests via ctest (mock tests are part of unit tests)                         |
-| `make cmake-gcc-test-unit-coverage` | Execute tests via ctest  and generate coverage reports including mock test coverage |
+Verify that the listed Make targets exist in the current project. Reuse its configured build and test tasks; do not assume these example targets are available.
 
-## 6. Style Guide
+1. Make Tasks
+
+    | Tasks                               | Description                                                                        |
+    | ----------------------------------- | ---------------------------------------------------------------------------------- |
+    | `make cmake-gcc-test-unit-build`    | Configure CMake presets with Google Mock support and compile with Ninja            |
+    | `make cmake-gcc-test-unit-run`      | Execute tests via CTest (mock tests are part of unit tests)                        |
+    | `make cmake-gcc-test-unit-coverage` | Execute tests via CTest and generate coverage reports including mock test coverage |
+
+2. Command Instructions
+
+    Run from the project root. Replace angle-bracket placeholders with values from the project's Makefile and CMake presets before execution. These examples illustrate the underlying operations; retain project-specific flags and targets. Coverage requires a clean build with GCC coverage instrumentation, a matching gcov tool, and successful test execution before reporting. Use the project's configured coverage tool and filters; the report examples assume [gcovr](https://gcovr.com/en/stable/) is installed.
+
+    | Instructions                                                                      | Description                                                                       |
+    | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+    | `cmake --list-presets`                                                            | List available configure presets and select the project's unit-test configuration |
+    | `cmake --preset <unit-configure-preset>`                                          | Configure the existing GCC/Ninja unit-test build with Google Mock support         |
+    | `cmake --build --list-presets`                                                    | List build presets and select one using the configured unit-test directory        |
+    | `cmake --build --preset <unit-build-preset>`                                      | Compile the configured unit-test targets                                          |
+    | `ctest --test-dir <unit-build-dir> --output-on-failure`                           | Execute registered unit tests, including mock tests, and display failure output   |
+    | `ctest --test-dir <unit-build-dir> -R '<test-regex>' --output-on-failure`         | Execute CTest entries matching a test-name regular expression                     |
+    | `gcovr --root . --object-directory <unit-build-dir> --html-details coverage.html` | Generate a detailed HTML report from instrumented test execution                  |
+    | `gcovr --root . --object-directory <unit-build-dir> --xml coverage.xml`           | Generate a Cobertura XML report from the same coverage data                       |
+
+## 7. Style Guide
 
 - Test Framework
   > Use [Google Mock (GMock)](https://google.github.io/googletest/gmock_for_dummies.html) framework via `#include <gmock/gmock.h>` and `#include <gtest/gtest.h>`.
@@ -174,11 +201,11 @@ The `FIRST` principles for mock testing focus on creating effective and maintain
 
 - Mock Types
   - NiceMock
-    > Ignores unexpected calls (use for non-critical dependencies)
+    > Suppresses warnings for uninteresting calls (methods without expectations); unexpected calls still fail.
   - StrictMock
-    > Fails on any unexpected calls (use for strict verification)
+    > Fails on uninteresting calls as well as unexpected calls; use only when the interaction contract requires strict verification.
   - Default Mock
-    > Warns on unexpected calls (balanced approach)
+    > Warns on uninteresting calls; unexpected calls fail regardless of mock strictness.
 
 - Expectations
   - Use `EXPECT_CALL` to set up expectations before exercising the unit under test
@@ -200,11 +227,11 @@ The `FIRST` principles for mock testing focus on creating effective and maintain
 - Assertions
   > Use `EXPECT_*` macros to allow all test cases to run. Mock expectations are automatically verified at the end of each test.
 
-## 7. Template
+## 8. Template
 
 Use these templates for new mock tests. Replace placeholders with actual values.
 
-### 7.1. File Header Template
+### 8.1. File Header Template
 
 ```cpp
 #include <gmock/gmock.h>
@@ -221,7 +248,7 @@ using namespace <namespace>;
 using namespace ::testing;
 ```
 
-### 7.2. Mock Class Template
+### 8.2. Mock Class Template
 
 ```cpp
 /**
@@ -235,7 +262,7 @@ public:
 };
 ```
 
-### 7.3. Table-Driven Mock Test Template
+### 8.3. Table-Driven Mock Test Template
 
 ```cpp
 TEST(<Module>Test, <FunctionName>WithMock)
@@ -297,7 +324,7 @@ TEST(<Module>Test, <FunctionName>WithMock)
 }
 ```
 
-### 7.4. Sequence Verification Template
+### 8.4. Sequence Verification Template
 
 ```cpp
 TEST(<Module>Test, <FunctionName>WithSequence)
@@ -319,7 +346,7 @@ TEST(<Module>Test, <FunctionName>WithSequence)
 }
 ```
 
-### 7.5. Exception Testing Template
+### 8.5. Exception Testing Template
 
 ```cpp
 TEST(<Module>Test, <FunctionName>ThrowsOnError)
@@ -337,7 +364,7 @@ TEST(<Module>Test, <FunctionName>ThrowsOnError)
 }
 ```
 
-### 7.6. NiceMock Template
+### 8.6. NiceMock Template
 
 ```cpp
 TEST(<Module>Test, <FunctionName>WithNiceMock)
@@ -362,7 +389,7 @@ TEST(<Module>Test, <FunctionName>WithNiceMock)
 }
 ```
 
-## 8. References
+## 9. References
 
 - GoogleTest [Mocking for Dummies](https://google.github.io/googletest/gmock_for_dummies.html) guide.
 - GoogleTest [Mocking Cookbook](https://google.github.io/googletest/gmock_cook_book.html) guide.

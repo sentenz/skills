@@ -2,7 +2,7 @@
 name: python-fuzz-testing
 description: Create and review Python property-based tests with Hypothesis and coverage-guided fuzz targets with Atheris. Use for generated inputs, invariants, parser robustness, malformed data, shrinking failures, seed corpora, crash reproduction, or fuzz regression tests.
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   activation:
     implicit: true
     priority: 1
@@ -32,16 +32,17 @@ This skill covers structured property-based tests with [Hypothesis](https://hypo
 - [1. Benefits](#1-benefits)
 - [2. Principles](#2-principles)
   - [2.1. FIRST](#21-first)
-- [3. Patterns](#3-patterns)
-  - [3.1. Input Generation](#31-input-generation)
-  - [3.2. Test Oracles](#32-test-oracles)
-- [4. Workflow](#4-workflow)
-- [5. Commands](#5-commands)
-- [6. Style Guide](#6-style-guide)
-- [7. Templates](#7-templates)
-  - [7.1. Structured Property with Hypothesis](#71-structured-property-with-hypothesis)
-  - [7.2. Coverage-Guided Target with Atheris](#72-coverage-guided-target-with-atheris)
-- [8. References](#8-references)
+- [3. Testing Patterns](#3-testing-patterns)
+- [4. Test Design](#4-test-design)
+  - [4.1. Input Generation](#41-input-generation)
+  - [4.2. Test Oracles](#42-test-oracles)
+- [5. Workflow](#5-workflow)
+- [6. Commands](#6-commands)
+- [7. Style Guide](#7-style-guide)
+- [8. Templates](#8-templates)
+  - [8.1. Structured Property with Hypothesis](#81-structured-property-with-hypothesis)
+  - [8.2. Coverage-Guided Target with Atheris](#82-coverage-guided-target-with-atheris)
+- [9. References](#9-references)
 
 ## 1. Benefits
 
@@ -79,11 +80,24 @@ FIRST groups five test-design properties: Fast, Independent, Repeatable, Self-Va
 - Timely
   > Generated properties accompany deterministic unit tests at input boundaries with significant failure consequences.
 
-## 3. Patterns
+## 3. Testing Patterns
+
+Use patterns to organize the target; use Test Design to choose input domains and oracles.
+
+| Pattern | Application |
+| --- | --- |
+| Arrange-Act-Assert (AAA) | Construct fresh state, exercise one boundary, and check its contract. |
+| In-Got-Want | Keep generated input, actual output, and independently derived expectations distinct. |
+| Table-Driven Seeds | Name representative valid, boundary, malformed, and regression inputs. |
+| Test Fixtures | Reset mutable state for every invocation; release resources even on failure. |
+
+Keep each target deterministic for a given input while allowing the engine to explore new inputs. FIRST describes test quality; coverage feedback and corpus mutation describe input generation.
+
+## 4. Test Design
 
 Input-generation techniques determine how examples are produced. Test oracles determine how the resulting behavior is evaluated.
 
-### 3.1. Input Generation
+### 4.1. Input Generation
 
 Structured generation encodes the input domain in strategies; coverage-guided mutation selects inputs using execution feedback.
 
@@ -92,7 +106,7 @@ Structured generation encodes the input domain in strategies; coverage-guided mu
 | Property-Based Generation | Generate structured inputs with Hypothesis strategies and shrink failures. |
 | Coverage-Guided Mutation | Instrument relevant Python code with Atheris and mutate a seed corpus. |
 
-### 3.2. Test Oracles
+### 4.2. Test Oracles
 
 The following oracles evaluate equality, agreement between implementations, relations between operations, or documented rejection behavior.
 
@@ -103,7 +117,7 @@ The following oracles evaluate equality, agreement between implementations, rela
 | Metamorphic Relation | Check idempotence, permutation invariance, or monotonicity when guaranteed by the contract. |
 | Input Rejection | Check documented rejection behavior without swallowing unrelated exceptions. |
 
-## 4. Workflow
+## 5. Workflow
 
 The workflow defines the input domain and oracle before selecting an engine, executing a campaign, and preserving regression cases.
 
@@ -139,7 +153,7 @@ The workflow defines the input domain and oracle before selecting an engine, exe
 
     Report the engine, versions, target, budget, explored cases or coverage when available, reproduction command, and retained artifacts. A clean finite campaign is not proof that all inputs are safe.
 
-## 5. Commands
+## 6. Commands
 
 Use the project's dependency manager to provide Hypothesis or Atheris as development dependencies. Run from the project root and adapt paths. The Atheris example is saved as `fuzz/fuzz_json.py`; execute it as a module so installed project imports resolve consistently.
 
@@ -153,7 +167,7 @@ Use the project's dependency manager to provide Hypothesis or Atheris as develop
 
 Atheris forwards [libFuzzer options](https://llvm.org/docs/LibFuzzer.html#options). Use CI process timeouts and resource limits as well as the campaign budget, since a single hung invocation may exceed the campaign duration. Preserve artifacts before cleaning temporary runners.
 
-## 6. Style Guide
+## 7. Style Guide
 
 These conventions preserve meaningful exploration, visible failures, and reproducible inputs.
 
@@ -181,11 +195,11 @@ These conventions preserve meaningful exploration, visible failures, and reprodu
 - Corpus Retention
   > Keep corpora small, representative, and free of credentials or sensitive production data. Minimize and review newly retained inputs.
 
-## 7. Templates
+## 8. Templates
 
 These self-contained examples exercise the standard-library JavaScript Object Notation (JSON) codec. Replace the codec with the project's implementation and retain only properties guaranteed by its contract.
 
-### 7.1. Structured Property with Hypothesis
+### 8.1. Structured Property with Hypothesis
 
 The property checks equality after serialization and deserialization within a bounded integer-list domain. Save the example as `tests/test_properties.py`.
 
@@ -209,7 +223,7 @@ def test_json_integer_list_round_trip(values):
 
 Adapt the integer range to the actual format; this range is a workload choice, not a Python integer limit. Add separate known-answer and invalid-input tests. For stateful application programming interfaces (APIs), consider a Hypothesis rule-based state machine with an independent model.
 
-### 7.2. Coverage-Guided Target with Atheris
+### 8.2. Coverage-Guided Target with Atheris
 
 Save as `fuzz/fuzz_json.py`. Keep `atheris.Setup` and `atheris.Fuzz` behind the main guard so importing the module does not start a campaign.
 
@@ -248,7 +262,7 @@ if __name__ == "__main__":
 
 Seed the corpus with small examples such as `[]`, `[0]`, and malformed JSON. Inputs outside the oracle's subdomain still reach the parser. Decide explicitly whether depth/resource exceptions are defects or documented rejections for the actual target.
 
-## 8. References
+## 9. References
 
 - Hypothesis [Quickstart](https://hypothesis.readthedocs.io/en/latest/quickstart.html) documentation.
 - Hypothesis [Strategies](https://hypothesis.readthedocs.io/en/latest/reference/strategies.html) documentation.

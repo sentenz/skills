@@ -1,8 +1,8 @@
 ---
 name: go-fuzz-testing
-description: Automates fuzz test creation for Go projects using Go's native fuzzing engine with consistent software testing patterns. Use when creating fuzz tests, mutation testing, or when the user mentions fuzzing, coverage-guided testing, or property-based testing.
+description: Automates fuzz test creation for Go projects using Go's native fuzzing engine with consistent software testing patterns. Use when creating fuzz tests or when the user mentions fuzzing, coverage-guided testing, or property-based testing.
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   activation:
     implicit: true
     priority: 1
@@ -10,14 +10,13 @@ metadata:
       - "fuzz"
       - "fuzzing"
       - "fuzz test"
-      - "mutation testing"
       - "coverage-guided"
       - "property-based"
       - "security test"
     match:
       languages: ["go", "golang"]
       paths: ["pkg/**/*_test.go", "internal/**/*_test.go", "testdata/fuzz/**"]
-      prompt_regex: "(?i)(fuzz|fuzzing|fuzz test|mutation test|coverage-guided|property-based|fuzz test|security test)"
+      prompt_regex: "(?i)(fuzz|fuzzing|fuzz test|coverage-guided|property-based|fuzz test|security test)"
   usage:
     load_on_prompt: true
     autodispatch: true
@@ -30,19 +29,21 @@ Instructions for AI coding agents on automating fuzz test creation using consist
 - [1. Benefits](#1-benefits)
 - [2. Principles](#2-principles)
   - [2.1. FIRST](#21-first)
-- [3. Patterns](#3-patterns)
-  - [3.1. Coverage-Guided Fuzzing](#31-coverage-guided-fuzzing)
-  - [3.2. Corpus-Driven Fuzzing](#32-corpus-driven-fuzzing)
-  - [3.3. Property-Based Testing](#33-property-based-testing)
-  - [3.4. Boundary Value Fuzzing](#34-boundary-value-fuzzing)
-  - [3.5. Crash Detection](#35-crash-detection)
-- [4. Workflow](#4-workflow)
-- [5. Commands](#5-commands)
-- [6. Style Guide](#6-style-guide)
-- [7. Template](#7-template)
-  - [7.1. Multi-Parameter Functions](#71-multi-parameter-functions)
-  - [7.2. Single-Parameter Functions](#72-single-parameter-functions)
-- [8. References](#8-references)
+- [3. Testing Patterns](#3-testing-patterns)
+- [4. Test Design](#4-test-design)
+  - [4.1. Coverage-Guided Fuzzing](#41-coverage-guided-fuzzing)
+  - [4.2. Corpus-Driven Fuzzing](#42-corpus-driven-fuzzing)
+  - [4.3. Property-Based Testing](#43-property-based-testing)
+  - [4.4. Boundary Value Fuzzing](#44-boundary-value-fuzzing)
+  - [4.5. Crash Detection](#45-crash-detection)
+  - [4.6. Test Oracles](#46-test-oracles)
+- [5. Workflow](#5-workflow)
+- [6. Commands](#6-commands)
+- [7. Style Guide](#7-style-guide)
+- [8. Template](#8-template)
+  - [8.1. Multi-Parameter Functions](#81-multi-parameter-functions)
+  - [8.2. Single-Parameter Functions](#82-single-parameter-functions)
+- [9. References](#9-references)
 
 ## 1. Benefits
 
@@ -53,7 +54,7 @@ Instructions for AI coding agents on automating fuzz test creation using consist
   > Fuzz testing automatically generates random inputs to discover edge cases and unexpected behaviors that manual testing might miss.
 
 - Security Vulnerability Discovery
-  > Helps identify security vulnerabilities, crashes, and undefined behaviors by testing with malformed, unexpected, or extreme inputs.
+  > Helps identify security vulnerabilities, panics, invariant violations, and unexpected behavior by testing with malformed, unexpected, or extreme inputs.
 
 - Continuous Testing
   > Fuzz tests can run continuously to explore the input space over time, discovering new edge cases as the corpus grows.
@@ -82,29 +83,57 @@ The `FIRST` principles for fuzz testing focus on creating effective and discover
 - Timely
   > Fuzz tests should be introduced alongside unit tests for functions that accept external inputs or perform calculations with boundary conditions.
 
-## 3. Patterns
+Input mutation in fuzzing is distinct from mutation testing, which changes production code to evaluate the test suite.
 
-### 3.1. Coverage-Guided Fuzzing
+## 3. Testing Patterns
+
+Use patterns to organize the target; use Test Design to choose input domains and oracles.
+
+| Pattern                  | Application                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------------- |
+| Arrange-Act-Assert (AAA) | Construct fresh state, exercise one boundary, and check its contract.                 |
+| In-Got-Want              | Keep generated input, actual output, and independently derived expectations distinct. |
+| Table-Driven Seeds       | Name representative valid, boundary, malformed, and regression inputs.                |
+| Test Fixtures            | Reset mutable state for every invocation; release resources even on failure.          |
+
+Keep each target deterministic for a given input while allowing the engine to explore new inputs. FIRST describes test quality; coverage feedback and corpus mutation describe input generation.
+
+## 4. Test Design
+
+### 4.1. Coverage-Guided Fuzzing
 
 Coverage-Guided Fuzzing is the primary fuzzing technique used by Go's native fuzzing engine. It automatically instruments code to track coverage and guides input generation toward unexplored code paths, maximizing code exploration and bug discovery.
 
-### 3.2. Corpus-Driven Fuzzing
+### 4.2. Corpus-Driven Fuzzing
 
 Corpus-Driven Fuzzing is a software testing technique that uses a collection of seed inputs (corpus) as the starting point for generating new test inputs through mutation.
 
-### 3.3. Property-Based Testing
+### 4.3. Property-Based Testing
 
 Property-Based Testing is a testing approach that verifies invariants and properties that should hold true for all inputs, rather than testing specific input-output pairs.
 
-### 3.4. Boundary Value Fuzzing
+### 4.4. Boundary Value Fuzzing
 
 Boundary Value Fuzzing focuses on testing edge cases and boundary conditions with randomly generated inputs around critical thresholds.
 
-### 3.5. Crash Detection
+### 4.5. Crash Detection
 
-Crash Detection is the process of identifying inputs that cause panics, runtime errors, or undefined behavior in the code under test.
+Crash Detection is the process of identifying inputs that cause panics, runtime errors, or violated invariants in the code under test.
 
-## 4. Workflow
+### 4.6. Test Oracles
+
+Select an oracle from the documented contract, independently of the input-generation engine.
+
+| Technique            | Application                                                                               |
+| -------------------- | ----------------------------------------------------------------------------------------- |
+| Round-Trip Testing   | Check decode-after-encode on the supported domain and add independent known-answer cases. |
+| Differential Testing | Compare independent implementations only where their specified semantics agree.           |
+| Metamorphic Testing  | Check guaranteed relations such as idempotence or permutation invariance.                 |
+| Negative Testing     | Verify the specified rejection of malformed inputs; do not discard all invalid inputs.    |
+
+Minimize confirmed failures and retain deterministic regression cases. Matching encoder/decoder defects can cancel out, so a round trip alone is insufficient. A finite fuzz campaign does not prove safety for every input.
+
+## 5. Workflow
 
 1. Identify
 
@@ -125,20 +154,34 @@ Crash Detection is the process of identifying inputs that cause panics, runtime 
 
 4. Apply Templates
 
-    Structure all fuzz tests using the [template](#7-template) pattern.
+    Structure all fuzz tests using the [template](#8-template) pattern.
 
 5. Seed Corpus
 
     Optionally provide seed inputs in `testdata/fuzz/<FuzzTestName>/` directory to guide fuzzing toward interesting inputs.
 
-## 5. Commands
+## 6. Commands
 
-| Command                                | Description                                  |
-| -------------------------------------- | -------------------------------------------- |
-| `make go-test-fuzz`                    | Execute fuzz tests for a specified duration  |
-| `ls -la testdata/fuzz/<FuzzTestName>/` | Inspect the seed corpus and generated inputs |
+Verify that the listed Make target exists in the current project and inspect its duration and target configuration. Use an existing project task when available; otherwise, adapt the commands below.
 
-## 6. Style Guide
+1. Make Tasks
+
+    | Tasks               | Description                                                        |
+    | ------------------- | ------------------------------------------------------------------ |
+    | `make go-test-fuzz` | Execute fuzz tests for the duration configured by the project task |
+
+2. Command Instructions
+
+    Run from the module root. Replace `./path/to/pkg`, `FuzzName`, and `<hash>` with the package, fuzz function, and saved failure identifier. Select one fuzz target in one package per campaign. Retain minimized failures under the package's `testdata/fuzz/FuzzName/` directory; exploratory inputs may remain in the Go build cache.
+
+    | Instructions                                                       | Description                                                                      |
+    | ------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+    | `go test ./path/to/pkg -run='^FuzzName$'`                          | Replay the seed corpus and saved regressions without starting a fuzzing campaign |
+    | `go test ./path/to/pkg -run='^$' -fuzz='^FuzzName$' -fuzztime=30s` | Run a bounded 30-second fuzzing campaign for one target                          |
+    | `go test ./path/to/pkg -run='FuzzName/<hash>'`                     | Reproduce a specific saved failing input                                         |
+    | `ls -la path/to/pkg/testdata/fuzz/FuzzName/`                       | Inspect retained corpus files when the directory exists                          |
+
+## 7. Style Guide
 
 - Test Framework
   > Use the standard Go `testing` package with `testing.F` for fuzz tests. Go's fuzzing engine automatically uses coverage-guided fuzzing to explore code paths.
@@ -157,10 +200,10 @@ Crash Detection is the process of identifying inputs that cause panics, runtime 
 
 - Fuzz Target
   > The fuzz target function receives `*testing.T` and randomly generated inputs. It should:
-  > - Validate inputs before calling the function under test (skip invalid inputs with `t.Skip()` if necessary)
+  > - Separate unsupported oracle domains from malformed inputs the API must reject; skip only the former with a stated reason
   > - Call the function with fuzzed inputs
   > - Assert invariants and properties that must always hold true
-  > - Not crash or panic for any input
+  > - Fail on unexpected panics; assert any explicitly documented panic behavior in a focused test
 
 - Error Handling
   > Fuzz tests should verify that functions handle errors gracefully without panicking.
@@ -168,11 +211,11 @@ Crash Detection is the process of identifying inputs that cause panics, runtime 
 - Assertions
   > Use explicit checks with `t.Errorf()` or `t.Fatalf()` to report violations of expected properties.
 
-## 7. Template
+## 8. Template
 
 Use this template for new fuzz test functions. Replace placeholders with actual values and adjust as needed for the use case.
 
-### 7.1. Multi-Parameter Functions
+### 8.1. Multi-Parameter Functions
 
 For functions with multiple parameters, use a struct array to define test cases.
 
@@ -194,8 +237,8 @@ func Fuzz<FunctionName>(f *testing.F) {
 
 	f.Fuzz(func(t *testing.T, param1 <type>, param2 <type>) {
 		// Arrange
-		// Optional: skip invalid inputs or prepare test conditions
-		// Example: if input < 0 { t.Skip("negative inputs not interesting") }
+		// Prepare fresh state; retain invalid inputs to check documented rejection
+		// Skip only inputs outside the stated oracle domain, with an explicit reason
 
 		// Act
 		got, err := <Function>(param1, param2)
@@ -217,7 +260,7 @@ func Fuzz<FunctionName>(f *testing.F) {
 }
 ```
 
-### 7.2. Single-Parameter Functions
+### 8.2. Single-Parameter Functions
 
 For functions with a single parameter, use a slice array to define test cases.
 
@@ -235,7 +278,7 @@ func Fuzz<FunctionName>(f *testing.F) {
 
 	f.Fuzz(func(t *testing.T, param <type>) {
 		// Arrange
-		// Optional: skip invalid inputs or prepare test conditions
+		// Prepare fresh state; retain invalid inputs to check documented rejection
 
 		// Act
 		got, err := <Function>(param)
@@ -251,7 +294,7 @@ func Fuzz<FunctionName>(f *testing.F) {
 }
 ```
 
-## 8. References
+## 9. References
 
 - Go [Fuzzing](https://go.dev/security/fuzz/) documentation.
 - Go [testing.F](https://pkg.go.dev/testing#F) package documentation.
