@@ -144,6 +144,15 @@ metadata:
         output = self.build(success=False)
         self.assertIn("references/missing.md", output)
 
+    def test_cpp_mock_lists_are_nested_in_built_html(self):
+        source = (ROOT / "skills/cpp-mock-testing/SKILL.md").read_text()
+        section = source.split("## 7. Style Guide", 1)[1].split("## 8. Template", 1)[0]
+        self.write("skills/example/SKILL.md", "# Style Guide\n" + section)
+        self.build()
+        page = (self.root / "public/skills/example/SKILL/index.html").read_text()
+        self.assertRegex(page, r"Expectations</p>\s*<ul>\s*<li>Use <code>EXPECT_CALL")
+        self.assertRegex(page, r"Matchers and Actions</p>\s*<ul>\s*<li>Use built-in matchers")
+
     def test_missing_skill_fails_strict_build(self):
         self.write("skills/example/SKILL.md", "# Example\n\n[Missing](../missing/SKILL.md)\n")
         self.assertIn("missing/SKILL.md", self.build(success=False))

@@ -24,6 +24,77 @@ class MarkdownCompatibilityTests(unittest.TestCase):
         )
         return ElementTree.fromstring(f"<article>{html}</article>")
 
+    def test_cpp_mock_expectations_and_matchers_remain_nested(self):
+        source = (ROOT / "skills/cpp-mock-testing/SKILL.md").read_text()
+        section = source.split("- Expectations\n", 1)[1].split("- Sequence Verification", 1)[0]
+        page = self.render("- Expectations\n" + section)
+        parents = page.findall("./ul/li")
+        self.assertEqual(len(parents), 2)
+        self.assertEqual([len(item.findall("./ul/li")) for item in parents], [3, 4])
+        self.assertIn("EXPECT_CALL", "".join(parents[0].find("./ul/li").itertext()))
+        self.assertIn("ReturnRef()", "".join(parents[1].findall("./ul/li")[-1].itertext()))
+
+    def test_cpp_mock_type_siblings_are_not_swallowed_by_blockquotes(self):
+        source = (ROOT / "skills/cpp-mock-testing/SKILL.md").read_text()
+        section = source.split("- Mock Types\n", 1)[1].split("- Expectations", 1)[0]
+        page = self.render("- Mock Types\n" + section)
+        children = page.findall("./ul/li/ul/li")
+        self.assertEqual(len(children), 3)
+        for item in children:
+            self.assertIsNotNone(item.find("./blockquote"))
+
+    def test_indented_code_lists_remain_literal(self):
+        for source in (
+            "    - Literal parent\n      - Literal child",
+            "- Parent\n\n        - Literal parent\n          - Literal child",
+        ):
+            with self.subTest(source=source):
+                page = self.render(source)
+                code = page.find(".//code")
+                self.assertIsNotNone(code)
+                self.assertIn("- Literal parent\n  - Literal child", "".join(code.itertext()))
+
+    def test_nested_bullets_preserve_levels_and_siblings(self):
+        for indent in ("  ", "    "):
+            with self.subTest(indent=len(indent)):
+                source = f"- Parent\n{indent}- Child\n{indent}{indent}- Grandchild\n{indent}- Sibling\n- Next\n"
+                page = self.render(source)
+                self.assertEqual(len(page.findall("./ul/li")), 2)
+                self.assertEqual(len(page.findall("./ul/li/ul/li")), 2)
+                self.assertEqual(len(page.findall("./ul/li/ul/li/ul/li")), 1)
+
+    def test_mixed_list_indentation_preserves_continuations(self):
+        page = self.render(
+            "1. Step\n\n    - Child\n      - Grandchild\n\n"
+            "        Continued paragraph.\n\n      - Sibling\n\n"
+            "    > Step quote.\n\n2. Next\n"
+        )
+        self.assertEqual(len(page.findall("./ol/li")), 2)
+        step = page.find("./ol/li")
+        self.assertEqual(len(step.findall("./ul/li/ul/li")), 2)
+        self.assertIn("Continued paragraph.", "".join(step.find("./ul/li/ul/li").itertext()))
+        self.assertIsNotNone(step.find("./blockquote"))
+
+    def test_nested_list_examples_remain_literal_in_fences(self):
+        for fence in ("```", "~~~", "````"):
+            with self.subTest(fence=fence):
+                literal = "- Parent\n  - Child\n    - Grandchild"
+                source = f"{fence}markdown\n{literal}\n{fence}"
+                self.assertEqual(COMPAT.prepare_markdown(source), source)
+                page = self.render(source)
+                self.assertIn(literal, "".join(page.find(".//code").itertext()))
+                self.assertIsNone(page.find("./ul"))
+
+    def test_fenced_examples_keep_relative_indentation_inside_nested_lists(self):
+        page = self.render(
+            "- Parent\n  - Child\n\n    ```markdown\n"
+            "    - Literal parent\n      - Literal child\n    ```\n\n  - Sibling\n"
+        )
+        self.assertEqual(len(page.findall("./ul/li/ul/li")), 2)
+        code = page.find("./ul/li/ul/li//code")
+        self.assertIsNotNone(code)
+        self.assertIn("- Literal parent\n  - Literal child", "".join(code.itertext()))
+
     def test_fenced_alert_examples_remain_literal(self):
         for fence in ("```", "~~~", "````", "~~~~"):
             with self.subTest(fence=fence):

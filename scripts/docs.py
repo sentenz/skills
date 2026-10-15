@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 from pathlib import Path
 import signal
@@ -77,6 +78,13 @@ def prepare(config_file: Path) -> Path:
     project["nav"] = [{"Home": "index.md"}, {"Skills": navigation}]
     project["docs_dir"] = docs.relative_to(root).as_posix()
     project.setdefault("extra", {})["source_root"] = str(root)
+    # Zensical caches rendered Markdown by source and configuration, so changes
+    # to our Python extension must also change the generated configuration.
+    scripts = Path(__file__).resolve().parent
+    project["extra"]["docs_renderer_version"] = hashlib.sha256(
+        (scripts / "docs_markdown.py").read_bytes()
+        + (scripts / "docs_skills.py").read_bytes()
+    ).hexdigest()
     generated = root / ".zensical.generated.toml"
     write_changed(generated, tomli_w.dumps(config).encode("utf-8"))
     return generated
