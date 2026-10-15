@@ -547,19 +547,22 @@ sast-cosign-verify:
 
 # ─── Static Site Generator (SSG) ─────────────────────────────────────────────────────────────────
 
-### Setup documentation pages with MkDocs
+PAGES_VENV ?= .venv
+
+## Setup documentation pages with MkDocs
 pages-mkdocs-setup:
-	@python3 -m venv .venv && . $(PIP_VENV)/activate && cd ./scripts/ && bash ./setup_pages.sh
+	@python3 -m venv "$(PAGES_VENV)"
+	@"$(PAGES_VENV)/bin/python" -m pip install -r requirements-docs.txt
 .PHONY: pages-mkdocs-setup
 
 ## Build documentation pages with MkDocs
 pages-mkdocs-build:
-	@. $(PIP_VENV)/activate; mkdocs build
+	@"$(PAGES_VENV)/bin/python" -m mkdocs build --strict
 .PHONY: pages-mkdocs-build
 
 ## Serve documentation pages locally with MkDocs
 pages-mkdocs-serve:
-	@. $(PIP_VENV)/activate; mkdocs serve --dev-addr 127.0.0.1:8000 --livereload
+	@"$(PAGES_VENV)/bin/python" -m mkdocs serve --dev-addr 127.0.0.1:8000 --livereload
 .PHONY: pages-mkdocs-serve
 
 # ─── Documentation Generators ────────────────────────────────────────────────────────────────────

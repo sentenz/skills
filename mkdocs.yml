@@ -1,0 +1,87 @@
+# SPDX-License-Identifier: Apache-2.0
+
+site_name: Skills
+site_description: Modular agent skills for software development.
+site_url: https://sentenz.github.io/skills/
+repo_name: sentenz/skills
+repo_url: https://github.com/sentenz/skills
+edit_uri: edit/main/
+
+docs_dir: docs
+site_dir: public
+strict: true
+watch:
+  - skills
+
+extra:
+  source_ref: main
+
+hooks:
+  - scripts/mkdocs_markdown.py
+  - scripts/mkdocs_skills.py
+
+extra_css:
+  - assets/css/style.css
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.magiclink
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.tilde
+  - tables
+  - toc:
+      permalink: true
+
+theme:
+  name: material
+  logo: assets/images/logo-wordmark.svg
+  favicon: assets/images/logo.svg
+  features:
+    - navigation.top
+    - navigation.tabs
+    - content.code.copy
+    - search.suggest
+    - search.highlight
+    - search.share
+  palette:
+    - media: "(prefers-color-scheme)"
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/link
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode

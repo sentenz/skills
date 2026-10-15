@@ -519,12 +519,21 @@ Software Supply Chain Security for identifying vulnerabilities in dependencies b
     - [mkdocs.yml](mkdocs.yml)
       > Configuration file for MkDocs specifying site settings, theme, plugins, and markdown extensions.
 
+    - [requirements-docs.txt](requirements-docs.txt)
+      > Shared dependency pins for local builds and CI, aligned with [sentenz/convention](https://github.com/sentenz/convention).
+
+    - [scripts/mkdocs_skills.py](scripts/mkdocs_skills.py)
+      > Discovers `skills/**/SKILL.md` at build time and generates the catalog and navigation. Only these skill documents and the generated catalog are published and indexed. Supporting references, scripts, assets, and other repository Markdown remain on GitHub; relative links to existing supporting files are redirected there. Skill source files are not modified or duplicated.
+
+    - [docs/assets/](docs/assets/)
+      > Material theme styling and logos adapted from `sentenz/convention`, alongside its Markdown compatibility hooks in [scripts/mkdocs_markdown.py](scripts/mkdocs_markdown.py).
+
 2. Usage and Instructions
 
     - CI/CD
 
       ```yaml
-      uses: sentenz/actions/mkdocs@latest
+      uses: ./.github/actions/mkdocs
       ```
 
     - Tasks
@@ -540,3 +549,12 @@ Software Supply Chain Security for identifying vulnerabilities in dependencies b
       ```bash
       make pages-mkdocs-serve
       ```
+
+      Python 3.12 with `venv` support is required for setup. The local preview is available at `http://127.0.0.1:8000/skills/`; builds are written to `public/`. New or removed `SKILL.md` files are discovered automatically on rebuild.
+
+      ```bash
+      .venv/bin/python -m unittest discover -s tests/mkdocs -v
+      ```
+
+    - Deployment
+      > The [MkDocs workflow](.github/workflows/mkdocs.yml) validates pull requests and uploads a site artifact. Pushes to `main` and manual runs on `main` deploy to GitHub Pages. Enable **Settings → Pages → Build and deployment → Source: GitHub Actions** before the first deployment. The site URL is `https://sentenz.github.io/skills/`.
