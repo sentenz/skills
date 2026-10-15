@@ -1,0 +1,1031 @@
+/* ========================================================================== */
+/* MkDocs Material — Material Design 3 token adapter                          */
+/* Palette: Orchid purple · Soft pink accent · Warm neutral surfaces          */
+/* Static HCT palettes: @material/material-color-utilities 0.3.0.             */
+/* Primary/neutral: CorePalette.of(#6442d6); tertiary: #81427c tonal palette. */
+/* Warning: #7b5800; success: #386a3c harmonized to the primary seed.         */
+/* M3 tones: accents 40/80, on-accents 100/20, containers 90/30, on 10/90.    */
+/* ========================================================================== */
+
+:root {
+  /* Prefer Google Sans when installed; MkDocs loads Roboto as its web fallback. */
+  --md-ref-typeface-brand: "Google Sans", "Roboto", system-ui, sans-serif;
+  --md-ref-typeface-plain: "Google Sans Text", "Roboto", system-ui, sans-serif;
+
+  /* M3 spacing tokens on the supplied 4px base grid. */
+  --md-sys-spacing-hairline: 1px;
+  --md-sys-spacing-base: 4px;
+  --md-sys-spacing-small: 8px;
+  --md-sys-spacing-medium: 16px;
+  --md-sys-spacing-section-small: 32px;
+  --md-sys-spacing-section-medium: 48px;
+  --md-sys-spacing-section-large: 56px;
+  --md-sys-spacing-section-extra-large: 64px;
+  --md-sys-spacing-page-small: 80px;
+  --md-sys-spacing-page-large: 120px;
+
+  /* M3 shape tokens. */
+  --md-sys-shape-corner-none: 0;
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-large-increased: 20px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-extra-large-increased: 32px;
+  --md-sys-shape-corner-extra-extra-large: 48px;
+  --md-sys-shape-corner-full: 9999px;
+
+  /* The single shadow level retained for floating UI over page content. */
+  --md-sys-elevation-level-1:
+    rgb(0 0 0 / 30%) 0 1px 2px 0,
+    rgb(0 0 0 / 15%) 0 1px 3px 1px;
+
+  /* M3 transition tokens for the CSS-only web surface. */
+  --md-sys-motion-duration-short: 200ms;
+  --md-sys-motion-duration-medium: 300ms;
+  --md-sys-motion-duration-long: 500ms;
+  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --md-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+
+  /* M3 type roles; pixel sizes preserve the scale with MkDocs' 20px rem base. */
+  --md-sys-typescale-display-large-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-display-large-weight: 400;
+  --md-sys-typescale-display-large-size: 57px;
+  --md-sys-typescale-display-large-line-height: 64px;
+  --md-sys-typescale-display-small-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-display-small-weight: 400;
+  --md-sys-typescale-display-small-size: 36px;
+  --md-sys-typescale-display-small-line-height: 44px;
+  --md-sys-typescale-headline-small-size: 24px;
+  --md-sys-typescale-headline-small-line-height: 32px;
+  --md-sys-typescale-title-large-size: 22px;
+  --md-sys-typescale-title-large-line-height: 28px;
+  --md-sys-typescale-title-large-weight: 400;
+  --md-sys-typescale-title-medium-size: 16px;
+  --md-sys-typescale-title-medium-line-height: 24px;
+  --md-sys-typescale-title-medium-weight: 500;
+  --md-sys-typescale-title-small-size: 14px;
+  --md-sys-typescale-title-small-line-height: 20px;
+  --md-sys-typescale-body-large-font: var(--md-ref-typeface-plain);
+  --md-sys-typescale-body-large-size: 16px;
+  --md-sys-typescale-body-large-line-height: 24px;
+  --md-sys-typescale-label-large-weight: 500;
+  --md-sys-typescale-label-medium-weight: 500;
+
+  --md-custom-reading-width: 80ch;
+  --md-custom-touch-target: 48px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Light scheme — HCT tonal roles */
+/* -------------------------------------------------------------------------- */
+
+[data-md-color-scheme="default"] {
+  color-scheme: light;
+
+  --md-sys-color-primary: #6341d5;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #e7deff;
+  --md-sys-color-on-primary-container: #1e0061;
+
+  --md-sys-color-secondary: #605b71;
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: #e6dff9;
+  --md-sys-color-on-secondary-container: #1d192b;
+
+  --md-sys-color-tertiary: #874781;
+  --md-sys-color-on-tertiary: #ffffff;
+  --md-sys-color-tertiary-container: #ffd7f6;
+  --md-sys-color-on-tertiary-container: #380038;
+
+  --md-sys-color-error: #ba1a1a;
+  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-error-container: #ffdad6;
+  --md-sys-color-on-error-container: #410002;
+
+  --md-sys-color-surface: #fdf8fd;
+  --md-sys-color-surface-dim: #ddd9dd;
+  --md-sys-color-surface-bright: #fdf8fd;
+  --md-sys-color-surface-container-lowest: #ffffff;
+  --md-sys-color-surface-container-low: #f7f2f7;
+  --md-sys-color-surface-container: #f1ecf1;
+  --md-sys-color-surface-container-high: #ebe7ec;
+  --md-sys-color-surface-container-highest: #e6e1e6;
+  --md-sys-color-on-surface: #1c1b1e;
+  --md-sys-color-inverse-surface: #313033;
+  --md-sys-color-inverse-on-surface: #f4eff4;
+  --md-sys-color-on-surface-variant: #48454e;
+  --md-sys-color-outline: #79757f;
+  --md-sys-color-outline-variant: #c9c4cf;
+  --md-sys-color-inverse-primary: #cbbeff;
+  --md-sys-color-scrim: #000000;
+  --md-sys-color-shadow: #000000;
+
+  /* Documentation-specific semantic extensions. */
+  --md-custom-color-warning: #7b5800;
+  --md-custom-color-warning-container: #ffdea6;
+  --md-custom-color-on-warning-container: #271900;
+
+  --md-custom-color-success: #226a4b;
+  --md-custom-color-success-container: #aaf2c9;
+  --md-custom-color-on-success-container: #002113;
+
+  --md-search-field-color: var(--md-sys-color-surface-container-lowest);
+  --md-search-field-hover-color: var(--md-sys-color-surface-container-low);
+  --md-footer-bg-color: var(--md-sys-color-inverse-surface);
+  --md-footer-bg-color--dark: var(--md-sys-color-on-surface);
+  --md-footer-fg-color: var(--md-sys-color-inverse-on-surface);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Dark scheme — HCT tonal roles */
+/* -------------------------------------------------------------------------- */
+
+[data-md-color-scheme="slate"] {
+  color-scheme: dark;
+
+  --md-sys-color-primary: #cbbeff;
+  --md-sys-color-on-primary: #340098;
+  --md-sys-color-primary-container: #4b21bd;
+  --md-sys-color-on-primary-container: #e7deff;
+
+  --md-sys-color-secondary: #cac3dc;
+  --md-sys-color-on-secondary: #322e41;
+  --md-sys-color-secondary-container: #484458;
+  --md-sys-color-on-secondary-container: #e6dff9;
+
+  --md-sys-color-tertiary: #faadef;
+  --md-sys-color-on-tertiary: #521750;
+  --md-sys-color-tertiary-container: #6c2f68;
+  --md-sys-color-on-tertiary-container: #ffd7f6;
+
+  --md-sys-color-error: #ffb4ab;
+  --md-sys-color-on-error: #690005;
+  --md-sys-color-error-container: #93000a;
+  --md-sys-color-on-error-container: #ffdad6;
+
+  --md-sys-color-surface: #141316;
+  --md-sys-color-surface-dim: #141316;
+  --md-sys-color-surface-bright: #3a383c;
+  --md-sys-color-surface-container-lowest: #0f0e11;
+  --md-sys-color-surface-container-low: #1c1b1e;
+  --md-sys-color-surface-container: #201f23;
+  --md-sys-color-surface-container-high: #2b292d;
+  --md-sys-color-surface-container-highest: #363438;
+  --md-sys-color-on-surface: #e6e1e6;
+  --md-sys-color-inverse-surface: #e6e1e6;
+  --md-sys-color-inverse-on-surface: #313033;
+  --md-sys-color-on-surface-variant: #c9c4cf;
+  --md-sys-color-outline: #938f99;
+  --md-sys-color-outline-variant: #48454e;
+  --md-sys-color-inverse-primary: #6341d5;
+  --md-sys-color-scrim: #000000;
+  --md-sys-color-shadow: #000000;
+
+  /* Documentation-specific semantic extensions. */
+  --md-custom-color-warning: #efbf65;
+  --md-custom-color-warning-container: #5d4200;
+  --md-custom-color-on-warning-container: #ffdea6;
+
+  --md-custom-color-success: #8ed6ae;
+  --md-custom-color-success-container: #005235;
+  --md-custom-color-on-success-container: #aaf2c9;
+
+  --md-search-field-color: var(--md-sys-color-surface-container-high);
+  --md-search-field-hover-color: var(--md-sys-color-surface-container-highest);
+  --md-footer-bg-color: var(--md-sys-color-surface-container-lowest);
+  --md-footer-bg-color--dark: var(--md-sys-color-surface-container-lowest);
+  --md-footer-fg-color: var(--md-sys-color-on-surface);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Shared MkDocs Material adapter — aliases resolve in the selected scheme. */
+/* -------------------------------------------------------------------------- */
+
+[data-md-color-scheme="default"],
+[data-md-color-scheme="slate"] {
+  --md-custom-color-info: var(--md-sys-color-primary);
+  --md-custom-color-info-container: var(--md-sys-color-primary-container);
+  --md-custom-color-on-info-container: var(--md-sys-color-on-primary-container);
+
+  /* State layers follow the active palette, including contrast and print overrides. */
+  --md-sys-state-hover: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
+  --md-sys-state-focus: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
+  --md-sys-state-pressed: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
+  --md-sys-state-dragged: color-mix(in srgb, var(--md-sys-color-primary) 16%, transparent);
+
+  --md-app-bar-color: var(--md-sys-color-surface-container);
+  --md-app-bar-on-color: var(--md-sys-color-on-surface);
+  --md-app-bar-accent-color: var(--md-sys-color-primary);
+  --md-search-field-text-color: var(--md-sys-color-on-surface);
+  --md-search-field-placeholder-color: var(--md-sys-color-on-surface-variant);
+  --md-app-bar-field-color: var(--md-search-field-color);
+  --md-app-bar-field-hover-color: var(--md-search-field-hover-color);
+
+  /* Preserve MkDocs' accent semantics; app chrome consumes its own surface roles. */
+  --md-primary-fg-color: var(--md-sys-color-primary);
+  --md-primary-fg-color--light: var(--md-sys-color-primary-container);
+  --md-primary-fg-color--dark: var(--md-sys-color-primary-container);
+  --md-primary-bg-color: var(--md-sys-color-on-primary);
+  --md-primary-bg-color--light: var(--md-sys-color-on-primary);
+  --md-accent-fg-color: var(--md-sys-color-primary);
+  --md-accent-fg-color--transparent: var(--md-sys-state-hover);
+  --md-accent-bg-color: var(--md-sys-color-on-primary);
+  --md-accent-bg-color--light: var(--md-sys-color-on-primary);
+
+  /* MkDocs' translucent background aliases are used by fades, not elevation. */
+  --md-default-bg-color: var(--md-sys-color-surface);
+  --md-default-bg-color--light: color-mix(in srgb, var(--md-sys-color-surface) 70%, transparent);
+  --md-default-bg-color--lighter: color-mix(in srgb, var(--md-sys-color-surface) 30%, transparent);
+  --md-default-bg-color--lightest: color-mix(in srgb, var(--md-sys-color-surface) 12%, transparent);
+  --md-default-fg-color: var(--md-sys-color-on-surface);
+  --md-default-fg-color--light: var(--md-sys-color-on-surface-variant);
+  --md-default-fg-color--lighter: var(--md-sys-color-outline);
+  --md-default-fg-color--lightest: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
+
+  --md-typeset-color: var(--md-sys-color-on-surface);
+  --md-typeset-a-color: var(--md-sys-color-primary);
+  --md-typeset-mark-color: var(--md-sys-color-primary-container);
+  --md-typeset-ins-color: var(--md-custom-color-success-container);
+  --md-typeset-del-color: var(--md-sys-color-error-container);
+  --md-typeset-table-color: var(--md-sys-color-outline-variant);
+  --md-typeset-table-color--light: var(--md-sys-state-hover);
+
+  --md-code-bg-color: var(--md-sys-color-surface-container);
+  --md-code-bg-color--light: color-mix(in srgb, var(--md-code-bg-color) 90%, transparent);
+  --md-code-bg-color--lighter: color-mix(in srgb, var(--md-code-bg-color) 54%, transparent);
+  --md-code-fg-color: var(--md-sys-color-on-surface);
+  --md-code-hl-color: var(--md-sys-color-primary);
+  --md-code-hl-color--light: var(--md-sys-state-hover);
+  --md-code-hl-keyword-color: var(--md-sys-color-primary);
+  --md-code-hl-function-color: var(--md-sys-color-tertiary);
+  --md-code-hl-string-color: var(--md-custom-color-success);
+  --md-code-hl-comment-color: var(--md-sys-color-on-surface-variant);
+  --md-code-hl-name-color: var(--md-sys-color-on-surface);
+  --md-code-hl-special-color: var(--md-sys-color-error);
+  --md-code-hl-number-color: var(--md-custom-color-warning);
+  --md-code-hl-operator-color: var(--md-sys-color-on-surface-variant);
+  --md-code-hl-punctuation-color: var(--md-sys-color-on-surface-variant);
+  --md-code-hl-generic-color: var(--md-sys-color-on-surface);
+  --md-code-hl-variable-color: var(--md-sys-color-secondary);
+  --md-code-hl-constant-color: var(--md-sys-color-primary);
+
+  --md-admonition-fg-color: var(--md-sys-color-on-surface);
+  --md-admonition-bg-color: var(--md-sys-color-surface-container-low);
+  --md-error-fg-color: var(--md-sys-color-error);
+  --md-error-bg-color: var(--md-sys-color-error-container);
+  --md-error-bg-color--light: color-mix(in srgb, var(--md-sys-color-error) 12%, transparent);
+  --md-warning-fg-color: var(--md-custom-color-on-warning-container);
+  --md-warning-bg-color: var(--md-custom-color-warning-container);
+  --md-footer-fg-color--light: var(--md-footer-fg-color);
+  --md-footer-fg-color--lighter: color-mix(in srgb, var(--md-footer-fg-color) 80%, var(--md-footer-bg-color--dark));
+
+  /* Compatibility aliases for existing local naming. */
+  --md-outline-color: var(--md-sys-color-outline);
+  --md-outline-color--light: var(--md-sys-color-outline-variant);
+  --md-state-hover: var(--md-sys-state-hover);
+  --md-state-focus: var(--md-sys-state-focus);
+  --md-state-pressed: var(--md-sys-state-pressed);
+  --md-state-dragged: var(--md-sys-state-dragged);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Shared component styling                                                   */
+/* -------------------------------------------------------------------------- */
+
+body {
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font-family: var(--md-ref-typeface-plain);
+}
+
+.md-typeset {
+  font-family: var(--md-sys-typescale-body-large-font);
+  font-size: var(--md-sys-typescale-body-large-size);
+  line-height: var(--md-sys-typescale-body-large-line-height);
+}
+
+.md-typeset h1 {
+  color: var(--md-sys-color-on-surface);
+  max-inline-size: clamp(18ch, 64vw, 36ch);
+  margin-bottom: var(--md-sys-spacing-section-large);
+  font-family: var(--md-sys-typescale-display-large-font);
+  font-size: clamp(
+    var(--md-sys-typescale-display-small-size),
+    7vw,
+    var(--md-sys-typescale-display-large-size)
+  );
+  font-weight: var(--md-sys-typescale-display-large-weight);
+  line-height: clamp(
+    var(--md-sys-typescale-display-small-line-height),
+    7.5vw,
+    var(--md-sys-typescale-display-large-line-height)
+  );
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.md-typeset h2 {
+  color: var(--md-sys-color-on-surface);
+  margin-top: var(--md-sys-spacing-page-small);
+  font-family: var(--md-sys-typescale-display-small-font);
+  font-size: clamp(32px, 4vw, var(--md-sys-typescale-display-small-size));
+  font-weight: var(--md-sys-typescale-display-small-weight);
+  line-height: clamp(40px, 4.6vw, var(--md-sys-typescale-display-small-line-height));
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.md-typeset h3 {
+  margin-top: var(--md-sys-spacing-section-medium);
+  font-family: var(--md-ref-typeface-plain);
+  font-size: var(--md-sys-typescale-headline-small-size);
+  font-weight: var(--md-sys-typescale-title-large-weight);
+  line-height: var(--md-sys-typescale-headline-small-line-height);
+  letter-spacing: 0.01em;
+}
+
+.md-typeset h4,
+.md-typeset h5,
+.md-typeset h6 {
+  font-family: var(--md-ref-typeface-plain);
+  font-weight: var(--md-sys-typescale-title-medium-weight);
+}
+
+.md-typeset h4 {
+  font-size: var(--md-sys-typescale-title-large-size);
+  font-weight: var(--md-sys-typescale-title-large-weight);
+  line-height: var(--md-sys-typescale-title-large-line-height);
+}
+
+.md-typeset h5 {
+  font-size: var(--md-sys-typescale-title-medium-size);
+  line-height: var(--md-sys-typescale-title-medium-line-height);
+  text-transform: none;
+}
+
+.md-typeset h6 {
+  font-size: var(--md-sys-typescale-title-small-size);
+  line-height: var(--md-sys-typescale-title-small-line-height);
+}
+
+.md-content__inner {
+  max-inline-size: var(--md-custom-reading-width);
+  margin-bottom: var(--md-sys-spacing-page-small);
+}
+
+.md-typeset :is(h1, h2, h3, h4, h5, h6) {
+  overflow-wrap: anywhere;
+}
+
+.md-typeset a {
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.16em;
+  transition:
+    color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
+    background-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+
+.md-typeset a:hover {
+  color: var(--md-sys-color-tertiary);
+  text-decoration-thickness: 0.12em;
+}
+
+.md-typeset a:focus-visible,
+.md-nav__link:focus-visible,
+.md-tabs__link:focus-visible,
+.md-search__input:focus-visible,
+.md-search__icon:focus-visible,
+.md-search-result__link:focus-visible,
+.md-source:focus-visible,
+.md-footer__link:focus-visible,
+.md-header__button:focus-visible,
+.md-clipboard:focus-visible,
+.md-top:focus-visible,
+.md-typeset summary:focus-visible {
+  outline: 3px solid var(--md-sys-color-primary);
+  outline-offset: 3px;
+  border-radius: var(--md-sys-shape-corner-extra-small);
+}
+
+/* Summary outlines stay inside the clipped details container. */
+.md-typeset summary:focus-visible {
+  outline-offset: -3px;
+}
+
+.md-footer__link:focus-visible {
+  outline-color: var(--md-footer-fg-color);
+}
+
+::selection {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+/* Header, tabs, and search. */
+
+/* Reserve the wordmark ratio while retaining MkDocs' header and drawer sizes. */
+.md-header__button.md-logo img,
+.md-nav__title .md-nav__button.md-logo img {
+  aspect-ratio: 16 / 3;
+}
+
+.md-header,
+.md-tabs {
+  background: var(--md-app-bar-color);
+  box-shadow: none;
+  color: var(--md-app-bar-on-color);
+}
+
+.md-search__form,
+[data-md-toggle="search"]:checked ~ .md-header .md-search__form {
+  background: var(--md-search-field-color);
+  border-radius: var(--md-sys-shape-corner-small);
+  transition: background-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+
+.md-search__form:hover,
+.md-search__form:focus-within,
+[data-md-toggle="search"]:checked ~ .md-header .md-search__form:focus-within {
+  background: var(--md-search-field-hover-color);
+}
+
+.md-search__input {
+  color: var(--md-search-field-text-color);
+  caret-color: var(--md-sys-color-primary);
+  opacity: 1;
+}
+
+.md-search__input::placeholder,
+[data-md-toggle="search"]:checked ~ .md-header .md-search__input::placeholder {
+  color: var(--md-search-field-placeholder-color);
+  opacity: 1;
+}
+
+.md-search__icon,
+.md-search__input + .md-search__icon {
+  color: var(--md-search-field-placeholder-color);
+}
+
+.md-search-result__meta {
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.md-search-result__link {
+  border-radius: var(--md-sys-shape-corner-small);
+  transition: background-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+
+.md-search-result__link:hover {
+  background: var(--md-sys-state-hover);
+}
+
+.md-search-result__link:focus,
+.md-search-result__link[data-md-state="active"] {
+  background: var(--md-sys-state-focus);
+}
+
+@media screen and (min-width: 60em) {
+  .md-search__output {
+    border-radius: 0 0 var(--md-sys-shape-corner-medium)
+      var(--md-sys-shape-corner-medium);
+    box-shadow: var(--md-sys-elevation-level-1);
+    overflow: hidden;
+  }
+}
+
+.md-tabs__link {
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 1;
+  font-weight: var(--md-sys-typescale-label-large-weight);
+  transition:
+    color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
+    opacity var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+
+.md-tabs__item--active .md-tabs__link,
+.md-tabs__link--active,
+.md-tabs__link:focus,
+.md-tabs__link:hover {
+  color: var(--md-app-bar-accent-color);
+}
+
+.md-tabs__indicator {
+  background: var(--md-app-bar-accent-color);
+  border-radius: var(--md-sys-shape-corner-full) var(--md-sys-shape-corner-full) 0 0;
+}
+
+/* Navigation drawer: active destinations use a flat filled tonal highlight. */
+
+@media screen and (max-width: 76.234375em) {
+  .md-nav--primary .md-nav__title[for="__drawer"],
+  .md-nav__source {
+    background: var(--md-app-bar-color);
+    color: var(--md-app-bar-on-color);
+  }
+}
+
+.md-nav__link {
+  border-radius: var(--md-sys-shape-corner-none);
+  transition:
+    color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
+    background-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
+    box-shadow var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+
+.md-nav__link:focus-visible {
+  border-radius: var(--md-sys-shape-corner-none);
+}
+
+.md-nav__link:hover {
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+}
+
+.md-nav__link--active,
+.md-nav__item--active > .md-nav__link {
+  color: var(--md-sys-color-on-secondary-container);
+  font-weight: var(--md-sys-typescale-label-large-weight);
+}
+
+.md-nav__link.md-nav__link--active {
+  --md-typeset-a-color: var(--md-sys-color-on-secondary-container);
+  --md-accent-fg-color: var(--md-sys-color-on-secondary-container);
+
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  box-shadow: inset 0.2rem 0 0 var(--md-sys-color-primary);
+  padding-left: 0.8rem;
+  padding-right: 0.6rem;
+}
+
+/* Code. */
+
+.md-typeset code {
+  border: var(--md-sys-spacing-hairline) solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-extra-small);
+}
+
+.md-typeset pre > code {
+  border: var(--md-sys-spacing-hairline) solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-small);
+}
+
+.md-typeset .highlight,
+.md-typeset .highlighttable {
+  border-radius: var(--md-sys-shape-corner-small);
+}
+
+.md-clipboard {
+  color: var(--md-sys-color-on-surface-variant);
+  border-radius: var(--md-sys-shape-corner-full);
+  transition:
+    color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
+    background-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+
+.md-clipboard:hover {
+  background: var(--md-sys-state-hover);
+}
+
+/* Admonitions and details. */
+
+.md-typeset .admonition[class],
+.md-typeset details[class],
+.md-typeset details {
+  --md-admonition-color: var(--md-sys-color-outline-variant);
+  --md-admonition-container: var(--md-sys-color-surface-container-low);
+  --md-admonition-on-container: var(--md-sys-color-on-surface);
+
+  background: var(--md-sys-color-surface-container-low);
+  border: var(--md-sys-spacing-hairline) solid var(--md-admonition-color);
+  border-radius: var(--md-sys-shape-corner-medium);
+  box-shadow: none;
+  color: var(--md-sys-color-on-surface);
+  overflow: hidden;
+  transition:
+    background-color var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard),
+    border-color var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard);
+}
+
+.md-typeset .admonition > .admonition-title,
+.md-typeset details[class] > summary,
+.md-typeset details > summary {
+  background: var(--md-admonition-container);
+  color: var(--md-admonition-on-container);
+  font-weight: var(--md-sys-typescale-label-large-weight);
+}
+
+.md-typeset .admonition > .admonition-title::before,
+.md-typeset details[class] > summary::before,
+.md-typeset details > summary::before {
+  background-color: var(--md-admonition-on-container);
+}
+
+.md-typeset .admonition > .admonition-title::after,
+.md-typeset details[class] > summary::after,
+.md-typeset details > summary::after {
+  color: var(--md-admonition-on-container);
+}
+
+.md-typeset :is(.admonition, details):is(.note, .info) {
+  --md-admonition-color: var(--md-custom-color-info);
+  --md-admonition-container: var(--md-custom-color-info-container);
+  --md-admonition-on-container: var(--md-custom-color-on-info-container);
+}
+
+.md-typeset :is(.admonition, details).abstract {
+  --md-admonition-color: var(--md-sys-color-tertiary);
+  --md-admonition-container: var(--md-sys-color-tertiary-container);
+  --md-admonition-on-container: var(--md-sys-color-on-tertiary-container);
+}
+
+.md-typeset :is(.admonition, details):is(.tip, .success) {
+  --md-admonition-color: var(--md-custom-color-success);
+  --md-admonition-container: var(--md-custom-color-success-container);
+  --md-admonition-on-container: var(--md-custom-color-on-success-container);
+}
+
+.md-typeset :is(.admonition, details):is(.question, .example) {
+  --md-admonition-color: var(--md-sys-color-secondary);
+  --md-admonition-container: var(--md-sys-color-secondary-container);
+  --md-admonition-on-container: var(--md-sys-color-on-secondary-container);
+}
+
+.md-typeset :is(.admonition, details).important {
+  --md-admonition-color: var(--md-sys-color-tertiary);
+  --md-admonition-container: var(--md-sys-color-tertiary-container);
+  --md-admonition-on-container: var(--md-sys-color-on-tertiary-container);
+}
+
+.md-typeset :is(.admonition, details).warning {
+  --md-admonition-color: var(--md-custom-color-warning);
+  --md-admonition-container: var(--md-custom-color-warning-container);
+  --md-admonition-on-container: var(--md-custom-color-on-warning-container);
+}
+
+.md-typeset :is(.admonition, details):is(.failure, .danger, .bug) {
+  --md-admonition-color: var(--md-sys-color-error);
+  --md-admonition-container: var(--md-sys-color-error-container);
+  --md-admonition-on-container: var(--md-sys-color-on-error-container);
+}
+
+.md-typeset :is(.admonition, details).quote {
+  --md-admonition-color: var(--md-sys-color-outline-variant);
+  --md-admonition-container: var(--md-sys-color-surface-container-high);
+  --md-admonition-on-container: var(--md-sys-color-on-surface-variant);
+}
+
+/* Blockquotes. */
+
+.md-typeset blockquote {
+  border-left: var(--md-sys-spacing-base) solid var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Tables. */
+
+.md-typeset table:not([class]) {
+  border: var(--md-sys-spacing-hairline) solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-medium);
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.md-typeset table:not([class]) th {
+  background: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface);
+  font-weight: var(--md-sys-typescale-label-large-weight);
+}
+
+.md-typeset table:not([class]) td {
+  border-top: var(--md-sys-spacing-hairline) solid var(--md-sys-color-outline-variant);
+}
+
+/* Keyboard. */
+
+.md-typeset kbd {
+  background: var(--md-sys-color-surface-container-highest);
+  border: var(--md-sys-spacing-hairline) solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  box-shadow: none;
+  color: var(--md-sys-color-on-surface);
+}
+
+/* Header links. */
+
+.md-typeset .headerlink {
+  color: var(--md-sys-color-outline);
+  transition: color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+
+.md-typeset .headerlink:hover {
+  color: var(--md-sys-color-tertiary);
+}
+
+/* Scrollbars. */
+
+[data-md-color-scheme] {
+  scrollbar-color: var(--md-sys-color-outline-variant) transparent;
+}
+
+[data-md-color-scheme] ::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-full);
+}
+
+[data-md-color-scheme] ::-webkit-scrollbar-thumb:hover {
+  background: var(--md-sys-color-outline);
+}
+
+[data-md-color-scheme] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Task lists. */
+
+.md-typeset .task-list-control .task-list-indicator::before {
+  /* MkDocs renders a masked icon: its background is the visible stroke. */
+  background: var(--md-sys-color-outline);
+}
+
+.md-typeset .task-list-control [type="checkbox"]:checked + .task-list-indicator::before {
+  background: var(--md-sys-color-primary);
+}
+
+/* Tooltips. */
+
+.md-tooltip {
+  --md-typeset-color: var(--md-sys-color-inverse-on-surface);
+  --md-typeset-a-color: var(--md-sys-color-inverse-primary);
+
+  background: var(--md-sys-color-inverse-surface);
+  border: 0;
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  color: var(--md-sys-color-inverse-on-surface);
+}
+
+/* Current MkDocs tooltips and clipboard notifications use the same inverse pair. */
+.md-tooltip2[role="tooltip"] {
+  --md-default-bg-color: var(--md-sys-color-inverse-surface);
+  --md-default-fg-color: var(--md-sys-color-inverse-on-surface);
+}
+
+.md-dialog {
+  background: var(--md-sys-color-inverse-surface);
+}
+
+.md-dialog__inner {
+  color: var(--md-sys-color-inverse-on-surface);
+}
+
+/* Progress. */
+
+.md-progress__bar {
+  background: var(--md-sys-color-primary);
+}
+
+/* Insertions, deletions, and highlights. */
+
+.md-typeset mark {
+  background: var(--md-sys-color-primary-container);
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.md-typeset ins {
+  background: var(--md-custom-color-success-container);
+  border-bottom: var(--md-sys-spacing-hairline) solid var(--md-custom-color-success);
+  color: var(--md-custom-color-on-success-container);
+  text-decoration: none;
+}
+
+.md-typeset del {
+  background: var(--md-sys-color-error-container);
+  border-bottom: var(--md-sys-spacing-hairline) solid var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error-container);
+}
+
+/* Tags and content tabs. */
+
+.md-tag,
+.md-typeset .md-tag {
+  background: var(--md-sys-color-secondary-container);
+  border-radius: var(--md-sys-shape-corner-small);
+  color: var(--md-sys-color-on-secondary-container);
+  font-weight: var(--md-sys-typescale-label-medium-weight);
+}
+
+.md-typeset .tabbed-labels > label {
+  border-radius: var(--md-sys-shape-corner-small);
+  font-weight: var(--md-sys-typescale-label-large-weight);
+  transition:
+    color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
+    background-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+
+.md-typeset .tabbed-labels > label:hover {
+  background: var(--md-sys-state-hover);
+}
+
+/* Images use shape and outline rather than persistent elevation shadows. */
+
+.md-typeset img {
+  max-inline-size: 100%;
+  height: auto;
+}
+
+.md-typeset img:not([src*=".svg" i]) {
+  background: var(--md-sys-color-surface-container-low);
+  border: var(--md-sys-spacing-hairline) solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-medium);
+  box-shadow: none;
+}
+
+/* Responsive reading width and interaction targets follow M3 window classes. */
+
+.md-main__inner {
+  padding-top: var(--md-sys-spacing-hairline);
+}
+
+@media (min-width: 600px) {
+  .md-main__inner {
+    padding-top: var(--md-sys-spacing-base);
+  }
+}
+
+@media (min-width: 840px) {
+  .md-main__inner {
+    padding-top: var(--md-sys-spacing-small);
+  }
+}
+
+@media (min-width: 1200px) {
+  .md-grid {
+    max-width: 75rem;
+  }
+
+  .md-content__inner {
+    margin-bottom: var(--md-sys-spacing-page-large);
+    margin-inline: auto;
+  }
+}
+
+@media (min-width: 1600px) {
+  .md-grid {
+    max-width: 90rem;
+  }
+}
+
+@media (pointer: coarse) {
+  .md-header__button,
+  .md-clipboard,
+  .md-top {
+    min-width: var(--md-custom-touch-target);
+    min-height: var(--md-custom-touch-target);
+  }
+
+  .md-header__button {
+    margin: 0;
+  }
+
+  .md-nav__link,
+  .md-tabs__link,
+  .md-typeset .tabbed-labels > label,
+  .md-typeset summary {
+    min-height: var(--md-custom-touch-target);
+    align-items: center;
+  }
+
+  .md-tabs__link {
+    margin-top: 0;
+  }
+
+  .md-typeset summary {
+    padding-block: var(--md-sys-spacing-medium);
+  }
+
+  .md-typeset summary::before,
+  .md-typeset summary::after {
+    top: var(--md-sys-spacing-medium);
+  }
+
+  .md-typeset pre > code {
+    padding-inline-end: calc(var(--md-custom-touch-target) + var(--md-sys-spacing-small));
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Accessibility                                                              */
+/* -------------------------------------------------------------------------- */
+
+@media (prefers-contrast: more) {
+  [data-md-color-scheme] {
+    --md-sys-color-on-surface-variant: var(--md-sys-color-on-surface);
+    --md-sys-color-outline: var(--md-sys-color-on-surface);
+    --md-footer-fg-color--lighter: var(--md-footer-fg-color);
+  }
+
+  .md-typeset code,
+  .md-typeset pre > code,
+  .md-typeset .admonition[class],
+  .md-typeset details[class],
+  .md-typeset details,
+  .md-typeset table:not([class]),
+  .md-typeset kbd,
+  .md-typeset img:not([src*=".svg" i]) {
+    border-color: var(--md-sys-color-outline);
+  }
+
+  .md-nav__link.md-nav__link--active {
+    outline: 1px solid var(--md-sys-color-outline);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Print                                                                      */
+/* -------------------------------------------------------------------------- */
+
+@media print {
+  [data-md-color-scheme] {
+    color-scheme: light;
+
+    --md-sys-color-primary: #6341d5;
+    --md-sys-color-on-primary: #ffffff;
+    --md-sys-color-primary-container: #ffffff;
+    --md-sys-color-on-primary-container: #1e0061;
+
+    --md-sys-color-secondary: #605b71;
+    --md-sys-color-on-secondary: #ffffff;
+    --md-sys-color-secondary-container: #ffffff;
+    --md-sys-color-on-secondary-container: #1d192b;
+
+    --md-sys-color-tertiary: #874781;
+    --md-sys-color-on-tertiary: #ffffff;
+    --md-sys-color-tertiary-container: #ffffff;
+    --md-sys-color-on-tertiary-container: #380038;
+
+    --md-sys-color-error: #ba1a1a;
+    --md-sys-color-on-error: #ffffff;
+    --md-sys-color-error-container: #ffffff;
+    --md-sys-color-on-error-container: #410002;
+
+    --md-custom-color-warning: #7b5800;
+    --md-custom-color-warning-container: #ffffff;
+    --md-custom-color-on-warning-container: #271900;
+
+    --md-custom-color-success: #226a4b;
+    --md-custom-color-success-container: #ffffff;
+    --md-custom-color-on-success-container: #002113;
+
+    --md-sys-color-surface: #ffffff;
+    --md-sys-color-surface-dim: #ffffff;
+    --md-sys-color-surface-bright: #ffffff;
+    --md-sys-color-surface-container-lowest: #ffffff;
+    --md-sys-color-surface-container-low: #ffffff;
+    --md-sys-color-surface-container: #f5f5f5;
+    --md-sys-color-surface-container-high: #eeeeee;
+    --md-sys-color-surface-container-highest: #e8e8e8;
+    --md-sys-color-on-surface: #000000;
+    --md-sys-color-inverse-surface: #313033;
+    --md-sys-color-inverse-on-surface: #f4eff4;
+    --md-sys-color-on-surface-variant: #1a1a1a;
+    --md-sys-color-outline: #4a4a4a;
+    --md-sys-color-outline-variant: #cccccc;
+    --md-sys-color-inverse-primary: #cbbeff;
+    --md-sys-color-scrim: #000000;
+    --md-sys-color-shadow: #000000;
+    --md-footer-bg-color: var(--md-sys-color-surface);
+    --md-footer-bg-color--dark: var(--md-sys-color-surface);
+    --md-footer-fg-color: var(--md-sys-color-on-surface);
+  }
+
+  [data-md-color-scheme] .md-header,
+  [data-md-color-scheme] .md-tabs,
+  [data-md-color-scheme] .md-footer {
+    background: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+  }
+
+  [data-md-color-scheme] .md-typeset img:not([src*=".svg" i]) {
+    background: none;
+    border: var(--md-sys-spacing-hairline) solid var(--md-sys-color-outline-variant);
+    box-shadow: none;
+  }
+}

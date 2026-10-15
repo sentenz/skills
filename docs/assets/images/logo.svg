@@ -1,0 +1,62 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  class="sentenz-logo"
+  width="512"
+  height="512"
+  viewBox="0 0 512 512"
+  role="img"
+  aria-labelledby="logo-title logo-description"
+>
+  <title id="logo-title">SENTENZ</title>
+  <desc id="logo-description">
+    A rounded orchid tile with a flowing S and a contrasting pink terminal point,
+    using coordinated Material 3 light and dark colors.
+  </desc>
+
+  <style>
+    /* Match the host M3 palette when inline, or use HCT fallback colors. */
+    .sentenz-logo {
+      --sentenz-logo-primary: var(--md-sys-color-primary, #6341d5);
+      --sentenz-logo-on-primary: var(--md-sys-color-on-primary, #ffffff);
+      --sentenz-logo-tertiary: var(--md-sys-color-tertiary, #874781);
+      --sentenz-logo-on-tertiary: var(--md-sys-color-on-tertiary, #ffffff);
+    }
+
+    /* Embedded images follow color-scheme; standalone images follow the OS. */
+    @media screen and (prefers-color-scheme: dark) {
+      .sentenz-logo {
+        --sentenz-logo-primary: var(--md-sys-color-primary, #cbbeff);
+        --sentenz-logo-on-primary: var(--md-sys-color-on-primary, #340098);
+        --sentenz-logo-tertiary: var(--md-sys-color-tertiary, #faadef);
+        --sentenz-logo-on-tertiary: var(--md-sys-color-on-tertiary, #521750);
+      }
+    }
+
+    .sentenz-logo .logo-container {
+      fill: var(--sentenz-logo-primary);
+    }
+
+    .sentenz-logo .logo-mark {
+      fill: none;
+      stroke: var(--sentenz-logo-on-primary);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 68;
+    }
+
+    .sentenz-logo .logo-terminal {
+      fill: var(--sentenz-logo-tertiary);
+      stroke: var(--sentenz-logo-on-tertiary);
+      stroke-width: 8;
+    }
+  </style>
+
+  <rect class="logo-container" x="32" y="32" width="448" height="448" rx="112" />
+  <g transform="translate(0 -16)">
+    <path
+      class="logo-mark"
+      d="M374 150C340 116 298 104 246 104C170 104 116 138 116 190C116 240 158 258 256 268C354 278 396 300 396 350C396 404 340 438 264 438C206 438 160 422 128 388"
+    />
+    <circle class="logo-terminal" cx="128" cy="388" r="24" />
+  </g>
+</svg>

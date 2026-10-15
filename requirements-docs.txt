@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Versions aligned with sentenz/convention.
+mkdocs==1.6.1
+mkdocs-material==9.7.1
+pymdown-extensions==10.21.2
+pygments==2.20.0
