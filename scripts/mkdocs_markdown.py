@@ -275,7 +275,6 @@ def _set_line_indentation_if_needed(
 def _should_stop_list_continuation_scan(
     active_fence_marker: str | None,
     candidate_line: str,
-    stripped_line: str,
     candidate_indent: int,
     item_indent: int,
     line_fence_marker: str | None,
@@ -287,11 +286,8 @@ def _should_stop_list_continuation_scan(
     if _is_list_break(candidate_line, item_indent):
         return True
 
-    return (
-        candidate_indent <= item_indent
-        and not stripped_line.startswith(">")
-        and line_fence_marker is None
-    )
+    # Peer and parent blockquotes belong outside this list item.
+    return candidate_indent <= item_indent and line_fence_marker is None
 
 
 def _normalize_list_item_continuation_blocks(
@@ -315,7 +311,6 @@ def _normalize_list_item_continuation_blocks(
         if _should_stop_list_continuation_scan(
             active_fence_marker,
             candidate,
-            stripped,
             candidate_indent,
             item_indent,
             line_fence_marker,
@@ -402,10 +397,31 @@ def _convert_github_alerts(markdown: str) -> str:
     lines = normalized_markdown.splitlines()
     converted: list[str] = []
     index = 0
+    active_fence: str | None = None
 
     while index < len(lines):
         raw_line = lines[index]
-        if not raw_line.lstrip().startswith(">"):
+        stripped_line = raw_line.lstrip()
+        fence_match = re.match(r"(`{3,}|~{3,})(.*)$", stripped_line)
+
+        if active_fence is not None:
+            # Only a bare delimiter of the same kind and sufficient length closes
+            # the example; shorter or mismatched fences remain literal content.
+            if (
+                fence_match is not None
+                and fence_match[1][0] == active_fence[0]
+                and len(fence_match[1]) >= len(active_fence)
+                and not fence_match[2].strip()
+            ):
+                active_fence = None
+            converted.append(raw_line)
+            index += 1
+            continue
+
+        if fence_match is not None:
+            active_fence = fence_match[1]
+
+        if not stripped_line.startswith(">"):
             converted.append(raw_line)
             index += 1
             continue
