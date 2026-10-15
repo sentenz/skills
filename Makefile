@@ -555,6 +555,11 @@ pages-zensical-setup:
 	@"$(PAGES_VENV)/bin/python" -m pip install -r requirements-docs.txt
 .PHONY: pages-zensical-setup
 
+## Teardown documentation pages environment for Zensical
+pages-zensical-teardown:
+	@rm -rf "$(PAGES_VENV)"
+.PHONY: pages-zensical-teardown
+
 ## Test Zensical publication and Markdown compatibility
 pages-zensical-test:
 	@"$(PAGES_VENV)/bin/python" -m unittest discover -s tests/docs -v
