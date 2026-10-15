@@ -84,4 +84,4 @@ theme:
       accent: custom
       toggle:
         icon: material/brightness-4
-        name: Switch to light mode
+        name: Switch to system preference
