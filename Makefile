@@ -555,10 +555,20 @@ pages-mkdocs-setup:
 	@"$(PAGES_VENV)/bin/python" -m pip install -r requirements-docs.txt
 .PHONY: pages-mkdocs-setup
 
+## Test MkDocs publication and Markdown compatibility hooks
+pages-mkdocs-test:
+	@"$(PAGES_VENV)/bin/python" -m unittest discover -s tests/mkdocs -v
+.PHONY: pages-mkdocs-test
+
 ## Build documentation pages with MkDocs
 pages-mkdocs-build:
 	@"$(PAGES_VENV)/bin/python" -m mkdocs build --strict
 .PHONY: pages-mkdocs-build
+
+## Validate MkDocs tests and the strict documentation build
+pages-mkdocs-validate: pages-mkdocs-test
+	@$(MAKE) pages-mkdocs-build
+.PHONY: pages-mkdocs-validate
 
 ## Serve documentation pages locally with MkDocs
 pages-mkdocs-serve:

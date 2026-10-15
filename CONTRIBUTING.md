@@ -543,7 +543,15 @@ Software Supply Chain Security for identifying vulnerabilities in dependencies b
       ```
 
       ```bash
+      make pages-mkdocs-test
+      ```
+
+      ```bash
       make pages-mkdocs-build
+      ```
+
+      ```bash
+      make pages-mkdocs-validate
       ```
 
       ```bash
@@ -552,9 +560,7 @@ Software Supply Chain Security for identifying vulnerabilities in dependencies b
 
       Python 3.12 with `venv` support is required for setup. The local preview is available at `http://127.0.0.1:8000/skills/`; builds are written to `public/`. New or removed `SKILL.md` files are discovered automatically on rebuild.
 
-      ```bash
-      .venv/bin/python -m unittest discover -s tests/mkdocs -v
-      ```
+      `pages-mkdocs-test` runs the publication and Markdown compatibility tests. `pages-mkdocs-validate` runs these tests followed by the strict site build, stopping if validation fails. Set `PAGES_VENV` to use a virtual environment other than `.venv`.
 
     - Deployment
       > The [MkDocs workflow](.github/workflows/mkdocs.yml) validates pull requests and uploads a site artifact. Pushes to `main` and manual runs on `main` deploy to GitHub Pages. Enable **Settings → Pages → Build and deployment → Source: GitHub Actions** before the first deployment. The site URL is `https://sentenz.github.io/skills/`.
