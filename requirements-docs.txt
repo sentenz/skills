@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
-# Versions aligned with sentenz/convention.
-mkdocs==1.6.1
-mkdocs-material==9.7.1
-pymdown-extensions==10.21.2
+# Shared dependency pins for local builds and CI.
+zensical==0.0.70
+pymdown-extensions==12.3
 pygments==2.20.0
+PyYAML==6.0.3
+tomli-w==1.2.0

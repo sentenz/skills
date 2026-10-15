@@ -10,15 +10,15 @@ import markdown
 
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
-    "mkdocs_markdown", ROOT / "scripts/mkdocs_markdown.py"
+    "docs_markdown", ROOT / "scripts/docs_markdown.py"
 )
-HOOK = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(HOOK)
+COMPAT = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(COMPAT)
 
 
-class MarkdownHookTests(unittest.TestCase):
+class MarkdownCompatibilityTests(unittest.TestCase):
     def render(self, source):
-        converted = HOOK.on_page_markdown(source)
+        converted = COMPAT.prepare_markdown(source)
         html = markdown.markdown(
             converted, extensions=["admonition", "pymdownx.superfences"]
         )
@@ -29,7 +29,7 @@ class MarkdownHookTests(unittest.TestCase):
             with self.subTest(fence=fence):
                 example = f"{fence}markdown\n> [!NOTE]\n> Literal alert.\n{fence}"
                 source = example + "\n\n> [!TIP]\n> Live alert."
-                converted = HOOK.on_page_markdown(source)
+                converted = COMPAT.prepare_markdown(source)
                 self.assertIn(example, converted)
                 page = self.render(source)
                 code = page.find(".//code")
@@ -41,7 +41,7 @@ class MarkdownHookTests(unittest.TestCase):
         for inner in ("```", "~~~", "````not-a-closer"):
             with self.subTest(inner=inner):
                 source = f"````markdown\n{inner}\n> [!NOTE]\n> Literal.\n````"
-                self.assertEqual(HOOK.on_page_markdown(source), source)
+                self.assertEqual(COMPAT.prepare_markdown(source), source)
 
     def test_list_nested_fenced_alert_example(self):
         source = (

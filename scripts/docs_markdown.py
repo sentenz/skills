@@ -1,4 +1,4 @@
-"""Markdown compatibility hooks adapted from sentenz/convention.
+"""Markdown compatibility preprocessing adapted from sentenz/convention.
 
 Source: content/assets/hooks/mkdocs_hooks.py at d65d8e928e4fe5e9555e8b40fc4014b9e1a169b7.
 """
@@ -6,7 +6,6 @@ Source: content/assets/hooks/mkdocs_hooks.py at d65d8e928e4fe5e9555e8b40fc4014b9
 from __future__ import annotations
 
 import re
-from typing import Any
 
 _ALERT_TYPE_MAP: dict[str, tuple[str, str]] = {
     "NOTE": ("note", "Note"),
@@ -386,9 +385,9 @@ def _normalize_list_blockquote_indentation(markdown: str) -> str:
 
 
 def _convert_github_alerts(markdown: str) -> str:
-    """Convert GitHub alert blockquotes to MkDocs admonition markdown.
+    """Convert GitHub alert blockquotes to Python Markdown admonition syntax.
 
-    This keeps the content as markdown so MkDocs extensions and Material
+    This keeps the content as markdown so Markdown extensions and the theme
     features (TOC/permalinks, code copy, tabs, etc.) still run as usual.
     """
 
@@ -438,6 +437,6 @@ def _convert_github_alerts(markdown: str) -> str:
     return "\n".join(converted)
 
 
-def on_page_markdown(markdown: str, **_kwargs: Any) -> str:
-    """Pre-process markdown while keeping MkDocs markdown extension pipeline."""
+def prepare_markdown(markdown: str) -> str:
+    """Pre-process Markdown before the Zensical extension pipeline."""
     return _convert_github_alerts(markdown)
