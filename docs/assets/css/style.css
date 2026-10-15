@@ -75,7 +75,6 @@
   --md-sys-typescale-label-large-weight: 500;
   --md-sys-typescale-label-medium-weight: 500;
 
-  --md-custom-reading-width: 80ch;
   --md-custom-touch-target: 48px;
 }
 
@@ -373,7 +372,6 @@ body {
 }
 
 .md-content__inner {
-  max-inline-size: var(--md-custom-reading-width);
   margin-bottom: var(--md-sys-spacing-page-small);
 }
 
@@ -847,7 +845,7 @@ body {
   box-shadow: none;
 }
 
-/* Responsive reading width and interaction targets follow M3 window classes. */
+/* Responsive layout and interaction targets follow M3 window classes. */
 
 .md-main__inner {
   padding-top: var(--md-sys-spacing-hairline);
@@ -872,7 +870,6 @@ body {
 
   .md-content__inner {
     margin-bottom: var(--md-sys-spacing-page-large);
-    margin-inline: auto;
   }
 }
 
