@@ -31,7 +31,7 @@ Contribution guidelines and project management tools.
   - [13.1. Trivy](#131-trivy)
 - [14. Documentation Generators](#14-documentation-generators)
   - [14.1. Doxygen](#141-doxygen)
-  - [14.2. MkDocs](#142-mkdocs)
+  - [14.2. Zensical](#142-zensical)
 
 ## 1. AI Agents
 
@@ -510,57 +510,62 @@ Software Supply Chain Security for identifying vulnerabilities in dependencies b
       make pages-doxygen-serve
       ```
 
-### 14.2. MkDocs
+### 14.2. Zensical
 
-[MkDocs](https://www.mkdocs.org/) is a Static Site Generator (SSG) designed for building project documentation using Markdown files.
+[Zensical](https://zensical.org/) is a Static Site Generator (SSG) designed for building project documentation using Markdown files.
 
 1. Insights and Details
 
-    - [mkdocs.yml](mkdocs.yml)
-      > Configuration file for MkDocs specifying site settings, theme, plugins, and markdown extensions.
+    - [zensical.toml](zensical.toml)
+      > Source configuration for Zensical specifying site settings, the classic theme variant, and Markdown extensions.
 
     - [requirements-docs.txt](requirements-docs.txt)
-      > Shared dependency pins for local builds and CI, aligned with [sentenz/convention](https://github.com/sentenz/convention).
+      > Shared dependency pins for local builds and CI, including Zensical and its Markdown extensions. MkDocs and Material for MkDocs are no longer required.
 
-    - [scripts/mkdocs_skills.py](scripts/mkdocs_skills.py)
-      > Discovers `skills/**/SKILL.md` at build time and generates the catalog and navigation. Only these skill documents and the generated catalog are published and indexed. Supporting references, scripts, assets, and other repository Markdown remain on GitHub; relative links to existing supporting files are redirected there. Skill source files are not modified or duplicated.
+    - [scripts/docs.py](scripts/docs.py)
+      > Discovers `skills/**/SKILL.md` and generates the catalog and navigation. Disposable build inputs are staged in `.zensical/docs/`, with configuration in `.zensical.generated.toml`; both are ignored by Git. Only skill documents and the catalog are published and indexed, alongside the theme assets. Canonical skill sources remain unchanged.
+
+    - [scripts/docs_skills.py](scripts/docs_skills.py)
+      > Redirects supporting-file links to GitHub before Zensical validates the staged Markdown, using the pinned Zensical reference scanner to preserve code examples. Missing repository targets fail the build; Zensical's strict link and anchor validation remains enabled. The Markdown extension preserves GitHub alerts and raw image links. Supporting references, scripts, assets, and other repository Markdown remain on GitHub.
 
     - [docs/assets/](docs/assets/)
-      > Material theme styling and logos adapted from `sentenz/convention`, alongside its Markdown compatibility hooks in [scripts/mkdocs_markdown.py](scripts/mkdocs_markdown.py).
+      > Material theme styling and logos adapted from `sentenz/convention`, alongside its Markdown compatibility preprocessing in [scripts/docs_markdown.py](scripts/docs_markdown.py). Zensical's `classic` variant retains the existing appearance.
 
 2. Usage and Instructions
 
     - CI/CD
 
       ```yaml
-      uses: ./.github/actions/mkdocs
+      uses: ./.github/actions/zensical
       ```
 
     - Tasks
 
       ```bash
-      make pages-mkdocs-setup
+      make pages-zensical-setup
       ```
 
       ```bash
-      make pages-mkdocs-test
+      make pages-zensical-test
       ```
 
       ```bash
-      make pages-mkdocs-build
+      make pages-zensical-build
       ```
 
       ```bash
-      make pages-mkdocs-validate
+      make pages-zensical-validate
       ```
 
       ```bash
-      make pages-mkdocs-serve
+      make pages-zensical-serve
       ```
 
       Python 3.12 with `venv` support is required for setup. The local preview is available at `http://127.0.0.1:8000/skills/`; builds are written to `public/`. New or removed `SKILL.md` files are discovered automatically on rebuild.
 
-      `pages-mkdocs-test` runs the publication and Markdown compatibility tests. `pages-mkdocs-validate` runs these tests followed by the strict site build, stopping if validation fails. Set `PAGES_VENV` to use a virtual environment other than `.venv`.
+      `pages-zensical-test` runs the publication and Markdown compatibility tests. `pages-zensical-validate` runs these tests followed by the strict site build, stopping if validation fails. Set `PAGES_VENV` to use a virtual environment other than `.venv`.
+
+      The targets invoke `python scripts/docs.py build` or `python scripts/docs.py serve`, which prepare the site before running Zensical. Use these entry points instead of bare `zensical build` or `zensical serve`: Zensical does not execute the former MkDocs hooks. Preview monitors skill sources, supporting files, theme assets, and `zensical.toml`, refreshing the staged inputs when they change. Restart preview after editing the Python build scripts.
 
     - Deployment
-      > The [MkDocs workflow](.github/workflows/mkdocs.yml) validates pull requests and uploads a site artifact. Pushes to `main` and manual runs on `main` deploy to GitHub Pages. Enable **Settings → Pages → Build and deployment → Source: GitHub Actions** before the first deployment. The site URL is `https://sentenz.github.io/skills/`.
+      > The [Zensical workflow](.github/workflows/zensical.yml) validates pull requests and uploads a site artifact. Pushes to `main` and manual runs on `main` deploy to GitHub Pages. Enable **Settings → Pages → Build and deployment → Source: GitHub Actions** before the first deployment. The site URL is `https://sentenz.github.io/skills/`.

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
-name: MkDocs
-description: Build SKILL.md documentation with Material theme and Markdown compatibility hooks.
+name: Zensical
+description: Build SKILL.md documentation with Zensical's classic theme and Markdown compatibility extensions.
 author: "sentenz"
 
 inputs:
@@ -23,10 +23,10 @@ runs:
       run: |
         python -m pip install --quiet -r requirements-docs.txt
 
-    - name: Test MkDocs Hooks
+    - name: Test Documentation Publication
       shell: bash
-      run: python -m unittest discover -s tests/mkdocs -v
+      run: python -m unittest discover -s tests/docs -v
 
     - name: Build Site
       shell: bash
-      run: python -m mkdocs build --strict
+      run: python scripts/docs.py build

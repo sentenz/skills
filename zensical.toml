@@ -1,0 +1,67 @@
+# SPDX-License-Identifier: Apache-2.0
+# Run through scripts/docs.py to stage the catalog and SKILL.md sources.
+
+[project]
+site_name = "Skills"
+site_description = "Modular agent skills for software development."
+site_url = "https://sentenz.github.io/skills/"
+repo_name = "sentenz/skills"
+repo_url = "https://github.com/sentenz/skills"
+edit_uri = "edit/main/"
+docs_dir = "docs"
+site_dir = "public"
+strict = true
+extra_css = ["assets/css/style.css"]
+
+[project.extra]
+source_ref = "main"
+
+[project.markdown_extensions]
+"scripts.docs_skills" = {}
+admonition = {}
+attr_list = {}
+"pymdownx.highlight" = { anchor_linenums = true, line_spans = "__span", pygments_lang_class = true }
+"pymdownx.inlinehilite" = {}
+"pymdownx.emoji" = { emoji_index = "zensical.extensions.emoji.twemoji", emoji_generator = "zensical.extensions.emoji.to_svg" }
+"pymdownx.magiclink" = {}
+"pymdownx.superfences" = { custom_fences = [{ name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" }] }
+"pymdownx.tasklist" = { custom_checkbox = true }
+"pymdownx.tabbed" = { alternate_style = true }
+"pymdownx.details" = {}
+"pymdownx.tilde" = {}
+tables = {}
+toc = { permalink = true }
+
+[project.theme]
+variant = "classic"
+logo = "assets/images/logo-wordmark.svg"
+favicon = "assets/images/logo.svg"
+features = [
+    "navigation.top",
+    "navigation.tabs",
+    "content.code.copy",
+    "content.action.edit",
+    "search.suggest",
+    "search.highlight",
+    "search.share",
+]
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme)"
+primary = "custom"
+accent = "custom"
+toggle = { icon = "material/link", name = "Switch to light mode" }
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+primary = "custom"
+accent = "custom"
+toggle = { icon = "material/brightness-7", name = "Switch to dark mode" }
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+primary = "custom"
+accent = "custom"
+toggle = { icon = "material/brightness-4", name = "Switch to system preference" }

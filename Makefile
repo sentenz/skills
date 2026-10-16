@@ -549,31 +549,36 @@ sast-cosign-verify:
 
 PAGES_VENV ?= .venv
 
-## Setup documentation pages with MkDocs
-pages-mkdocs-setup:
+## Setup documentation pages with Zensical
+pages-zensical-setup:
 	@python3 -m venv "$(PAGES_VENV)"
 	@"$(PAGES_VENV)/bin/python" -m pip install -r requirements-docs.txt
-.PHONY: pages-mkdocs-setup
+.PHONY: pages-zensical-setup
 
-## Test MkDocs publication and Markdown compatibility hooks
-pages-mkdocs-test:
-	@"$(PAGES_VENV)/bin/python" -m unittest discover -s tests/mkdocs -v
-.PHONY: pages-mkdocs-test
+## Teardown documentation pages environment for Zensical
+pages-zensical-teardown:
+	@rm -rf "$(PAGES_VENV)"
+.PHONY: pages-zensical-teardown
 
-## Build documentation pages with MkDocs
-pages-mkdocs-build:
-	@"$(PAGES_VENV)/bin/python" -m mkdocs build --strict
-.PHONY: pages-mkdocs-build
+## Test Zensical publication and Markdown compatibility
+pages-zensical-test:
+	@"$(PAGES_VENV)/bin/python" -m unittest discover -s tests/docs -v
+.PHONY: pages-zensical-test
 
-## Validate MkDocs tests and the strict documentation build
-pages-mkdocs-validate: pages-mkdocs-test
-	@$(MAKE) pages-mkdocs-build
-.PHONY: pages-mkdocs-validate
+## Build documentation pages with Zensical
+pages-zensical-build:
+	@"$(PAGES_VENV)/bin/python" scripts/docs.py build
+.PHONY: pages-zensical-build
 
-## Serve documentation pages locally with MkDocs
-pages-mkdocs-serve:
-	@"$(PAGES_VENV)/bin/python" -m mkdocs serve --dev-addr 127.0.0.1:8000 --livereload
-.PHONY: pages-mkdocs-serve
+## Validate Zensical tests and the strict documentation build
+pages-zensical-validate: pages-zensical-test
+	@$(MAKE) pages-zensical-build
+.PHONY: pages-zensical-validate
+
+## Serve documentation pages locally with Zensical
+pages-zensical-serve:
+	@"$(PAGES_VENV)/bin/python" scripts/docs.py serve --dev-addr 127.0.0.1:8000
+.PHONY: pages-zensical-serve
 
 # ─── Documentation Generators ────────────────────────────────────────────────────────────────────
 

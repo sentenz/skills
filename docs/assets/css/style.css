@@ -75,7 +75,6 @@
   --md-sys-typescale-label-large-weight: 500;
   --md-sys-typescale-label-medium-weight: 500;
 
-  --md-custom-reading-width: 80ch;
   --md-custom-touch-target: 48px;
 }
 
@@ -373,7 +372,6 @@ body {
 }
 
 .md-content__inner {
-  max-inline-size: var(--md-custom-reading-width);
   margin-bottom: var(--md-sys-spacing-page-small);
 }
 
@@ -439,6 +437,28 @@ body {
   background: var(--md-app-bar-color);
   box-shadow: none;
   color: var(--md-app-bar-on-color);
+}
+
+/* Zensical's search launcher replaces the former input-based search field.
+   Use surface foregrounds in dark mode, including its icon and shortcut. */
+[data-md-color-scheme="slate"] .md-search__button {
+  background: var(--md-search-field-color);
+  color: var(--md-search-field-text-color);
+}
+
+[data-md-color-scheme="slate"] .md-search__button:hover,
+[data-md-color-scheme="slate"] .md-search__button:focus {
+  background: var(--md-search-field-hover-color);
+  color: var(--md-search-field-text-color);
+}
+
+[data-md-color-scheme="slate"] .md-search__button::before {
+  background-color: currentColor;
+}
+
+[data-md-color-scheme="slate"] .md-search__button::after {
+  background: var(--md-sys-color-surface-container-lowest);
+  color: var(--md-search-field-text-color);
 }
 
 .md-search__form,
@@ -847,7 +867,7 @@ body {
   box-shadow: none;
 }
 
-/* Responsive reading width and interaction targets follow M3 window classes. */
+/* Responsive layout and interaction targets follow M3 window classes. */
 
 .md-main__inner {
   padding-top: var(--md-sys-spacing-hairline);
@@ -872,7 +892,6 @@ body {
 
   .md-content__inner {
     margin-bottom: var(--md-sys-spacing-page-large);
-    margin-inline: auto;
   }
 }
 
