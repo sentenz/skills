@@ -439,6 +439,28 @@ body {
   color: var(--md-app-bar-on-color);
 }
 
+/* Zensical's search launcher replaces the former input-based search field.
+   Use surface foregrounds in dark mode, including its icon and shortcut. */
+[data-md-color-scheme="slate"] .md-search__button {
+  background: var(--md-search-field-color);
+  color: var(--md-search-field-text-color);
+}
+
+[data-md-color-scheme="slate"] .md-search__button:hover,
+[data-md-color-scheme="slate"] .md-search__button:focus {
+  background: var(--md-search-field-hover-color);
+  color: var(--md-search-field-text-color);
+}
+
+[data-md-color-scheme="slate"] .md-search__button::before {
+  background-color: currentColor;
+}
+
+[data-md-color-scheme="slate"] .md-search__button::after {
+  background: var(--md-sys-color-surface-container-lowest);
+  color: var(--md-search-field-text-color);
+}
+
 .md-search__form,
 [data-md-toggle="search"]:checked ~ .md-header .md-search__form {
   background: var(--md-search-field-color);
