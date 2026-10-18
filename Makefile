@@ -96,7 +96,7 @@ agent-skills-restore:
 
 # ─── Dependency Manager ──────────────────────────────────────────────────────────────────────────
 
-DEPENDENCY_IMAGE_RENOVATE ?= docker.io/renovate/renovate:44.151.0@sha256:8a79148ec24cc05809782e20e720dafe9dde0c24a00f26e76d14dec2cbd74a53
+DEPENDENCY_IMAGE_RENOVATE ?= docker.io/renovate/renovate:44.167.4@sha256:82f2a1375a48339c02f9a74b14f8468386c5c5e88ff10aa1674aae31df52969d
 
 ## Update project dependencies locally using Renovate and generate a report
 dependency-renovate-update:
@@ -287,7 +287,7 @@ lint-markdown:
 
 # ─── SAST Manager ────────────────────────────────────────────────────────────────────────────────
 
-SAST_IMAGE_SEMGREP ?= semgrep/semgrep:1.180.0@sha256:529ee8a277ec8adc5b534d7c74eea0a47e9de21d62852b6ba7ac6ba9566845c3
+SAST_IMAGE_SEMGREP ?= semgrep/semgrep:1.181.0@sha256:81474464c1f07483ba0682a44787fd93c91397419762a04abe2bafaae396304b
 SAST_FILES_SEMGREP ?= .
 SAST_REGEX_SEMGREP = $(if $(strip $(SAST_FILES_SEMGREP)),$(SAST_FILES_SEMGREP),.)
 
@@ -298,7 +298,7 @@ sast-semgrep-scan:
 	docker run --rm -v "${PWD}:/workspace" -w /workspace "$(SAST_IMAGE_SEMGREP)" semgrep scan --config auto --error --json --output logs/sast/semgrep.json $(SAST_REGEX_SEMGREP) 2> logs/sast/semgrep.log
 .PHONY: sast-semgrep-scan
 
-SAST_IMAGE_TRIVY ?= aquasec/trivy:0.75.0@sha256:af6acf9a6b85dfe389a1941505c0ce9efef52a4719635e1a962f022a3d855daa
+SAST_IMAGE_TRIVY ?= aquasec/trivy:0.76.0@sha256:2416d1f74045b57274df1a340eee6b510cacd73c66a6ccb8da092b117eb7d222
 SAST_FILES_TRIVY ?= .
 
 ## Scan Infrastructure-as-Code (IaC) files for misconfigurations using Trivy and generate a report
