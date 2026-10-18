@@ -2,6 +2,6 @@
 # Shared dependency pins for local builds and CI.
 zensical==0.0.70
 pymdown-extensions==12.3
-pygments==2.20.0
+pygments==2.21.0
 PyYAML==6.0.3
 tomli-w==1.2.0
