@@ -539,6 +539,11 @@ Software Supply Chain Security for identifying vulnerabilities in dependencies b
       uses: ./.github/actions/zensical
       ```
 
+      > [!NOTE]
+      > Deployment
+      >
+      > The [Zensical workflow](.github/workflows/zensical.yml) validates pull requests and uploads a site artifact. Pushes to `main` and manual runs on `main` deploy to GitHub Pages. Enable **Settings → Pages → Build and deployment → Source: GitHub Actions** before the first deployment. The site URL is `https://sentenz.github.io/skills/`.
+
     - Tasks
 
       ```bash
@@ -563,6 +568,3 @@ Software Supply Chain Security for identifying vulnerabilities in dependencies b
 
       > [!NOTE]
       > The local preview is available at `http://127.0.0.1:8000/skills/`. Builds are written to `public/`. New or removed `SKILL.md` files are discovered automatically on rebuild.
-
-    - Deployment
-      > The [Zensical workflow](.github/workflows/zensical.yml) validates pull requests and uploads a site artifact. Pushes to `main` and manual runs on `main` deploy to GitHub Pages. Enable **Settings → Pages → Build and deployment → Source: GitHub Actions** before the first deployment. The site URL is `https://sentenz.github.io/skills/`.
