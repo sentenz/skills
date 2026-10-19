@@ -561,11 +561,8 @@ Software Supply Chain Security for identifying vulnerabilities in dependencies b
       make pages-zensical-serve
       ```
 
-      Python 3.12 with `venv` support is required for setup. The local preview is available at `http://127.0.0.1:8000/skills/`; builds are written to `public/`. New or removed `SKILL.md` files are discovered automatically on rebuild.
-
-      `pages-zensical-test` runs the publication and Markdown compatibility tests. `pages-zensical-validate` runs these tests followed by the strict site build, stopping if validation fails. Set `PAGES_VENV` to use a virtual environment other than `.venv`.
-
-      The targets invoke `python scripts/docs.py build` or `python scripts/docs.py serve`, which prepare the site before running Zensical. Use these entry points instead of bare `zensical build` or `zensical serve`: Zensical does not execute the former MkDocs hooks. Preview monitors skill sources, supporting files, theme assets, and `zensical.toml`, refreshing the staged inputs when they change. Restart preview after editing the Python build scripts.
+      > [!NOTE]
+      > The local preview is available at `http://127.0.0.1:8000/skills/`. Builds are written to `public/`. New or removed `SKILL.md` files are discovered automatically on rebuild.
 
     - Deployment
       > The [Zensical workflow](.github/workflows/zensical.yml) validates pull requests and uploads a site artifact. Pushes to `main` and manual runs on `main` deploy to GitHub Pages. Enable **Settings → Pages → Build and deployment → Source: GitHub Actions** before the first deployment. The site URL is `https://sentenz.github.io/skills/`.
