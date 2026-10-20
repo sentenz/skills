@@ -1,0 +1,4 @@
+interface:
+  display_name: "Google Go Style Guide"
+  short_description: "Apply Google Go style within project conventions"
+  default_prompt: "Use $google-go-style-guide to review this Go code and suggest focused changes that preserve project conventions and behavior."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Google C++ Style Guide"
+  short_description: "Apply Google C++ style within project conventions"
+  default_prompt: "Use $google-cpp-style-guide to review this C++ code and suggest focused changes that preserve project conventions and behavior."

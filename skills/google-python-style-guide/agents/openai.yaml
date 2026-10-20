@@ -1,0 +1,4 @@
+interface:
+  display_name: "Google Python Style Guide"
+  short_description: "Apply Google Python style within project conventions"
+  default_prompt: "Use $google-python-style-guide to review this Python code and suggest focused changes that preserve project conventions and behavior."
