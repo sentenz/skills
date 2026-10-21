@@ -7,7 +7,22 @@ description: Google's official Go style guide. Covers gofmt formatting, naming c
 
 > Official Google Go coding standards for idiomatic, maintainable code.
 
-## Golden Rules
+- [1. Golden Rules](#1-golden-rules)
+- [2. Quick Reference](#2-quick-reference)
+  - [2.1. Naming Conventions](#21-naming-conventions)
+  - [2.2. Variables](#22-variables)
+  - [2.3. Error Handling](#23-error-handling)
+  - [2.4. Functions](#24-functions)
+  - [2.5. Interfaces](#25-interfaces)
+  - [2.6. Defer](#26-defer)
+  - [2.7. Goroutines and Channels](#27-goroutines-and-channels)
+  - [2.8. Package Organization](#28-package-organization)
+- [3. Common Mistakes](#3-common-mistakes)
+- [4. When to Use This Guide](#4-when-to-use-this-guide)
+- [5. Install](#5-install)
+- [6. Full Guide](#6-full-guide)
+
+## 1. Golden Rules
 
 1. **Run `gofmt` before commit** — formatting is non-negotiable
 2. **Short variable names** in small scopes — `i`, `err`, `ctx`
@@ -17,22 +32,22 @@ description: Google's official Go style guide. Covers gofmt formatting, naming c
 6. **Explicit is better** — avoid magic, prefer clarity
 7. **Package names: lowercase, single word** — no underscores
 
-## Quick Reference
+## 2. Quick Reference
 
-### Naming Conventions
+### 2.1. Naming Conventions
 
-| Element | Convention | Example |
-|---|---|---|
-| Packages | lowercase | `package user` |
-| Files | lowercase_underscore | `user_service.go` |
-| Types | UpperCamelCase | `UserService` |
-| Functions/Methods | UpperCamelCase (exported) | `GetUser` |
-| Functions/Methods | lowerCamelCase (unexported) | `getUserByID` |
-| Variables | lowerCamelCase | `userCount` |
-| Constants | UpperCamelCase or UPPER_SNAKE | `MaxRetries` |
-| Interfaces | UpperCamelCase + -er suffix | `Reader`, `Writer` |
+| Element           | Convention                    | Example            |
+| ----------------- | ----------------------------- | ------------------ |
+| Packages          | lowercase                     | `package user`     |
+| Files             | lowercase_underscore          | `user_service.go`  |
+| Types             | UpperCamelCase                | `UserService`      |
+| Functions/Methods | UpperCamelCase (exported)     | `GetUser`          |
+| Functions/Methods | lowerCamelCase (unexported)   | `getUserByID`      |
+| Variables         | lowerCamelCase                | `userCount`        |
+| Constants         | UpperCamelCase or UPPER_SNAKE | `MaxRetries`       |
+| Interfaces        | UpperCamelCase + -er suffix   | `Reader`, `Writer` |
 
-### Variables
+### 2.2. Variables
 
 ```go
 // ✓ CORRECT - short names in small scopes
@@ -51,7 +66,7 @@ for index := 0; index < 10; index++ {
 }
 ```
 
-### Error Handling
+### 2.3. Error Handling
 
 ```go
 // ✓ CORRECT - check every error
@@ -64,7 +79,7 @@ if err != nil {
 user, _ := getUser(id)
 ```
 
-### Functions
+### 2.4. Functions
 
 ```go
 // ✓ CORRECT - multiple return values
@@ -78,7 +93,7 @@ func ParseConfig(path string) (cfg *Config, err error) {
 }
 ```
 
-### Interfaces
+### 2.5. Interfaces
 
 ```go
 // ✓ CORRECT - small, focused interfaces
@@ -92,7 +107,7 @@ func ProcessData(r Reader) (*Result, error) {
 }
 ```
 
-### Defer
+### 2.6. Defer
 
 ```go
 // ✓ CORRECT - defer for cleanup
@@ -107,7 +122,7 @@ func ReadFile(path string) ([]byte, error) {
 }
 ```
 
-### Goroutines and Channels
+### 2.7. Goroutines and Channels
 
 ```go
 // ✓ CORRECT - use context for cancellation
@@ -129,7 +144,7 @@ func ProcessItems(ctx context.Context, items []Item) error {
 results := make(chan Result, len(items))
 ```
 
-### Package Organization
+### 2.8. Package Organization
 
 ```go
 // ✓ CORRECT - package comment
@@ -147,18 +162,18 @@ import (
 )
 ```
 
-## Common Mistakes
+## 3. Common Mistakes
 
-| Mistake | Correct Approach |
-|---|---|
-| Ignoring errors | Check every error |
+| Mistake                      | Correct Approach           |
+| ---------------------------- | -------------------------- |
+| Ignoring errors              | Check every error          |
 | Long variable names in loops | Use short names (`i`, `j`) |
-| Panic for normal errors | Return errors |
-| Naked returns | Use explicit returns |
-| Not running gofmt | Always format code |
-| Underscores in package names | Use single lowercase word |
+| Panic for normal errors      | Return errors              |
+| Naked returns                | Use explicit returns       |
+| Not running gofmt            | Always format code         |
+| Underscores in package names | Use single lowercase word  |
 
-## When to Use This Guide
+## 4. When to Use This Guide
 
 - Writing new Go code
 - Refactoring existing Go
@@ -166,12 +181,12 @@ import (
 - Setting up linting rules (golangci-lint)
 - Onboarding new team members
 
-## Install
+## 5. Install
 
 ```bash
 npx skills add testdino-hq/google-styleguides-skills/go
 ```
 
-## Full Guide
+## 6. Full Guide
 
 See [go.md](references/go.md) references for complete details, examples, and edge cases.
