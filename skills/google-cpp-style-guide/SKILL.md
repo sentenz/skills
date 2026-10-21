@@ -1,5 +1,5 @@
 ---
-name: cpp
+name: google-cpp-style-guide
 description: Google's official C++ style guide. Covers headers, naming conventions, formatting, classes, memory management, RAII, smart pointers, and modern C++ features.
 ---
 
