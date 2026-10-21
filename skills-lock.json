@@ -23,19 +23,19 @@
       "source": "testdino-hq/google-styleguides-skills",
       "sourceType": "github",
       "skillPath": "cpp/SKILL.md",
-      "computedHash": "e20130e07404a47585445663ce52a9232665e689d0f8ac6c6db7f6dd0ca8255f"
+      "computedHash": "819a438441894a2216985008a0deeca759470a3348bbe0b36b4b1399fc6a9968"
     },
     "google-go-style-guide": {
       "source": "testdino-hq/google-styleguides-skills",
       "sourceType": "github",
       "skillPath": "go/SKILL.md",
-      "computedHash": "1e34e1672a5564b070449fff498d048da2839e8516668a70962be4c02b50367d"
+      "computedHash": "2fa83ffa632ec5a3b294114bbbe6f02fa2755f13db1e303719b81b2934342a33"
     },
     "google-python-style-guide": {
       "source": "testdino-hq/google-styleguides-skills",
       "sourceType": "github",
       "skillPath": "python/SKILL.md",
-      "computedHash": "2abe338bd2d22dbf5dceeef06292b736bdf43ea4715325dce6d4036505785a6f"
+      "computedHash": "0a0f2298f3e1873d2cd56e3e97e3b757e95e0dc7009524bf168dab109c28d14a"
     },
     "material-3": {
       "source": "hamen/material-3-skill",
