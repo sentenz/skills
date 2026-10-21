@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.19.0](https://github.com/sentenz/skills/compare/v1.18.0...v1.19.0) (2026-10-21)
+
+### Features
+
+* **skills:** add Google style guides for Go, C++, and Python ([#142](https://github.com/sentenz/skills/issues/142)) ([602af4d](https://github.com/sentenz/skills/commit/602af4d7b56dca159ccd8b981aee7186ddc34a6c))
+
 ## [1.18.0](https://github.com/sentenz/skills/compare/v1.17.0...v1.18.0) (2026-10-14)
 
 ### Features
