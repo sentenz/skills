@@ -7,7 +7,22 @@ description: Google's official Python style guide extending PEP 8. Covers type a
 
 > Official Google Python coding standards extending PEP 8.
 
-## Golden Rules
+- [1. Golden Rules](#1-golden-rules)
+- [2. Quick Reference](#2-quick-reference)
+  - [2.1. Naming Conventions](#21-naming-conventions)
+  - [2.2. Type Annotations](#22-type-annotations)
+  - [2.3. Docstrings (Google Style)](#23-docstrings-google-style)
+  - [2.4. Imports](#24-imports)
+  - [2.5. String Formatting](#25-string-formatting)
+  - [2.6. Comprehensions](#26-comprehensions)
+  - [2.7. Exception Handling](#27-exception-handling)
+  - [2.8. Default Arguments](#28-default-arguments)
+- [3. Common Mistakes](#3-common-mistakes)
+- [4. When to Use This Guide](#4-when-to-use-this-guide)
+- [5. Install](#5-install)
+- [6. Full Guide](#6-full-guide)
+
+## 1. Golden Rules
 
 1. **Follow PEP 8** as baseline — Google's guide extends it
 2. **Use type annotations** for all public functions and methods
@@ -17,21 +32,21 @@ description: Google's official Python style guide extending PEP 8. Covers type a
 6. **Prefer comprehensions** over `map()`/`filter()`
 7. **Use f-strings** for string formatting (Python 3.6+)
 
-## Quick Reference
+## 2. Quick Reference
 
-### Naming Conventions
+### 2.1. Naming Conventions
 
-| Element | Convention | Example |
-|---|---|---|
-| Modules | snake_case | `user_service.py` |
-| Classes | UpperCamelCase | `UserService` |
-| Functions/Methods | snake_case | `get_user_by_id` |
-| Variables | snake_case | `user_count` |
-| Constants | UPPER_SNAKE_CASE | `MAX_RETRIES` |
-| Protected | _single_leading | `_internal` |
-| Private | __double_leading | `__private` |
+| Element           | Convention       | Example           |
+| ----------------- | ---------------- | ----------------- |
+| Modules           | snake_case       | `user_service.py` |
+| Classes           | UpperCamelCase   | `UserService`     |
+| Functions/Methods | snake_case       | `get_user_by_id`  |
+| Variables         | snake_case       | `user_count`      |
+| Constants         | UPPER_SNAKE_CASE | `MAX_RETRIES`     |
+| Protected         | _single_leading  | `_internal`       |
+| Private           | __double_leading | `__private`       |
 
-### Type Annotations
+### 2.2. Type Annotations
 
 ```python
 # ✓ CORRECT
@@ -46,7 +61,7 @@ def get_user(user_id):  # missing type annotations
     ...
 ```
 
-### Docstrings (Google Style)
+### 2.3. Docstrings (Google Style)
 
 ```python
 def fetch_data(url: str, timeout: int = 30) -> dict:
@@ -65,7 +80,7 @@ def fetch_data(url: str, timeout: int = 30) -> dict:
     ...
 ```
 
-### Imports
+### 2.4. Imports
 
 ```python
 # ✓ CORRECT - stdlib, then third-party, then local
@@ -82,7 +97,7 @@ import os, sys        # one import per line
 from os.path import * # never wildcard imports
 ```
 
-### String Formatting
+### 2.5. String Formatting
 
 ```python
 # ✓ CORRECT - f-strings
@@ -94,7 +109,7 @@ greeting = "Hello, " + name + "!"    # use f-strings
 greeting = "Hello, %s!" % name       # use f-strings
 ```
 
-### Comprehensions
+### 2.6. Comprehensions
 
 ```python
 # ✓ CORRECT
@@ -106,7 +121,7 @@ evens = [x for x in range(20) if x % 2 == 0]
 squares = list(map(lambda x: x ** 2, range(10)))  # use comprehension
 ```
 
-### Exception Handling
+### 2.7. Exception Handling
 
 ```python
 # ✓ CORRECT - catch specific exceptions
@@ -122,7 +137,7 @@ except:     # never bare except
     pass
 ```
 
-### Default Arguments
+### 2.8. Default Arguments
 
 ```python
 # ✗ INCORRECT - mutable default arguments
@@ -138,19 +153,19 @@ def add_item(item: str, items: Optional[List[str]] = None) -> List[str]:
     return items
 ```
 
-## Common Mistakes
+## 3. Common Mistakes
 
-| Mistake | Correct Approach |
-|---|---|
-| Mutable default args | Use None as default |
-| Wildcard imports | Explicit imports only |
-| Bare `except` | Catch specific exceptions |
-| `%` or `.format()` strings | Use f-strings |
-| `map()`/`filter()` | Use comprehensions |
-| Missing docstrings | Add Google-style docstrings |
-| Missing type annotations | Annotate public functions |
+| Mistake                    | Correct Approach            |
+| -------------------------- | --------------------------- |
+| Mutable default args       | Use None as default         |
+| Wildcard imports           | Explicit imports only       |
+| Bare `except`              | Catch specific exceptions   |
+| `%` or `.format()` strings | Use f-strings               |
+| `map()`/`filter()`         | Use comprehensions          |
+| Missing docstrings         | Add Google-style docstrings |
+| Missing type annotations   | Annotate public functions   |
 
-## When to Use This Guide
+## 4. When to Use This Guide
 
 - Writing new Python code
 - Refactoring existing Python
@@ -158,12 +173,12 @@ def add_item(item: str, items: Optional[List[str]] = None) -> List[str]:
 - Setting up linting rules (pylint, flake8)
 - Onboarding new team members
 
-## Install
+## 5. Install
 
 ```bash
 npx skills add testdino-hq/google-styleguides-skills/python
 ```
 
-## Full Guide
+## 6. Full Guide
 
 See [python.md](references/python.md) references for complete details, examples, and edge cases.
