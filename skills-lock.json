@@ -19,6 +19,24 @@
       "skillPath": "skills/github-actions-hardening/SKILL.md",
       "computedHash": "d550a44874f22494c8a7c7a025d61134e090bcc1a977643806977ac9e01155a1"
     },
+    "google-cpp-style-guide": {
+      "source": "testdino-hq/google-styleguides-skills",
+      "sourceType": "github",
+      "skillPath": "cpp/SKILL.md",
+      "computedHash": "819a438441894a2216985008a0deeca759470a3348bbe0b36b4b1399fc6a9968"
+    },
+    "google-go-style-guide": {
+      "source": "testdino-hq/google-styleguides-skills",
+      "sourceType": "github",
+      "skillPath": "go/SKILL.md",
+      "computedHash": "2fa83ffa632ec5a3b294114bbbe6f02fa2755f13db1e303719b81b2934342a33"
+    },
+    "google-python-style-guide": {
+      "source": "testdino-hq/google-styleguides-skills",
+      "sourceType": "github",
+      "skillPath": "python/SKILL.md",
+      "computedHash": "0a0f2298f3e1873d2cd56e3e97e3b757e95e0dc7009524bf168dab109c28d14a"
+    },
     "material-3": {
       "source": "hamen/material-3-skill",
       "sourceType": "github",

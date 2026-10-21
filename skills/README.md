@@ -21,6 +21,9 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 
 ### 1.1. C++ Skills
 
+- [Google C++ Style Guide](google-cpp-style-guide/SKILL.md)
+  > External Agent Skill adapted from the MIT-licensed [TestDino Google Style Guides collection](https://github.com/testdino-hq/google-styleguides-skills) for headers, naming, formatting, classes, ownership, RAII, and smart pointers, preserving project conventions.
+
 - [C++ Unit Testing](cpp-unit-testing/SKILL.md)
   > Unit test creation using GoogleTest (GTest) framework with In-Got-Want, Table-Driven Testing, and AAA patterns.
 
@@ -37,6 +40,9 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
   > API documentation creation using Doxygen-compatible comments for C++ header files.
 
 ### 1.2. Go Skills
+
+- [Google Go Style Guide](google-go-style-guide/SKILL.md)
+  > External Agent Skill adapted from the MIT-licensed [TestDino Google Style Guides collection](https://github.com/testdino-hq/google-styleguides-skills) for gofmt formatting, naming, errors, interfaces, concurrency, and package organization, preserving project conventions.
 
 - [Go Unit Testing](go-unit-testing/SKILL.md)
   > Unit test creation for Go projects using the standard testing package with consistent software testing patterns.
@@ -95,6 +101,9 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
   > External Agent Skill from the MIT-licensed [hamen/material-3-skill](https://github.com/hamen/material-3-skill) for Material Design 3 implementation across Jetpack Compose, Flutter, and limited web, including design tokens, 30+ components, theming, adaptive layout, M3 Expressive guidance, accessibility, and compliance auditing.
 
 ### 1.10. Python Skills
+
+- [Google Python Style Guide](google-python-style-guide/SKILL.md)
+  > External Agent Skill adapted from the MIT-licensed [TestDino Google Style Guides collection](https://github.com/testdino-hq/google-styleguides-skills) for type annotations, Google-style docstrings, imports, naming, comprehensions, and exception handling, preserving project conventions.
 
 - [Python Unit Testing](python-unit-testing/SKILL.md)
   > Unit and regression test creation with pytest or unittest using FIRST, In-Got-Want, table-driven testing, AAA, fixtures, and branch coverage.

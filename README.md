@@ -60,13 +60,13 @@ A catalog of modular agent skills for AI coding assistants, providing specialize
 Available skills can be activated by agents based on defined triggers and contextual cues, enabling AI coding assistants to invoke relevant skills for tasks.
 
 - [C++ Skills](skills/README.md#11-c-skills)
-  > C++ unit testing, mock testing, fuzz testing, benchmark testing, and API documentation skills.
+  > C++ unit testing, mock testing, fuzz testing, benchmark testing, API documentation, and style guidance.
 
 - [Go Skills](skills/README.md#12-go-skills)
-  > Go unit testing, fuzz testing, benchmark testing, and API documentation skills.
+  > Go unit testing, fuzz testing, benchmark testing, API documentation, and style guidance.
 
 - [Python Skills](skills/README.md#110-python-skills)
-  > Python unit testing, mock testing, property-based and fuzz testing, and benchmark testing skills.
+  > Python unit testing, mock testing, property-based and fuzz testing, benchmark testing, and style guidance.
 
 - [Terraform Skills](skills/README.md#13-terraform-skills)
   > Terraform and OpenTofu module design, testing, CI/CD, security, compliance, and state management skills.
