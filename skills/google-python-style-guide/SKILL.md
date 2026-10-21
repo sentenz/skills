@@ -1,5 +1,5 @@
 ---
-name: python
+name: google-python-style-guide
 description: Google's official Python style guide extending PEP 8. Covers type annotations, Google-style docstrings, imports, naming conventions, f-strings, comprehensions, and exception handling. Enforces 80-char line length and 4-space indentation.
 ---
 
