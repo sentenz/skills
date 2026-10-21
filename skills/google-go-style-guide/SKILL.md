@@ -1,5 +1,5 @@
 ---
-name: go
+name: google-go-style-guide
 description: Google's official Go style guide. Covers gofmt formatting, naming conventions, error handling, interfaces, concurrency patterns, and package organization. Enforces idiomatic Go code with short variable names and explicit error checks.
 ---
 
