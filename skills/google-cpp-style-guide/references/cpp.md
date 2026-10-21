@@ -2,33 +2,32 @@
 
 > Source: https://google.github.io/styleguide/cppguide.html
 
-Read these examples as excerpts; supply project-specific types and imports before compiling or running them.
+- [1. Golden Rules](#1-golden-rules)
+- [2. Headers](#2-headers)
+  - [2.1. Include Order](#21-include-order)
+- [3. Naming](#3-naming)
+- [4. Classes](#4-classes)
+  - [4.1. Key Rules](#41-key-rules)
+- [5. Functions](#5-functions)
+- [6. Smart Pointers](#6-smart-pointers)
+- [7. Modern C++ Features](#7-modern-c-features)
+- [8. Avoid These Features](#8-avoid-these-features)
+- [9. Formatting](#9-formatting)
+- [10. Common Mistakes](#10-common-mistakes)
 
-- [Golden Rules](#golden-rules)
-- [1. Headers](#1-headers)
-- [2. Naming](#2-naming)
-- [3. Classes](#3-classes)
-- [4. Functions](#4-functions)
-- [5. Smart Pointers](#5-smart-pointers)
-- [6. Modern C++ Features](#6-modern-c-features)
-- [7. Avoid These Features](#7-avoid-these-features)
-- [8. Formatting](#8-formatting)
-- [Common Mistakes](#common-mistakes)
-- [Attribution](#attribution)
+## 1. Golden Rules
 
-## Golden Rules
-
-1. **Respect the project language standard** — avoid unsupported features and non-standard extensions
+1. **Target C++20** — avoid non-standard extensions
 2. **80-character line limit** — for readability
 3. **2-space indentation** — no tabs
-4. **Use `const` where appropriate** — express intent; constness alone does not establish thread safety
-5. **Follow the project exception policy** — Google style disallows exceptions; do not change an existing exception-based API as a style edit
+4. **Use `const` liberally** — for correctness and thread safety
+5. **Avoid exceptions** — Google code doesn't use C++ exceptions
 6. **Smart pointers for ownership** — `std::unique_ptr` and `std::shared_ptr`
 7. **Header guards** — use `PROJECT_PATH_FILE_H_` format
 
 ---
 
-## 1. Headers
+## 2. Headers
 
 ```cpp
 // CORRECT - self-contained header with guard
@@ -36,6 +35,7 @@ Read these examples as excerpts; supply project-specific types and imports befor
 #define FOO_BAR_BAZ_H_
 
 #include <string>
+#include "base/basictypes.h"
 
 class Baz {
  public:
@@ -45,7 +45,7 @@ class Baz {
 #endif  // FOO_BAR_BAZ_H_
 ```
 
-### Include Order
+### 2.1. Include Order
 
 1. Related header
 2. C system headers
@@ -55,21 +55,21 @@ class Baz {
 
 ---
 
-## 2. Naming
+## 3. Naming
 
-| Element | Convention | Example |
-|---|---|---|
-| Files | snake_case | `url_table.cc` |
-| Types | UpperCamelCase | `UrlTable` |
-| Variables | snake_case | `table_name` |
-| Functions | UpperCamelCase | `AddTableEntry()` |
-| Constants | kConstantName | `kDaysInAWeek` |
-| Macros | UPPER_SNAKE_CASE | `MY_MACRO` |
-| Class members | snake_case_ | `table_name_` (trailing underscore) |
+| Element       | Convention       | Example                             |
+| ------------- | ---------------- | ----------------------------------- |
+| Files         | snake_case       | `url_table.cc`                      |
+| Types         | UpperCamelCase   | `UrlTable`                          |
+| Variables     | snake_case       | `table_name`                        |
+| Functions     | UpperCamelCase   | `AddTableEntry()`                   |
+| Constants     | kConstantName    | `kDaysInAWeek`                      |
+| Macros        | UPPER_SNAKE_CASE | `MY_MACRO`                          |
+| Class members | snake_case_      | `table_name_` (trailing underscore) |
 
 ---
 
-## 3. Classes
+## 4. Classes
 
 ```cpp
 // CORRECT
@@ -77,17 +77,17 @@ class MyClass {
  public:
   MyClass();  // Constructor
   ~MyClass();  // Destructor
-
+  
   void DoSomething();
   int GetValue() const { return value_; }
-
+  
  private:
   int value_;
   std::string name_;
 };
 ```
 
-### Key Rules
+### 4.1. Key Rules
 
 - Declare data members `private` (except in structs)
 - Use trailing underscore for private data members
@@ -97,7 +97,7 @@ class MyClass {
 
 ---
 
-## 4. Functions
+## 5. Functions
 
 ```cpp
 // CORRECT - return type on same line
@@ -117,7 +117,7 @@ ReturnType LongClassName::ReallyLongFunctionName(
 
 ---
 
-## 5. Smart Pointers
+## 6. Smart Pointers
 
 ```cpp
 // CORRECT - use unique_ptr for exclusive ownership
@@ -133,7 +133,7 @@ std::auto_ptr<Foo> foo;  // AVOID
 
 ---
 
-## 6. Modern C++ Features
+## 7. Modern C++ Features
 
 ```cpp
 // CORRECT - use auto for complex types
@@ -154,19 +154,19 @@ constexpr int kArraySize = 100;
 
 ---
 
-## 7. Avoid These Features
+## 8. Avoid These Features
 
-| Feature | Why Avoid |
-|---|---|
-| Exceptions | Disallowed by Google style; respect the target project policy |
+| Feature               | Why Avoid                             |
+| --------------------- | ------------------------------------- |
+| Exceptions            | Not used at Google; use error codes   |
 | RTTI (`dynamic_cast`) | Use sparingly; prefer virtual methods |
-| Multiple inheritance | Complex; use sparingly |
-| Operator overloading | Use judiciously; must be obvious |
-| Default arguments | Can be confusing; prefer overloads |
+| Multiple inheritance  | Complex; use sparingly                |
+| Operator overloading  | Use judiciously; must be obvious      |
+| Default arguments     | Can be confusing; prefer overloads    |
 
 ---
 
-## 8. Formatting
+## 9. Formatting
 
 ```cpp
 // CORRECT - braces and spacing
@@ -191,17 +191,13 @@ DoSomething(
 
 ---
 
-## Common Mistakes
+## 10. Common Mistakes
 
-| Mistake | Correct Approach |
-|---|---|
-| Exceptions in a Google-style project | Follow the existing error API; do not add Abseil solely for style |
-| Bare `new`/`delete` | Use smart pointers |
-| `NULL` | Use `nullptr` |
-| C-style casts | Use C++ casts (`static_cast`, etc.) |
-| `using namespace std` | Never in headers; avoid in .cc files |
-| Mutable globals | Prefer explicit dependencies and controlled lifetimes |
-
-## Attribution
-
-Adapted from [TestDino's companion guide](https://github.com/testdino-hq/google-styleguides-skills/blob/8674a2a2186a02f86852e061f6166a500ae30f7c/cpp/cpp.md). See [the skill](../SKILL.md#sources-and-license) for adaptation details and [LICENSE](../LICENSE) for the preserved MIT terms. This summary does not replace the primary Google guide.
+| Mistake               | Correct Approach                       |
+| --------------------- | -------------------------------------- |
+| Using exceptions      | Use error codes or `absl::Status`      |
+| Bare `new`/`delete`   | Use smart pointers                     |
+| `NULL`                | Use `nullptr`                          |
+| C-style casts         | Use C++ casts (`static_cast`, etc.)    |
+| `using namespace std` | Never in headers; avoid in .cc files   |
+| Mutable globals       | Use singletons or dependency injection |
