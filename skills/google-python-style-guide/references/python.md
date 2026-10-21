@@ -2,39 +2,36 @@
 
 > Source: https://google.github.io/styleguide/pyguide.html
 
-Read these examples as excerpts; supply project-specific types and imports before compiling or running them.
+- [1. Golden Rules](#1-golden-rules)
+- [2. Imports](#2-imports)
+- [3. Type Annotations](#3-type-annotations)
+- [4. Docstrings (Google Style)](#4-docstrings-google-style)
+- [5. Naming Conventions](#5-naming-conventions)
+- [6. Strings](#6-strings)
+- [7. Comprehensions](#7-comprehensions)
+- [8. Exception Handling](#8-exception-handling)
+- [9. Default Arguments](#9-default-arguments)
+- [10. Common Mistakes](#10-common-mistakes)
 
-- [Golden Rules](#golden-rules)
-- [1. Imports](#1-imports)
-- [2. Type Annotations](#2-type-annotations)
-- [3. Docstrings (Google Style)](#3-docstrings-google-style)
-- [4. Naming Conventions](#4-naming-conventions)
-- [5. Strings](#5-strings)
-- [6. Comprehensions](#6-comprehensions)
-- [7. Exception Handling](#7-exception-handling)
-- [8. Default Arguments](#8-default-arguments)
-- [Common Mistakes](#common-mistakes)
-- [Attribution](#attribution)
-
-## Golden Rules
+## 1. Golden Rules
 
 1. **Follow PEP 8** as baseline — Google's guide extends it
-2. **Annotate public APIs** using syntax supported by the project; retain documented exceptions
+2. **Use type annotations** for all public functions and methods
 3. **4-space indentation** — no tabs
 4. **Maximum line length: 80 characters**
-5. **Document public APIs** with Google-style docstrings, respecting documented exceptions
+5. **Docstrings mandatory** for all public modules, functions, classes, methods
 6. **Prefer comprehensions** over `map()`/`filter()`
-7. **Choose readable string formatting** — f-strings, `%`, and `.format()` are supported; keep logging arguments lazy
+7. **Use f-strings** for string formatting (Python 3.6+)
 
 ---
 
-## 1. Imports
+## 2. Imports
 
 ```python
 # CORRECT - stdlib, then third-party, then local
 import os
 import sys
-from typing import List, Optional
+from typing import Optional, List
 
 import numpy as np
 
@@ -47,7 +44,7 @@ from os.path import * # never wildcard imports
 
 ---
 
-## 2. Type Annotations
+## 3. Type Annotations
 
 ```python
 # CORRECT
@@ -64,7 +61,7 @@ def get_user(user_id):  # add type annotations
 
 ---
 
-## 3. Docstrings (Google Style)
+## 4. Docstrings (Google Style)
 
 ```python
 def fetch_data(url: str, timeout: int = 30) -> dict:
@@ -85,34 +82,35 @@ def fetch_data(url: str, timeout: int = 30) -> dict:
 
 ---
 
-## 4. Naming Conventions
+## 5. Naming Conventions
 
-| Element | Convention | Example |
-|---|---|---|
-| Modules | snake_case | user_service.py |
-| Classes | UpperCamelCase | UserService |
-| Functions/Methods | snake_case | get_user_by_id |
-| Variables | snake_case | user_count |
-| Constants | UPPER_SNAKE_CASE | MAX_RETRIES |
-| Non-public | single leading underscore | _internal |
+| Element           | Convention       | Example         |
+| ----------------- | ---------------- | --------------- |
+| Modules           | snake_case       | user_service.py |
+| Classes           | UpperCamelCase   | UserService     |
+| Functions/Methods | snake_case       | get_user_by_id  |
+| Variables         | snake_case       | user_count      |
+| Constants         | UPPER_SNAKE_CASE | MAX_RETRIES     |
+| Protected         | _single_leading  | _internal       |
+| Private           | __double_leading | __private       |
 
 ---
 
-## 5. Strings
+## 6. Strings
 
 ```python
 # CORRECT - f-strings
 name = "Alice"
 greeting = f"Hello, {name}!"
 
-# Other supported formatting forms
-greeting = "Hello, " + name + "!"
-greeting = "Hello, %s!" % name
+# INCORRECT
+greeting = "Hello, " + name + "!"    # use f-strings
+greeting = "Hello, %s!" % name       # use f-strings
 ```
 
 ---
 
-## 6. Comprehensions
+## 7. Comprehensions
 
 ```python
 # CORRECT
@@ -127,7 +125,7 @@ squares = list(map(lambda x: x ** 2, range(10)))  # use comprehension
 
 ---
 
-## 7. Exception Handling
+## 8. Exception Handling
 
 ```python
 # CORRECT - catch specific exceptions
@@ -149,7 +147,7 @@ except:     # never bare except
 
 ---
 
-## 8. Default Arguments
+## 9. Default Arguments
 
 ```python
 # INCORRECT - mutable default arguments
@@ -167,18 +165,14 @@ def add_item(item: str, items: Optional[List[str]] = None) -> List[str]:
 
 ---
 
-## Common Mistakes
+## 10. Common Mistakes
 
-| Mistake | Correct Approach |
-|---|---|
-| Mutable default args | Use None as default |
-| Wildcard imports | Explicit imports only |
-| Bare `except` | Catch specific exceptions |
-| Eager formatting in logging | Pass the format string and arguments separately |
-| `map()`/`filter()` | Use comprehensions |
-| Missing docstrings | Add Google-style docstrings |
-| Missing type annotations | Annotate public functions |
-
-## Attribution
-
-Adapted from [TestDino's companion guide](https://github.com/testdino-hq/google-styleguides-skills/blob/8674a2a2186a02f86852e061f6166a500ae30f7c/python/python.md). See [the skill](../SKILL.md#sources-and-license) for adaptation details and [LICENSE](../LICENSE) for the preserved MIT terms. This summary does not replace the primary Google guide.
+| Mistake                    | Correct Approach            |
+| -------------------------- | --------------------------- |
+| Mutable default args       | Use None as default         |
+| Wildcard imports           | Explicit imports only       |
+| Bare `except`              | Catch specific exceptions   |
+| `%` or `.format()` strings | Use f-strings               |
+| `map()`/`filter()`         | Use comprehensions          |
+| Missing docstrings         | Add Google-style docstrings |
+| Missing type annotations   | Annotate public functions   |
