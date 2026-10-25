@@ -1,5 +1,5 @@
 # [Choice] Python version (use -bookworm or -bullseye variants on local arm64/Apple Silicon): 3, 3.13, 3.12, 3.11, 3.10, 3.9, 3-bookworm, 3.13-bookworm, 3.12-bookworm, 3.11-bookworm, 3.10-bookworm, 3.9-bookworm, 3-bullseye, 3.13-bullseye, 3.12-bullseye, 3.11-bullseye, 3.10-bullseye, 3.9-bullseye, 3-buster, 3.12-buster, 3.11-buster, 3.10-buster, 3.9-buster
-ARG VARIANT=3-trixie@sha256:a07fc5df0a3f5f1b5dcb197f442492e8953f5595747e6e761232763167de74c6
+ARG VARIANT=3-trixie@sha256:e5eb16387fc01b6d5af685c908cbc7f82f18b383d3a358d6e37cfbac6e88ac37
 FROM python:${VARIANT}
 
 # Remove imagemagick due to https://security-tracker.debian.org/tracker/CVE-2019-10131
