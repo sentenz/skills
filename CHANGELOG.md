@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.20.0](https://github.com/sentenz/skills/compare/v1.19.0...v1.20.0) (2026-10-28)
+
+### Features
+
+* add Cloudflare security audit skill ([#147](https://github.com/sentenz/skills/issues/147)) ([0bcc19b](https://github.com/sentenz/skills/commit/0bcc19b0f5dca5e37025b3bac0079555f8ac6bc0))
+
 ## [1.19.0](https://github.com/sentenz/skills/compare/v1.18.0...v1.19.0) (2026-10-21)
 
 ### Features
