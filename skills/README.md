@@ -369,7 +369,7 @@ External Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awe
 
 #### 1.7.2. Threat Modeling ICS
 
-- [Threat Modeling ICS](threat-modeling-ics/SKILL.md)
+[Threat Modeling ICS](threat-modeling-ics/SKILL.md)
 
 Threat modeling for OT/ICS systems using Microsoft TMT, STRIDE, MITRE ATT&CK for ICS, CWE, and CVSS v4.0.
 
@@ -389,7 +389,7 @@ Threat modeling for OT/ICS systems using Microsoft TMT, STRIDE, MITRE ATT&CK for
 
 #### 1.8.1. Architecture Decision Records (ADR)
 
-- [Architecture Decision Records (ADR)](adr/SKILL.md)
+[Architecture Decision Records (ADR)](adr/SKILL.md)
 
 Creates and maintains Architecture Decision Records following a structured format with State, Context, Decision, Considered, Consequences, Implementation, and References sections.
 
@@ -407,7 +407,7 @@ Creates and maintains Architecture Decision Records following a structured forma
 
 #### 1.8.2. Technical Article
 
-- [Technical Article](technical-article/SKILL.md)
+[Technical Article](technical-article/SKILL.md)
 
 Creates, revises, and reviews convention-style technical articles using formal language, numbered Markdown structure, taxonomies, examples, and source-qualified references.
 
@@ -427,7 +427,7 @@ Creates, revises, and reviews convention-style technical articles using formal l
 
 #### 1.9.1. Material Design 3
 
-- [Material Design 3](material-3/SKILL.md)
+[Material Design 3](material-3/SKILL.md)
 
 External Agent Skill from the MIT-licensed [hamen/material-3-skill](https://github.com/hamen/material-3-skill) for Material Design 3 implementation across Jetpack Compose, Flutter, and limited web, including design tokens, 30+ components, theming, adaptive layout, M3 Expressive guidance, accessibility, and compliance auditing.
 
@@ -447,8 +447,9 @@ External Agent Skill from the MIT-licensed [hamen/material-3-skill](https://gith
 
 #### 1.10.1. Google Python Style Guide
 
-- [Google Python Style Guide](google-python-style-guide/SKILL.md)
-  > External Agent Skill adapted from the MIT-licensed [TestDino Google Style Guides collection](https://github.com/testdino-hq/google-styleguides-skills) for type annotations, Google-style docstrings, imports, naming, comprehensions, and exception handling, preserving project conventions.
+[Google Python Style Guide](google-python-style-guide/SKILL.md)
+
+External Agent Skill adapted from the MIT-licensed [TestDino Google Style Guides collection](https://github.com/testdino-hq/google-styleguides-skills) for type annotations, Google-style docstrings, imports, naming, comprehensions, and exception handling, preserving project conventions.
 
 1. Installation
 
@@ -464,8 +465,9 @@ External Agent Skill from the MIT-licensed [hamen/material-3-skill](https://gith
 
 #### 1.10.2. Python Unit Testing
 
-- [Python Unit Testing](python-unit-testing/SKILL.md)
-  > Unit and regression test creation with pytest or unittest using FIRST, In-Got-Want, table-driven testing, AAA, fixtures, and branch coverage.
+[Python Unit Testing](python-unit-testing/SKILL.md)
+
+Unit and regression test creation with pytest or unittest using FIRST, In-Got-Want, table-driven testing, AAA, fixtures, and branch coverage.
 
 1. Installation
 
@@ -481,8 +483,9 @@ External Agent Skill from the MIT-licensed [hamen/material-3-skill](https://gith
 
 #### 1.10.3. Python Mock Testing
 
-- [Python Mock Testing](python-mock-testing/SKILL.md)
-  > Dependency isolation and interaction verification using unittest.mock, autospec, async mocks, and pytest monkeypatch.
+[Python Mock Testing](python-mock-testing/SKILL.md)
+
+Dependency isolation and interaction verification using unittest.mock, autospec, async mocks, and pytest monkeypatch.
 
 1. Installation
 
@@ -498,8 +501,8 @@ External Agent Skill from the MIT-licensed [hamen/material-3-skill](https://gith
 
 #### 1.10.4. Python Fuzz Testing
 
-- [Python Fuzz Testing](python-fuzz-testing/SKILL.md)
-  > Property-based tests with Hypothesis and coverage-guided fuzz targets with Atheris, including bounded campaigns and reproducible regressions.
+[Python Fuzz Testing](python-fuzz-testing/SKILL.md)
+Property-based tests with Hypothesis and coverage-guided fuzz targets with Atheris, including bounded campaigns and reproducible regressions.
 
 1. Installation
 
