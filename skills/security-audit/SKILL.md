@@ -5,10 +5,6 @@ description: Security guidance and vulnerability review for codebases, APIs, ser
 
 # Security Audit
 
-## Upstream source
-
-Imported from [Cloudflare security-audit-skill](https://github.com/cloudflare/security-audit-skill/tree/c1c8a8c1471069fb0e188eeaff69b8e8db6564a8/skills/security-audit) at commit `c1c8a8c1471069fb0e188eeaff69b8e8db6564a8` under the [MIT license](LICENSE), copyright Cloudflare, Inc. The workflow, supporting documents, schema, validators, and tests retain their upstream contents and relative layout. Local additions are this provenance section and the colocated license; installation and usage are documented in the [skill catalog](../README.md#111-security-audit-skills).
-
 Find vulnerabilities that violate a real trust boundary, then give owners the source evidence, safe reproduction, priority, and smallest effective fix. This is a defensive, source-first workflow. A candidate without a concrete affected principal, resource, or security outcome is not a confirmed finding.
 
 ## Operating modes
