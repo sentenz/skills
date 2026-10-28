@@ -89,8 +89,8 @@ Available skills can be activated by agents based on defined triggers and contex
 - [UI and Design Skills](skills/README.md#19-ui-and-design-skills)
   > Material Design 3 implementation guidance for components, design tokens, theming, adaptive layouts, accessibility, and compliance auditing.
 
-- [Security Audit Skills](skills/README.md#111-security-audit-skills)
-  > Cloudflare's source-grounded security audit workflow with coverage planning, independent verification, structured findings, and report validators.
+- [Security Skills](skills/README.md#111-security-skills)
+  > Security audit workflows with coverage planning, independent verification, structured findings, and report validators.
 
 ## 2. Contribution
 
