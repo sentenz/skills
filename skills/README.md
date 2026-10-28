@@ -31,16 +31,16 @@ Agent skills are modular capabilities that AI agents can utilize to perform spec
   - [1.8. Documentation Skills](#18-documentation-skills)
     - [1.8.1. Architecture Decision Records (ADR)](#181-architecture-decision-records-adr)
     - [1.8.2. Technical Article](#182-technical-article)
-  - [1.9. UI and Design Skills](#19-ui-and-design-skills)
+  - [1.9. Design Skills](#19-design-skills)
     - [1.9.1. Material Design 3](#191-material-design-3)
   - [1.10. Python Skills](#110-python-skills)
     - [1.10.1. Google Python Style Guide](#1101-google-python-style-guide)
     - [1.10.2. Python Unit Testing](#1102-python-unit-testing)
     - [1.10.3. Python Mock Testing](#1103-python-mock-testing)
     - [1.10.4. Python Fuzz Testing](#1104-python-fuzz-testing)
-  - [1.11. Python Benchmark Testing](#111-python-benchmark-testing)
-  - [1.12. Security Skills](#112-security-skills)
-    - [1.12.1. Security Audit](#1121-security-audit)
+    - [1.10.5. Python Benchmark Testing](#1105-python-benchmark-testing)
+  - [1.11. Security Skills](#111-security-skills)
+    - [1.11.1. Security Audit](#1111-security-audit)
 - [2. References](#2-references)
 
 ## 1. Agent Skills
@@ -423,7 +423,7 @@ Creates, revises, and reviews convention-style technical articles using formal l
     Use the technical-article skill to write a technical article explaining this repository's architecture.
     ```
 
-### 1.9. UI and Design Skills
+### 1.9. Design Skills
 
 #### 1.9.1. Material Design 3
 
@@ -513,7 +513,7 @@ External Agent Skill from the MIT-licensed [hamen/material-3-skill](https://gith
     Use the python-fuzz-testing skill to add Hypothesis property-based tests for this repository's Python input parsers.
     ```
 
-### 1.11. Python Benchmark Testing
+#### 1.10.5. Python Benchmark Testing
 
 [Python Benchmark Testing](python-benchmark-testing/SKILL.md)
 
@@ -531,9 +531,9 @@ Performance measurement with pytest-benchmark and pyperf, including baseline com
     Use the python-benchmark-testing skill to add pytest-benchmark benchmarks for this repository's Python code.
     ```
 
-### 1.12. Security Skills
+### 1.11. Security Skills
 
-#### 1.12.1. Security Audit
+#### 1.11.1. Security Audit
 
 [Security Audit](security-audit/SKILL.md)
 
