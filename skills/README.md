@@ -129,13 +129,19 @@ Install the skill from this repository:
 npx skills add https://github.com/sentenz/skills --skill security-audit
 ```
 
-Add `--global` for a user-level installation. Use a coding agent with tool use and parallel sub-agents, plus Node.js for the validators. Executing target code requires an OS-enforced sandbox with external networking disabled, an allowlisted environment, resource limits, and writes restricted to assigned scratch paths. When those controls are unavailable, retain blocked leads as needing validation and provide a safe validation plan.
+Use a coding agent with tool use and parallel sub-agents, plus Node.js for the validators. Executing target code requires an OS-enforced sandbox with external networking disabled, an allowlisted environment, resource limits, and writes restricted to assigned scratch paths. When those controls are unavailable, retain blocked leads as needing validation and provide a safe validation plan.
 
 Invocation examples:
 
-```text
+```plaintext
 security audit this codebase
+```
+
+```plaintext
 find security vulnerabilities in ./src
+```
+
+```plaintext
 do a security review, output to ~/audits/my-project
 ```
 
