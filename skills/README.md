@@ -58,13 +58,13 @@ External Agent Skill adapted from the MIT-licensed [TestDino Google Style Guides
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill google-cpp-style-guide
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Review the C++ code in this repository using the google-cpp-style-guide skill.
     ```
 
 #### 1.1.2. C++ Unit Testing
@@ -76,13 +76,13 @@ Unit test creation using GoogleTest (GTest) framework with In-Got-Want, Table-Dr
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill cpp-unit-testing
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the cpp-unit-testing skill to add GoogleTest unit tests for the C++ code in this repository.
     ```
 
 #### 1.1.3. C++ Mock Testing
@@ -94,13 +94,13 @@ Mock test creation using Google Mock (GMock) for test isolation and behavior ver
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill cpp-mock-testing
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the cpp-mock-testing skill to test the C++ interfaces in this repository with Google Mock.
     ```
 
 #### 1.1.4. C++ Fuzz Testing
@@ -112,13 +112,13 @@ Fuzz test creation for discovering edge cases and vulnerabilities.
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill cpp-fuzz-testing
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the cpp-fuzz-testing skill to add Google FuzzTest tests for the C++ input parsers in this repository.
     ```
 
 #### 1.1.5. C++ Benchmark Testing
@@ -130,13 +130,13 @@ Benchmark test creation for performance measurement and optimization.
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill cpp-benchmark-testing
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the cpp-benchmark-testing skill to add Google Benchmark benchmarks for the C++ code in this repository.
     ```
 
 #### 1.1.6. C++ API Documentation
@@ -148,13 +148,13 @@ API documentation creation using Doxygen-compatible comments for C++ header file
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill cpp-api-documentation
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the cpp-api-documentation skill to add Doxygen comments to the existing C++ headers in this repository.
     ```
 
 ### 1.2. Go Skills
@@ -168,13 +168,13 @@ External Agent Skill adapted from the MIT-licensed [TestDino Google Style Guides
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill google-go-style-guide
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Review the Go code in this repository using the google-go-style-guide skill.
     ```
 
 #### 1.2.2. Go Unit Testing
@@ -186,13 +186,13 @@ Unit test creation for Go projects using the standard testing package with consi
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill go-unit-testing
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the go-unit-testing skill to add table-driven unit tests for the Go packages in this repository.
     ```
 
 #### 1.2.3. Go Fuzz Testing
@@ -204,13 +204,13 @@ Fuzz test creation using Go's native fuzzing engine with coverage-guided testing
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill go-fuzz-testing
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the go-fuzz-testing skill to add native Go fuzz tests for the input parsers in this repository.
     ```
 
 #### 1.2.4. Go Benchmark Testing
@@ -222,13 +222,13 @@ Fuzz test creation using Go's native fuzzing engine with coverage-guided testing
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill go-benchmark-testing
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the go-benchmark-testing skill to add benchmarks for the Go packages in this repository.
     ```
 
 #### 1.2.5. Go API Documentation
@@ -240,13 +240,13 @@ External Agent Skill for API documentation creation using godoc conventions and 
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill go-api-documentation
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the go-api-documentation skill to document the exported Go APIs in this repository.
     ```
 
 ### 1.3. Terraform Skills
@@ -260,13 +260,13 @@ External Agent Skill for API documentation creation using godoc conventions and 
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill terraform
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the terraform skill to review the Terraform modules in this repository and recommend improvements.
     ```
 
 ### 1.4. Dependency Management Skills
@@ -280,13 +280,13 @@ External Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awe
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill dependabot
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the dependabot skill to configure dependency updates for this repository.
     ```
 
 ### 1.5. GitHub Actions Skills
@@ -300,13 +300,13 @@ External MIT-licensed Agent Skill from [GitHub Awesome-Copilot](https://github.c
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill github-actions-efficiency
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the github-actions-efficiency skill to audit .github/workflows for redundant runs and unnecessary CI costs.
     ```
 
 #### 1.5.2. GitHub Actions Hardening
@@ -318,13 +318,13 @@ External MIT-licensed Agent Skill from [GitHub Awesome-Copilot](https://github.c
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill github-actions-hardening
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the github-actions-hardening skill to review .github/workflows for security risks and recommend fixes.
     ```
 
 ### 1.6. Container Skills
@@ -338,13 +338,13 @@ External Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awe
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill multi-stage-dockerfile
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the multi-stage-dockerfile skill to create an optimized multi-stage Dockerfile for this application.
     ```
 
 ### 1.7. Threat Modeling Skills
@@ -358,13 +358,13 @@ External Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awe
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill tm7-threat-model
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the tm7-threat-model skill to create a STRIDE threat model for this application as a Microsoft TMT .tm7 file.
     ```
 
 #### 1.7.2. Threat Modeling ICS
@@ -376,13 +376,13 @@ Threat modeling for OT/ICS systems using Microsoft TMT, STRIDE, MITRE ATT&CK for
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill threat-modeling-ics
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the threat-modeling-ics skill to create an OT/ICS threat model from the supplied architecture and asset inventory.
     ```
 
 ### 1.8. Documentation Skills
@@ -396,13 +396,13 @@ Creates and maintains Architecture Decision Records following a structured forma
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill adr
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the adr skill to document the decision to use PostgreSQL for this application, including alternatives and consequences.
     ```
 
 #### 1.8.2. Technical Article
@@ -414,13 +414,13 @@ Creates, revises, and reviews convention-style technical articles using formal l
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill technical-article
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the technical-article skill to write a technical article explaining this repository's architecture.
     ```
 
 ### 1.9. UI and Design Skills
@@ -434,13 +434,13 @@ External Agent Skill from the MIT-licensed [hamen/material-3-skill](https://gith
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill material-3
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the material-3 skill to review this application's UI for Material Design 3 compliance and recommend improvements.
     ```
 
 ### 1.10. Python Skills
@@ -453,13 +453,13 @@ External Agent Skill from the MIT-licensed [hamen/material-3-skill](https://gith
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill google-python-style-guide
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Review the Python code in this repository using the google-python-style-guide skill.
     ```
 
 #### 1.10.2. Python Unit Testing
@@ -470,13 +470,13 @@ External Agent Skill from the MIT-licensed [hamen/material-3-skill](https://gith
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill python-unit-testing
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the python-unit-testing skill to add pytest unit tests for the Python modules in this repository.
     ```
 
 #### 1.10.3. Python Mock Testing
@@ -487,13 +487,13 @@ External Agent Skill from the MIT-licensed [hamen/material-3-skill](https://gith
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill python-mock-testing
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the python-mock-testing skill to isolate external dependencies in this repository's Python tests.
     ```
 
 #### 1.10.4. Python Fuzz Testing
@@ -504,13 +504,13 @@ External Agent Skill from the MIT-licensed [hamen/material-3-skill](https://gith
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill python-fuzz-testing
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the python-fuzz-testing skill to add Hypothesis property-based tests for this repository's Python input parsers.
     ```
 
 ### 1.11. Python Benchmark Testing
@@ -522,13 +522,13 @@ Performance measurement with pytest-benchmark and pyperf, including baseline com
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill <replace-with-skill-name>
+    npx skills add sentenz/skills --skill python-benchmark-testing
     ```
 
 2. Invocation
 
     ```plaintext
-    <Replace with skill invocation command>
+    Use the python-benchmark-testing skill to add pytest-benchmark benchmarks for this repository's Python code.
     ```
 
 ### 1.12. Security Skills
