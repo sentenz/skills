@@ -86,8 +86,11 @@ Available skills can be activated by agents based on defined triggers and contex
 - [Documentation Skills](skills/README.md#18-documentation-skills)
   > Architecture Decision Records (ADR) creation and maintenance skills.
 
-- [UI and Design Skills](skills/README.md#19-ui-and-design-skills)
+- [Design Skills](skills/README.md#19-design-skills)
   > Material Design 3 implementation guidance for components, design tokens, theming, adaptive layouts, accessibility, and compliance auditing.
+
+- [Security Skills](skills/README.md#111-security-skills)
+  > Security audit workflows with coverage planning, independent verification, structured findings, and report validators.
 
 ## 2. Contribution
 
