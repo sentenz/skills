@@ -13,6 +13,7 @@ Agent skills are modular capabilities that AI agents can utilize to perform spec
   - [1.8. Documentation Skills](#18-documentation-skills)
   - [1.9. UI and Design Skills](#19-ui-and-design-skills)
   - [1.10. Python Skills](#110-python-skills)
+  - [1.11. Security Audit Skills](#111-security-audit-skills)
 - [2. References](#2-references)
 
 ## 1. Agent Skills
@@ -116,6 +117,37 @@ Skills are documented in individual `SKILL.md` files located in appropriate subd
 
 - [Python Benchmark Testing](python-benchmark-testing/SKILL.md)
   > Performance measurement with pytest-benchmark and pyperf, including baseline comparisons, mutable workloads, and separate profiling.
+
+### 1.11. Security Audit Skills
+
+- [Security Audit](security-audit/SKILL.md)
+  > External MIT-licensed Agent Skill from [Cloudflare](https://github.com/cloudflare/security-audit-skill) for source-grounded vulnerability review, coverage planning, independent validation, and structured reporting. Includes the complete six-phase workflow, domain references, report schema, and zero-dependency validators and tests. The imported revision and local adaptations are recorded in the skill's upstream source section.
+
+Install the skill from this repository:
+
+```bash
+npx skills add https://github.com/sentenz/skills --skill security-audit
+```
+
+Add `--global` for a user-level installation. Use a coding agent with tool use and parallel sub-agents, plus Node.js for the validators. Executing target code requires an OS-enforced sandbox with external networking disabled, an allowlisted environment, resource limits, and writes restricted to assigned scratch paths. When those controls are unavailable, retain blocked leads as needing validation and provide a safe validation plan.
+
+Invocation examples:
+
+```text
+security audit this codebase
+find security vulnerabilities in ./src
+do a security review, output to ~/audits/my-project
+```
+
+Security questions and focused reviews use guidance mode. Explicit codebase audits, pen tests, full reviews, or requested report artifacts use the complete workflow. Full audits default to `~/security-audit-skill/<repo-name>/run-<N>`; an output directory inside the target requires explicit selection and verification that version control ignores it.
+
+Full audits produce `run-metadata.json`, `architecture.md`, `coverage-ledger.json`, `findings.json`, `REPORT.md`, `FINDINGS-DETAIL.md`, and `NEEDS-VALIDATION.md`. Findings distinguish `confirmed`, `needs_validation`, and `rejected`; only confirmed findings receive severity. The audit recommends fixes without modifying target source.
+
+Run the bundled validator tests from the repository root:
+
+```bash
+make security-audit-test
+```
 
 ## 2. References
 

@@ -88,6 +88,11 @@ agent-skills-update:
 	npx skills@1.5.15 update sentenz/skills
 .PHONY: agent-skills-update
 
+## Test the security audit findings and coverage-ledger validators
+security-audit-test:
+	node --test skills/security-audit/validate-findings.test.cjs skills/security-audit/validate-coverage-ledger.test.cjs
+.PHONY: security-audit-test
+
 ## Restore Agent Skills in the project environment to a previous state
 agent-skills-restore:
 	DISABLE_TELEMETRY=1 \
