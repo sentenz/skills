@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Run Trivy Filesystem Scan
-        uses: sentenz/actions/trivy@e7bea10ae219cba52f6f3f42e492ce900f37e3bd # 1.5.3
+        uses: sentenz/actions/trivy@7eb0decd5ee41c0ef933860135d8033a8bdf24b7 # 1.5.4
         with:
           scan-type: fs
           scan-target: "."
@@ -47,7 +47,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Run Trivy Config Scan
-        uses: sentenz/actions/trivy@e7bea10ae219cba52f6f3f42e492ce900f37e3bd # 1.5.3
+        uses: sentenz/actions/trivy@7eb0decd5ee41c0ef933860135d8033a8bdf24b7 # 1.5.4
         with:
           scan-type: config
           scan-target: "."
@@ -72,7 +72,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Run SBOM Generation (CycloneDX)
-        uses: sentenz/actions/trivy@e7bea10ae219cba52f6f3f42e492ce900f37e3bd # 1.5.3
+        uses: sentenz/actions/trivy@7eb0decd5ee41c0ef933860135d8033a8bdf24b7 # 1.5.4
         with:
           scan-type: sbom-generate
           scan-target: "."
@@ -80,7 +80,7 @@ jobs:
           output: sbom.cdx.json
 
       - name: Run SBOM Generation (SPDX)
-        uses: sentenz/actions/trivy@e7bea10ae219cba52f6f3f42e492ce900f37e3bd # 1.5.3
+        uses: sentenz/actions/trivy@7eb0decd5ee41c0ef933860135d8033a8bdf24b7 # 1.5.4
         with:
           scan-type: sbom-generate
           scan-target: "."
@@ -111,7 +111,7 @@ jobs:
           name: sbom-files
 
       - name: Scan SBOM for vulnerabilities
-        uses: sentenz/actions/trivy@e7bea10ae219cba52f6f3f42e492ce900f37e3bd # 1.5.3
+        uses: sentenz/actions/trivy@7eb0decd5ee41c0ef933860135d8033a8bdf24b7 # 1.5.4
         with:
           scan-type: sbom
           scan-target: sbom.cdx.json
@@ -127,7 +127,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Run License Compliance Scan
-        uses: sentenz/actions/trivy@e7bea10ae219cba52f6f3f42e492ce900f37e3bd # 1.5.3
+        uses: sentenz/actions/trivy@7eb0decd5ee41c0ef933860135d8033a8bdf24b7 # 1.5.4
         with:
           scan-type: fs
           scan-target: "."
