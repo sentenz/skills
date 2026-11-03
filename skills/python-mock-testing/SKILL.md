@@ -90,33 +90,34 @@ Test doubles are classified by their role in a test. Configuration and verificat
 
 Stubs supply responses, mocks verify interactions, and fakes implement a bounded substitute for stateful behavior.
 
-| Category | Application |
-| --- | --- |
-| Stub | Return a known value when the interaction itself is unimportant. |
-| Mock | Verify externally meaningful calls and arguments. |
-| Fake | Use a small in-memory implementation when stateful behavior would make mocks brittle. |
+| Category | Application                                                                           |
+| -------- | ------------------------------------------------------------------------------------- |
+| Stub     | Return a known value when the interaction itself is unimportant.                      |
+| Mock     | Verify externally meaningful calls and arguments.                                     |
+| Fake     | Use a small in-memory implementation when stateful behavior would make mocks brittle. |
 
 ### 3.2. Configuration and Verification
 
 The following techniques preserve signatures and verify asynchronous execution.
 
-| Technique | Application |
-| --- | --- |
-| Autospec | Constrain calls to the real callable signature with `autospec=True` or `create_autospec`. |
-| Asynchronous Verification | Use an async-aware autospec or `AsyncMock`; assert awaits as well as results. |
+| Technique                 | Application                                                                               |
+| ------------------------- | ----------------------------------------------------------------------------------------- |
+| Autospec                  | Constrain calls to the real callable signature with `autospec=True` or `create_autospec`. |
+| Asynchronous Verification | Use an async-aware autospec or `AsyncMock`; assert awaits as well as results.             |
 
 ## 4. Test Design
 
 Choose scenarios from the dependency contract, then select the least complex test double that can reproduce them.
 
-| Technique | Application |
-| --- | --- |
-| Failure Injection | Configure specific exceptions, failures, or bounded retry sequences and verify recovery or propagation. |
-| Negative Testing | Exercise rejected requests and verify that prohibited side effects do not occur. |
-| Boundary Value Analysis | Cover relevant argument limits and retry thresholds, including exhaustion. |
-| Interaction Verification | Check arguments, counts, and ordering only when required by the observable contract. |
+| Technique                | Application                                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------------------------------- |
+| Failure Injection        | Configure specific exceptions, failures, or bounded retry sequences and verify recovery or propagation. |
+| Negative Testing         | Exercise rejected requests and verify that prohibited side effects do not occur.                        |
+| Boundary Value Analysis  | Cover relevant argument limits and retry thresholds, including exhaustion.                              |
+| Interaction Verification | Check arguments, counts, and ordering only when required by the observable contract.                    |
 
-Assert returned values or state as well as contractual interactions. Keep real-boundary integration tests separate: a passing mock test does not establish compatibility with a live dependency. FIRST governs isolation and reproducibility; it is not an additional testing pattern.
+> [!NOTE]
+> Assert returned values or state as well as contractual interactions. Keep real-boundary integration tests separate: a passing mock test does not establish compatibility with a live dependency. FIRST governs isolation and reproducibility; it is not an additional testing pattern.
 
 ## 5. Workflow
 
@@ -154,12 +155,12 @@ The workflow identifies the dependency boundary, configures its substitute, and 
 
 Use the project's environment and existing test task; replace example paths with actual ones. `unittest.mock` needs no additional package.
 
-| Command | Purpose |
-| --- | --- |
-| `python -m pytest tests/test_service.py -q` | Run the affected tests. |
-| `python -m pytest tests/test_service.py -k retry -vv` | Diagnose retry scenarios. |
-| `python -m pytest tests -q` | Check interactions with the surrounding suite. |
-| `python -m unittest discover -s tests -v` | Run existing unittest-based mocks. |
+| Command                                               | Purpose                                        |
+| ----------------------------------------------------- | ---------------------------------------------- |
+| `python -m pytest tests/test_service.py -q`           | Run the affected tests.                        |
+| `python -m pytest tests/test_service.py -k retry -vv` | Diagnose retry scenarios.                      |
+| `python -m pytest tests -q`                           | Check interactions with the surrounding suite. |
+| `python -m unittest discover -s tests -v`             | Run existing unittest-based mocks.             |
 
 ## 7. Style Guide
 

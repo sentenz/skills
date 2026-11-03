@@ -91,34 +91,35 @@ Test-structure patterns organize execution and assertions. Data and isolation pa
 
 The following patterns express the relationship between preconditions, the operation, and the expected result.
 
-| Pattern | Python Application |
-| --- | --- |
-| In-Got-Want | Name inputs `value` or `input_value`, actual results `got`, and expectations `want`; `in` is a keyword. |
-| Table-Driven Testing | Use `pytest.mark.parametrize` with readable case identifiers; use `subTest` in existing unittest suites. |
-| Arrange, Act, Assert (AAA) | Separate setup, the operation, and its assertions; keep one cohesive behavior per test. |
+| Pattern                    | Python Application                                                                                       |
+| -------------------------- | -------------------------------------------------------------------------------------------------------- |
+| In-Got-Want                | Name inputs `value` or `input_value`, actual results `got`, and expectations `want`; `in` is a keyword.  |
+| Table-Driven Testing       | Use `pytest.mark.parametrize` with readable case identifiers; use `subTest` in existing unittest suites. |
+| Arrange, Act, Assert (AAA) | Separate setup, the operation, and its assertions; keep one cohesive behavior per test.                  |
 
 ### 3.2. Test Data and Isolation
 
 Fixtures manage test state and cleanup; data-driven cases separate inputs from test logic; test doubles substitute collaborators at external boundaries.
 
-| Pattern | Python Application |
-| --- | --- |
-| Fixtures | Use function scope by default, `tmp_path` for files, and context managers or yield fixtures for cleanup. |
+| Pattern             | Python Application                                                                                                                                                     |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fixtures            | Use function scope by default, `tmp_path` for files, and context managers or yield fixtures for cleanup.                                                               |
 | Data-Driven Testing | Load versioned JavaScript Object Notation (JSON) or comma-separated values (CSV) cases relative to `Path(__file__)`, validate their schema, and parametrize each case. |
-| Test Doubles | Isolate external boundaries; use [Python Mock Testing](../python-mock-testing/SKILL.md) for interaction contracts. |
+| Test Doubles        | Isolate external boundaries; use [Python Mock Testing](../python-mock-testing/SKILL.md) for interaction contracts.                                                     |
 
 ## 4. Test Design
 
 Select cases from the public contract before choosing a test-structure pattern. Derive expected results independently of the implementation.
 
-| Technique | Application |
-| --- | --- |
-| Boundary Value Analysis | Exercise limits and adjacent values, empty inputs, and relevant size or numeric thresholds. |
-| Negative Testing | Assert documented rejection of invalid inputs, including the expected error and observable state. |
-| Regression Testing | Preserve a minimal reproducer for each confirmed defect and verify the corrected behavior. |
-| Coverage Analysis | Use uncovered branches to identify missing scenarios; do not treat a percentage as proof of correctness. |
+| Technique               | Application                                                                                              |
+| ----------------------- | -------------------------------------------------------------------------------------------------------- |
+| Boundary Value Analysis | Exercise limits and adjacent values, empty inputs, and relevant size or numeric thresholds.              |
+| Negative Testing        | Assert documented rejection of invalid inputs, including the expected error and observable state.        |
+| Regression Testing      | Preserve a minimal reproducer for each confirmed defect and verify the corrected behavior.               |
+| Coverage Analysis       | Use uncovered branches to identify missing scenarios; do not treat a percentage as proof of correctness. |
 
-Use table-driven or external data-driven cases to express these choices. FIRST describes quality principles, not input-selection techniques. Add property-based or fuzz tests when a contract supplies a meaningful invariant; do not invent properties merely to increase coverage.
+> [!NOTE]
+> Use table-driven or external data-driven cases to express these choices. FIRST describes quality principles, not input-selection techniques. Add property-based or fuzz tests when a contract supplies a meaningful invariant; do not invent properties merely to increase coverage.
 
 ## 5. Workflow
 
@@ -156,15 +157,15 @@ The workflow connects contract analysis, test implementation, and verification w
 
 Run from the project root in its configured environment. Adapt paths to the actual suite; use an existing Make, tox, nox, uv, or Poetry task when provided. Do not assume a Make target exists.
 
-| Command | Purpose |
-| --- | --- |
-| `python -m pytest tests/test_parser.py -q` | Run the affected module. |
-| `python -m pytest tests/test_parser.py::test_parse_port -vv` | Run a selected behavior and show case IDs. |
-| `python -m pytest --collect-only -q` | Check discovery and parametrization. |
-| `python -m pytest tests -q` | Run the relevant suite. |
-| `python -m coverage run --branch -m pytest tests` | Collect branch coverage when coverage.py is installed. |
-| `python -m coverage report -m` | Inspect missing statements and branches. |
-| `python -m unittest discover -s tests -v` | Run an existing unittest suite. |
+| Command                                                      | Purpose                                                |
+| ------------------------------------------------------------ | ------------------------------------------------------ |
+| `python -m pytest tests/test_parser.py -q`                   | Run the affected module.                               |
+| `python -m pytest tests/test_parser.py::test_parse_port -vv` | Run a selected behavior and show case IDs.             |
+| `python -m pytest --collect-only -q`                         | Check discovery and parametrization.                   |
+| `python -m pytest tests -q`                                  | Run the relevant suite.                                |
+| `python -m coverage run --branch -m pytest tests`            | Collect branch coverage when coverage.py is installed. |
+| `python -m coverage report -m`                               | Inspect missing statements and branches.               |
+| `python -m unittest discover -s tests -v`                    | Run an existing unittest suite.                        |
 
 ## 7. Style Guide
 
@@ -292,7 +293,6 @@ class TestParsePort(unittest.TestCase):
 
 ## 9. References
 
-- Sentenz [Python Mock Testing](../python-mock-testing/SKILL.md) skill.
 - pytest [Parametrization](https://docs.pytest.org/en/stable/how-to/parametrize.html) documentation.
 - pytest [Fixtures](https://docs.pytest.org/en/stable/how-to/fixtures.html) documentation.
 - pytest [Assertions](https://docs.pytest.org/en/stable/how-to/assert.html) documentation.

@@ -84,13 +84,14 @@ FIRST groups five test-design properties: Fast, Independent, Repeatable, Self-Va
 
 Use patterns to organize repeated measurements; use Test Design to define the workload, measurement boundary, and comparison.
 
-| Pattern | Application |
-| --- | --- |
-| Table-Driven Workloads | Reuse benchmark logic across named input sizes, shapes, and distributions. |
-| Benchmark Fixtures | Own setup and cleanup explicitly; restore equivalent state for each measured operation. |
-| Grouped Benchmarks | Keep related workload variants discoverable without mixing their results. |
+| Pattern                | Application                                                                             |
+| ---------------------- | --------------------------------------------------------------------------------------- |
+| Table-Driven Workloads | Reuse benchmark logic across named input sizes, shapes, and distributions.              |
+| Benchmark Fixtures     | Own setup and cleanup explicitly; restore equivalent state for each measured operation. |
+| Grouped Benchmarks     | Keep related workload variants discoverable without mixing their results.               |
 
-FIRST describes isolation and repeatability. Microbenchmarks, comparative measurements, and profiling answer performance questions rather than define assertion structure.
+> [!NOTE]
+> FIRST describes isolation and repeatability. Microbenchmarks, comparative measurements, and profiling answer performance questions rather than define assertion structure.
 
 ## 4. Test Design
 
@@ -100,23 +101,23 @@ Workload-design patterns specify the operation and its inputs. Measurement techn
 
 The following patterns vary workload scope, comparison, input distribution, or state ownership.
 
-| Pattern | Application |
-| --- | --- |
-| Microbenchmark | Measure a small, isolated operation with a defined boundary. |
-| Comparative Benchmark | Measure the same workload and environment before and after a change. |
-| Table-Driven Workload | Parametrize representative sizes, shapes, and distributions with stable case identifiers. |
-| Stateful Operation | Recreate state outside timing for each measured invocation, or explicitly measure setup as part of the workload. |
+| Pattern               | Application                                                                                                      |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Microbenchmark        | Measure a small, isolated operation with a defined boundary.                                                     |
+| Comparative Benchmark | Measure the same workload and environment before and after a change.                                             |
+| Table-Driven Workload | Parametrize representative sizes, shapes, and distributions with stable case identifiers.                        |
+| Stateful Operation    | Recreate state outside timing for each measured invocation, or explicitly measure setup as part of the workload. |
 
 ### 4.2. Measurement Techniques
 
 Timing samples quantify elapsed cost; CPU and allocation profiles attribute costs in separate instrumented runs. CPU denotes the central processing unit.
 
-| Technique | Application |
-| --- | --- |
-| Callable Timing | Use pytest-benchmark for an isolated callable within an existing pytest suite. |
-| Process-Isolated Timing | Use pyperf for calibrated runs across worker processes. |
-| CPU Profiling | Use [cProfile](https://docs.python.org/3/library/profile.html) to locate execution costs separately from latency measurements. |
-| Allocation Tracing | Use [tracemalloc](https://docs.python.org/3/library/tracemalloc.html) to inspect traced Python allocations separately from latency measurements. |
+| Technique               | Application                                                                                                                                      |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Callable Timing         | Use pytest-benchmark for an isolated callable within an existing pytest suite.                                                                   |
+| Process-Isolated Timing | Use pyperf for calibrated runs across worker processes.                                                                                          |
+| CPU Profiling           | Use [cProfile](https://docs.python.org/3/library/profile.html) to locate execution costs separately from latency measurements.                   |
+| Allocation Tracing      | Use [tracemalloc](https://docs.python.org/3/library/tracemalloc.html) to inspect traced Python allocations separately from latency measurements. |
 
 ## 5. Workflow
 
@@ -158,15 +159,15 @@ The workflow establishes a correct workload and baseline before measuring a cand
 
 Run in the project environment with pytest-benchmark or pyperf installed. Replace illustrative paths and output names; do not compare unrelated runners or overwrite the baseline with the candidate run.
 
-| Command | Purpose |
-| --- | --- |
-| `python -m pytest benchmarks/test_sort.py --benchmark-only` | Execute pytest benchmarks. |
-| `python -m pytest benchmarks/test_sort.py --benchmark-only --benchmark-save=baseline` | Save the baseline in pytest-benchmark storage. |
-| `python -m pytest benchmarks/test_sort.py --benchmark-only --benchmark-compare=0001` | Compare against the actual saved run ID, replacing `0001`. |
-| `python -m pyperf timeit -s 'values = tuple(range(1000, 0, -1))' 'sorted(values)' -o before.json` | Measure a workload with calibrated workers. |
-| `python -m pyperf compare_to before.json after.json --table` | Compare result files collected with the same workload. |
-| `python -m cProfile -o profile.pstats path/to/workload.py` | Profile a representative script separately from timing runs. |
-| `python -m pstats profile.pstats` | Inspect CPU profiling output. |
+| Command                                                                                           | Purpose                                                      |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `python -m pytest benchmarks/test_sort.py --benchmark-only`                                       | Execute pytest benchmarks.                                   |
+| `python -m pytest benchmarks/test_sort.py --benchmark-only --benchmark-save=baseline`             | Save the baseline in pytest-benchmark storage.               |
+| `python -m pytest benchmarks/test_sort.py --benchmark-only --benchmark-compare=0001`              | Compare against the actual saved run ID, replacing `0001`.   |
+| `python -m pyperf timeit -s 'values = tuple(range(1000, 0, -1))' 'sorted(values)' -o before.json` | Measure a workload with calibrated workers.                  |
+| `python -m pyperf compare_to before.json after.json --table`                                      | Compare result files collected with the same workload.       |
+| `python -m cProfile -o profile.pstats path/to/workload.py`                                        | Profile a representative script separately from timing runs. |
+| `python -m pstats profile.pstats`                                                                 | Inspect CPU profiling output.                                |
 
 For a changed application callable, use the same import/setup and statement on the baseline and candidate revisions, writing `before.json` and `after.json` respectively. `timeit` alone is useful for local exploration, but does not replace a controlled regression experiment.
 

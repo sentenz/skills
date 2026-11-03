@@ -9,6 +9,7 @@ metadata:
     triggers:
       - "fuzz test"
       - "property-based test"
+      - "coverage-guided fuzz test"
       - "hypothesis"
       - "atheris"
       - "fuzzing"
@@ -84,14 +85,15 @@ FIRST groups five test-design properties: Fast, Independent, Repeatable, Self-Va
 
 Use patterns to organize the target; use Test Design to choose input domains and oracles.
 
-| Pattern | Application |
-| --- | --- |
-| Arrange-Act-Assert (AAA) | Construct fresh state, exercise one boundary, and check its contract. |
-| In-Got-Want | Keep generated input, actual output, and independently derived expectations distinct. |
-| Table-Driven Seeds | Name representative valid, boundary, malformed, and regression inputs. |
-| Test Fixtures | Reset mutable state for every invocation; release resources even on failure. |
+| Pattern                  | Application                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------------- |
+| Arrange-Act-Assert (AAA) | Construct fresh state, exercise one boundary, and check its contract.                 |
+| In-Got-Want              | Keep generated input, actual output, and independently derived expectations distinct. |
+| Table-Driven Seeds       | Name representative valid, boundary, malformed, and regression inputs.                |
+| Test Fixtures            | Reset mutable state for every invocation; release resources even on failure.          |
 
-Keep each target deterministic for a given input while allowing the engine to explore new inputs. FIRST describes test quality; coverage feedback and corpus mutation describe input generation.
+> [!NOTE]
+> Keep each target deterministic for a given input while allowing the engine to explore new inputs. FIRST describes test quality; coverage feedback and corpus mutation describe input generation.
 
 ## 4. Test Design
 
@@ -101,21 +103,21 @@ Input-generation techniques determine how examples are produced. Test oracles de
 
 Structured generation encodes the input domain in strategies; coverage-guided mutation selects inputs using execution feedback.
 
-| Technique | Application |
-| --- | --- |
+| Technique                 | Application                                                                |
+| ------------------------- | -------------------------------------------------------------------------- |
 | Property-Based Generation | Generate structured inputs with Hypothesis strategies and shrink failures. |
-| Coverage-Guided Mutation | Instrument relevant Python code with Atheris and mutate a seed corpus. |
+| Coverage-Guided Mutation  | Instrument relevant Python code with Atheris and mutate a seed corpus.     |
 
 ### 4.2. Test Oracles
 
 The following oracles evaluate equality, agreement between implementations, relations between operations, or documented rejection behavior.
 
-| Oracle | Application |
-| --- | --- |
-| Round Trip | Assert `decode(encode(value)) == value` over the supported domain; add independent known-answer cases because paired defects can cancel out. |
-| Differential Comparison | Compare implementations only where their documented semantics agree. |
-| Metamorphic Relation | Check idempotence, permutation invariance, or monotonicity when guaranteed by the contract. |
-| Input Rejection | Check documented rejection behavior without swallowing unrelated exceptions. |
+| Oracle                  | Application                                                                                                                                  |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Round Trip              | Assert `decode(encode(value)) == value` over the supported domain; add independent known-answer cases because paired defects can cancel out. |
+| Differential Comparison | Compare implementations only where their documented semantics agree.                                                                         |
+| Metamorphic Relation    | Check idempotence, permutation invariance, or monotonicity when guaranteed by the contract.                                                  |
+| Input Rejection         | Check documented rejection behavior without swallowing unrelated exceptions.                                                                 |
 
 ## 5. Workflow
 
@@ -157,15 +159,27 @@ The workflow defines the input domain and oracle before selecting an engine, exe
 
 Use the project's dependency manager to provide Hypothesis or Atheris as development dependencies. Run from the project root and adapt paths. The Atheris example is saved as `fuzz/fuzz_json.py`; execute it as a module so installed project imports resolve consistently.
 
-| Command | Purpose |
-| --- | --- |
-| `python -m pytest tests/test_properties.py -q` | Run Hypothesis properties. |
-| `python -m pytest tests/test_properties.py --hypothesis-seed=1234 -vv` | Investigate a run with a fixed seed; also retain the concrete failure. |
-| `mkdir -p fuzz/corpus/json fuzz/artifacts` | Prepare corpus and artifact directories. |
-| `python -m fuzz.fuzz_json fuzz/corpus/json -max_total_time=30 -max_len=4096 -artifact_prefix=fuzz/artifacts/` | Run a bounded Atheris smoke campaign. |
-| `python -m fuzz.fuzz_json fuzz/artifacts/crash-example -runs=1` | Replay an actual saved crash, replacing the example filename. |
+> [!NOTE]
+> Atheris forwards [libFuzzer options](https://llvm.org/docs/LibFuzzer.html#options). Use CI process timeouts and resource limits as well as the campaign budget, since a single hung invocation may exceed the campaign duration. Preserve artifacts before cleaning temporary runners.
 
-Atheris forwards [libFuzzer options](https://llvm.org/docs/LibFuzzer.html#options). Use CI process timeouts and resource limits as well as the campaign budget, since a single hung invocation may exceed the campaign duration. Preserve artifacts before cleaning temporary runners.
+1. Make Tasks
+
+    Verify that the listed Make targets exist in the current project. Reuse its configured build and test tasks; do not assume these example targets are available.
+
+    | Task             | Purpose                                        |
+    | ---------------- | ---------------------------------------------- |
+    | `make test`      | Run all tests including Hypothesis properties. |
+    | `make test-fuzz` | Launch the Atheris fuzzing campaign.           |
+
+2. Command Instructions
+
+    | Command                                                                                                       | Purpose                                                                |
+    | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+    | `python -m pytest tests/test_properties.py -q`                                                                | Run Hypothesis properties.                                             |
+    | `python -m pytest tests/test_properties.py --hypothesis-seed=1234 -vv`                                        | Investigate a run with a fixed seed; also retain the concrete failure. |
+    | `mkdir -p fuzz/corpus/json fuzz/artifacts`                                                                    | Prepare corpus and artifact directories.                               |
+    | `python -m fuzz.fuzz_json fuzz/corpus/json -max_total_time=30 -max_len=4096 -artifact_prefix=fuzz/artifacts/` | Run a bounded Atheris smoke campaign.                                  |
+    | `python -m fuzz.fuzz_json fuzz/artifacts/crash-example -runs=1`                                               | Replay an actual saved crash, replacing the example filename.          |
 
 ## 7. Style Guide
 
