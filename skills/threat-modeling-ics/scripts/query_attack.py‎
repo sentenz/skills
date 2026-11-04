@@ -19,7 +19,7 @@ DEFAULT_ATTACK_SOURCE = (
     Path(__file__).resolve().parent.parent
     / "assets"
     / "attack"
-    / "ics-attack-19.2.json"
+    / "ics-attack-20.0.json"
 )
 ATTACK_ID_PATTERN = re.compile(r"T\d{4}(?:\.\d{3})?")
 VERSIONED_FILENAME_PATTERN = re.compile(r"ics-attack-(.+)\.json")

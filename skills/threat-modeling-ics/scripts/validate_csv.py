@@ -89,7 +89,7 @@ DEFAULT_ATTACK_SOURCE = (
     Path(__file__).resolve().parent.parent
     / "assets"
     / "attack"
-    / "ics-attack-19.2.json"
+    / "ics-attack-20.0.json"
 )
 DEFAULT_CWE_SOURCE = (
     Path(__file__).resolve().parent.parent
@@ -126,6 +126,7 @@ class Finding:
     message: str
     actual: str
     expected: str
+    severity: str = "error"
 
 
 @dataclass(frozen=True)
@@ -700,16 +701,13 @@ def validate_cwe_mappings(
                     origin="output",
                     row_number=row_number,
                     threat_id=threat_id,
-                    column="Justification",
+                    column="CWE ID",
                     message=(
-                        f"{weakness.mapping_usage} CWE mapping requires an explicit "
-                        "review rationale"
+                        f"{weakness.mapping_usage} CWE adnotation"
                     ),
-                    actual=f"{identifier} without CWE mapping rationale",
-                    expected=(
-                        "CWE mapping rationale: <evidence and why no more-specific "
-                        "Allowed entry fits>"
-                    ),
+                    actual=f"{identifier}",
+                    expected=f"{weakness.mapping_usage} usage of CWE, reference suggestions or related weaknesses",
+                    severity="info",
                 )
             )
     return findings
@@ -1355,6 +1353,8 @@ def print_report(
     output_records: list[Record],
     source_records: Optional[list[Record]],
 ) -> None:
+    errors = [f for f in findings if f.severity == "error"]
+    infos = [f for f in findings if f.severity == "info"]
     affected = {
         (finding.origin, finding.row_number)
         for finding in findings
@@ -1367,7 +1367,8 @@ def print_report(
     print(f"Output rows     : {max(len(output_records) - 1, 0)}")
     if source_records is not None:
         print(f"Source rows     : {max(len(source_records) - 1, 0)}")
-    print(f"Findings       : {len(findings)}")
+    print(f"Errors         : {len(errors)}")
+    print(f"Info           : {len(infos)}")
     print(f"Affected rows  : {len(affected)}")
     print(separator)
 
@@ -1376,13 +1377,13 @@ def print_report(
         return
 
     print()
-    print("No.  Scope   Row    Id            Column                    Finding")
-    print("-" * 96)
+    print("No.  Sev    Scope   Row    Id            Column                    Finding")
+    print("-" * 100)
     for number, finding in enumerate(findings, start=1):
         row = str(finding.row_number) if finding.row_number is not None else "-"
         threat_id = finding.threat_id or "-"
         print(
-            f"{number:>3}  {finding.origin:<6}  {row:>4}  "
+            f"{number:>3}  {finding.severity:<5}  {finding.origin:<6}  {row:>4}  "
             f"{threat_id[:12]:<12}  {finding.column[:24]:<24}  "
             f"{finding.message}"
         )
@@ -1392,7 +1393,7 @@ def print_report(
         row = str(finding.row_number) if finding.row_number is not None else "file"
         threat_id = finding.threat_id or "<unknown>"
         print(
-            f"\n@@ finding {number}: {finding.origin}:{row} "
+            f"\n@@ finding {number} [{finding.severity}]: {finding.origin}:{row} "
             f"Id {threat_id} [{finding.column}] @@"
         )
         print(f"  {finding.message}")
@@ -1494,7 +1495,7 @@ def main() -> int:
         return 2
 
     print_report(findings, output_records, source_records)
-    return 1 if findings else 0
+    return 1 if any(f.severity == "error" for f in findings) else 0
 
 
 if __name__ == "__main__":

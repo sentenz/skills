@@ -6,7 +6,7 @@
 ## 1. Details
 
 - [attack/](attack/)
-  > MITRE ATT&CK for ICS 19.2 STIX snapshot from the [ATT&CK STIX dataset](https://github.com/mitre-attack/attack-stix-data/blob/master/ics-attack/ics-attack-19.2.json). Contains techniques, tactics, mitigations, relationships, and lifecycle flags. Treat it as programmatic input only, use `scripts/query_attack.py` for bounded lookup and `scripts/validate_csv.py` for complete-output validation.
+  > MITRE ATT&CK for ICS 20.0 STIX snapshot from the [ATT&CK STIX dataset](https://github.com/mitre-attack/attack-stix-data/blob/master/ics-attack/). Contains techniques, tactics, mitigations, relationships, and lifecycle flags. Treat it as programmatic input only, use `scripts/query_attack.py` for bounded lookup and `scripts/validate_csv.py` for complete-output validation.
 
 - [cwe/](cwe/)
   > Versioned MITRE CWE 4.20 projection derived from the [CWE JSON API](https://github.com/CWE-CAPEC/REST-API-wg/tree/main/json_repo). Contains all weakness IDs plus abstraction, status, mapping notes, relationships, candidate mitigations, and selected discovery views. Treat it as programmatic input only, use `scripts/query_cwe.py` for bounded lookup and `scripts/validate_csv.py` for complete-output validation.

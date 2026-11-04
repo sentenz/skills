@@ -1,6 +1,6 @@
 # Justification Templates
 
-Use these templates after completing review steps 1–13. Select the template from the final `State`, replace every bracketed placeholder with row-specific evidence, and omit optional clauses when evidence does not support them. Write the result as one paragraph in the generated CSV cell.
+Use these templates after completing review steps 1–13. Select the template from the final `State`, replace every bracketed placeholder with row-specific evidence, and omit optional clauses when evidence does not support them. Write the result as one paragraph in the analysis CSV cell.
 
 - [1. Baseline-Derived Structure](#1-baseline-derived-structure)
 - [2. Universal Rules](#2-universal-rules)
