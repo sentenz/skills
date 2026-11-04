@@ -1,18 +1,18 @@
 ---
-name: threat-modeling-ics
+name: threat-modeling-analysis
 description: >-
-  Performs continuous, evidence-driven threat modeling for OT/ICS systems from Microsoft Threat Modeling Tool (TMT) threat-list exports (`*.csv`) and model files (`*.tm7`).
+  Performs evidence-driven threat analysis for OT/ICS systems from Microsoft Threat Modeling Tool (TMT) threat-list exports (`*.csv`) and model files (`*.tm7`).
   Supports initial threat generation, periodic reassessment, and event-driven review within a single evolving `<Device_Name>_Threat_Model_Analysis.csv` artifact. Uses TMT and
   STRIDE for initial threat enumeration, then enriches each threat with OT/ICS context, MITRE ATT&CK for ICS mappings, MITRE EMB3D device-property threat enrichment for
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.8.0"
+  version: "1.8.1"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
 
-# Threat Modeling ICS
+# Threat Modeling Analysis
 
 Instructions for AI security agents reviewing Microsoft Threat Modeling Tool threat-list exports.
 

@@ -27,7 +27,7 @@ Agent skills are modular capabilities that AI agents can utilize to perform spec
     - [1.6.1. Multi-Stage Dockerfile](#161-multi-stage-dockerfile)
   - [1.7. Threat Modeling Skills](#17-threat-modeling-skills)
     - [1.7.1. TM7 Threat Model](#171-tm7-threat-model)
-    - [1.7.2. Threat Modeling ICS](#172-threat-modeling-ics)
+    - [1.7.2. Threat Modeling Analysis](#172-threat-modeling-analysis)
   - [1.8. Documentation Skills](#18-documentation-skills)
     - [1.8.1. Architecture Decision Records (ADR)](#181-architecture-decision-records-adr)
     - [1.8.2. Technical Article](#182-technical-article)
@@ -367,22 +367,22 @@ External Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awe
     Use the tm7-threat-model skill to create a STRIDE threat model for this application as a Microsoft TMT .tm7 file.
     ```
 
-#### 1.7.2. Threat Modeling ICS
+#### 1.7.2. Threat Modeling Analysis
 
-[Threat Modeling ICS](threat-modeling-ics/SKILL.md)
+[Threat Modeling Analysis](threat-modeling-analysis/SKILL.md)
 
-Threat modeling for OT/ICS systems using Microsoft TMT, STRIDE, MITRE ATT&CK for ICS, CWE, and CVSS v4.0.
+Evidence-driven threat modeling and analysis for OT/ICS systems using Microsoft TMT, STRIDE, MITRE ATT&CK for ICS, CWE, and CVSS v4.0.
 
 1. Installation
 
     ```bash
-    npx skills add sentenz/skills --skill threat-modeling-ics
+    npx skills add sentenz/skills --skill threat-modeling-analysis
     ```
 
 2. Invocation
 
     ```plaintext
-    Use the threat-modeling-ics skill to create an OT/ICS threat model from the supplied architecture and asset inventory.
+    Use the threat-modeling-analysis skill to create and review an OT/ICS threat model from the supplied architecture and asset inventory.
     ```
 
 ### 1.8. Documentation Skills

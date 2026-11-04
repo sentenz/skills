@@ -613,7 +613,7 @@ risk-validate-cvss:
 		exit 1; \
 	fi
 
-	@uv run skills/threat-modeling-ics/scripts/validate_cvss.py --csv "$(filter-out $@,$(MAKECMDGOALS))"
+	@uv run skills/threat-modeling-analysis/scripts/validate_cvss.py --csv "$(filter-out $@,$(MAKECMDGOALS))"
 .PHONY: risk-validate-cvss
 
 # Usage: make risk-validate-csv <source> <artifact>
@@ -625,5 +625,5 @@ risk-validate-csv:
 		exit 1; \
 	fi
 
-	@python3 skills/threat-modeling-ics/scripts/validate_csv.py --source "$(word 1,$(filter-out $@,$(MAKECMDGOALS)))" --artifact "$(word 2,$(filter-out $@,$(MAKECMDGOALS)))"
+	@python3 skills/threat-modeling-analysis/scripts/validate_csv.py --source "$(word 1,$(filter-out $@,$(MAKECMDGOALS)))" --artifact "$(word 2,$(filter-out $@,$(MAKECMDGOALS)))"
 .PHONY: risk-validate-csv
