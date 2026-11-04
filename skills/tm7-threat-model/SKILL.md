@@ -24,12 +24,14 @@ When asked to produce a `.tm7` file:
    - **Processes** (web apps, services, functions) → `StencilEllipse`, `GE.P`
    - **Data stores** (databases, caches, queues, blobs) → `StencilParallelLines`, `GE.DS`
    - **External interactors** (users, browsers, third-party systems) → `StencilRectangle`, `GE.EI`
-   - **Trust boundaries** → `BorderBoundary`, `GE.TB`
+   - **Trust boundaries** → `BorderBoundary`, `GE.TB.B`
    - **Data flows** connecting the above → `Connector`, `GE.DF`
 2. **Assign a unique lowercase UUID** (e.g. `148ade68-5c80-40f3-8e1f-4e2cabdb5991`) to every
    stencil and every flow. Never use human-readable ids like `users-browser`.
 3. **Lay out coordinates** (`Left`/`Top`/`Width`/`Height`) so stencils don't overlap.
 4. **Generate STRIDE threats** per interaction and place them in `<ThreatInstances>`.
+   Adapt descriptions, priorities, and mitigations to the architecture; do not inherit example
+   threat states or claim a mitigation is implemented without evidence.
 5. **Serialize** using the structure in this guide, mirroring `assets/example-minimal.tm7`.
 6. **Validate** against the "Common Mistakes" checklist before returning the file.
 7. **Write the file with no XML declaration and no pretty-print indentation** (a single
@@ -37,6 +39,11 @@ When asked to produce a `.tm7` file:
 
 Always open [`assets/example-minimal.tm7`](./assets/example-minimal.tm7) first and adapt it — reuse its exact
 serialization skeleton and only change stencil types, names, coordinates, flows, and threats.
+
+For device interfaces, paired flows, trust boundaries, or a larger STRIDE example, read
+[`references/example-patterns.md`](./references/example-patterns.md). It explains how to use
+[`references/Example_Threat_Model.tm7`](./references/Example_Threat_Model.tm7) selectively while
+retaining the minimal template's serialization skeleton and KnowledgeBase.
 
 ## CRITICAL: Serialization format
 
@@ -73,10 +80,13 @@ The file MUST start with this exact root element — **no `<?xml?>` declaration*
 
 ## File structure (correct order)
 
-A full tool export contains, in this order: `DrawingSurfaceList`, `MetaInformation`, `Notes`,
+The minimal template contains, in this order: `DrawingSurfaceList`, `MetaInformation`, `Notes`,
 `ThreatInstances`, `ThreatMetaData` (often empty/self-closing), then the large generic
 `KnowledgeBase` as a **top-level sibling** (not nested inside `ThreatMetaData`), and finally
 `Profile`.
+
+The larger reference uses a different layout; do not combine the two layouts. See
+[example differences](./references/example-patterns.md#serialization-differences).
 
 ```xml
 <ThreatModel xmlns="..." xmlns:i="...">
@@ -112,7 +122,7 @@ A full tool export contains, in this order: `DrawingSurfaceList`, `MetaInformati
 </ThreatModel>
 ```
 
-> The `<KnowledgeBase>` (the generic SDL stencil/threat catalog) is large but **required** —
+> The `<KnowledgeBase>` (the template's stencil/threat catalog) is large but **required** —
 > the tool uses it to resolve every stencil `TypeId`. It is a **top-level sibling** placed after
 > `ThreatMetaData` and before `Profile`, **not** nested inside `ThreatMetaData`. Reuse it verbatim
 > from `assets/example-minimal.tm7`; only add stencils whose `TypeId` already appears in that
@@ -159,9 +169,9 @@ Each stencil in `<Borders>` is wrapped in `<a:KeyValueOfguidanyType>`:
 | Process (circle) | `StencilEllipse` | `GE.P` | Processes, web apps, services |
 | Data store (parallel lines) | `StencilParallelLines` | `GE.DS` | Databases, storage, caches |
 | External interactor (rectangle) | `StencilRectangle` | `GE.EI` | Users, external systems |
-| Trust boundary | `BorderBoundary` | `GE.TB` | Trust boundaries |
+| Trust boundary | `BorderBoundary` | `GE.TB.B` | Trust boundaries |
 
-### Common `TypeId` values (SDL TM knowledge base)
+### Common `TypeId` values (baseline KnowledgeBase)
 
 | `TypeId` | Component |
 |----------|-----------|
@@ -214,7 +224,10 @@ Properties use typed `<a:anyType>` elements:
 Threats go in `<ThreatInstances>` using `<a:KeyValueOfstringThreatpc_P0_PhOB>` (note the exact
 `PhOB` suffix). Unlike stencils, the threat `<a:Value>` fields are **`b:`-prefixed** (the
 `ThreatModeling.KnowledgeBase` namespace), and the `<a:Key>` is the literal concatenation
-`TH<id> + <SourceGuid> + <FlowGuid> + <TargetGuid>`:
+`<TypeId> + <SourceGuid> + <FlowGuid> + <TargetGuid>` (without separators). The minimal
+template uses `TH117`; the larger reference uses catalog-specific IDs such as `S2` and `E7`.
+Use a threat `TypeId` defined in the output's KnowledgeBase; never transfer IDs between
+catalogs without checking their definitions:
 
 ```xml
 <ThreatInstances xmlns:a="...Arrays">
@@ -289,8 +302,8 @@ Use the standard STRIDE categories for `UserThreatCategory`: **S**poofing, **T**
 6. **Dangling references** — a `Line`, threat `SourceGuid`/`TargetGuid`, or threat `FlowGuid`
    that points to a stencil/flow GUID that isn't actually defined in `<Borders>`/`<Lines>`.
    Every reference must resolve to an included element.
-7. **Missing or duplicated `z:Id` reference attributes** — every serialized object needs a
-   `z:Id`, and each `z:Id` (e.g. `i1`, `i2`, `i10`) must be **unique** across the whole file.
+7. **Missing or duplicated `z:Id` reference attributes** — preserve these attributes where
+   the template uses them; each `z:Id` (e.g. `i1`, `i2`, `i10`) must be **unique** across the whole file.
    When you duplicate a template block to add an element, always renumber its `z:Id` (and any
    nested ones) to values not used elsewhere; reusing an id creates duplicate DataContract
    object ids and makes deserialization fail.
@@ -299,6 +312,11 @@ Use the standard STRIDE categories for `UserThreatCategory`: **S**poofing, **T**
    `xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts"`.
 9. **Pretty-printing with indentation** — the correct output is a single continuous XML stream
    with no added newlines or indentation inside the content.
+
+Also check drawing-surface references, catalog membership for stencil and threat `TypeId`
+values, and consistency between each threat key, interaction key, and GUID fields. Report
+structural checks separately from an actual open/save check in Microsoft Threat Modeling
+Tool; parsing XML alone does not establish application compatibility.
 
 ## Reference asset
 
