@@ -62,6 +62,7 @@ IDENTIFIER_ONLY_PATTERN = re.compile(
 MID_PATTERN = re.compile(r"\bMID-\d{3}\b", re.IGNORECASE)
 TID_PATTERN = re.compile(r"\bTID-\d{3}\b", re.IGNORECASE)
 ATTACK_ID_PATTERN = re.compile(r"T\d{4}(?:\.\d{3})?")
+ATTACK_SOURCE_NAMES = frozenset({"mitre-attack", "mitre-ics-attack"})
 CWE_ID_PATTERN = re.compile(r"CWE-\d+")
 CWE_RATIONALE_PATTERN = re.compile(r"\bCWE mapping rationale\s*:", re.IGNORECASE)
 AMBIGUOUS_BASIC_CONTROL_PATTERN = re.compile(
@@ -435,7 +436,7 @@ def load_attack_techniques(path: Path) -> dict[str, AttackTechnique]:
             str(reference.get("external_id", "")).strip().upper()
             for reference in raw_references
             if isinstance(reference, dict)
-            and reference.get("source_name") == "mitre-attack"
+            and reference.get("source_name") in ATTACK_SOURCE_NAMES
             and ATTACK_ID_PATTERN.fullmatch(
                 str(reference.get("external_id", "")).strip().upper()
             )
