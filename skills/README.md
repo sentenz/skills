@@ -353,7 +353,7 @@ External Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awe
 
 [TM7 Threat Model](tm7-threat-model/SKILL.md)
 
-External Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awesome-copilot) for generating valid [Microsoft Threat Modeling Tool (TMT)](https://github.com/github/awesome-copilot/tree/main/skills/tm7-threat-model) v7.3+ files with diagrams and STRIDE threats.
+Agent Skill derived from [GitHub Awesome-Copilot](https://github.com/github/awesome-copilot/tree/main/skills/tm7-threat-model) for creating, inspecting, and modifying Microsoft Threat Modeling Tool (`.tm7`) files with diagrams and STRIDE threats. Refined with the bundled [embedded-device example](tm7-threat-model/references/Example_Threat_Model.tm7) and [adaptation patterns](tm7-threat-model/references/example-patterns.md), covering catalog selection, directional interfaces, scope properties, and validation.
 
 1. Installation
 

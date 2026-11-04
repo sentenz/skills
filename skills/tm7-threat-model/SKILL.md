@@ -1,312 +1,188 @@
 ---
 name: tm7-threat-model
-description: 'Creates valid Microsoft Threat Modeling Tool (.tm7) files compatible with the Microsoft Threat Modeling Tool v7.3+. Use this skill whenever asked to create, generate, or modify a .tm7 threat model file, or when performing STRIDE threat modeling that should output a .tm7 file that opens cleanly in the Microsoft Threat Modeling Tool.'
+description: 'Create, inspect, and modify Microsoft Threat Modeling Tool (.tm7) files with data flow diagrams and STRIDE threats. Use when a threat model must be delivered as .tm7, when adapting an existing .tm7 model, or when modeling software, embedded devices, or industrial interfaces using the bundled examples.'
 ---
 
-# Microsoft Threat Modeling Tool (.tm7) Generator
+# Microsoft Threat Modeling Tool (.tm7)
 
-You generate **valid `.tm7` files** for the Microsoft Threat Modeling Tool (v7.3+). A `.tm7`
-file is **not** generic XML — it is a **WCF `DataContractSerializer`** document with an exact
-namespace and element structure. If the structure is wrong, the tool refuses to open the file
-with:
+Produce a diagram and STRIDE threats using the WCF `DataContractSerializer` structure
+demonstrated by the bundled exports. Treat XML well-formedness, model consistency, and
+successful opening in Microsoft Threat Modeling Tool as separate validation levels.
 
-> "File is not an actual threat model or the threat model may be corrupted."
+## Select the reference
 
-Your job is to translate a described system (components, data stores, external actors, data
-flows, trust boundaries) into a diagram plus STRIDE threats, serialized in the exact `.tm7`
-format described below.
+Read [example patterns](./references/example-patterns.md) before adapting either export.
+
+| Resource | Use |
+|----------|-----|
+| [Example_Threat_Model.tm7](./references/Example_Threat_Model.tm7) | Full embedded-device example: generic stencils, trust borders, scope properties, directional interfaces, and generated STRIDE threats; SDL TM Knowledge Base (Core) `4.1.0.11`, model `Version` `4.3`. |
+| [example-minimal.tm7](./assets/example-minimal.tm7) | Smaller diagram with two stencils, one connector, and one threat; Azure Threat Model Template `1.0.0.33`. Use its own catalog and serialization layout. |
+
+For modifications, use the supplied model as the base and preserve its catalog and layout.
+For new models, select the bundled export whose stencil and threat catalog fits the system.
+Inspect relevant XML subtrees programmatically; avoid loading the entire knowledge base into
+context. Use the references to learn serialization and modeling patterns, not to inherit
+device names, scope decisions, security settings, priorities, or mitigation claims.
 
 ## Workflow
 
-When asked to produce a `.tm7` file:
+1. **Inventory the architecture.** Identify processes, stores, external actors, trust zones,
+   directed interfaces, and scope assumptions. Record the payload or action and protocol
+   for each flow. Separate confirmed facts from unresolved assumptions.
+2. **Select one base export.** Preserve its root children, member order, namespaces,
+   `KnowledgeBase`, and `Profile`. Do not combine the Azure and Core catalogs or copy a
+   threat `TypeId` from one into the other.
+3. **Build the diagram.** Clone complete compatible stencil/property blocks. Assign a new
+   lowercase UUID to each new surface, stencil, boundary, and connector; retain existing
+   identities when modifying a model. Update dictionary keys and all references together.
+4. **Set properties and scope.** Select list values by their actual option text and index.
+   Give exclusions a reason on each affected element and flow. Populate metadata from
+   known facts; leave unknown ownership fields empty rather than inventing people.
+5. **Lay out the model.** Position components without overlap, size borders around the
+   intended zones, and preserve or recalculate connector endpoint and handle coordinates.
+   Use separate connectors for independently modeled directions, as in the JTAG and QSPI
+   examples. A visual border does not set `Out Of Scope` properties.
+6. **Assess interactions.** Review applicable STRIDE categories for each in-scope flow and
+   its endpoints. Use threat types from the selected catalog. Adapt descriptions to the
+   architecture and record proposed controls without asserting that they are implemented.
+7. **Serialize and validate.** Follow the checks below, write compact UTF-8 XML without an
+   XML declaration to match the examples, and reparse the saved file. Open and save it in
+   Microsoft Threat Modeling Tool when available; otherwise report that application
+   validation remains unperformed.
 
-1. **Model the system.** Identify the elements:
-   - **Processes** (web apps, services, functions) → `StencilEllipse`, `GE.P`
-   - **Data stores** (databases, caches, queues, blobs) → `StencilParallelLines`, `GE.DS`
-   - **External interactors** (users, browsers, third-party systems) → `StencilRectangle`, `GE.EI`
-   - **Trust boundaries** → `BorderBoundary`, `GE.TB`
-   - **Data flows** connecting the above → `Connector`, `GE.DF`
-2. **Assign a unique lowercase UUID** (e.g. `148ade68-5c80-40f3-8e1f-4e2cabdb5991`) to every
-   stencil and every flow. Never use human-readable ids like `users-browser`.
-3. **Lay out coordinates** (`Left`/`Top`/`Width`/`Height`) so stencils don't overlap.
-4. **Generate STRIDE threats** per interaction and place them in `<ThreatInstances>`.
-5. **Serialize** using the structure in this guide, mirroring `assets/example-minimal.tm7`.
-6. **Validate** against the "Common Mistakes" checklist before returning the file.
-7. **Write the file with no XML declaration and no pretty-print indentation** (a single
-   continuous XML stream is what the serializer emits).
+## Serialization contract
 
-Always open [`assets/example-minimal.tm7`](./assets/example-minimal.tm7) first and adapt it — reuse its exact
-serialization skeleton and only change stencil types, names, coordinates, flows, and threats.
+Preserve namespace URIs and in-scope prefix bindings, including prefixes used inside
+`i:type` values. Prefix spellings are aliases; changing them without updating QName-valued
+attributes can break deserialization. XML declarations and indentation are not themselves
+proof of corruption; use the bundled compact style to minimize unnecessary changes.
 
-## CRITICAL: Serialization format
+| Alias used here | Namespace URI | Purpose |
+|-----------------|---------------|---------|
+| `m` / default | `http://schemas.datacontract.org/2004/07/ThreatModeling.Model` | Root, drawing surfaces, model members |
+| `d` | `http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts` | Inherited stencil members |
+| `a` | `http://schemas.microsoft.com/2003/10/Serialization/Arrays` | Dictionary and array wrappers |
+| `b` | `http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase` | Attribute objects, catalog, threat members |
+| `i` | `http://www.w3.org/2001/XMLSchema-instance` | `type` and `nil` attributes |
+| `z` | `http://schemas.microsoft.com/2003/10/Serialization/` | Object identities and references |
+| `c` | `http://www.w3.org/2001/XMLSchema` | Primitive type names |
 
-TM7 files use **WCF `DataContractSerializer` XML**, not standard XML.
+Read namespaces locally: the exports rebind `a` to the KnowledgeBase namespace inside
+`KnowledgeBase`; it does not always denote Arrays.
 
-The file MUST start with this exact root element — **no `<?xml?>` declaration**:
+### Root members
 
-```xml
-<ThreatModel xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+Preserve the sequence of the selected export; these are two observed layouts, not a rule
+to merge their optional members:
+
+| Export | Root children in document order |
+|--------|---------------------------------|
+| Core example | `DrawingSurfaceList`, `MetaInformation`, `Notes`, `ThreatInstances`, `ThreatGenerationEnabled`, `Validations`, `Version`, `KnowledgeBase`, `Profile` |
+| Minimal Azure example | `DrawingSurfaceList`, `MetaInformation`, `Notes`, `ThreatInstances`, `ThreatMetaData`, `KnowledgeBase`, `Profile` |
+
+Keep `KnowledgeBase` as a root-level sibling before `Profile`, never inside
+`ThreatMetaData`. Preserve the separate catalog-level `KnowledgeBase/ThreatMetaData`.
+Keep `<PromptedKb xmlns=""/>` in `Profile`. Do not infer a tool release number from the
+Core example's model `Version` value `4.3`.
+
+### Stencils and connectors
+
+Keep stencils in `DrawingSurfaceModel/Borders` and connectors in `Lines`, each wrapped
+in an Arrays `KeyValueOfguidanyType` containing `Key` and `Value`. Set `Key` equal to
+the object's Abstracts `Guid`. Preserve the Abstracts namespace and member order of
+`GenericTypeId`, `Guid`, `Properties`, `TypeId`, and geometry members.
+
+| Element | `i:type` | Core example `GenericTypeId` | Core example `TypeId` |
+|---------|----------|------------------------------|-----------------------|
+| Process | `StencilEllipse` | `GE.P` | `GE.P` |
+| Data store | `StencilParallelLines` | `GE.DS` | `GE.DS` |
+| External actor | `StencilRectangle` | `GE.EI` | `GE.EI` or `SE.EI.TMCore.User` |
+| Trust border | `BorderBoundary` | `GE.TB.B` | `GE.TB.B` |
+| Directed flow | `Connector` | `GE.DF` | `GE.DF` |
+
+Resolve generic identifiers against `KnowledgeBase/GenericElements` and specialized
+identifiers against `StandardElements`. Do not replace a complete specialized stencil
+with a generic block by changing only its `TypeId`; its property definitions also differ.
+Use `GE.TB.B` for the demonstrated border, not the unsupported shorthand `GE.TB`.
+
+For each connector, resolve Abstracts `SourceGuid` and `TargetGuid` to stencils on the
+same surface. Preserve `HandleX`, `HandleY`, `SourceX`, `SourceY`, `TargetX`, and
+`TargetY` along with the direction. Do not assign all endpoint coordinates zero by default.
+
+Preserve existing `z:Id` attributes and allocate fresh identifiers for cloned objects,
+including nested objects. Scan the entire document, including the catalog, for collisions.
+Resolve every `z:Ref` to an existing identity. Do not add `z:Id` to every XML node or
+regenerate catalog identifiers as if they were diagram UUIDs.
+
+### Typed properties
+
+Keep complete Arrays `anyType` blocks with KnowledgeBase members:
+
+| Attribute type | Representation |
+|----------------|----------------|
+| `HeaderDisplayAttribute` | `DisplayName`, `Name`, and nil `Value` |
+| `StringDisplayAttribute` | `Value` typed as XML Schema `string` |
+| `BooleanDisplayAttribute` | `Value` typed as XML Schema `boolean` |
+| `ListDisplayAttribute` | Arrays string options in `Value`, plus zero-based `SelectedIndex` |
+
+Preserve property `Name` identifiers and option order. Never assume `0` means `No` or
+`1` means `Yes`: the Core example's `Source Authenticated` options are `Not Selected`,
+`No`, `Yes`, while `Destination Authenticated` has `No`, `Yes`. See the
+[property examples](./references/example-patterns.md#typed-properties-and-scope).
+
+If a control is unconfirmed, select `Not Selected` when available. If the catalog only
+offers `No` and `Yes`, document a conservative `No` as an assumption that credits no
+control pending confirmation, rather than presenting it as an observed implementation fact.
+
+### Threat instances
+
+Use Arrays `KeyValueOfstringThreatpc_P0_PhOB` wrappers in `ThreatInstances`. Preserve
+the selected export's KnowledgeBase `Value` member order, including nil members.
+Construct identities from the interaction, not from a hard-coded `TH` prefix:
+
+```text
+TypeId         = an Id in the selected KnowledgeBase/ThreatTypes
+dictionary Key = TypeId + SourceGuid + FlowGuid + TargetGuid
+InteractionKey = SourceGuid + ":" + FlowGuid + ":" + TargetGuid
 ```
 
-**NEVER use:**
-- `<?xml version="1.0" encoding="utf-8"?>` — causes deserialization failure.
-- `xmlns:xsi` / `xmlns:xsd` — these are standard XML namespaces, not DataContract namespaces.
-- Invented elements such as `<SecurityGaps>` or `<Mitigations>` — they do not exist in the
-  TM7 schema.
+The Core example uses identifiers such as `S2`, `T1`, and `E7`; the Azure template uses
+identifiers such as `TH117`. Keep numeric threat `Id` values unique and separate from
+`TypeId` and dictionary keys. Resolve `DrawingSurfaceGuid`, both endpoint GUIDs, and
+`FlowGuid` within the intended surface. Keep the interaction consistent with the selected
+flow and assessed direction; do not blindly copy the minimal example's threat endpoints.
 
-> **Note:** `<MetaInformation>` (with children like `<Owner>`, `<Contributors>`,
-> `<Reviewer>`, `<Assumptions>`, `<ExternalDependencies>`, `<HighLevelSystemDescription>`,
-> `<ThreatModelName>`), `<Notes>`, and `<KnowledgeBase>` **are** part of the real schema and
-> are emitted by the tool — keep them (see the structure below and `assets/example-minimal.tm7`).
-> Just don't invent elements that the tool never produces.
+Store display content in `Properties` using Arrays `KeyValueOfstringstring` entries.
+The Core example demonstrates `Title`, `UserThreatCategory`,
+`UserThreatShortDescription`, `UserThreatDescription`, `InteractionString`, and
+`Priority`; its top-level `Title` and `UserThreat*` members remain nil. Keep the
+top-level and property `Priority` values consistent. Preserve catalog category spellings,
+including `Denial Of Service` and `Elevation Of Privilege` in the Core example.
 
-## Required namespace prefixes
+Use `AutoGenerated` for newly generated, unreviewed threats as demonstrated by the Core
+example. Preserve existing review states when editing. Set `Mitigated` only with evidence
+of implemented controls and a recorded justification; suggested controls alone do not
+establish mitigation. Add properties only when supported by the selected catalog's
+`ThreatMetaData`; do not invent `<Mitigations>` or `<SecurityGaps>` elements.
 
-| Prefix | URI | Used for |
-|--------|-----|----------|
-| (default) | `http://schemas.datacontract.org/2004/07/ThreatModeling.Model` | Root `ThreatModel` |
-| `xmlns:i` | `http://www.w3.org/2001/XMLSchema-instance` | Type attributes |
-| `xmlns:z` | `http://schemas.microsoft.com/2003/10/Serialization/` | Reference ids (`z:Id`) |
-| `xmlns:a` | `http://schemas.microsoft.com/2003/10/Serialization/Arrays` | Arrays / collections |
-| `xmlns:b` | `http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase` | Stencil properties |
-| `xmlns:c` | `http://www.w3.org/2001/XMLSchema` | Primitive type values |
+## Validation and delivery
 
-## File structure (correct order)
+Perform these checks on the saved file:
 
-A full tool export contains, in this order: `DrawingSurfaceList`, `MetaInformation`, `Notes`,
-`ThreatInstances`, `ThreatMetaData` (often empty/self-closing), then the large generic
-`KnowledgeBase` as a **top-level sibling** (not nested inside `ThreatMetaData`), and finally
-`Profile`.
+1. Parse XML with namespaces and verify the selected root layout and member order.
+   Resolve namespace prefixes inside `i:type` values, not only element tag names.
+2. Check unique surface/stencil/connector UUIDs, matching dictionary keys and `Guid`
+   members, unique `z:Id` values, and resolvable `z:Ref` attributes.
+3. Resolve connector endpoints and threat surface/flow/endpoint references. Reconstruct
+   threat dictionary and interaction keys and check unique numeric threat IDs.
+4. Resolve stencil and threat types against the selected knowledge base. Check every
+   list index is within its own option array and selects the intended value.
+5. Review names, metadata, exclusions and their reasons, directional flows, boundary
+   placement, and connector geometry. Require STRIDE review of in-scope interactions;
+   do not force six threats per flow or copy the example's threat count.
+6. Confirm descriptions and states reflect available evidence. Reopen in Microsoft
+   Threat Modeling Tool when available and inspect both diagram and analysis views.
 
-```xml
-<ThreatModel xmlns="..." xmlns:i="...">
-  <DrawingSurfaceList>
-    <DrawingSurfaceModel z:Id="i1" xmlns:z="...">
-      <GenericTypeId xmlns="...Abstracts">DRAWINGSURFACE</GenericTypeId>
-      <Guid xmlns="...Abstracts">{guid}</Guid>
-      <Properties xmlns="...Abstracts" xmlns:a="...Arrays">...</Properties>
-      <TypeId xmlns="...Abstracts">DRAWINGSURFACE</TypeId>
-      <Borders xmlns:a="...Arrays">
-        <!-- Stencil elements: processes, data stores, external entities, boundaries -->
-      </Borders>
-      <Lines xmlns:a="...Arrays">
-        <!-- Data flow lines connecting stencils -->
-      </Lines>
-      <Notes xmlns:a="...Arrays"/>
-    </DrawingSurfaceModel>
-  </DrawingSurfaceList>
-  <MetaInformation>
-    <!-- Owner, Contributors, Reviewer, Assumptions, ThreatModelName, etc. -->
-  </MetaInformation>
-  <Notes xmlns:a="...Arrays"/>
-  <ThreatInstances>
-    <!-- Threat entries -->
-  </ThreatInstances>
-  <ThreatMetaData/>
-  <KnowledgeBase z:Id="i21" xmlns:a="...ThreatModeling.KnowledgeBase" xmlns:z="...">
-    <!-- Generic SDL stencil/threat catalog — top-level sibling of ThreatMetaData -->
-  </KnowledgeBase>
-  <Profile>
-    <PromptedKb xmlns=""/>
-  </Profile>
-</ThreatModel>
-```
-
-> The `<KnowledgeBase>` (the generic SDL stencil/threat catalog) is large but **required** —
-> the tool uses it to resolve every stencil `TypeId`. It is a **top-level sibling** placed after
-> `ThreatMetaData` and before `Profile`, **not** nested inside `ThreatMetaData`. Reuse it verbatim
-> from `assets/example-minimal.tm7`; only add stencils whose `TypeId` already appears in that
-> KnowledgeBase.
-
-## Stencil elements
-
-Each stencil in `<Borders>` is wrapped in `<a:KeyValueOfguidanyType>`:
-
-```xml
-<a:KeyValueOfguidanyType>
-  <a:Key>{guid}</a:Key>
-  <a:Value z:Id="i2" i:type="StencilEllipse">
-    <GenericTypeId xmlns="...Abstracts">GE.P</GenericTypeId>
-    <Guid xmlns="...Abstracts">{guid}</Guid>
-    <Properties xmlns="...Abstracts">
-      <a:anyType i:type="b:HeaderDisplayAttribute" xmlns:b="...KnowledgeBase">
-        <b:DisplayName>Web Application</b:DisplayName>
-        <b:Name/>
-        <b:Value i:nil="true"/>
-      </a:anyType>
-      <a:anyType i:type="b:StringDisplayAttribute" xmlns:b="...KnowledgeBase">
-        <b:DisplayName>Name</b:DisplayName>
-        <b:Name/>
-        <b:Value i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">My Component</b:Value>
-      </a:anyType>
-      <!-- Out Of Scope, Reason, configurable attributes -->
-    </Properties>
-    <TypeId xmlns="...Abstracts">SE.P.TMCore.WebApp</TypeId>
-    <Height xmlns="...Abstracts">100</Height>
-    <Left xmlns="...Abstracts">400</Left>
-    <StrokeDashArray i:nil="true" xmlns="...Abstracts"/>
-    <StrokeThickness xmlns="...Abstracts">1</StrokeThickness>
-    <Top xmlns="...Abstracts">200</Top>
-    <Width xmlns="...Abstracts">100</Width>
-  </a:Value>
-</a:KeyValueOfguidanyType>
-```
-
-### Stencil shape types
-
-| Shape | `i:type` | `GenericTypeId` | Description |
-|-------|----------|-----------------|-------------|
-| Process (circle) | `StencilEllipse` | `GE.P` | Processes, web apps, services |
-| Data store (parallel lines) | `StencilParallelLines` | `GE.DS` | Databases, storage, caches |
-| External interactor (rectangle) | `StencilRectangle` | `GE.EI` | Users, external systems |
-| Trust boundary | `BorderBoundary` | `GE.TB` | Trust boundaries |
-
-### Common `TypeId` values (SDL TM knowledge base)
-
-| `TypeId` | Component |
-|----------|-----------|
-| `SE.P.TMCore.WebApp` | Web Application |
-| `SE.P.TMCore.AzureAppServiceWebApp` | Azure App Service Web App |
-| `SE.P.TMCore.AzureEventHub` | Azure Event Hub |
-| `SE.P.TMCore.DynamicsCRM` | Dynamics CRM |
-| `SE.DS.TMCore.SQL` | SQL Database |
-| `SE.DS.TMCore.AzureSQLDB` | Azure SQL Database |
-| `SE.EI.TMCore.Browser` | Browser |
-| `SE.EI.TMCore.Mobile` | Mobile Client |
-
-## Data flow lines
-
-Lines in `<Lines>` also use `<a:KeyValueOfguidanyType>`, with `i:type="Connector"`:
-
-```xml
-<a:KeyValueOfguidanyType>
-  <a:Key>{line-guid}</a:Key>
-  <a:Value z:Id="i10" i:type="Connector">
-    <GenericTypeId xmlns="...Abstracts">GE.DF</GenericTypeId>
-    <Guid xmlns="...Abstracts">{line-guid}</Guid>
-    <Properties xmlns="...Abstracts">...</Properties>
-    <TypeId xmlns="...Abstracts">SE.DF.TMCore.Request</TypeId>
-    <HandleX xmlns="...Abstracts">0</HandleX>
-    <HandleY xmlns="...Abstracts">0</HandleY>
-    <SourceGuid xmlns="...Abstracts">{source-stencil-guid}</SourceGuid>
-    <SourceX xmlns="...Abstracts">0</SourceX>
-    <SourceY xmlns="...Abstracts">0</SourceY>
-    <TargetGuid xmlns="...Abstracts">{target-stencil-guid}</TargetGuid>
-    <TargetX xmlns="...Abstracts">0</TargetX>
-    <TargetY xmlns="...Abstracts">0</TargetY>
-  </a:Value>
-</a:KeyValueOfguidanyType>
-```
-
-## Property attribute types
-
-Properties use typed `<a:anyType>` elements:
-
-| `i:type` | Purpose | Value |
-|----------|---------|-------|
-| `b:HeaderDisplayAttribute` | Section header | `i:nil="true"` |
-| `b:StringDisplayAttribute` | Text value (Name, Reason) | `i:type="c:string"` |
-| `b:BooleanDisplayAttribute` | Boolean (Out Of Scope) | `i:type="c:boolean"` |
-| `b:ListDisplayAttribute` | Dropdown list | Has `<b:SelectedIndex>` |
-
-## Threat instances
-
-Threats go in `<ThreatInstances>` using `<a:KeyValueOfstringThreatpc_P0_PhOB>` (note the exact
-`PhOB` suffix). Unlike stencils, the threat `<a:Value>` fields are **`b:`-prefixed** (the
-`ThreatModeling.KnowledgeBase` namespace), and the `<a:Key>` is the literal concatenation
-`TH<id> + <SourceGuid> + <FlowGuid> + <TargetGuid>`:
-
-```xml
-<ThreatInstances xmlns:a="...Arrays">
-  <a:KeyValueOfstringThreatpc_P0_PhOB>
-    <a:Key>TH117{source-guid}{flow-guid}{target-guid}</a:Key>
-    <a:Value xmlns:b="...KnowledgeBase">
-      <b:ChangedBy/>
-      <b:DrawingSurfaceGuid>{drawing-surface-guid}</b:DrawingSurfaceGuid>
-      <b:FlowGuid>{flow-guid}</b:FlowGuid>
-      <b:Id>32</b:Id>
-      <b:InteractionKey>{source-guid}:{flow-guid}:{target-guid}</b:InteractionKey>
-      <b:InteractionString i:nil="true"/>
-      <b:ModifiedAt>2025-01-01T00:00:00</b:ModifiedAt>
-      <b:Priority>High</b:Priority>
-      <b:Properties>
-        <a:KeyValueOfstringstring>
-          <a:Key>Title</a:Key>
-          <a:Value>An adversary may spoof the user and gain access</a:Value>
-        </a:KeyValueOfstringstring>
-        <a:KeyValueOfstringstring>
-          <a:Key>UserThreatCategory</a:Key>
-          <a:Value>Spoofing</a:Value>
-        </a:KeyValueOfstringstring>
-        <a:KeyValueOfstringstring>
-          <a:Key>UserThreatShortDescription</a:Key>
-          <a:Value>Spoofing is when a process or entity is something other than its claimed identity.</a:Value>
-        </a:KeyValueOfstringstring>
-        <a:KeyValueOfstringstring>
-          <a:Key>PossibleMitigations</a:Key>
-          <a:Value>Enable multi-factor authentication and least-privilege access control.</a:Value>
-        </a:KeyValueOfstringstring>
-        <a:KeyValueOfstringstring>
-          <a:Key>Priority</a:Key>
-          <a:Value>High</a:Value>
-        </a:KeyValueOfstringstring>
-        <a:KeyValueOfstringstring>
-          <a:Key>SDLPhase</a:Key>
-          <a:Value>Design</a:Value>
-        </a:KeyValueOfstringstring>
-      </b:Properties>
-      <b:SourceGuid>{source-stencil-guid}</b:SourceGuid>
-      <b:State>Mitigated</b:State>
-      <b:StateInformation i:nil="true"/>
-      <b:TargetGuid>{target-stencil-guid}</b:TargetGuid>
-      <b:Title i:nil="true"/>
-      <b:TypeId>TH117</b:TypeId>
-      <b:Upgraded>false</b:Upgraded>
-      <b:Wide>false</b:Wide>
-    </a:Value>
-  </a:KeyValueOfstringThreatpc_P0_PhOB>
-</ThreatInstances>
-```
-
-**Every GUID must resolve:** `SourceGuid` and `TargetGuid` must equal `<a:Key>` values of real
-stencils in `<Borders>`, and `FlowGuid` must equal the `<a:Key>` of a real connector in
-`<Lines>`. Dangling references produce a model that opens with missing diagram elements.
-
-Use the standard STRIDE categories for `UserThreatCategory`: **S**poofing, **T**ampering,
-**R**epudiation, **I**nformation Disclosure, **D**enial of Service, **E**levation of Privilege.
-
-## Common mistakes that break TM7 files
-
-1. **Adding an `<?xml version="1.0"?>` declaration** — `DataContractSerializer` does not emit one.
-2. **Using `xmlns:xsi` / `xmlns:xsd`** instead of DataContract namespaces.
-3. **Using simple element names** like `<Border>`, `<Line>`, `<Stencil>` — you must use the
-   DataContract wrapper types such as `<a:KeyValueOfguidanyType>`.
-4. **Inventing elements the tool never emits** like `<SecurityGaps>` or `<Mitigations>` — these
-   are not in the schema. (`<MetaInformation>`, `<Notes>`, and `<KnowledgeBase>` **are** valid
-   and must be preserved.)
-5. **Using human-readable GUIDs** like `users-browser` instead of real UUIDs
-   (e.g. `148ade68-5c80-40f3-8e1f-4e2cabdb5991`).
-6. **Dangling references** — a `Line`, threat `SourceGuid`/`TargetGuid`, or threat `FlowGuid`
-   that points to a stencil/flow GUID that isn't actually defined in `<Borders>`/`<Lines>`.
-   Every reference must resolve to an included element.
-7. **Missing or duplicated `z:Id` reference attributes** — every serialized object needs a
-   `z:Id`, and each `z:Id` (e.g. `i1`, `i2`, `i10`) must be **unique** across the whole file.
-   When you duplicate a template block to add an element, always renumber its `z:Id` (and any
-   nested ones) to values not used elsewhere; reusing an id creates duplicate DataContract
-   object ids and makes deserialization fail.
-8. **Missing the `xmlns` on child elements** — each `GenericTypeId`, `Guid`, `Properties`,
-   `TypeId`, etc. must carry its own
-   `xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts"`.
-9. **Pretty-printing with indentation** — the correct output is a single continuous XML stream
-   with no added newlines or indentation inside the content.
-
-## Reference asset
-
-Always use [`assets/example-minimal.tm7`](./assets/example-minimal.tm7) in this skill's
-directory as the structural reference. It is a fully synthetic, sanitized export (no personal or
-project data) that opens cleanly in the tool: two stencils connected by one data flow, with one
-STRIDE threat whose every reference resolves. Adapt the stencil types, names, properties,
-coordinates, data flows, and threats to the user's architecture, but **never** change the
-serialization format or namespace structure, and only use stencil `TypeId` values that already
-appear in its bundled `KnowledgeBase`. After generating, mentally diff your output's skeleton
-against the example to confirm every namespace, wrapper element, and GUID reference matches.
+Deliver the `.tm7` file with a short account of the modeled scope, assumptions, and checks
+actually performed. Do not claim application compatibility solely from XML parsing or
+reference checks.
