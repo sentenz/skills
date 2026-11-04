@@ -10,13 +10,13 @@ replacement serialization template. Paths here are relative to the skill directo
 The device example contains one drawing surface, eight components, two boundary shapes,
 ten directed flows, and fifty threats spanning all six STRIDE categories.
 
-| Pattern | Evidence in the example | Adaptation |
-| --- | --- | --- |
-| Components | MCU and position sensor as processes; flash memory with bootloader as a data store; debug probe, operator, PLC/DCS, and UPS as external interactors | Select shapes by the component's role within the modeled system. Retain only components supported by the target architecture. |
-| Bidirectional interfaces | Separate MCU-to-debugger and debugger-to-MCU JTAG flows; separate MCU-to-NVM and NVM-to-MCU QSPI flows | Create one connector per direction with distinct UUIDs, labels, and endpoint references. Assess each direction independently. |
-| Distinct human interactions | Operator-to-MCU pushbuttons and MCU-to-operator LED status | Separate command input from status output; describe the actual information and interface. |
-| Physical dependencies | UPS supply, two-wire 4–20 mA power/signal, and a motion interaction | Include physical dependencies only when relevant to scope. Confirm direction and security meaning from the architecture rather than inferring them from the sample label. |
-| Trust and scope | `Trust Boundary Example Device` and `Out of Scope` boundary shapes | Place boundaries around the intended trust domains. Record scope decisions and reasons explicitly; a boundary named `Out of Scope` is only a label. |
+| Pattern                     | Evidence in the example                                                                                                                             | Adaptation                                                                                                                                                                |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Components                  | MCU and position sensor as processes; flash memory with bootloader as a data store; debug probe, operator, PLC/DCS, and UPS as external interactors | Select shapes by the component's role within the modeled system. Retain only components supported by the target architecture.                                             |
+| Bidirectional interfaces    | Separate MCU-to-debugger and debugger-to-MCU JTAG flows; separate MCU-to-NVM and NVM-to-MCU QSPI flows                                              | Create one connector per direction with distinct UUIDs, labels, and endpoint references. Assess each direction independently.                                             |
+| Distinct human interactions | Operator-to-MCU pushbuttons and MCU-to-operator LED status                                                                                          | Separate command input from status output; describe the actual information and interface.                                                                                 |
+| Physical dependencies       | UPS supply, two-wire 4–20 mA power/signal, and a motion interaction                                                                                 | Include physical dependencies only when relevant to scope. Confirm direction and security meaning from the architecture rather than inferring them from the sample label. |
+| Trust and scope             | `Trust Boundary Example Device` and `Out of Scope` boundary shapes                                                                                  | Place boundaries around the intended trust domains. Record scope decisions and reasons explicitly; a boundary named `Out of Scope` is only a label.                       |
 
 For border boundaries, both bundled catalogs define `GE.TB.B`; use it for both
 `GenericTypeId` and `TypeId` with `i:type="BorderBoundary"`. The catalogs also define
@@ -48,13 +48,13 @@ applies to an analog interface merely because the generated example includes it.
 
 These are observations from the bundled XML files, not proof of compatibility across tool versions.
 
-| Detail | Minimal template | Device example | Generation rule |
-| --- | --- | --- | --- |
-| KnowledgeBase manifest | Azure Threat Model Template, `1.0.0.33` | SDL TM Knowledge Base (Core), `4.1.0.11` | Retain the baseline catalog. Check generic and standard element IDs as well as threat IDs before adapting a block. |
-| After `ThreatInstances` | Root `ThreatMetaData`, then `KnowledgeBase`, then `Profile` | `ThreatGenerationEnabled`, `Validations`, `Version` (`4.3`), then `KnowledgeBase`, then `Profile` | Preserve the baseline root sequence. Do not splice in the example's version fields. |
-| Threat identifiers | `TH117` | IDs such as `S2`, `E7`, and `D4` | Use IDs from the output's catalog and rebuild keys accordingly. |
-| Threat state | One `Mitigated` threat | Fifty `AutoGenerated` threats | Reassess state and supporting evidence for the target system. |
-| Object reference IDs | Present on the surface, stencils, connector, and KnowledgeBase | Present on the surface, stencils, connectors, and KnowledgeBase | Preserve existing reference tracking and allocate unique IDs when cloning blocks. Neither example puts `z:Id` on every XML object. |
+| Detail                  | Minimal template                                               | Device example                                                                                    | Generation rule                                                                                                                    |
+| ----------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| KnowledgeBase manifest  | Azure Threat Model Template, `1.0.0.33`                        | SDL TM Knowledge Base (Core), `4.1.0.11`                                                          | Retain the baseline catalog. Check generic and standard element IDs as well as threat IDs before adapting a block.                 |
+| After `ThreatInstances` | Root `ThreatMetaData`, then `KnowledgeBase`, then `Profile`    | `ThreatGenerationEnabled`, `Validations`, `Version` (`4.3`), then `KnowledgeBase`, then `Profile` | Preserve the baseline root sequence. Do not splice in the example's version fields.                                                |
+| Threat identifiers      | `TH117`                                                        | IDs such as `S2`, `E7`, and `D4`                                                                  | Use IDs from the output's catalog and rebuild keys accordingly.                                                                    |
+| Threat state            | One `Mitigated` threat                                         | Fifty `AutoGenerated` threats                                                                     | Reassess state and supporting evidence for the target system.                                                                      |
+| Object reference IDs    | Present on the surface, stencils, connector, and KnowledgeBase | Present on the surface, stencils, connectors, and KnowledgeBase                                   | Preserve existing reference tracking and allocate unique IDs when cloning blocks. Neither example puts `z:Id` on every XML object. |
 
 Both files contain a top-level `KnowledgeBase` and a separate `ThreatMetaData` collection
 inside that catalog. Do not confuse catalog metadata with the minimal template's root-level
