@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.1](https://github.com/sentenz/skills/compare/v1.20.0...v1.20.1) (2026-11-04)
+
+### Bug Fixes
+
+* **skills:** enhance threat model analysis CSV and validation scripts ([26ccd40](https://github.com/sentenz/skills/commit/26ccd40b7a7baac1d4127dbb109e2cbe6988b75f))
+* **skills:** rename the skill directory to skills/threat-modeling-analysis and updated the active references ([bcb5f94](https://github.com/sentenz/skills/commit/bcb5f94a5a8b53502825207d277a99d4bef73ecf))
+
 ## [1.20.0](https://github.com/sentenz/skills/compare/v1.19.0...v1.20.0) (2026-10-28)
 
 ### Features
