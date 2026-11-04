@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.20.2](https://github.com/sentenz/skills/compare/v1.20.1...v1.20.2) (2026-11-04)
+
+### Bug Fixes
+
+* **skills:** update attack source name handling to use a frozenset for Threat Modeling Analysis ([fcaed1a](https://github.com/sentenz/skills/commit/fcaed1ae2eb47ed662654c123f87e732beadc4a7))
+
 ## [1.20.1](https://github.com/sentenz/skills/compare/v1.20.0...v1.20.1) (2026-11-04)
 
 ### Bug Fixes
