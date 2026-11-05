@@ -31,6 +31,7 @@ Agent skills are modular capabilities that AI agents can utilize to perform spec
   - [1.8. Documentation Skills](#18-documentation-skills)
     - [1.8.1. Architecture Decision Records (ADR)](#181-architecture-decision-records-adr)
     - [1.8.2. Technical Article](#182-technical-article)
+    - [1.8.3. Draw.io Diagram Generator](#183-drawio-diagram-generator)
   - [1.9. Design Skills](#19-design-skills)
     - [1.9.1. Material Design 3](#191-material-design-3)
   - [1.10. Python Skills](#110-python-skills)
@@ -421,6 +422,23 @@ Creates, revises, and reviews convention-style technical articles using formal l
 
     ```plaintext
     Use the technical-article skill to write a technical article explaining this repository's architecture.
+    ```
+
+#### 1.8.3. Draw.io Diagram Generator
+
+- [Draw.io Diagram Generator](draw-io-diagram-generator/SKILL.md)
+  > External MIT-licensed Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awesome-copilot/tree/main/skills/draw-io-diagram-generator) for creating, editing, and validating draw.io architecture, sequence, ER, UML, flowchart, and network-topology diagrams, with XML references, five templates, and Python utilities.
+
+1. Installation
+
+    ```bash
+    npx skills add sentenz/skills --skill draw-io-diagram-generator
+    ```
+
+2. Invocation
+
+    ```plaintext
+    Use the draw-io-diagram-generator skill to create docs/architecture.drawio showing this application's components and dependencies.
     ```
 
 ### 1.9. Design Skills
