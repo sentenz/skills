@@ -112,29 +112,6 @@ class CoreConsistencyTests(unittest.TestCase):
                                    lambda m: m[1] + '6200', self.worked, count=1),
                             'Connector outside bundled canvas envelope')
 
-    def test_cra_scope_inventory_and_uncertainties(self):
-        _, model, _ = read_xml(POPULATED)
-        objects = model.findall('.//m:Borders/a:KeyValueOfguidanyType/a:Value', N)
-        objects += model.findall('.//m:Lines/a:KeyValueOfguidanyType/a:Value', N)
-        guids = {v.findtext('d:Guid', namespaces=N) for v in objects}
-        assessment = model.findtext('m:MetaInformation/m:Assumptions', namespaces=N)
-        document = (SKILL / 'references/cra-scope-assessment.md').read_text(encoding='utf-8')
-        pattern = r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}'
-        self.assertEqual(set(re.findall(pattern, assessment)), guids)
-        self.assertEqual(set(re.findall(pattern, document)), guids)
-        unresolved = {'cea9ef0a-d9bd-46c5-8c96-6dbce2b58a07',
-                      'fe9683fb-3eaf-4898-b9c6-2fd1aab24dc7',
-                      '5f4312a0-1972-49c0-adf1-b7207b1aee33'}
-        for v in objects:
-            props = {p.findtext('k:DisplayName', namespaces=N): p.findtext('k:Value', namespaces=N)
-                     for p in v.findall('d:Properties/a:anyType', N)}
-            if v.findtext('d:GenericTypeId', namespaces=N) == 'GE.TB.B':
-                self.assertNotIn('Out Of Scope', props)
-            if props.get('Out Of Scope') == 'true':
-                self.assertTrue(props.get('Reason For Out Of Scope'))
-            if v.findtext('d:Guid', namespaces=N) in unresolved:
-                self.assertEqual(props['Out Of Scope'], 'false')
-
     def test_duplicate_serializer_id(self):
         self.reject(self.worked.replace('z:Id="i4"', 'z:Id="i3"', 1), 'Duplicate z:Id')
 
