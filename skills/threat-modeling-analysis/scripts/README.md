@@ -38,10 +38,18 @@
     ```
 
 - [validate_csv.py](validate_csv.py)
-  > Validates the complete threat-analysis CSV output contract, enforcement-boundary terminology, active MITRE ATT&CK techniques, mappable MITRE CWE weaknesses, source-backed EMB3D mitigation citations, and optional raw-TMT source traceability, then reports all findings with actual-versus-expected diffs.
+  > Validates the complete threat-analysis CSV output contract, Risk Approval mapping, enforcement-boundary terminology, active MITRE ATT&CK techniques, mappable MITRE CWE weaknesses, source-backed EMB3D mitigation citations, and optional raw-TMT source traceability, then reports all findings with actual-versus-expected diffs.
+
+    Risk Approval must use exactly one standardized role label at or above the minimum required by [Risk Approval Mapping](../references/mapping-rules.md#12-risk-approval-mapping). `Avoidance` permits `Not Required`. Other treatments require at least `Product Security` for Info/Low, `Lead Security` for Medium, `CPSO` for High, and `Executive` for Critical. Stronger approvers are allowed. Resolved prioritization and treatment require an approval. A populated approval requires valid prioritization and treatment. Incomplete mapping inputs may retain a blank approval, and `Not Started` or `Needs Investigation` rows must keep treatment and approval blank. Evidence supporting escalation remains an analyst review responsibility.
 
     ```bash
     uv run ./scripts/validate_csv.py --source 'input.csv' --artifact 'analysis.csv'
+    ```
+
+    Run the regression tests from the repository root:
+
+    ```bash
+    python3 -m unittest discover -s tests/threat_modeling_analysis -v
     ```
 
 - [validate_cvss.py](validate_cvss.py)

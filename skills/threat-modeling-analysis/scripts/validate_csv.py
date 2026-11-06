@@ -86,6 +86,22 @@ EMB3D_LEVELS = frozenset({"foundational", "intermediate", "leading"})
 CWE_MAPPING_USAGES = frozenset(
     {"Allowed", "Allowed-with-Review", "Discouraged", "Prohibited"}
 )
+# Minimum approver hierarchy from references/mapping-rules.md, section 12.
+RISK_APPROVAL_ROLES = (
+    "Not Required",
+    "Product Security",
+    "Lead Security",
+    "CPSO",
+    "Executive",
+)
+RISK_APPROVAL_BY_PRIORITIZATION = {
+    "Info": "Product Security",
+    "Low": "Product Security",
+    "Medium": "Lead Security",
+    "High": "CPSO",
+    "Critical": "Executive",
+}
+RISK_TREATMENTS = ("Avoidance", "Mitigation", "Acceptance", "Transfer")
 DEFAULT_ATTACK_SOURCE = (
     Path(__file__).resolve().parent.parent
     / "assets"
@@ -947,6 +963,77 @@ def validate_mitigation_citations(
     return findings
 
 
+def validate_risk_approval(
+    prioritization: str,
+    treatment: str,
+    approval: str,
+    *,
+    row_number: int,
+    threat_id: str,
+) -> list[Finding]:
+    """Check canonical approval labels and the minimum role, allowing escalation."""
+    # Blank fields may represent an incomplete review. Never infer an approval
+    # while either mapping input remains unresolved.
+    if not approval and (not prioritization or not treatment):
+        return []
+
+    findings: list[Finding] = []
+    for column, value, allowed in (
+        ("Risk Prioritization", prioritization, RISK_APPROVAL_BY_PRIORITIZATION),
+        ("Risk Treatment", treatment, RISK_TREATMENTS),
+    ):
+        if value not in allowed:
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column=column,
+                    message=f"Risk Approval requires a valid {column}",
+                    actual=value,
+                    expected=", ".join(allowed),
+                )
+            )
+
+    if approval not in RISK_APPROVAL_ROLES:
+        findings.append(
+            Finding(
+                origin="output",
+                row_number=row_number,
+                threat_id=threat_id,
+                column="Risk Approval",
+                message="Risk Approval must contain exactly one standardized role label",
+                actual=approval,
+                expected=", ".join(RISK_APPROVAL_ROLES),
+            )
+        )
+    if findings:
+        return findings
+
+    minimum = (
+        "Not Required"
+        if treatment == "Avoidance"
+        else RISK_APPROVAL_BY_PRIORITIZATION[prioritization]
+    )
+    minimum_rank = RISK_APPROVAL_ROLES.index(minimum)
+    if RISK_APPROVAL_ROLES.index(approval) < minimum_rank:
+        findings.append(
+            Finding(
+                origin="output",
+                row_number=row_number,
+                threat_id=threat_id,
+                column="Risk Approval",
+                message=(
+                    "Risk Approval is below the minimum required for "
+                    f"{prioritization} / {treatment}"
+                ),
+                actual=approval,
+                expected=" or ".join(RISK_APPROVAL_ROLES[minimum_rank:]),
+            )
+        )
+    return findings
+
+
 def validate_rows(
     records: list[Record],
     technique_index: Optional[dict[str, AttackTechnique]] = None,
@@ -1197,6 +1284,23 @@ def validate_rows(
                     message="Mitigated uses an incompatible treatment",
                     actual=treatment,
                     expected="Mitigation, Acceptance, or Transfer",
+                )
+            )
+
+        if state not in {"Not Started", "Needs Investigation"}:
+            prioritization_cell = _cell(record, "Risk Prioritization")
+            prioritization = (
+                prioritization_cell.value.strip()
+                if prioritization_cell is not None
+                else ""
+            )
+            findings.extend(
+                validate_risk_approval(
+                    prioritization,
+                    treatment,
+                    approval,
+                    row_number=row_number,
+                    threat_id=threat_id,
                 )
             )
 
