@@ -58,6 +58,10 @@ Their catalogs match apart from the `KnowledgeBase` object's `z:Id` (`i2` in the
 asset, `i22` in the populated reference). That ID is serializer identity, not catalog content.
 Keep the chosen export's entire `KnowledgeBase` intact when copying populated blocks.
 
+The populated example's [CRA scope assessment](./references/cra-scope-assessment.md) records
+all stencil and connection classifications, conditional exclusions, and unresolved evidence.
+Its scope flags are analysis decisions, not independent regulatory rulings on each stencil.
+
 The blank asset has no populated blocks to duplicate. Read the populated reference when
 adding diagram elements or threats. For changes to an existing Core model, preserve its
 catalog and existing serialization unless a catalog change is explicitly requested. Validate
