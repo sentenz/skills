@@ -101,18 +101,26 @@ class CoreConsistencyTests(unittest.TestCase):
             self.assertAlmostEqual(number('HandleX'), (sx + tx) / 2)
             self.assertAlmostEqual(number('HandleY'), (sy + ty) / 2)
             if direction == 'request':
-                self.assertEqual((sx, sy), (200, 100))
+                self.assertEqual((sx, sy), (150, 100))
                 self.assertLess(max(sy, ty), 150)
-                self.assertEqual(flow.findtext('d:PortSource', namespaces=N), 'NorthEast')
-                self.assertEqual(flow.findtext('d:PortTarget', namespaces=N), 'NorthWest')
+                self.assertEqual(flow.findtext('d:PortSource', namespaces=N), 'North')
+                self.assertEqual(flow.findtext('d:PortTarget', namespaces=N), 'North')
                 cx, cy = tx, ty
             else:
-                self.assertEqual((tx, ty), (200, 200))
+                self.assertEqual((tx, ty), (150, 200))
                 self.assertGreater(min(sy, ty), 150)
-                self.assertEqual(flow.findtext('d:PortSource', namespaces=N), 'SouthWest')
-                self.assertEqual(flow.findtext('d:PortTarget', namespaces=N), 'SouthEast')
+                self.assertEqual(flow.findtext('d:PortSource', namespaces=N), 'South')
+                self.assertEqual(flow.findtext('d:PortTarget', namespaces=N), 'South')
                 cx, cy = sx, sy
             self.assertAlmostEqual((cx - 950) ** 2 + (cy - 150) ** 2, 50 ** 2, places=4)
+
+    def test_fractional_connector_coordinates(self):
+        for coordinate in ('HandleX', 'HandleY', 'SourceX', 'SourceY', 'TargetX', 'TargetY'):
+            for invalid in ('557.3223305', '550.0', '5.5e2'):
+                with self.subTest(coordinate=coordinate, value=invalid):
+                    self.reject(re.sub(r'(<'+coordinate+r'[^>]*>)[^<]+',
+                                       lambda m: m[1] + invalid, self.worked, count=1),
+                                'Connector coordinate must be an integer: ' + coordinate)
 
     def test_request_threat_cannot_reference_response(self):
         self.reject(self.worked.replace(

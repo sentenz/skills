@@ -142,18 +142,21 @@ HandleX = (SourceX + TargetX) / 2
 HandleY = (SourceY + TargetY) / 2
 ```
 
-This keeps the handle collinear with the endpoints. The bundled worked example uses two
-separated straight diagonal lanes. Client is a rectangle; Service is a circular process.
-The circle's diagonal ports lie on its circumference, not its bounding-box corners:
-for radius 50 and center `(950, 150)`, use offsets `50 / sqrt(2)` (approximately `35.355339`).
+Serialize connector coordinates as integers, following the supplied Core export. Do not
+write fractional values or exponent notation. Choose endpoint positions whose midpoint is
+also integral, so the straight-line convention does not require fractional handles.
+
+The worked example uses two separated horizontal lanes. Client is a rectangle and Service
+is a circular process; both have center X coordinates of 150 and 950 respectively. The
+request connects their North ports and the response connects their South ports.
 
 | Member | Request: Client to Service | Response: Service to Client |
 | ------ | -------------------------- | --------------------------- |
-| `PortSource` | `NorthEast` | `SouthWest` |
-| `PortTarget` | `NorthWest` | `SouthEast` |
-| `SourceX`, `SourceY` | `200`, `100` | `914.644661`, `185.355339` |
-| `TargetX`, `TargetY` | `914.644661`, `114.644661` | `200`, `200` |
-| `HandleX`, `HandleY` | `557.3223305`, `107.3223305` | `557.3223305`, `192.6776695` |
+| `PortSource` | `North` | `South` |
+| `PortTarget` | `North` | `South` |
+| `SourceX`, `SourceY` | `150`, `100` | `950`, `200` |
+| `TargetX`, `TargetY` | `950`, `100` | `150`, `200` |
+| `HandleX`, `HandleY` | `550`, `100` | `550`, `200` |
 
 Copy the supported representation from a Core export; keep geometry members in the Abstracts
 namespace and in their original order. Do not invent a `Curved`, `Straight`, or `Routing`

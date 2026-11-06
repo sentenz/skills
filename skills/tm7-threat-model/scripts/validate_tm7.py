@@ -5,6 +5,7 @@ Uses only the Python standard library. This is a consistency checker for the bun
 Core exports, not a replacement for Microsoft Threat Modeling Tool deserialization.
 """
 import argparse
+import re
 from pathlib import Path
 import sys
 import uuid
@@ -233,6 +234,9 @@ def validate(path, template):
                     check(group == 'Borders', 'Border representation must be in Borders')
                 if generic == 'GE.DF':
                     members(value, FLOW_MEMBERS, D, 'Connector')
+                    for coordinate in ('HandleX', 'HandleY', 'SourceX', 'SourceY', 'TargetX', 'TargetY'):
+                        check(re.fullmatch(r'[+-]?[0-9]+', text(value, 'd:' + coordinate)) is not None,
+                              'Connector coordinate must be an integer: ' + coordinate)
                     flows[key] = (sid, value)
                 elif generic != 'GE.TB.L':
                     members(value, BORDER_MEMBERS, D, 'Border')

@@ -201,6 +201,8 @@ properties. Reverse the source and target for the response. Use supported ports 
 populated reference and separate straight lanes from the
 [TMT Style Guide](./references/tmt-style-guide.md#4-straight-data-flows); endpoints must
 resolve on the same drawing surface and coordinates must match their attachment ports.
+Serialize connector coordinates as integers, as in the Core export; choose integral
+midpoints instead of writing fractional handle coordinates.
 Do not add a response to a genuinely one-way transfer. If a return path is omitted from
 scope, record that limitation explicitly instead of implying that one connector models both.
 
