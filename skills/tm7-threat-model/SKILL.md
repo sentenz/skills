@@ -18,9 +18,11 @@ When asked to produce a `.tm7` file:
 
 1. **Model the system.** Identify processes, data stores, external interactors, trust
    boundaries, and unidirectional data flows. Represent a bidirectional connection, such as
-   request/response, with two opposite flows. Select their types from the embedded Core catalog.
-2. **Assign unique lowercase UUIDs** to every drawing surface, stencil, and flow. Use real
-   UUIDs such as `148ade68-5c80-40f3-8e1f-4e2cabdb5991`, rather than component names.
+   Request and Response, with two opposite unidirectional flows. Select their types from the
+   embedded Core catalog.
+2. **Assign unique lowercase UUIDs** to every new drawing surface, stencil, and flow.
+   Preserve existing UUIDs when editing a model. Use real UUIDs such as
+   `148ade68-5c80-40f3-8e1f-4e2cabdb5991`, rather than component names.
 3. **Lay out coordinates** using the [TMT Style Guide](./references/tmt-style-guide.md):
    retain default stencil sizes, use straight data flows, and apply its flow naming convention.
    Keep stencils readable, boundary membership correct, and connector endpoints on their shapes.
@@ -43,7 +45,7 @@ When asked to produce a `.tm7` file:
 | `assets/example-minimal.tm7`          | Authoritative blank generation skeleton supplied by the user: one empty drawing surface, no stencils, flows, or threats | `4.1.0.11`                        |
 | `references/Example_Threat_Model.tm7` | Populated Core example: 10 border entries, 10 connectors, 50 threats                                                    | `4.1.0.11`                        |
 | `references/core-xml-examples.md`     | Complete, namespace-qualified example blocks and a connected worked model                                               | Uses the blank skeleton's catalog |
-| `references/core-worked-example.tm7` | Request/response connection: two stencils, two unidirectional connectors, one illustrative request-side threat           | `4.1.0.11`                        |
+| `references/core-worked-example.tm7` | Bidirectional connection (Request and Response): two stencils, two connectors, one illustrative request-side threat           | `4.1.0.11`                        |
 | `references/tmt-style-guide.md`       | Diagram patterns, stencil sizes, straight connector geometry, and naming conventions                                    | Applies to Core `4.1.0.11`        |
 
 Both exports use model `Version` **`4.3`**, distinct from the knowledge-base version and
@@ -186,24 +188,28 @@ Connector members, all in Abstracts, occur in this order:
 `PortTarget`, `SourceGuid`, `SourceX`, `SourceY`, `TargetGuid`, `TargetX`, `TargetY`.
 
 Treat an **individual data flow** as one unidirectional transfer from `SourceGuid` to
-`TargetGuid`, represented by one `Connector`. Treat a **bidirectional data flow connection**
-as two opposite flows between the same stencils, such as a request and its response.
+`TargetGuid`, represented by one `Connector`. Treat a **bidirectional connection**
+as two opposite unidirectional flows between the same stencils: for example, Request from
+Client to Service and Response from Service to Client.
 The connection is a conceptual grouping, not an additional Core object or a single connector
 with two arrowheads. A protocol name or a combined `Request/Response` label does not create
 the reverse flow.
 
-For each modeled direction, assign a distinct UUID, unused serializer ID, directional name,
-and applicable properties. Reverse the source and target for the response. Use supported
-ports from the populated reference and separate straight lanes from the
+For each new direction, assign a distinct UUID and unused serializer ID. Preserve the UUID
+and serializer ID of an existing connector. Give each direction its own name and applicable
+properties. Reverse the source and target for the response. Use supported ports from the
+populated reference and separate straight lanes from the
 [TMT Style Guide](./references/tmt-style-guide.md#4-straight-data-flows); endpoints must
 resolve on the same drawing surface and coordinates must match their attachment ports.
 Do not add a response to a genuinely one-way transfer. If a return path is omitted from
 scope, record that limitation explicitly instead of implying that one connector models both.
 
 Evaluate threats independently for each direction using the Core generation filters.
-Bind each finding to its own flow UUID and ordered source/target pair; do not clone request
-threats onto a response without checking applicability. Authentication properties are relative
-to each connector's source and destination, so reassess them when reversing endpoints.
+Keep each finding's `FlowGuid`, `SourceGuid`, `TargetGuid`, `InteractionKey`, and threat
+dictionary key consistent with its connector. Use that connector's directional Name in the
+`InteractionString` property. Do not clone request threats onto a response without checking
+applicability. Authentication properties are relative to each connector's source and
+destination, so reassess them when reversing endpoints.
 
 ## Property attribute types
 

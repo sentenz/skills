@@ -40,7 +40,7 @@ interactors. Use a Core type that represents the component's role in the modeled
 | External actor interacts with a service    | External interactor -> process                   | Operator -> MCU control service                          |
 | One component sends data to another        | Process -> process                               | PLC -> MCU                                               |
 | A process persists or retrieves data       | Process -> data store, or data store -> process  | MCU -> configuration store; configuration store -> MCU   |
-| Bidirectional request/response connection  | Two opposite unidirectional flows                | PLC -> MCU request; MCU -> PLC response                  |
+| Bidirectional connection (Request and Response)  | Two opposite unidirectional flows                | PLC -> MCU request; MCU -> PLC response                  |
 | Components share a security context        | Enclosing trust boundary around those components | Device boundary around MCU and local configuration store |
 
 The examples describe modeling roles; choose them from the actual scope. A PLC may be an
@@ -60,12 +60,13 @@ Distinguish the transfer from the connection between components:
 | Concept | Meaning | Core representation |
 | ------- | ------- | ------------------- |
 | Unidirectional data flow | One transfer from a source to a target | One `Connector` with its own UUID and ordered endpoints |
-| Bidirectional data flow connection | Data travels in both directions between two components | Two `Connector` objects with opposite endpoints and distinct UUIDs |
+| Bidirectional connection | Data travels in both directions between two components | Two `Connector` objects with opposite endpoints and distinct UUIDs |
 
 Model a request from A to B and its response from B to A separately whenever both directions
 are in scope, even if they share a protocol, session, transport, or protection mechanism.
-Name each direction for the data it carries. `Request/Response` may describe the connection
-in model metadata, but must not label a single connector as though it carries both directions.
+Name each direction for the data it carries: Request from A to B and Response from B to A.
+Describe the pair as a bidirectional connection in model metadata; do not label a single
+connector `Request/Response` as though it carries both directions.
 Do not invent a bidirectional XML flag, connection object, or second arrowhead property.
 
 Keep genuinely one-way transfers, such as an event sent without a modeled reply, as one
@@ -122,9 +123,9 @@ use another lane or drawing surface. Keep flows straight rather than introducing
 or decorative bends. Do not add fictitious processes or split one interaction into extra
 connectors solely to route a line.
 
-For request/response pairs, choose distinct attachment ports and lanes so both arrows and
-labels remain distinguishable. Do not draw both directions on the same segment, where one
-arrow or label can hide the other. Reposition the stencils if necessary. Each direction retains
+For bidirectional connections (Request and Response), choose distinct attachment ports and
+lanes so both arrows and labels remain distinguishable. Do not draw both directions on the
+same segment, where one arrow or label can hide the other. Reposition the stencils if necessary. Each direction retains
 its own connector, UUID, name, properties, and applicable threat interactions.
 
 ### Connector geometry
@@ -205,9 +206,10 @@ the modeled architecture.
 When multiple flows use the same endpoints and protocol, add the payload or operation after
 the protocol, as in `Modbus RTU request`, `Modbus RTU response`, or `HTTPS firmware download`.
 Use distinct names for interactions that have different payloads, directions, privileges, or
-protection assumptions. A request/response pair always has two directional labels with source
-and target reversed. Split additional flows within one direction only when their differences
-matter to the threat model; do not use this grouping rule to merge opposite directions.
+protection assumptions. A bidirectional connection (Request and Response) always has two
+directional labels with source and target reversed. Split additional flows within one direction
+only when their differences matter to the threat model; do not use this grouping rule to
+merge opposite directions.
 
 Use `unencrypted`, `unauthenticated`, `TLS encrypted`, or `mutually authenticated` only for
 documented properties. Encryption and authentication are separate claims. If both matter,
@@ -246,8 +248,9 @@ in the skill rather than adding new XML fields for presentation.
 
 Evaluate each direction against the Core filters independently. A response does not inherit
 request findings: its source and target roles, authentication claims, payload, and applicable
-threat types can differ. Use its own flow UUID in `FlowGuid`, `InteractionKey`, and threat
-dictionary keys, and its directional label in the `InteractionString` property.
+threat types can differ. Keep `FlowGuid`, `SourceGuid`, `TargetGuid`, `InteractionKey`, and
+the threat dictionary key consistent with the referenced connector's UUID and ordered
+endpoints. Use its directional Name in the `InteractionString` property.
 
 ## 7. Review checklist
 

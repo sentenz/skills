@@ -6,8 +6,9 @@ declarations already inherited in the final document can retain their exported s
 
 [core-worked-example.tm7](./core-worked-example.tm7) is a connected example derived from
 the user's blank Core 4.1.0.11 skeleton and populated Core reference blocks: Client (external
-interactor) and Service (process), two generic unidirectional flows forming one bidirectional
-request/response connection, and one illustrative request-side S3 spoofing threat.
+interactor) and Service (process), two generic unidirectional flows forming one
+bidirectional connection (Request and Response), and one illustrative request-side S3
+spoofing threat.
 Its knowledge base is copied unchanged from `assets/example-minimal.tm7`. This is a static
 consistency example; Microsoft Threat Modeling Tool open/save validation is separate.
 
@@ -21,6 +22,11 @@ Copy full property blocks when adapting them.
 | Request | Client | Service | `6cae5818-d775-4935-96a4-b317b1fcdecb` | `i5` |
 | Response | Service | Client | `7bb5aad7-8c3f-4c99-a2e8-9344102f61b5` | `i6` |
 
+| Direction | Connector Name |
+| --------- | -------------- |
+| Request | `Client to Service via generic data flow request (transport unspecified, unencrypted, unauthenticated)` |
+| Response | `Service to Client via generic data flow response (transport unspecified, unencrypted, unauthenticated)` |
+
 Each connector is one-way. Together they represent one bidirectional connection; there is
 no extra connection object. Both ordinary stencils retain 100 × 100 dimensions. Separate
 diagonal lanes and midpoint handles follow the [TMT Style Guide](./tmt-style-guide.md).
@@ -33,6 +39,12 @@ The S3 finding belongs only to the request because its filter requires an extern
 source and a process target. The reversed response does not satisfy that filter. No response
 threat is fabricated by reversing this finding, and the single finding is not exhaustive
 STRIDE coverage. Evaluate response threats independently in a complete model.
+
+For the S3 finding, `FlowGuid` is the Request UUID above, `SourceGuid` is Client's UUID,
+and `TargetGuid` is Service's UUID. Its `InteractionKey` is
+`SourceGuid:FlowGuid:TargetGuid`; its dictionary key is `S3` followed by those same three
+UUIDs without separators. Its `InteractionString` property matches the Request Name
+exactly. The Response Name is available for independently applicable response findings.
 
 ## External interactor
 
