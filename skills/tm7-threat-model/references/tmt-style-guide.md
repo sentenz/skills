@@ -8,7 +8,7 @@ Guide for pattern, format, and style conventions in Microsoft Threat Modeling To
 - [3. Stencil size and layout](#3-stencil-size-and-layout)
   - [Default sizes](#default-sizes)
   - [Layout defaults](#layout-defaults)
-- [4. Straight data flows](#4-straight-data-flows)
+- [4. Data flow connections](#4-data-flow-connections)
   - [Connector geometry](#connector-geometry)
 - [5. Naming and text format](#5-naming-and-text-format)
   - [Components and boundaries](#components-and-boundaries)
@@ -112,57 +112,61 @@ it visual emphasis. Enlarge trust boundaries to fit their contents and labels.
 The worked example places Client at `Left=100`, `Top=100`, and Service at `Left=900`,
 `Top=100`, both sized 100 × 100. Its 700-unit clear gap accommodates the directional flow labels.
 
-## 4. Straight data flows
+## 4. Data flow connections
 
-Use a single straight segment for each directional data flow. Horizontal or vertical
-segments are preferred; a straight diagonal is acceptable when it makes the diagram clearer.
-Keep the arrow direction consistent with `SourceGuid` and `TargetGuid`.
+Prefer ports that face the other stencil. Keep the arrow direction consistent with
+`SourceGuid` and `TargetGuid`. Use a straight connector for an individual one-way transfer.
+For a bidirectional connection, the two directions may share facing attachment points;
+use opposing handle offsets to keep both arrows and labels distinguishable, as in the
+supplied worked example. Each direction retains its own connector, UUID, name, properties,
+and applicable threats.
 
-When a line would collide with a component, label, or another flow, move the components or
-use another lane or drawing surface. Keep flows straight rather than introducing curvature
-or decorative bends. Do not add fictitious processes or split one interaction into extra
-connectors solely to route a line.
-
-For bidirectional connections (Request and Response), choose distinct attachment ports and
-lanes so both arrows and labels remain distinguishable. Do not draw both directions on the
-same segment, where one arrow or label can hide the other. Reposition the stencils if necessary. Each direction retains
-its own connector, UUID, name, properties, and applicable threat interactions.
+Move components when connectors or labels collide with unrelated stencils. Do not add
+fictitious processes or split an interaction solely to route a line.
 
 ### Connector geometry
 
-Preserve the exported connector members and accepted port values. Match `SourceX`/`SourceY`
-and `TargetX`/`TargetY` to the actual attachment points on their stencils. The endpoint
-coordinates must agree with `PortSource` and `PortTarget`; do not leave stale coordinates
-after moving or resizing a stencil.
+Keep `PortSource`, `PortTarget`, and endpoint coordinates consistent. The supplied example
+uses the following anchors for 100 × 100 stencils: Client's East anchor is `(195, 150)`
+and Service's West anchor is `(905, 150)`. These are five units inside the bounding edges,
+not the top or bottom edges used by the earlier layout. Preserve this inset when adapting
+these examples; do not replace exported attachment points with mathematical shape-edge
+intersections. Other stencil sizes or port types require a matching TMT export.
 
-For this skill's straight-connector convention, place the handle at the endpoint midpoint:
+For the bundled 100 × 100 stencils, the cardinal anchors relative to `Left`, `Top` are:
 
-```text
-HandleX = (SourceX + TargetX) / 2
-HandleY = (SourceY + TargetY) / 2
-```
+| Port | X offset | Y offset |
+| ---- | -------- | -------- |
+| North | 50 | 5 |
+| South | 50 | 95 |
+| East | 95 | 50 |
+| West | 5 | 50 |
 
-Serialize connector coordinates as integers, following the supplied Core export. Do not
-write fractional values or exponent notation. Choose endpoint positions whose midpoint is
-also integral, so the straight-line convention does not require fractional handles.
+For a straight one-way connector, place its handle at the endpoint midpoint. For a
+bidirectional connection, offset the handles to opposite sides of the shared endpoint
+segment. Preserve exported handle coordinates when adapting an existing model; a midpoint
+requirement must not flatten a deliberately separated Request and Response pair.
+Serialize coordinates as integers; do not write fractions or exponent notation.
 
-The worked example uses two separated horizontal lanes. Client is a rectangle and Service
-is a circular process; both have center X coordinates of 150 and 950 respectively. The
-request connects their North ports and the response connects their South ports.
+The worked example preserves the supplied connection geometry exactly:
 
 | Member | Request: Client to Service | Response: Service to Client |
 | ------ | -------------------------- | --------------------------- |
-| `PortSource` | `North` | `South` |
-| `PortTarget` | `North` | `South` |
-| `SourceX`, `SourceY` | `150`, `100` | `950`, `200` |
-| `TargetX`, `TargetY` | `950`, `100` | `150`, `200` |
-| `HandleX`, `HandleY` | `550`, `100` | `550`, `200` |
+| `PortSource` | `East` | `West` |
+| `PortTarget` | `West` | `East` |
+| `SourceX`, `SourceY` | `195`, `150` | `905`, `150` |
+| `TargetX`, `TargetY` | `905`, `150` | `195`, `150` |
+| `HandleX`, `HandleY` | `563`, `123` | `562`, `178` |
 
-Copy the supported representation from a Core export; keep geometry members in the Abstracts
-namespace and in their original order. Do not invent a `Curved`, `Straight`, or `Routing`
-XML property. Inspect the rendered connector in TMT when available, including after a save
-and reopen. The static validator currently checks connector structure and references; it
-does not verify line rendering or enforce these geometric style conventions.
+The populated example applies the same inset to facing cardinal ports and uses opposing
+28-unit handle offsets for reverse-direction pairs. This offset is a layout convention,
+not a new Core property or a universal TMT requirement.
+
+Keep geometry members in the Abstracts namespace and in their original order. Do not
+invent a `Curved`, `Straight`, or `Routing` XML property. Inspect the rendered connectors
+in TMT when available, including after saving and reopening. Static validation checks
+structure and references; the fixture tests check these examples' anchor and handle
+conventions, but neither proves application rendering.
 
 ## 5. Naming and text format
 
@@ -263,10 +267,11 @@ Before delivering a new or updated model:
    defaults; enclosing boundaries fit the intended members.
 2. Stencils align cleanly, labels remain readable, and boundary membership reflects the
    security contexts in the architecture.
-3. Every data flow is straight, points in the correct direction, and meets its intended
-   source and target. Handle coordinates follow the midpoint convention.
+3. Every data flow points in the correct direction and uses facing attachment points
+   consistent with its ports and the exported inset. One-way handles use midpoints;
+   opposite flows have distinguishable handle offsets.
    Bidirectional connections contain two opposite connectors with distinct UUIDs, names,
-   attachment ports, and visible lanes. One-way transfers have no invented return flow.
+   directional arrows, and visible labels. One-way transfers have no invented return flow.
 4. Flow names follow `Source to Target via Protocol (Transport, Protection)`, with a useful
    payload/operation qualifier when needed. Unknown details are explicit.
 5. Display names, flow labels, threat interaction labels, and Core property selections agree.

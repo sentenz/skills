@@ -24,7 +24,7 @@ When asked to produce a `.tm7` file:
    Preserve existing UUIDs when editing a model. Use real UUIDs such as
    `148ade68-5c80-40f3-8e1f-4e2cabdb5991`, rather than component names.
 3. **Lay out coordinates** using the [TMT Style Guide](./references/tmt-style-guide.md):
-   retain default stencil sizes, use straight data flows, and apply its flow naming convention.
+   retain default stencil sizes, use facing connection points, and apply its flow naming convention.
    Keep stencils readable, boundary membership correct, and connector endpoints on their shapes.
 4. **Generate STRIDE threats** for applicable interactions, using Core threat types and
    their generation filters. Place them in `ThreatInstances`; include architecture-specific
@@ -46,7 +46,7 @@ When asked to produce a `.tm7` file:
 | `references/Example_Threat_Model.tm7` | Style-aligned populated Core example: 10 border entries, 10 labeled connectors, 50 threats                                                    | `4.1.0.11`                        |
 | `references/core-xml-examples.md`     | Complete, namespace-qualified example blocks and a connected worked model                                               | Uses the blank skeleton's catalog |
 | `references/core-worked-example.tm7` | Bidirectional connection (Request and Response): two stencils, two connectors, one illustrative request-side threat           | `4.1.0.11`                        |
-| `references/tmt-style-guide.md`       | Diagram patterns, stencil sizes, straight connector geometry, and naming conventions                                    | Applies to Core `4.1.0.11`        |
+| `references/tmt-style-guide.md`       | Diagram patterns, stencil sizes, connector attachment geometry, and naming conventions                                    | Applies to Core `4.1.0.11`        |
 
 Both exports use model `Version` **`4.3`**, distinct from the knowledge-base version and
 the application's version. Their manifest name is **`SDL TM Knowledge Base (Core)`** and
@@ -198,11 +198,12 @@ the reverse flow.
 For each new direction, assign a distinct UUID and unused serializer ID. Preserve the UUID
 and serializer ID of an existing connector. Give each direction its own name and applicable
 properties. Reverse the source and target for the response. Use supported ports from the
-populated reference and separate straight lanes from the
-[TMT Style Guide](./references/tmt-style-guide.md#4-straight-data-flows); endpoints must
+populated reference and the attachment and handle conventions from the
+[TMT Style Guide](./references/tmt-style-guide.md#4-data-flow-connections); endpoints must
 resolve on the same drawing surface and coordinates must match their attachment ports.
-Serialize connector coordinates as integers, as in the Core export; choose integral
-midpoints instead of writing fractional handle coordinates.
+Use the exported five-unit inset for the bundled 100 × 100 cardinal attachment points.
+Serialize connector coordinates as integers. Use midpoint handles for straight one-way
+flows and opposing handle offsets for bidirectional connections, as in the worked example.
 Do not add a response to a genuinely one-way transfer. If a return path is omitted from
 scope, record that limitation explicitly instead of implying that one connector models both.
 
@@ -301,7 +302,7 @@ stencil, connector, list-property, and threat XML blocks with resolving identifi
 6. Properties match the chosen type and inherited catalog values; every list selection
    is in range. Threat categories, descriptions, priority, and property keys match Core.
 7. Output has no XML declaration or added formatting. Existing text whitespace is preserved.
-   Review sizes, straight connectors, and naming against the style guide; these visual and naming
+   Review sizes, connection points, handle separation, and naming against the style guide; these visual and naming
    conventions are separate from the script's structural checks.
 8. Run `python scripts/validate_tm7.py model.tm7`. All bundled models validate against the
    blank asset's Core `4.1.0.11` catalog. The checker excludes the knowledge base object's

@@ -47,8 +47,8 @@ class CoreConsistencyTests(unittest.TestCase):
             './/m:Borders/a:KeyValueOfguidanyType/a:Value', N)}
         flows = {value(v, 'Guid'): v for v in model.findall(
             './/m:Lines/a:KeyValueOfguidanyType/a:Value', N)}
-        ports = {'North': (50, 0), 'South': (50, 100),
-                 'East': (100, 50), 'West': (0, 50)}
+        ports = {'North': (50, 5), 'South': (50, 95),
+                 'East': (95, 50), 'West': (5, 50)}
         for flow in flows.values():
             source, target = (stencils[value(flow, end + 'Guid')] for end in ('Source', 'Target'))
             self.assertTrue(label(flow).startswith(label(source) + ' to ' + label(target) + ' via '))
@@ -58,14 +58,20 @@ class CoreConsistencyTests(unittest.TestCase):
                 dx, dy = ports[value(flow, 'Port' + end)]
                 self.assertEqual(int(value(flow, end + 'X')), int(value(stencil, 'Left')) + dx)
                 self.assertEqual(int(value(flow, end + 'Y')), int(value(stencil, 'Top')) + dy)
-            for axis in ('X', 'Y'):
-                self.assertEqual(2 * int(value(flow, 'Handle' + axis)),
-                                 int(value(flow, 'Source' + axis)) + int(value(flow, 'Target' + axis)))
-            for reverse in flows.values():
-                if (value(flow, 'SourceGuid'), value(flow, 'TargetGuid')) == (
-                        value(reverse, 'TargetGuid'), value(reverse, 'SourceGuid')):
-                    self.assertNotEqual((value(flow, 'HandleX'), value(flow, 'HandleY')),
-                                        (value(reverse, 'HandleX'), value(reverse, 'HandleY')))
+            reverses = [r for r in flows.values()
+                        if (value(flow, 'SourceGuid'), value(flow, 'TargetGuid')) ==
+                        (value(r, 'TargetGuid'), value(r, 'SourceGuid'))]
+            sx, sy, tx, ty, hx, hy = [int(value(flow, k)) for k in
+                                    ('SourceX', 'SourceY', 'TargetX', 'TargetY', 'HandleX', 'HandleY')]
+            if not reverses:
+                self.assertEqual((2 * hx, 2 * hy), (sx + tx, sy + ty))
+            for reverse in reverses:
+                self.assertEqual((sx, sy), (int(value(reverse, 'TargetX')), int(value(reverse, 'TargetY'))))
+                self.assertEqual((tx, ty), (int(value(reverse, 'SourceX')), int(value(reverse, 'SourceY'))))
+                side = (tx - sx) * (hy - sy) - (ty - sy) * (hx - sx)
+                other_side = ((tx - sx) * (int(value(reverse, 'HandleY')) - sy)
+                              - (ty - sy) * (int(value(reverse, 'HandleX')) - sx))
+                self.assertLess(side * other_side, 0, 'Reverse-flow handles must lie on opposite sides')
         for threat in model.findall('m:ThreatInstances/a:KeyValueOfstringThreatpc_P0_PhOB/a:Value', N):
             props = {p.findtext('a:Key', namespaces=N): p.findtext('a:Value', namespaces=N)
                      for p in threat.findall('k:Properties/a:KeyValueOfstringstring', N)}
@@ -129,27 +135,15 @@ class CoreConsistencyTests(unittest.TestCase):
                          request.findtext('d:Guid', namespaces=N))
 
     def test_request_response_geometry(self):
+        # Exact connection geometry from the supplied TMT example, independent of UUIDs.
         _, worked, _ = read_xml(WORKED)
-        flows = worked.findall('.//m:Lines/a:KeyValueOfguidanyType/a:Value', N)
-        for flow, direction in zip(flows, ('request', 'response')):
-            def number(name):
-                return float(flow.findtext('d:' + name, namespaces=N))
-            sx, sy, tx, ty = (number(x) for x in ('SourceX', 'SourceY', 'TargetX', 'TargetY'))
-            self.assertAlmostEqual(number('HandleX'), (sx + tx) / 2)
-            self.assertAlmostEqual(number('HandleY'), (sy + ty) / 2)
-            if direction == 'request':
-                self.assertEqual((sx, sy), (150, 100))
-                self.assertLess(max(sy, ty), 150)
-                self.assertEqual(flow.findtext('d:PortSource', namespaces=N), 'North')
-                self.assertEqual(flow.findtext('d:PortTarget', namespaces=N), 'North')
-                cx, cy = tx, ty
-            else:
-                self.assertEqual((tx, ty), (150, 200))
-                self.assertGreater(min(sy, ty), 150)
-                self.assertEqual(flow.findtext('d:PortSource', namespaces=N), 'South')
-                self.assertEqual(flow.findtext('d:PortTarget', namespaces=N), 'South')
-                cx, cy = sx, sy
-            self.assertAlmostEqual((cx - 950) ** 2 + (cy - 150) ** 2, 50 ** 2, places=4)
+        request, response = worked.findall('.//m:Lines/a:KeyValueOfguidanyType/a:Value', N)
+        members = ('PortSource', 'PortTarget', 'SourceX', 'SourceY',
+                   'TargetX', 'TargetY', 'HandleX', 'HandleY')
+        expected = (('East', 'West', '195', '150', '905', '150', '563', '123'),
+                    ('West', 'East', '905', '150', '195', '150', '562', '178'))
+        for flow, geometry in zip((request, response), expected):
+            self.assertEqual(tuple(flow.findtext('d:' + k, namespaces=N) for k in members), geometry)
 
     def test_fractional_connector_coordinates(self):
         for coordinate in ('HandleX', 'HandleY', 'SourceX', 'SourceY', 'TargetX', 'TargetY'):

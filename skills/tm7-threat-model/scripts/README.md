@@ -29,7 +29,7 @@ replace `uv run` with `python -B` to use an existing Python installation directl
     a populated Core export and is reported as unsupported by this checker.
 
 - [test_validate_tm7.py](test_validate_tm7.py)
-  > Runs 23 regression tests covering the bundled Core models, documentation fragments, and deliberately corrupted models. Checks the worked request/response pair's directionality, labels, properties, and separated straight geometry; the populated model's directional names, matching threat labels, and integer midpoint geometry; acceptance of a single one-way flow; and rejection of broken references, unsupported identifiers and properties, namespace errors, fractional connector coordinates, invalid lists, inconsistent threats, changed catalog content, and malformed member order. Prints the standard unittest summary and returns a nonzero exit code on failure.
+  > Runs 23 regression tests covering the bundled Core models, documentation fragments, and deliberately corrupted models. Checks the worked request/response pair's directionality, labels, properties, and facing inset anchors and opposing handles; the populated model's directional names, matching threat labels, and integer attachment and handle geometry; acceptance of a single one-way flow; and rejection of broken references, unsupported identifiers and properties, namespace errors, fractional connector coordinates, invalid lists, inconsistent threats, changed catalog content, and malformed member order. Prints the standard unittest summary and returns a nonzero exit code on failure.
 
     ```bash
     uv run ./scripts/test_validate_tm7.py
@@ -45,4 +45,4 @@ replace `uv run` with `python -B` to use an existing Python installation directl
 - [Minimal Core export](../assets/example-minimal.tm7), the default validation template.
 - [Populated Core reference](../references/Example_Threat_Model.tm7).
 - [Core XML examples](../references/core-xml-examples.md) and [connected worked model](../references/core-worked-example.tm7).
-- [TMT Style Guide](../references/tmt-style-guide.md) for manual size, straightness, layout, and naming checks.
+- [TMT Style Guide](../references/tmt-style-guide.md) for manual size, connection geometry, layout, and naming checks.

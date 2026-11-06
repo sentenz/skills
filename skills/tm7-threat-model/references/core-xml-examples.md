@@ -28,8 +28,8 @@ Copy full property blocks when adapting them.
 | Response | `Service to Client via generic data flow response (transport unspecified, unencrypted, unauthenticated)` |
 
 Each connector is one-way. Together they represent one bidirectional connection; there is
-no extra connection object. Both ordinary stencils retain 100 × 100 dimensions. Separate
-horizontal lanes and midpoint handles follow the [TMT Style Guide](./tmt-style-guide.md).
+no extra connection object. Both ordinary stencils retain 100 × 100 dimensions. Facing ports, five-unit inset anchors, and opposing
+handle offsets follow the [TMT Style Guide](./tmt-style-guide.md).
 
 The model metadata explicitly assumes no authentication, confidentiality, or integrity in
 either direction, matching the configured Core properties and labels. Protocol and transport
@@ -428,16 +428,16 @@ exactly. The Response Name is available for independently applicable response fi
 </a:anyType>
 </Properties>
 <TypeId xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">GE.DF</TypeId>
-<HandleX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">550</HandleX>
-<HandleY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">100</HandleY>
-<PortSource xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">North</PortSource>
-<PortTarget xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">North</PortTarget>
+<HandleX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">563</HandleX>
+<HandleY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">123</HandleY>
+<PortSource xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">East</PortSource>
+<PortTarget xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">West</PortTarget>
 <SourceGuid xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">148ade68-5c80-40f3-8e1f-4e2cabdb5991</SourceGuid>
-<SourceX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">150</SourceX>
-<SourceY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">100</SourceY>
+<SourceX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">195</SourceX>
+<SourceY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">150</SourceY>
 <TargetGuid xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">cc4f292c-59f9-414c-9af4-2c631ad900de</TargetGuid>
-<TargetX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">950</TargetX>
-<TargetY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">100</TargetY>
+<TargetX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">905</TargetX>
+<TargetY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">150</TargetY>
 </a:Value>
 </a:KeyValueOfguidanyType>
 ```
@@ -602,16 +602,16 @@ exactly. The Response Name is available for independently applicable response fi
 </a:anyType>
 </Properties>
 <TypeId xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">GE.DF</TypeId>
-<HandleX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">550</HandleX>
-<HandleY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">200</HandleY>
-<PortSource xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">South</PortSource>
-<PortTarget xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">South</PortTarget>
+<HandleX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">562</HandleX>
+<HandleY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">178</HandleY>
+<PortSource xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">West</PortSource>
+<PortTarget xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">East</PortTarget>
 <SourceGuid xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">cc4f292c-59f9-414c-9af4-2c631ad900de</SourceGuid>
-<SourceX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">950</SourceX>
-<SourceY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">200</SourceY>
+<SourceX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">905</SourceX>
+<SourceY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">150</SourceY>
 <TargetGuid xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">148ade68-5c80-40f3-8e1f-4e2cabdb5991</TargetGuid>
-<TargetX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">150</TargetX>
-<TargetY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">200</TargetY>
+<TargetX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">195</TargetX>
+<TargetY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">150</TargetY>
 </a:Value>
 </a:KeyValueOfguidanyType>
 ```
