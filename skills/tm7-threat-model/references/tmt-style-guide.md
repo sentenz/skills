@@ -4,6 +4,7 @@ Guide for pattern, format, and style conventions in Microsoft Threat Modeling To
 
 - [1. Scope and application](#1-scope-and-application)
 - [2. Diagram patterns](#2-diagram-patterns)
+  - [Flow directionality](#flow-directionality)
 - [3. Stencil size and layout](#3-stencil-size-and-layout)
   - [Default sizes](#default-sizes)
   - [Layout defaults](#layout-defaults)
@@ -39,7 +40,7 @@ interactors. Use a Core type that represents the component's role in the modeled
 | External actor interacts with a service    | External interactor -> process                   | Operator -> MCU control service                          |
 | One component sends data to another        | Process -> process                               | PLC -> MCU                                               |
 | A process persists or retrieves data       | Process -> data store, or data store -> process  | MCU -> configuration store; configuration store -> MCU   |
-| Request and response have distinct meaning | Two directed flows with separate names           | PLC -> MCU request; MCU -> PLC response                  |
+| Bidirectional request/response connection  | Two opposite unidirectional flows                | PLC -> MCU request; MCU -> PLC response                  |
 | Components share a security context        | Enclosing trust boundary around those components | Device boundary around MCU and local configuration store |
 
 The examples describe modeling roles; choose them from the actual scope. A PLC may be an
@@ -51,6 +52,26 @@ Keep each connector's endpoints on its owning surface.
 Place a trust boundary where identity, privilege, administration, or another security context
 changes. Name the boundary for that context. Boundary geometry must reflect the intended
 membership and crossing relationships because Core threat-generation filters can use them.
+
+### Flow directionality
+
+Distinguish the transfer from the connection between components:
+
+| Concept | Meaning | Core representation |
+| ------- | ------- | ------------------- |
+| Unidirectional data flow | One transfer from a source to a target | One `Connector` with its own UUID and ordered endpoints |
+| Bidirectional data flow connection | Data travels in both directions between two components | Two `Connector` objects with opposite endpoints and distinct UUIDs |
+
+Model a request from A to B and its response from B to A separately whenever both directions
+are in scope, even if they share a protocol, session, transport, or protection mechanism.
+Name each direction for the data it carries. `Request/Response` may describe the connection
+in model metadata, but must not label a single connector as though it carries both directions.
+Do not invent a bidirectional XML flag, connection object, or second arrowhead property.
+
+Keep genuinely one-way transfers, such as an event sent without a modeled reply, as one
+flow. Do not infer a response merely from the transport's ability to send data both ways.
+Record an intentionally omitted return path in the model's scope or assumptions. For an
+existing connection, preserve existing flow UUIDs and add only the missing modeled direction.
 
 ## 3. Stencil size and layout
 
@@ -88,7 +109,7 @@ it visual emphasis. Enlarge trust boundaries to fit their contents and labels.
   routing a connector through an unrelated stencil or along a boundary edge.
 
 The worked example places Client at `Left=100`, `Top=100`, and Service at `Left=900`,
-`Top=100`, both sized 100 × 100. Its 700-unit clear gap accommodates the longer flow label.
+`Top=100`, both sized 100 × 100. Its 700-unit clear gap accommodates the directional flow labels.
 
 ## 4. Straight data flows
 
@@ -102,8 +123,9 @@ or decorative bends. Do not add fictitious processes or split one interaction in
 connectors solely to route a line.
 
 For request/response pairs, choose distinct attachment ports and lanes so both arrows and
-labels remain distinguishable. Reposition the stencils if necessary. Each direction retains
-its own connector, UUID, name, and threat interactions.
+labels remain distinguishable. Do not draw both directions on the same segment, where one
+arrow or label can hide the other. Reposition the stencils if necessary. Each direction retains
+its own connector, UUID, name, properties, and applicable threat interactions.
 
 ### Connector geometry
 
@@ -119,15 +141,18 @@ HandleX = (SourceX + TargetX) / 2
 HandleY = (SourceY + TargetY) / 2
 ```
 
-This keeps the handle collinear with the endpoints. The bundled worked example uses:
+This keeps the handle collinear with the endpoints. The bundled worked example uses two
+separated straight diagonal lanes. Client is a rectangle; Service is a circular process.
+The circle's diagonal ports lie on its circumference, not its bounding-box corners:
+for radius 50 and center `(950, 150)`, use offsets `50 / sqrt(2)` (approximately `35.355339`).
 
-| Member               | Value        |
-| -------------------- | ------------ |
-| `PortSource`         | `East`       |
-| `PortTarget`         | `West`       |
-| `SourceX`, `SourceY` | `200`, `150` |
-| `TargetX`, `TargetY` | `900`, `150` |
-| `HandleX`, `HandleY` | `550`, `150` |
+| Member | Request: Client to Service | Response: Service to Client |
+| ------ | -------------------------- | --------------------------- |
+| `PortSource` | `NorthEast` | `SouthWest` |
+| `PortTarget` | `NorthWest` | `SouthEast` |
+| `SourceX`, `SourceY` | `200`, `100` | `914.644661`, `185.355339` |
+| `TargetX`, `TargetY` | `914.644661`, `114.644661` | `200`, `200` |
+| `HandleX`, `HandleY` | `557.3223305`, `107.3223305` | `557.3223305`, `192.6776695` |
 
 Copy the supported representation from a Core export; keep geometry members in the Abstracts
 namespace and in their original order. Do not invent a `Curved`, `Straight`, or `Routing`
@@ -180,7 +205,9 @@ the modeled architecture.
 When multiple flows use the same endpoints and protocol, add the payload or operation after
 the protocol, as in `Modbus RTU request`, `Modbus RTU response`, or `HTTPS firmware download`.
 Use distinct names for interactions that have different payloads, directions, privileges, or
-protection assumptions. Split them only when those differences matter to the threat model.
+protection assumptions. A request/response pair always has two directional labels with source
+and target reversed. Split additional flows within one direction only when their differences
+matter to the threat model; do not use this grouping rule to merge opposite directions.
 
 Use `unencrypted`, `unauthenticated`, `TLS encrypted`, or `mutually authenticated` only for
 documented properties. Encryption and authentication are separate claims. If both matter,
@@ -217,6 +244,11 @@ Use the catalog's exact category name and short description, then adapt
 the threat's state tied to the evidence for those controls. Follow the Core property rules
 in the skill rather than adding new XML fields for presentation.
 
+Evaluate each direction against the Core filters independently. A response does not inherit
+request findings: its source and target roles, authentication claims, payload, and applicable
+threat types can differ. Use its own flow UUID in `FlowGuid`, `InteractionKey`, and threat
+dictionary keys, and its directional label in the `InteractionString` property.
+
 ## 7. Review checklist
 
 Before delivering a new or updated model:
@@ -227,6 +259,8 @@ Before delivering a new or updated model:
    security contexts in the architecture.
 3. Every data flow is straight, points in the correct direction, and meets its intended
    source and target. Handle coordinates follow the midpoint convention.
+   Bidirectional connections contain two opposite connectors with distinct UUIDs, names,
+   attachment ports, and visible lanes. One-way transfers have no invented return flow.
 4. Flow names follow `Source to Target via Protocol (Transport, Protection)`, with a useful
    payload/operation qualifier when needed. Unknown details are explicit.
 5. Display names, flow labels, threat interaction labels, and Core property selections agree.

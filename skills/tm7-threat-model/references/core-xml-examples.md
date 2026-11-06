@@ -6,13 +6,33 @@ declarations already inherited in the final document can retain their exported s
 
 [core-worked-example.tm7](./core-worked-example.tm7) is a connected example derived from
 the user's blank Core 4.1.0.11 skeleton and populated Core reference blocks: Client (external
-interactor) -> Service (process), one generic directional flow, and one S3 spoofing threat.
+interactor) and Service (process), two generic unidirectional flows forming one bidirectional
+request/response connection, and one illustrative request-side S3 spoofing threat.
 Its knowledge base is copied unchanged from `assets/example-minimal.tm7`. This is a static
 consistency example; Microsoft Threat Modeling Tool open/save validation is separate.
 
 The fragments below use matching UUIDs and serializer IDs. The blank export reserves `i1`
-and `i2`; these fragments allocate `i3`, `i4`, and `i5`. The worked model includes all three
-diagram fragments and the threat below. Copy full property blocks when adapting them.
+and `i2`; these fragments allocate `i3` and `i4` to stencils, `i5` to the request, and `i6`
+to the response. The worked model includes all four diagram fragments and the threat below.
+Copy full property blocks when adapting them.
+
+| Direction | Source | Target | Flow UUID | Serializer ID |
+| --------- | ------ | ------ | --------- | ------------- |
+| Request | Client | Service | `6cae5818-d775-4935-96a4-b317b1fcdecb` | `i5` |
+| Response | Service | Client | `7bb5aad7-8c3f-4c99-a2e8-9344102f61b5` | `i6` |
+
+Each connector is one-way. Together they represent one bidirectional connection; there is
+no extra connection object. Both ordinary stencils retain 100 × 100 dimensions. Separate
+diagonal lanes and midpoint handles follow the [TMT Style Guide](./tmt-style-guide.md).
+
+The model metadata explicitly assumes no authentication, confidentiality, or integrity in
+either direction, matching the configured Core properties and labels. Protocol and transport
+remain unspecified. Adapt these assumptions and properties to the actual architecture.
+
+The S3 finding belongs only to the request because its filter requires an external-interactor
+source and a process target. The reversed response does not satisfy that filter. No response
+threat is fabricated by reversing this finding, and the single finding is not exhaustive
+STRIDE coverage. Evaluate response threats independently in a complete model.
 
 ## External interactor
 
@@ -236,7 +256,7 @@ diagram fragments and the threat below. Copy full property blocks when adapting 
 </a:KeyValueOfguidanyType>
 ```
 
-## Connector
+## Request connector
 
 ```xml
 <a:KeyValueOfguidanyType xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model" xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/">
@@ -253,7 +273,7 @@ diagram fragments and the threat below. Copy full property blocks when adapting 
 <a:anyType i:type="b:StringDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
 <b:DisplayName>Name</b:DisplayName>
 <b:Name/>
-<b:Value i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">Client to Service via generic data flow (protocol unspecified, protection unknown)</b:Value>
+<b:Value i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">Client to Service via generic data flow request (transport unspecified, unencrypted, unauthenticated)</b:Value>
 </a:anyType>
 <a:anyType i:type="b:StringDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
 <b:DisplayName>Dataflow Order</b:DisplayName>
@@ -396,21 +416,195 @@ diagram fragments and the threat below. Copy full property blocks when adapting 
 </a:anyType>
 </Properties>
 <TypeId xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">GE.DF</TypeId>
-<HandleX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">550</HandleX>
-<HandleY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">150</HandleY>
-<PortSource xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">East</PortSource>
-<PortTarget xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">West</PortTarget>
+<HandleX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">557.3223305</HandleX>
+<HandleY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">107.3223305</HandleY>
+<PortSource xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">NorthEast</PortSource>
+<PortTarget xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">NorthWest</PortTarget>
 <SourceGuid xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">148ade68-5c80-40f3-8e1f-4e2cabdb5991</SourceGuid>
 <SourceX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">200</SourceX>
-<SourceY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">150</SourceY>
+<SourceY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">100</SourceY>
 <TargetGuid xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">cc4f292c-59f9-414c-9af4-2c631ad900de</TargetGuid>
-<TargetX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">900</TargetX>
-<TargetY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">150</TargetY>
+<TargetX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">914.644661</TargetX>
+<TargetY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">114.644661</TargetY>
 </a:Value>
 </a:KeyValueOfguidanyType>
 ```
 
-## List property (from the connector)
+## Response connector
+
+```xml
+<a:KeyValueOfguidanyType xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model" xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/">
+<a:Key>7bb5aad7-8c3f-4c99-a2e8-9344102f61b5</a:Key>
+<a:Value z:Id="i6" i:type="Connector">
+<GenericTypeId xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">GE.DF</GenericTypeId>
+<Guid xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">7bb5aad7-8c3f-4c99-a2e8-9344102f61b5</Guid>
+<Properties xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">
+<a:anyType i:type="b:HeaderDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
+<b:DisplayName>Generic Data Flow</b:DisplayName>
+<b:Name/>
+<b:Value i:nil="true"/>
+</a:anyType>
+<a:anyType i:type="b:StringDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
+<b:DisplayName>Name</b:DisplayName>
+<b:Name/>
+<b:Value i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">Service to Client via generic data flow response (transport unspecified, unencrypted, unauthenticated)</b:Value>
+</a:anyType>
+<a:anyType i:type="b:StringDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
+<b:DisplayName>Dataflow Order</b:DisplayName>
+<b:Name>15ccd509-98eb-49ad-b9c2-b4a2926d1780</b:Name>
+<b:Value i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema">0</b:Value>
+</a:anyType>
+<a:anyType i:type="b:BooleanDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
+<b:DisplayName>Out Of Scope</b:DisplayName>
+<b:Name>71f3d9aa-b8ef-4e54-8126-607a1d903103</b:Name>
+<b:Value i:type="c:boolean" xmlns:c="http://www.w3.org/2001/XMLSchema">false</b:Value>
+</a:anyType>
+<a:anyType i:type="b:StringDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
+<b:DisplayName>Reason For Out Of Scope</b:DisplayName>
+<b:Name>752473b6-52d4-4776-9a24-202153f7d579</b:Name>
+<b:Value i:type="c:string" xmlns:c="http://www.w3.org/2001/XMLSchema"/>
+</a:anyType>
+<a:anyType i:type="b:HeaderDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
+<b:DisplayName>Configurable Attributes</b:DisplayName>
+<b:Name/>
+<b:Value i:nil="true"/>
+</a:anyType>
+<a:anyType i:type="b:ListDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
+<b:DisplayName>Physical Network</b:DisplayName>
+<b:Name>channel</b:Name>
+<b:Value i:type="a:ArrayOfstring">
+<a:string>Not Selected</a:string>
+<a:string>Wire</a:string>
+<a:string>Wi-Fi</a:string>
+<a:string>Bluetooth</a:string>
+<a:string>2G-4G</a:string>
+</b:Value>
+<b:SelectedIndex>0</b:SelectedIndex>
+</a:anyType>
+<a:anyType i:type="b:ListDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
+<b:DisplayName>Source Authenticated</b:DisplayName>
+<b:Name>authenticatesSource</b:Name>
+<b:Value i:type="a:ArrayOfstring">
+<a:string>Not Selected</a:string>
+<a:string>No</a:string>
+<a:string>Yes</a:string>
+</b:Value>
+<b:SelectedIndex>1</b:SelectedIndex>
+</a:anyType>
+<a:anyType i:type="b:ListDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
+<b:DisplayName>Destination Authenticated</b:DisplayName>
+<b:Name>authenticatesDestination</b:Name>
+<b:Value i:type="a:ArrayOfstring">
+<a:string>No</a:string>
+<a:string>Yes</a:string>
+</b:Value>
+<b:SelectedIndex>0</b:SelectedIndex>
+</a:anyType>
+<a:anyType i:type="b:ListDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
+<b:DisplayName>Provides Confidentiality</b:DisplayName>
+<b:Name>providesConfidentiality</b:Name>
+<b:Value i:type="a:ArrayOfstring">
+<a:string>No</a:string>
+<a:string>Yes</a:string>
+</b:Value>
+<b:SelectedIndex>0</b:SelectedIndex>
+</a:anyType>
+<a:anyType i:type="b:ListDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
+<b:DisplayName>Provides Integrity</b:DisplayName>
+<b:Name>providesIntegrity</b:Name>
+<b:Value i:type="a:ArrayOfstring">
+<a:string>No</a:string>
+<a:string>Yes</a:string>
+</b:Value>
+<b:SelectedIndex>0</b:SelectedIndex>
+</a:anyType>
+<a:anyType i:type="b:ListDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
+<b:DisplayName>Transmits XML</b:DisplayName>
+<b:Name>XMLenc</b:Name>
+<b:Value i:type="a:ArrayOfstring">
+<a:string>No</a:string>
+<a:string>Yes</a:string>
+</b:Value>
+<b:SelectedIndex>0</b:SelectedIndex>
+</a:anyType>
+<a:anyType i:type="b:ListDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
+<b:DisplayName>Contains Cookies</b:DisplayName>
+<b:Name>Cookies</b:Name>
+<b:Value i:type="a:ArrayOfstring">
+<a:string>Yes</a:string>
+<a:string>No</a:string>
+</b:Value>
+<b:SelectedIndex>1</b:SelectedIndex>
+</a:anyType>
+<a:anyType i:type="b:ListDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
+<b:DisplayName>SOAP Payload</b:DisplayName>
+<b:Name>SOAP</b:Name>
+<b:Value i:type="a:ArrayOfstring">
+<a:string>No</a:string>
+<a:string>Yes</a:string>
+</b:Value>
+<b:SelectedIndex>0</b:SelectedIndex>
+</a:anyType>
+<a:anyType i:type="b:ListDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
+<b:DisplayName>REST Payload</b:DisplayName>
+<b:Name>REST</b:Name>
+<b:Value i:type="a:ArrayOfstring">
+<a:string>No</a:string>
+<a:string>Yes</a:string>
+</b:Value>
+<b:SelectedIndex>0</b:SelectedIndex>
+</a:anyType>
+<a:anyType i:type="b:ListDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
+<b:DisplayName>RSS Payload</b:DisplayName>
+<b:Name>RSS</b:Name>
+<b:Value i:type="a:ArrayOfstring">
+<a:string>No</a:string>
+<a:string>Yes</a:string>
+</b:Value>
+<b:SelectedIndex>0</b:SelectedIndex>
+</a:anyType>
+<a:anyType i:type="b:ListDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
+<b:DisplayName>JSON Payload</b:DisplayName>
+<b:Name>JSON</b:Name>
+<b:Value i:type="a:ArrayOfstring">
+<a:string>No</a:string>
+<a:string>Yes</a:string>
+</b:Value>
+<b:SelectedIndex>0</b:SelectedIndex>
+</a:anyType>
+<a:anyType i:type="b:ListDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase">
+<b:DisplayName>Forgery Protection</b:DisplayName>
+<b:Name>54851a3b-65da-4902-b4e0-94ef015be735</b:Name>
+<b:Value i:type="a:ArrayOfstring">
+<a:string>Not Selected</a:string>
+<a:string>ValidateAntiForgeryTokenAttribute</a:string>
+<a:string>ViewStateUserKey</a:string>
+<a:string>Nonce</a:string>
+<a:string>Other dynamic canary</a:string>
+<a:string>Static header not available to the browser</a:string>
+<a:string>Other</a:string>
+<a:string>None</a:string>
+<a:string>Not applicable because the request does not change data</a:string>
+</b:Value>
+<b:SelectedIndex>0</b:SelectedIndex>
+</a:anyType>
+</Properties>
+<TypeId xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">GE.DF</TypeId>
+<HandleX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">557.3223305</HandleX>
+<HandleY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">192.6776695</HandleY>
+<PortSource xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">SouthWest</PortSource>
+<PortTarget xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">SouthEast</PortTarget>
+<SourceGuid xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">cc4f292c-59f9-414c-9af4-2c631ad900de</SourceGuid>
+<SourceX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">914.644661</SourceX>
+<SourceY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">185.355339</SourceY>
+<TargetGuid xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">148ade68-5c80-40f3-8e1f-4e2cabdb5991</TargetGuid>
+<TargetX xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">200</TargetX>
+<TargetY xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model.Abstracts">200</TargetY>
+</a:Value>
+</a:KeyValueOfguidanyType>
+```
+
+## List property (from the request connector)
 
 ```xml
 <a:anyType i:type="b:ListDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase" xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model" xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/">
@@ -444,7 +638,7 @@ diagram fragments and the threat below. Copy full property blocks when adapting 
 <b:Properties>
 <a:KeyValueOfstringstring>
 <a:Key>Title</a:Key>
-<a:Value>Spoofing the Client External Entity</a:Value>
+<a:Value>Spoofed Client sends unauthorized requests to Service</a:Value>
 </a:KeyValueOfstringstring>
 <a:KeyValueOfstringstring>
 <a:Key>UserThreatCategory</a:Key>
@@ -460,7 +654,7 @@ diagram fragments and the threat below. Copy full property blocks when adapting 
 </a:KeyValueOfstringstring>
 <a:KeyValueOfstringstring>
 <a:Key>InteractionString</a:Key>
-<a:Value>Client to Service via generic data flow (protocol unspecified, protection unknown)</a:Value>
+<a:Value>Client to Service via generic data flow request (transport unspecified, unencrypted, unauthenticated)</a:Value>
 </a:KeyValueOfstringstring>
 <a:KeyValueOfstringstring>
 <a:Key>Priority</a:Key>
