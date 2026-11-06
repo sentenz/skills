@@ -98,6 +98,13 @@ it visual emphasis. Enlarge trust boundaries to fit their contents and labels.
 
 ### Layout defaults
 
+Keep the bundled examples within a conservative 1500 × 1000 coordinate envelope, including
+border extents and line endpoints and handles. The supplied populated export fits within
+1430 × 685. An earlier expansion to approximately 6500 × 5300 triggered TMT's corrupted
+coordinate corrections. This envelope is a project compatibility convention, not a verified
+universal TMT limit. Preserve existing export geometry; larger layouts require validation
+in the target TMT application before delivery.
+
 - Arrange the primary interaction from left to right. Use additional rows for independent
   interactions or storage access when this reduces crossings.
 - Align related 100 × 100 stencils by their centerlines. A 25-unit placement grid is a useful
@@ -158,9 +165,9 @@ The worked example preserves the supplied connection geometry exactly:
 | `TargetX`, `TargetY` | `905`, `150` | `195`, `150` |
 | `HandleX`, `HandleY` | `563`, `123` | `562`, `178` |
 
-The populated example applies the same inset to facing cardinal ports and uses opposing
-28-unit handle offsets for reverse-direction pairs. This offset is a layout convention,
-not a new Core property or a universal TMT requirement.
+The populated example retains the supplied export's border positions, attachment ports,
+endpoint coordinates, and handles exactly. Its long labels may require inspection in TMT;
+do not expand the coordinate range to fit them without an application open/save check.
 
 Keep geometry members in the Abstracts namespace and in their original order. Do not
 invent a `Curved`, `Straight`, or `Routing` XML property. Inspect the rendered connectors
@@ -269,7 +276,7 @@ Before delivering a new or updated model:
    security contexts in the architecture.
 3. Every data flow points in the correct direction and uses facing attachment points
    consistent with its ports and the exported inset. One-way handles use midpoints;
-   opposite flows have distinguishable handle offsets.
+   opposite flows retain their exported handles or use validated separating offsets.
    Bidirectional connections contain two opposite connectors with distinct UUIDs, names,
    directional arrows, and visible labels. One-way transfers have no invented return flow.
 4. Flow names follow `Source to Target via Protocol (Transport, Protection)`, with a useful
@@ -286,7 +293,7 @@ Before delivering a new or updated model:
 - [Blank Core 4.1.0.11 export](../assets/example-minimal.tm7).
 - [Populated Core reference](../references/Example_Threat_Model.tm7), which demonstrates
   ordinary stencil dimensions, integer connector coordinates, and directional flow labels.
-  Its JTAG and QSPI bidirectional connections use separate Request and Response lanes;
+  Its JTAG and QSPI bidirectional connections use separate Request and Response connectors;
   existing threat interaction labels match their connectors.
 - [Connected worked example](../references/core-worked-example.tm7).
 - [Core XML examples](../references/core-xml-examples.md).

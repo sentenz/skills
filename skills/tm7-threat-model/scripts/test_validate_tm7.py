@@ -47,36 +47,70 @@ class CoreConsistencyTests(unittest.TestCase):
             './/m:Borders/a:KeyValueOfguidanyType/a:Value', N)}
         flows = {value(v, 'Guid'): v for v in model.findall(
             './/m:Lines/a:KeyValueOfguidanyType/a:Value', N)}
-        ports = {'North': (50, 5), 'South': (50, 95),
-                 'East': (95, 50), 'West': (5, 50)}
         for flow in flows.values():
             source, target = (stencils[value(flow, end + 'Guid')] for end in ('Source', 'Target'))
             self.assertTrue(label(flow).startswith(label(source) + ' to ' + label(target) + ' via '))
             self.assertIn(' (', label(flow))
             for end, stencil in (('Source', source), ('Target', target)):
                 self.assertEqual((value(stencil, 'Width'), value(stencil, 'Height')), ('100', '100'))
-                dx, dy = ports[value(flow, 'Port' + end)]
-                self.assertEqual(int(value(flow, end + 'X')), int(value(stencil, 'Left')) + dx)
-                self.assertEqual(int(value(flow, end + 'Y')), int(value(stencil, 'Top')) + dy)
-            reverses = [r for r in flows.values()
-                        if (value(flow, 'SourceGuid'), value(flow, 'TargetGuid')) ==
-                        (value(r, 'TargetGuid'), value(r, 'SourceGuid'))]
-            sx, sy, tx, ty, hx, hy = [int(value(flow, k)) for k in
-                                    ('SourceX', 'SourceY', 'TargetX', 'TargetY', 'HandleX', 'HandleY')]
-            if not reverses:
-                self.assertEqual((2 * hx, 2 * hy), (sx + tx, sy + ty))
-            for reverse in reverses:
-                self.assertEqual((sx, sy), (int(value(reverse, 'TargetX')), int(value(reverse, 'TargetY'))))
-                self.assertEqual((tx, ty), (int(value(reverse, 'SourceX')), int(value(reverse, 'SourceY'))))
-                side = (tx - sx) * (hy - sy) - (ty - sy) * (hx - sx)
-                other_side = ((tx - sx) * (int(value(reverse, 'HandleY')) - sy)
-                              - (ty - sy) * (int(value(reverse, 'HandleX')) - sx))
-                self.assertLess(side * other_side, 0, 'Reverse-flow handles must lie on opposite sides')
+                x, y = int(value(flow, end + 'X')), int(value(flow, end + 'Y'))
+                left, top = int(value(stencil, 'Left')), int(value(stencil, 'Top'))
+                self.assertTrue(left <= x <= left + 100 and top <= y <= top + 100)
         for threat in model.findall('m:ThreatInstances/a:KeyValueOfstringThreatpc_P0_PhOB/a:Value', N):
             props = {p.findtext('a:Key', namespaces=N): p.findtext('a:Value', namespaces=N)
                      for p in threat.findall('k:Properties/a:KeyValueOfstringstring', N)}
             self.assertEqual(props['InteractionString'],
                              label(flows[threat.findtext('k:FlowGuid', namespaces=N)]))
+
+    def test_populated_preserves_supplied_export_geometry(self):
+        # Compatibility baseline: the supplied populated TMT export, before layout expansion.
+        _, model, _ = read_xml(POPULATED)
+        expected = {
+            'eb7fcab6-6c6f-4057-805e-8263102d5a6e': ('13', '181', '100', '100'),
+            '1cd50465-88c8-4d5a-9fe8-86ba82b78968': ('369', '10', '820', '675'),
+            'b12efa5e-d565-4d97-970c-0f16f0efcdbe': ('591', '182', '100', '100'),
+            '68f7ea80-2b40-443c-97d0-8afdb8fb9f5b': ('590', '495', '100', '100'),
+            'cea9ef0a-d9bd-46c5-8c96-6dbce2b58a07': ('955', '107', '100', '100'),
+            '2c04f557-30f1-4fde-9527-2b190e6b2d7c': ('11', '323', '100', '100'),
+            '5f4312a0-1972-49c0-adf1-b7207b1aee33': ('13', '58', '100', '100'),
+            '6bd55692-9166-48ab-a7ab-45815087d674': ('1311', '396', '100', '100'),
+            'fafd48d9-90dd-4e9c-8daf-bf2efb3ac46a': ('1313', '105', '100', '100'),
+            '71c124e0-039b-4be4-8f31-32192932da6b': ('934', '10', '496', '674'),
+        }
+        fields = ('Left', 'Top', 'Width', 'Height')
+        actual = {v.findtext('d:Guid', namespaces=N):
+                  tuple(v.findtext('d:' + k, namespaces=N) for k in fields)
+                  for v in model.findall('.//m:Borders/a:KeyValueOfguidanyType/a:Value', N)}
+        self.assertEqual(actual, expected)
+        expected = {
+            '9d4afcea-3e67-4aa2-abf9-4e4514946c6b': ('455', '232', 'West', 'East', '596', '232', '108', '231'),
+            '552b907e-0d26-4e70-92c9-e0b4df52e9bf': ('272', '231', 'East', 'West', '108', '231', '596', '232'),
+            '3ea05cdd-2a10-419e-a3df-a0bc3bf98680': ('320', '146', 'East', 'NorthWest', '108', '108', '609', '200'),
+            '1dd4151c-3b0f-414b-8d77-e92441b51b47': ('1052', '376', 'West', 'SouthEast', '1316', '446', '672', '263'),
+            '9ac0f863-3849-4fe2-befd-fa32dce6fea1': ('454', '298', 'East', 'SouthWest', '106', '373', '609', '263'),
+            'fe9683fb-3eaf-4898-b9c6-2fd1aab24dc7': ('827', '177', 'West', 'NorthEast', '960', '157', '672', '200'),
+            '3f4ff8e3-29b3-4d50-988f-590b63a01bb3': ('640', '387', 'South', 'North', '641', '277', '640', '500'),
+            '55ff5bd2-fdb9-4e83-b229-0744938845fb': ('303', '331', 'SouthWest', 'East', '609', '263', '106', '373'),
+            'fdfd398d-f6d8-4fb4-a772-d0d15168e4a9': ('641', '354', 'North', 'South', '640', '500', '641', '277'),
+            'cb59d018-06d7-4803-9217-f168963da421': ('1179', '156', 'East', 'West', '1050', '157', '1318', '155'),
+        }
+        fields = ('HandleX', 'HandleY', 'PortSource', 'PortTarget', 'SourceX', 'SourceY', 'TargetX', 'TargetY')
+        actual = {v.findtext('d:Guid', namespaces=N):
+                  tuple(v.findtext('d:' + k, namespaces=N) for k in fields)
+                  for v in model.findall('.//m:Lines/a:KeyValueOfguidanyType/a:Value', N)}
+        self.assertEqual(actual, expected)
+
+    def test_canvas_envelope_rejects_expanded_coordinates(self):
+        for member, number in (('Left', '6200'), ('Top', '5000'), ('Width', '2800'), ('Height', '5250')):
+            with self.subTest(member=member):
+                self.reject(re.sub(r'(<'+member+r'[^>]*>)[^<]+',
+                                   lambda m: m[1] + number, self.worked, count=1),
+                            'Border outside bundled canvas envelope')
+        for member in ('SourceX', 'SourceY', 'TargetX', 'TargetY', 'HandleX', 'HandleY'):
+            with self.subTest(member=member):
+                self.reject(re.sub(r'(<'+member+r'[^>]*>)[^<]+',
+                                   lambda m: m[1] + '6200', self.worked, count=1),
+                            'Connector outside bundled canvas envelope')
 
     def test_duplicate_serializer_id(self):
         self.reject(self.worked.replace('z:Id="i4"', 'z:Id="i3"', 1), 'Duplicate z:Id')

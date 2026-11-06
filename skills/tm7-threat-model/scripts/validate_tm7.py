@@ -33,6 +33,8 @@ THREAT_MEMBERS = ['ChangedBy', 'DrawingSurfaceGuid', 'FlowGuid', 'Id', 'Interact
                   'UserThreatCategory', 'UserThreatDescription', 'UserThreatShortDescription', 'Wide']
 SHAPES = {'GE.P': 'StencilEllipse', 'GE.EI': 'StencilRectangle', 'GE.DS': 'StencilParallelLines',
           'GE.DF': 'Connector', 'GE.TB.B': 'BorderBoundary'}
+# Conservative envelope for the bundled exports, not a universal TMT canvas limit.
+CANVAS_WIDTH, CANVAS_HEIGHT = 1500, 1000
 COMMON_PROPERTIES = {'Name', '71f3d9aa-b8ef-4e54-8126-607a1d903103',
                      '752473b6-52d4-4776-9a24-202153f7d579'}
 
@@ -237,9 +239,22 @@ def validate(path, template):
                     for coordinate in ('HandleX', 'HandleY', 'SourceX', 'SourceY', 'TargetX', 'TargetY'):
                         check(re.fullmatch(r'[+-]?[0-9]+', text(value, 'd:' + coordinate)) is not None,
                               'Connector coordinate must be an integer: ' + coordinate)
+                        raw = text(value, 'd:' + coordinate)
+                        if re.fullmatch(r'[+-]?[0-9]+', raw):
+                            limit = CANVAS_WIDTH if coordinate.endswith('X') else CANVAS_HEIGHT
+                            check(0 <= int(raw) <= limit,
+                                  'Connector outside bundled canvas envelope: ' + coordinate)
                     flows[key] = (sid, value)
                 elif generic != 'GE.TB.L':
                     members(value, BORDER_MEMBERS, D, 'Border')
+                    rectangle = [text(value, 'd:' + k) for k in ('Left', 'Top', 'Width', 'Height')]
+                    if all(re.fullmatch(r'[+-]?[0-9]+', x) for x in rectangle):
+                        left, top, width, height = map(int, rectangle)
+                        check(left >= 0 and top >= 0 and width > 0 and height > 0
+                              and left + width <= CANVAS_WIDTH and top + height <= CANVAS_HEIGHT,
+                              'Border outside bundled canvas envelope: ' + key)
+                    else:
+                        check(False, 'Border rectangle must use integer coordinates: ' + key)
                     local_objects[key] = value
                 diagram_properties(value, type_id)
         objects[sid] = local_objects

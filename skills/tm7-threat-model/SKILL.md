@@ -26,6 +26,8 @@ When asked to produce a `.tm7` file:
 3. **Lay out coordinates** using the [TMT Style Guide](./references/tmt-style-guide.md):
    retain default stencil sizes, use facing connection points, and apply its flow naming convention.
    Keep stencils readable, boundary membership correct, and connector endpoints on their shapes.
+   Preserve supplied export geometry and keep bundled examples within the style guide's
+   conservative coordinate envelope; verify larger layouts in TMT before delivery.
 4. **Generate STRIDE threats** for applicable interactions, using Core threat types and
    their generation filters. Place them in `ThreatInstances`; include architecture-specific
    descriptions and proposed mitigations without claiming that proposed controls are implemented.
@@ -43,7 +45,7 @@ When asked to produce a `.tm7` file:
 | Asset                                 | Role                                                                                                                    | Core manifest version             |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
 | `assets/example-minimal.tm7`          | Authoritative blank generation skeleton supplied by the user: one empty drawing surface, no stencils, flows, or threats | `4.1.0.11`                        |
-| `references/Example_Threat_Model.tm7` | Style-aligned populated Core example: 10 border entries, 10 labeled connectors, 50 threats                                                    | `4.1.0.11`                        |
+| `references/Example_Threat_Model.tm7` | Labeled populated Core example: 10 border entries, 10 labeled connectors, 50 threats                                                    | `4.1.0.11`                        |
 | `references/core-xml-examples.md`     | Complete, namespace-qualified example blocks and a connected worked model                                               | Uses the blank skeleton's catalog |
 | `references/core-worked-example.tm7` | Bidirectional connection (Request and Response): two stencils, two connectors, one illustrative request-side threat           | `4.1.0.11`                        |
 | `references/tmt-style-guide.md`       | Diagram patterns, stencil sizes, connector attachment geometry, and naming conventions                                    | Applies to Core `4.1.0.11`        |

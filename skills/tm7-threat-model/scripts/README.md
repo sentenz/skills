@@ -23,13 +23,17 @@ replace `uv run` with `python -B` to use an existing Python installation directl
     validating edits against another catalog. Catalog comparison excludes the knowledge
     base object's serializer ID; serializer IDs are checked separately for uniqueness.
 
+    Geometry checks enforce a conservative 1500 × 1000 envelope for the bundled examples,
+    including border extents, line endpoints, and handles. This is a project convention,
+    not a verified universal TMT canvas limit.
+
     These are static consistency checks. The script does not evaluate threat-generation
     expressions, prove architecture coverage, or perform an application open/save check.
     Enclosing trust boundaries are supported; trust-line boundary serialization requires
     a populated Core export and is reported as unsupported by this checker.
 
 - [test_validate_tm7.py](test_validate_tm7.py)
-  > Runs 23 regression tests covering the bundled Core models, documentation fragments, and deliberately corrupted models. Checks the worked request/response pair's directionality, labels, properties, and facing inset anchors and opposing handles; the populated model's directional names, matching threat labels, and integer attachment and handle geometry; acceptance of a single one-way flow; and rejection of broken references, unsupported identifiers and properties, namespace errors, fractional connector coordinates, invalid lists, inconsistent threats, changed catalog content, and malformed member order. Prints the standard unittest summary and returns a nonzero exit code on failure.
+  > Runs 25 regression tests covering the bundled Core models, documentation fragments, and deliberately corrupted models. Checks the worked request/response pair's directionality, labels, properties, and facing inset anchors and opposing handles; the populated model's directional names, matching threat labels, and preserved supplied-export geometry; acceptance of a single one-way flow; and rejection of broken references, unsupported identifiers and properties, namespace errors, fractional connector coordinates, oversized border/line coordinates, invalid lists, inconsistent threats, changed catalog content, and malformed member order. Prints the standard unittest summary and returns a nonzero exit code on failure.
 
     ```bash
     uv run ./scripts/test_validate_tm7.py
