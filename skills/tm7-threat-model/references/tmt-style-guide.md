@@ -280,8 +280,9 @@ Before delivering a new or updated model:
 - [Skill workflow and serialization contract](../SKILL.md).
 - [Blank Core 4.1.0.11 export](../assets/example-minimal.tm7).
 - [Populated Core reference](../references/Example_Threat_Model.tm7), which demonstrates
-  ordinary stencil dimensions and exported port values. Its existing layout and labels
-  are source examples; apply this guide to new diagrams.
+  ordinary stencil dimensions, integer connector coordinates, and directional flow labels.
+  Its JTAG and QSPI bidirectional connections use separate Request and Response lanes;
+  existing threat interaction labels match their connectors.
 - [Connected worked example](../references/core-worked-example.tm7).
 - [Core XML examples](../references/core-xml-examples.md).
 - [Script usage and validation limits](../scripts/README.md).

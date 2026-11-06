@@ -35,6 +35,43 @@ class CoreConsistencyTests(unittest.TestCase):
                 self.assertEqual(errors, [])
                 self.assertEqual(tuple(result[x] for x in ('borders', 'connectors', 'threats')), counts)
 
+    def test_populated_flow_labels_and_geometry(self):
+        _, model, _ = read_xml(POPULATED)
+        def value(element, member):
+            return element.findtext('d:' + member, namespaces=N)
+        def label(element):
+            return next(p.findtext('k:Value', namespaces=N)
+                        for p in element.findall('d:Properties/a:anyType', N)
+                        if p.findtext('k:DisplayName', namespaces=N) == 'Name')
+        stencils = {value(v, 'Guid'): v for v in model.findall(
+            './/m:Borders/a:KeyValueOfguidanyType/a:Value', N)}
+        flows = {value(v, 'Guid'): v for v in model.findall(
+            './/m:Lines/a:KeyValueOfguidanyType/a:Value', N)}
+        ports = {'North': (50, 0), 'South': (50, 100),
+                 'East': (100, 50), 'West': (0, 50)}
+        for flow in flows.values():
+            source, target = (stencils[value(flow, end + 'Guid')] for end in ('Source', 'Target'))
+            self.assertTrue(label(flow).startswith(label(source) + ' to ' + label(target) + ' via '))
+            self.assertIn(' (', label(flow))
+            for end, stencil in (('Source', source), ('Target', target)):
+                self.assertEqual((value(stencil, 'Width'), value(stencil, 'Height')), ('100', '100'))
+                dx, dy = ports[value(flow, 'Port' + end)]
+                self.assertEqual(int(value(flow, end + 'X')), int(value(stencil, 'Left')) + dx)
+                self.assertEqual(int(value(flow, end + 'Y')), int(value(stencil, 'Top')) + dy)
+            for axis in ('X', 'Y'):
+                self.assertEqual(2 * int(value(flow, 'Handle' + axis)),
+                                 int(value(flow, 'Source' + axis)) + int(value(flow, 'Target' + axis)))
+            for reverse in flows.values():
+                if (value(flow, 'SourceGuid'), value(flow, 'TargetGuid')) == (
+                        value(reverse, 'TargetGuid'), value(reverse, 'SourceGuid')):
+                    self.assertNotEqual((value(flow, 'HandleX'), value(flow, 'HandleY')),
+                                        (value(reverse, 'HandleX'), value(reverse, 'HandleY')))
+        for threat in model.findall('m:ThreatInstances/a:KeyValueOfstringThreatpc_P0_PhOB/a:Value', N):
+            props = {p.findtext('a:Key', namespaces=N): p.findtext('a:Value', namespaces=N)
+                     for p in threat.findall('k:Properties/a:KeyValueOfstringstring', N)}
+            self.assertEqual(props['InteractionString'],
+                             label(flows[threat.findtext('k:FlowGuid', namespaces=N)]))
+
     def test_duplicate_serializer_id(self):
         self.reject(self.worked.replace('z:Id="i4"', 'z:Id="i3"', 1), 'Duplicate z:Id')
 

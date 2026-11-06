@@ -43,7 +43,7 @@ When asked to produce a `.tm7` file:
 | Asset                                 | Role                                                                                                                    | Core manifest version             |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
 | `assets/example-minimal.tm7`          | Authoritative blank generation skeleton supplied by the user: one empty drawing surface, no stencils, flows, or threats | `4.1.0.11`                        |
-| `references/Example_Threat_Model.tm7` | Populated Core example: 10 border entries, 10 connectors, 50 threats                                                    | `4.1.0.11`                        |
+| `references/Example_Threat_Model.tm7` | Style-aligned populated Core example: 10 border entries, 10 labeled connectors, 50 threats                                                    | `4.1.0.11`                        |
 | `references/core-xml-examples.md`     | Complete, namespace-qualified example blocks and a connected worked model                                               | Uses the blank skeleton's catalog |
 | `references/core-worked-example.tm7` | Bidirectional connection (Request and Response): two stencils, two connectors, one illustrative request-side threat           | `4.1.0.11`                        |
 | `references/tmt-style-guide.md`       | Diagram patterns, stencil sizes, straight connector geometry, and naming conventions                                    | Applies to Core `4.1.0.11`        |
