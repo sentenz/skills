@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.21.1](https://github.com/sentenz/skills/compare/v1.21.0...v1.21.1) (2026-11-07)
+
+### Bug Fixes
+
+* **skills:** migrate TM7 threat modeling to Core and clarify flow directionality ([#152](https://github.com/sentenz/skills/issues/152)) ([b8127a5](https://github.com/sentenz/skills/commit/b8127a52b4ab3c67cc1b8dbfddbd92aca980de5b))
+
 ## [1.21.0](https://github.com/sentenz/skills/compare/v1.20.3...v1.21.0) (2026-11-07)
 
 ### Features
