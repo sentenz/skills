@@ -10,9 +10,8 @@ import unittest
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[2]
-SKILL = ROOT / "skills/threat-modeling-analysis"
-SCRIPT = SKILL / "scripts/validate_csv.py"
+SCRIPT = Path(__file__).with_name("validate_csv.py").resolve()
+SKILL = SCRIPT.parents[1]
 SPEC = importlib.util.spec_from_file_location("validate_csv", SCRIPT)
 VALIDATOR = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = VALIDATOR

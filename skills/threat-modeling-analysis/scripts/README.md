@@ -45,7 +45,7 @@
     ```
 
     ```bash
-    python3 -m unittest discover -s tests/threat_modeling_analysis -v
+    python3 ./scripts/validate_csv_test.py -v
     ```
 
 - [validate_cvss.py](validate_cvss.py)
