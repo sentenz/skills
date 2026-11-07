@@ -7,6 +7,12 @@
       "skillPath": "skills/dependabot/SKILL.md",
       "computedHash": "a7f64786f061e1ec9a513757a54f96e3c05b1f88d9d7e380222defbcd87a56e4"
     },
+    "draw-io-diagram-generator": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/draw-io-diagram-generator/SKILL.md",
+      "computedHash": "62482a37dd45bfd414b285c1876e2028c5de62d43bb0af8a35fc488cafdb04b8"
+    },
     "github-actions-efficiency": {
       "source": "github/awesome-copilot",
       "sourceType": "github",

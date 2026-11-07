@@ -84,7 +84,7 @@ Available skills can be activated by agents based on defined triggers and contex
   > Threat modeling for OT/ICS systems and Microsoft Threat Modeling Tool (`.tm7`) file generation.
 
 - [Documentation Skills](skills/README.md#18-documentation-skills)
-  > Architecture Decision Records (ADR) creation and maintenance skills.
+  > Architecture Decision Records (ADR) creation and maintenance, technical articles, and draw.io diagram generation and editing skills.
 
 - [Design Skills](skills/README.md#19-design-skills)
   > Material Design 3 implementation guidance for components, design tokens, theming, adaptive layouts, accessibility, and compliance auditing.
