@@ -46,10 +46,10 @@ Omit every optional category that lacks evidence. In particular, a mitigated nar
 ## 4. Not Applicable
 
 ```plaintext
-[Candidate scenario] does not apply because [architectural contradiction, absent capability, removed element, or out-of-scope boundary]. [Evidence] confirms that [rejected precondition or unavailable effect]. [Optional: The related weakness remains covered by threat row [Id or title] through [applicable path].]
+[Candidate scenario] does not apply because [architectural contradiction, absent capability, or removed element]. [Evidence] confirms that [rejected precondition or unavailable effect]. [Optional: The related weakness remains covered by threat row [Id or title] through [applicable path].]
 ```
 
-Name the architectural record or design decision when `Risk Treatment = Avoidance`. Do not add mitigation tiers, residual-risk ownership, or approval prose when the row has no residual risk and `Risk Approval = Not Required`.
+Name the architectural record or design decision when `Risk Treatment = Avoidance`. If a model scope decision is relevant, cite its decision ID and evidence following the shared [scope handoff](../../tm7-threat-model/references/data-connection-scope.md#3-decision-record-and-handoff). A boundary-only exclusion is an assessment limitation, not evidence of elimination: use `Needs Investigation`, identify the excluded boundary and required further assessment, and leave unsupported risk and governance fields blank. Do not add mitigation tiers, residual-risk ownership, or approval prose when the row has no residual risk and `Risk Approval = Not Required`.
 
 ## 5. Needs Investigation
 
