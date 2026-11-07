@@ -4,16 +4,16 @@ Guide for pattern, format, and style conventions in Microsoft Threat Modeling To
 
 - [1. Scope and application](#1-scope-and-application)
 - [2. Diagram patterns](#2-diagram-patterns)
-  - [Flow directionality](#flow-directionality)
+  - [2.1. Flow directionality](#21-flow-directionality)
 - [3. Stencil size and layout](#3-stencil-size-and-layout)
-  - [Default sizes](#default-sizes)
-  - [Layout defaults](#layout-defaults)
+  - [3.1. Default sizes](#31-default-sizes)
+  - [3.2. Layout defaults](#32-layout-defaults)
 - [4. Data flow connections](#4-data-flow-connections)
-  - [Connector geometry](#connector-geometry)
+  - [4.1. Connector geometry](#41-connector-geometry)
 - [5. Naming and text format](#5-naming-and-text-format)
-  - [Components and boundaries](#components-and-boundaries)
-  - [Data flow naming convention](#data-flow-naming-convention)
-  - [Text and XML format](#text-and-xml-format)
+  - [5.1. Components and boundaries](#51-components-and-boundaries)
+  - [5.2. Data flow naming convention](#52-data-flow-naming-convention)
+  - [5.3. Text and XML format](#53-text-and-xml-format)
 - [6. Properties and threat presentation](#6-properties-and-threat-presentation)
 - [7. Review checklist](#7-review-checklist)
 - [8. References](#8-references)
@@ -35,13 +35,13 @@ or protection details as unknown rather than inventing them to complete a label.
 Model the system as directed interactions among processes, data stores, and external
 interactors. Use a Core type that represents the component's role in the modeled scope.
 
-| Pattern                                    | Representation                                   | Example                                                  |
-| ------------------------------------------ | ------------------------------------------------ | -------------------------------------------------------- |
-| External actor interacts with a service    | External interactor -> process                   | Operator -> MCU control service                          |
-| One component sends data to another        | Process -> process                               | PLC -> MCU                                               |
-| A process persists or retrieves data       | Process -> data store, or data store -> process  | MCU -> configuration store; configuration store -> MCU   |
-| Bidirectional connection (Request and Response)  | Two opposite unidirectional flows                | PLC -> MCU request; MCU -> PLC response                  |
-| Components share a security context        | Enclosing trust boundary around those components | Device boundary around MCU and local configuration store |
+| Pattern                                         | Representation                                   | Example                                                  |
+| ----------------------------------------------- | ------------------------------------------------ | -------------------------------------------------------- |
+| External actor interacts with a service         | External interactor -> process                   | Operator -> MCU control service                          |
+| One component sends data to another             | Process -> process                               | PLC -> MCU                                               |
+| A process persists or retrieves data            | Process -> data store, or data store -> process  | MCU -> configuration store; configuration store -> MCU   |
+| Bidirectional connection (Request and Response) | Two opposite unidirectional flows                | PLC -> MCU request; MCU -> PLC response                  |
+| Components share a security context             | Enclosing trust boundary around those components | Device boundary around MCU and local configuration store |
 
 The examples describe modeling roles; choose them from the actual scope. A PLC may be an
 external interactor when its internals are outside scope, or a process when they are modeled.
@@ -53,13 +53,13 @@ Place a trust boundary where identity, privilege, administration, or another sec
 changes. Name the boundary for that context. Boundary geometry must reflect the intended
 membership and crossing relationships because Core threat-generation filters can use them.
 
-### Flow directionality
+### 2.1. Flow directionality
 
 Distinguish the transfer from the connection between components:
 
-| Concept | Meaning | Core representation |
-| ------- | ------- | ------------------- |
-| Unidirectional data flow | One transfer from a source to a target | One `Connector` with its own UUID and ordered endpoints |
+| Concept                  | Meaning                                                | Core representation                                                |
+| ------------------------ | ------------------------------------------------------ | ------------------------------------------------------------------ |
+| Unidirectional data flow | One transfer from a source to a target                 | One `Connector` with its own UUID and ordered endpoints            |
 | Bidirectional connection | Data travels in both directions between two components | Two `Connector` objects with opposite endpoints and distinct UUIDs |
 
 Model a request from A to B and its response from B to A separately whenever both directions
@@ -76,7 +76,7 @@ existing connection, preserve existing flow UUIDs and add only the missing model
 
 ## 3. Stencil size and layout
 
-### Default sizes
+### 3.1. Default sizes
 
 Keep the exported default dimensions for ordinary stencils:
 
@@ -96,7 +96,7 @@ Use concise component names so labels fit. Move explanatory detail into properti
 metadata. Do not stretch a process into an ellipse or enlarge one component merely to give
 it visual emphasis. Enlarge trust boundaries to fit their contents and labels.
 
-### Layout defaults
+### 3.2. Layout defaults
 
 Keep the bundled examples within a conservative 1500 × 1000 coordinate envelope, including
 border extents and line endpoints and handles. The supplied populated export fits within
@@ -131,7 +131,7 @@ and applicable threats.
 Move components when connectors or labels collide with unrelated stencils. Do not add
 fictitious processes or split an interaction solely to route a line.
 
-### Connector geometry
+### 4.1. Connector geometry
 
 Keep `PortSource`, `PortTarget`, and endpoint coordinates consistent. The supplied example
 uses the following anchors for 100 × 100 stencils: Client's East anchor is `(195, 150)`
@@ -142,12 +142,12 @@ intersections. Other stencil sizes or port types require a matching TMT export.
 
 For the bundled 100 × 100 stencils, the cardinal anchors relative to `Left`, `Top` are:
 
-| Port | X offset | Y offset |
-| ---- | -------- | -------- |
-| North | 50 | 5 |
-| South | 50 | 95 |
-| East | 95 | 50 |
-| West | 5 | 50 |
+| Port  | X offset | Y offset |
+| ----- | -------- | -------- |
+| North | 50       | 5        |
+| South | 50       | 95       |
+| East  | 95       | 50       |
+| West  | 5        | 50       |
 
 For a straight one-way connector, place its handle at the endpoint midpoint. For a
 bidirectional connection, offset the handles to opposite sides of the shared endpoint
@@ -157,13 +157,13 @@ Serialize coordinates as integers; do not write fractions or exponent notation.
 
 The worked example preserves the supplied connection geometry exactly:
 
-| Member | Request: Client to Service | Response: Service to Client |
-| ------ | -------------------------- | --------------------------- |
-| `PortSource` | `East` | `West` |
-| `PortTarget` | `West` | `East` |
-| `SourceX`, `SourceY` | `195`, `150` | `905`, `150` |
-| `TargetX`, `TargetY` | `905`, `150` | `195`, `150` |
-| `HandleX`, `HandleY` | `563`, `123` | `562`, `178` |
+| Member               | Request: Client to Service | Response: Service to Client |
+| -------------------- | -------------------------- | --------------------------- |
+| `PortSource`         | `East`                     | `West`                      |
+| `PortTarget`         | `West`                     | `East`                      |
+| `SourceX`, `SourceY` | `195`, `150`               | `905`, `150`                |
+| `TargetX`, `TargetY` | `905`, `150`               | `195`, `150`                |
+| `HandleX`, `HandleY` | `563`, `123`               | `562`, `178`                |
 
 The populated example retains the supplied export's border positions, attachment ports,
 endpoint coordinates, and handles exactly. Its long labels may require inspection in TMT;
@@ -177,7 +177,7 @@ conventions, but neither proves application rendering.
 
 ## 5. Naming and text format
 
-### Components and boundaries
+### 5.1. Components and boundaries
 
 Use short, stable names from the architecture: `PLC`, `MCU`, `Operator`, `Firmware service`,
 or `Configuration store`. Keep acronyms consistently capitalized. Introduce an unfamiliar
@@ -187,7 +187,7 @@ Use descriptive boundary names such as `Device trust boundary` or `Maintenance n
 trust boundary`. A name must not imply a protection or trust relationship that has not been
 established. Use the same component names in flow labels and threat descriptions.
 
-### Data flow naming convention
+### 5.2. Data flow naming convention
 
 Use this base pattern:
 
@@ -235,7 +235,7 @@ on that flow, use the same label in the `InteractionString` property dictionary 
 When renaming an existing flow, update corresponding interaction labels without changing
 its UUID, threat dictionary keys, or colon-delimited `InteractionKey`.
 
-### Text and XML format
+### 5.3. Text and XML format
 
 Use sentence case for explanatory prose, preserve established acronym spelling, and keep
 visible labels on one logical line. Put detailed assumptions in `MetaInformation/Assumptions`

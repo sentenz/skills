@@ -26,51 +26,51 @@ Every `.drawio` file is XML with this root structure:
 
 ### `<mxfile>` Attributes
 
-| Attribute | Required | Default | Description |
-| ----------- | ---------- | --------- | ------------- |
-| `host` | No | `"app.diagrams.net"` | Origin editor (`"Electron"` for desktop/VS Code) |
-| `modified` | No | — | ISO 8601 timestamp |
-| `agent` | No | — | User agent string |
-| `version` | No | — | draw.io version |
-| `type` | No | `"device"` | Storage type |
+| Attribute  | Required | Default              | Description                                      |
+| ---------- | -------- | -------------------- | ------------------------------------------------ |
+| `host`     | No       | `"app.diagrams.net"` | Origin editor (`"Electron"` for desktop/VS Code) |
+| `modified` | No       | —                    | ISO 8601 timestamp                               |
+| `agent`    | No       | —                    | User agent string                                |
+| `version`  | No       | —                    | draw.io version                                  |
+| `type`     | No       | `"device"`           | Storage type                                     |
 
 ### `<diagram>` Attributes
 
-| Attribute | Required | Description |
-| ----------- | ---------- | ------------- |
-| `id` | Yes | Unique page identifier (any string) |
-| `name` | Yes | Tab label shown in editor |
+| Attribute | Required | Description                         |
+| --------- | -------- | ----------------------------------- |
+| `id`      | Yes      | Unique page identifier (any string) |
+| `name`    | Yes      | Tab label shown in editor           |
 
 ### `<mxGraphModel>` Attributes
 
-| Attribute | Type | Default | Description |
-| ----------- | ------ | --------- | ------------- |
-| `dx` | int | `1422` | Scroll X offset |
-| `dy` | int | `762` | Scroll Y offset |
-| `grid` | `0`/`1` | `1` | Show grid |
-| `gridSize` | int | `10` | Grid snap size in px |
-| `guides` | `0`/`1` | `1` | Show alignment guides |
-| `tooltips` | `0`/`1` | `1` | Enable tooltips |
-| `connect` | `0`/`1` | `1` | Enable connection arrows on hover |
-| `arrows` | `0`/`1` | `1` | Show directional arrows |
-| `fold` | `0`/`1` | `1` | Enable group fold/collapse |
-| `page` | `0`/`1` | `1` | Show page boundary |
-| `pageScale` | float | `1` | Page zoom scale |
-| `pageWidth` | int | `1169` | Page width in px (A4 landscape) |
-| `pageHeight` | int | `827` | Page height in px (A4 landscape) |
-| `math` | `0`/`1` | `0` | Enable LaTeX math rendering |
-| `shadow` | `0`/`1` | `0` | Global shadow on shapes |
+| Attribute    | Type    | Default | Description                       |
+| ------------ | ------- | ------- | --------------------------------- |
+| `dx`         | int     | `1422`  | Scroll X offset                   |
+| `dy`         | int     | `762`   | Scroll Y offset                   |
+| `grid`       | `0`/`1` | `1`     | Show grid                         |
+| `gridSize`   | int     | `10`    | Grid snap size in px              |
+| `guides`     | `0`/`1` | `1`     | Show alignment guides             |
+| `tooltips`   | `0`/`1` | `1`     | Enable tooltips                   |
+| `connect`    | `0`/`1` | `1`     | Enable connection arrows on hover |
+| `arrows`     | `0`/`1` | `1`     | Show directional arrows           |
+| `fold`       | `0`/`1` | `1`     | Enable group fold/collapse        |
+| `page`       | `0`/`1` | `1`     | Show page boundary                |
+| `pageScale`  | float   | `1`     | Page zoom scale                   |
+| `pageWidth`  | int     | `1169`  | Page width in px (A4 landscape)   |
+| `pageHeight` | int     | `827`   | Page height in px (A4 landscape)  |
+| `math`       | `0`/`1` | `0`     | Enable LaTeX math rendering       |
+| `shadow`     | `0`/`1` | `0`     | Global shadow on shapes           |
 
 **Common page sizes (px at 96dpi):**
 
-| Format | Width | Height |
-| -------- | ------- | -------- |
-| A4 landscape | `1169` | `827` |
-| A4 portrait | `827` | `1169` |
-| A3 landscape | `1654` | `1169` |
-| Letter landscape | `1100` | `850` |
-| Letter portrait | `850` | `1100` |
-| Screen (16:9) | `1654` | `931` |
+| Format           | Width  | Height |
+| ---------------- | ------ | ------ |
+| A4 landscape     | `1169` | `827`  |
+| A4 portrait      | `827`  | `1169` |
+| A3 landscape     | `1654` | `1169` |
+| Letter landscape | `1100` | `850`  |
+| Letter portrait  | `850`  | `1100` |
+| Screen (16:9)    | `1654` | `931`  |
 
 ---
 
@@ -100,23 +100,23 @@ These two cells MUST be the first entries inside `<root>`. IDs `0` and `1` are r
 
 ### `<mxCell>` Vertex Attributes
 
-| Attribute | Required | Type | Description |
-| ----------- | ---------- | ------ | ------------- |
-| `id` | Yes | string | Unique identifier within this diagram |
-| `value` | Yes | string | Label text (HTML allowed if style has `html=1`) |
-| `style` | Yes | string | Semicolon-delimited key=value style string |
-| `vertex` | Yes | `"1"` | Must be `"1"` to declare this as a shape |
-| `parent` | Yes | string | Parent cell ID (`"1"` for default layer) |
+| Attribute | Required | Type   | Description                                     |
+| --------- | -------- | ------ | ----------------------------------------------- |
+| `id`      | Yes      | string | Unique identifier within this diagram           |
+| `value`   | Yes      | string | Label text (HTML allowed if style has `html=1`) |
+| `style`   | Yes      | string | Semicolon-delimited key=value style string      |
+| `vertex`  | Yes      | `"1"`  | Must be `"1"` to declare this as a shape        |
+| `parent`  | Yes      | string | Parent cell ID (`"1"` for default layer)        |
 
 ### `<mxGeometry>` Vertex Attributes
 
-| Attribute | Required | Type | Description |
-| ----------- | ---------- | ------ | ------------- |
-| `x` | Yes | float | Left edge of shape (px from canvas origin) |
-| `y` | Yes | float | Top edge of shape (px from canvas origin) |
-| `width` | Yes | float | Shape width in px |
-| `height` | Yes | float | Shape height in px |
-| `as` | Yes | `"geometry"` | Always `"geometry"` |
+| Attribute | Required | Type         | Description                                |
+| --------- | -------- | ------------ | ------------------------------------------ |
+| `x`       | Yes      | float        | Left edge of shape (px from canvas origin) |
+| `y`       | Yes      | float        | Top edge of shape (px from canvas origin)  |
+| `width`   | Yes      | float        | Shape width in px                          |
+| `height`  | Yes      | float        | Shape height in px                         |
+| `as`      | Yes      | `"geometry"` | Always `"geometry"`                        |
 
 ---
 
@@ -137,22 +137,22 @@ These two cells MUST be the first entries inside `<root>`. IDs `0` and `1` are r
 
 ### `<mxCell>` Edge Attributes
 
-| Attribute | Required | Type | Description |
-| ----------- | ---------- | ------ | ------------- |
-| `id` | Yes | string | Unique identifier |
-| `value` | Yes | string | Connector label (empty string for no label) |
-| `style` | Yes | string | Style string (see Edge Styles) |
-| `edge` | Yes | `"1"` | Must be `"1"` to declare as connector |
-| `source` | No | string | ID of source vertex |
-| `target` | No | string | ID of target vertex |
-| `parent` | Yes | string | Parent cell ID (usually `"1"`) |
+| Attribute | Required | Type   | Description                                 |
+| --------- | -------- | ------ | ------------------------------------------- |
+| `id`      | Yes      | string | Unique identifier                           |
+| `value`   | Yes      | string | Connector label (empty string for no label) |
+| `style`   | Yes      | string | Style string (see Edge Styles)              |
+| `edge`    | Yes      | `"1"`  | Must be `"1"` to declare as connector       |
+| `source`  | No       | string | ID of source vertex                         |
+| `target`  | No       | string | ID of target vertex                         |
+| `parent`  | Yes      | string | Parent cell ID (usually `"1"`)              |
 
 ### `<mxGeometry>` Edge Attributes
 
-| Attribute | Required | Type | Description |
-| ----------- | ---------- | ------ | ------------- |
-| `relative` | No | `"1"` | Always `"1"` for edges |
-| `as` | Yes | `"geometry"` | Always `"geometry"` |
+| Attribute  | Required | Type         | Description            |
+| ---------- | -------- | ------------ | ---------------------- |
+| `relative` | No       | `"1"`        | Always `"1"` for edges |
+| `as`       | Yes      | `"geometry"` | Always `"geometry"`    |
 
 ### Edge with Label Offset
 
@@ -295,12 +295,12 @@ Common HTML tags supported: `<b>`, `<i>`, `<u>`, `<br>`, `<font color="#hex">`, 
 
 ## ID Generation Rules
 
-| Rule | Detail |
-| ------ | -------- |
-| IDs `0` and `1` | Reserved — always the root and default layer |
-| All other IDs | Must be unique within their `<diagram>` |
-| Safe pattern | Sequential integers starting at `2`, or UUID strings |
-| Cross-page | IDs do not need to be unique across different `<diagram>` pages |
+| Rule            | Detail                                                          |
+| --------------- | --------------------------------------------------------------- |
+| IDs `0` and `1` | Reserved — always the root and default layer                    |
+| All other IDs   | Must be unique within their `<diagram>`                         |
+| Safe pattern    | Sequential integers starting at `2`, or UUID strings            |
+| Cross-page      | IDs do not need to be unique across different `<diagram>` pages |
 
 **Safe sequential ID example:**
 
@@ -327,12 +327,12 @@ id="a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 
 ## Recommended Spacing
 
-| Context | Value |
-| --------- | ------- |
-| Minimum gap between shapes | `40px` |
-| Comfortable gap | `80px` |
-| Swimlane inner padding | `20px` |
-| Page margin from edge | `40px` |
+| Context                     | Value  |
+| --------------------------- | ------ |
+| Minimum gap between shapes  | `40px` |
+| Comfortable gap             | `80px` |
+| Swimlane inner padding      | `20px` |
+| Page margin from edge       | `40px` |
 | Connector routing clearance | `10px` |
 
 ---

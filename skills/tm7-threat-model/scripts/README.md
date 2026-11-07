@@ -32,11 +32,11 @@ replace `uv run` with `python -B` to use an existing Python installation directl
     Enclosing trust boundaries are supported; trust-line boundary serialization requires
     a populated Core export and is reported as unsupported by this checker.
 
-- [test_validate_tm7.py](test_validate_tm7.py)
+- [validate_tm7_test.py](validate_tm7_test.py)
   > Runs 26 regression tests covering the bundled Core models, documentation fragments, and deliberately corrupted models. Checks the worked request/response pair's directionality, labels, properties, and facing inset anchors and opposing handles; the populated model's directional names, matching threat labels, and preserved supplied-export geometry; acceptance of a single one-way flow; and rejection of broken references, unsupported identifiers and properties, namespace errors, fractional connector coordinates, oversized border/line coordinates, invalid lists, inconsistent threats, changed catalog content, and malformed member order. Prints the standard unittest summary and returns a nonzero exit code on failure.
 
     ```bash
-    uv run ./scripts/test_validate_tm7.py
+    uv run ./scripts/validate_tm7_test.py
     ```
 
     Tests write temporary fixtures and remove them after each check. Set `TM7_TEST_TMP`

@@ -12,7 +12,19 @@ structure, member order, namespaces, and embedded knowledge base from the Core a
 > [!NOTE]
 > Generates and modifies Microsoft Threat Modeling Tool (.tm7) files using the **SDL TM Knowledge Base (Core)**.
 
-## Workflow
+- [1. Workflow](#1-workflow)
+- [2. Core reference assets](#2-core-reference-assets)
+- [3. Serialization format](#3-serialization-format)
+  - [3.1. Namespaces and qualified types](#31-namespaces-and-qualified-types)
+  - [3.2. Object identity](#32-object-identity)
+- [4. Stencils and boundaries](#4-stencils-and-boundaries)
+  - [4.1. Common Core `TypeId` values](#41-common-core-typeid-values)
+- [5. Data flow lines](#5-data-flow-lines)
+- [6. Property attribute types](#6-property-attribute-types)
+- [7. Threat instances](#7-threat-instances)
+- [8. Validation checklist](#8-validation-checklist)
+
+## 1. Workflow
 
 When asked to produce a `.tm7` file:
 
@@ -40,15 +52,15 @@ When asked to produce a `.tm7` file:
 7. **Write without an XML declaration or added pretty-print indentation.** Preserve existing
    whitespace inside catalog descriptions and user text; the supplied asset contains such text.
 
-## Core reference assets
+## 2. Core reference assets
 
 | Asset                                 | Role                                                                                                                    | Core manifest version             |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
 | `assets/example-minimal.tm7`          | Authoritative blank generation skeleton supplied by the user: one empty drawing surface, no stencils, flows, or threats | `4.1.0.11`                        |
-| `references/Example_Threat_Model.tm7` | Labeled populated Core example: 10 border entries, 10 labeled connectors, 50 threats                                                    | `4.1.0.11`                        |
+| `references/Example_Threat_Model.tm7` | Labeled populated Core example: 10 border entries, 10 labeled connectors, 50 threats                                    | `4.1.0.11`                        |
 | `references/core-xml-examples.md`     | Complete, namespace-qualified example blocks and a connected worked model                                               | Uses the blank skeleton's catalog |
-| `references/core-worked-example.tm7` | Bidirectional connection (Request and Response): two stencils, two connectors, one illustrative request-side threat           | `4.1.0.11`                        |
-| `references/tmt-style-guide.md`       | Diagram patterns, stencil sizes, connector attachment geometry, and naming conventions                                    | Applies to Core `4.1.0.11`        |
+| `references/core-worked-example.tm7`  | Bidirectional connection (Request and Response): two stencils, two connectors, one illustrative request-side threat     | `4.1.0.11`                        |
+| `references/tmt-style-guide.md`       | Diagram patterns, stencil sizes, connector attachment geometry, and naming conventions                                  | Applies to Core `4.1.0.11`        |
 
 Both exports use model `Version` **`4.3`**, distinct from the knowledge-base version and
 the application's version. Their manifest name is **`SDL TM Knowledge Base (Core)`** and
@@ -63,7 +75,7 @@ adding diagram elements or threats. For changes to an existing Core model, prese
 catalog and existing serialization unless a catalog change is explicitly requested. Validate
 against that model's original export with `--template original.tm7`.
 
-## Serialization format
+## 3. Serialization format
 
 Start with this root, with no XML declaration:
 
@@ -96,7 +108,7 @@ are both `DRAWINGSURFACE`. Preserve the profile's `<PromptedKb xmlns=""/>` child
 Do not invent XML elements such as `SecurityGaps` or `Mitigations`. Store threat details
 in the Core properties described below.
 
-### Namespaces and qualified types
+### 3.1. Namespaces and qualified types
 
 | Conventional prefix | URI                                                                      | Role                                                      |
 | ------------------- | ------------------------------------------------------------------------ | --------------------------------------------------------- |
@@ -116,7 +128,7 @@ An XML serializer that rewrites element prefixes may leave QName-valued `i:type`
 unbound; verify them explicitly. Namespace URIs, rather than the spellings `i` or `xsi`,
 determine XML meaning. Retain the asset's aliases for predictable output.
 
-### Object identity
+### 3.2. Object identity
 
 Dictionary `<a:Key>` and inherited `<Guid>` must match for each stencil and connector.
 UUIDs identify model objects. `z:Id` strings identify serializer objects; these are separate
@@ -126,7 +138,7 @@ reference-tracked objects, including nested objects when present. In the blank s
 Every present `z:Id` must be unique and every `z:Ref` must resolve; ordinary untracked
 objects, including the exported threat values, do not require invented `z:Id` attributes.
 
-## Stencils and boundaries
+## 4. Stencils and boundaries
 
 Each entry in a drawing surface's `Borders` is an Arrays
 `KeyValueOfguidanyType` containing an Arrays `Key` and `Value`. The value has an
@@ -150,7 +162,7 @@ members. Obtain its block from a matching Core export before adding one; do not 
 serializer type from the catalog representation. The bundled checker supports the demonstrated
 enclosing boundary format and reports line boundaries as unsupported pending such an export.
 
-### Common Core `TypeId` values
+### 4.1. Common Core `TypeId` values
 
 Generic stencils may use their `GenericTypeId` as `TypeId`. Specialized stencils inherit
 their generic family through the catalog's `ParentId` chain.
@@ -177,7 +189,7 @@ without a specialized Core type, choose the appropriate generic type and give it
 display name. Rebuild configurable properties when changing types; changing only `TypeId`
 can retain incompatible inherited attributes.
 
-## Data flow lines
+## 5. Data flow lines
 
 `Lines` uses the same Arrays `KeyValueOfguidanyType` wrapper, with `i:type="Connector"`,
 `GenericTypeId` `GE.DF`, and a catalog-backed `TypeId`. Use `GE.DF` for a generic flow or
@@ -216,7 +228,7 @@ dictionary key consistent with its connector. Use that connector's directional N
 applicability. Authentication properties are relative to each connector's source and
 destination, so reassess them when reversing endpoints.
 
-## Property attribute types
+## 6. Property attribute types
 
 Inherited `Properties` contains Arrays `anyType` items. Each item's `DisplayName`, `Name`,
 `Value`, and optional `SelectedIndex` are in the KnowledgeBase namespace.
@@ -239,7 +251,7 @@ Examples include `authenticatesItself` for external interactors and `authenticat
 `authenticatesDestination`, `providesConfidentiality`, and `providesIntegrity` for flows.
 Selected values affect Core threat-generation filters, so record only supported assumptions.
 
-## Threat instances
+## 7. Threat instances
 
 Use the Arrays dictionary wrapper **`KeyValueOfstringThreatpc_P0_PhOB`**. Its `Value`
 contains KnowledgeBase members, in the order demonstrated by the populated Core export:
@@ -287,7 +299,7 @@ The catalog additionally defines Abuse; its presence does not change the STRIDE 
 Read [references/core-xml-examples.md](./references/core-xml-examples.md) for complete
 stencil, connector, list-property, and threat XML blocks with resolving identifiers.
 
-## Validation checklist
+## 8. Validation checklist
 
 1. Root and member order match the chosen Core skeleton, including `Header`, `Zoom`,
    `ThreatGenerationEnabled`, `Validations`, `Version`, and `Profile`.
@@ -312,5 +324,5 @@ stencil, connector, list-property, and threat XML blocks with resolving identifi
    Static checks validate the bundled serialization contract and consistency;
    an application open/save check is additional evidence when the tool is available.
 
-The checker's regression tests run with `python -B scripts/test_validate_tm7.py`.
+The checker's regression tests run with `python -B scripts/validate_tm7_test.py`.
 See [scripts/README.md](./scripts/README.md) for script usage, output, and validation limits.

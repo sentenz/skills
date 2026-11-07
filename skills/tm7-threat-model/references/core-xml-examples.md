@@ -1,5 +1,12 @@
 # Core XML examples
 
+- [1. External interactor](#1-external-interactor)
+- [2. Process](#2-process)
+- [3. Request connector](#3-request-connector)
+- [4. Response connector](#4-response-connector)
+- [5. List property (from the request connector)](#5-list-property-from-the-request-connector)
+- [6. Core threat instance](#6-core-threat-instance)
+
 These are complete XML fragments, formatted for reading. Serialize the final model without
 adding indentation. Namespace declarations here make each fragment independently parseable;
 declarations already inherited in the final document can retain their exported scope.
@@ -17,15 +24,15 @@ and `i2`; these fragments allocate `i3` and `i4` to stencils, `i5` to the reques
 to the response. The worked model includes all four diagram fragments and the threat below.
 Copy full property blocks when adapting them.
 
-| Direction | Source | Target | Flow UUID | Serializer ID |
-| --------- | ------ | ------ | --------- | ------------- |
-| Request | Client | Service | `6cae5818-d775-4935-96a4-b317b1fcdecb` | `i5` |
-| Response | Service | Client | `7bb5aad7-8c3f-4c99-a2e8-9344102f61b5` | `i6` |
+| Direction | Source  | Target  | Flow UUID                              | Serializer ID |
+| --------- | ------- | ------- | -------------------------------------- | ------------- |
+| Request   | Client  | Service | `6cae5818-d775-4935-96a4-b317b1fcdecb` | `i5`          |
+| Response  | Service | Client  | `7bb5aad7-8c3f-4c99-a2e8-9344102f61b5` | `i6`          |
 
-| Direction | Connector Name |
-| --------- | -------------- |
-| Request | `Client to Service via generic data flow request (transport unspecified, unencrypted, unauthenticated)` |
-| Response | `Service to Client via generic data flow response (transport unspecified, unencrypted, unauthenticated)` |
+| Direction | Connector Name                                                                                           |
+| --------- | -------------------------------------------------------------------------------------------------------- |
+| Request   | `Client to Service via generic data flow request (transport unspecified, unencrypted, unauthenticated)`  |
+| Response  | `Service to Client via generic data flow response (transport unspecified, unencrypted, unauthenticated)` |
 
 Each connector is one-way. Together they represent one bidirectional connection; there is
 no extra connection object. Both ordinary stencils retain 100 × 100 dimensions. Facing ports, five-unit inset anchors, and opposing
@@ -46,7 +53,7 @@ and `TargetGuid` is Service's UUID. Its `InteractionKey` is
 UUIDs without separators. Its `InteractionString` property matches the Request Name
 exactly. The Response Name is available for independently applicable response findings.
 
-## External interactor
+## 1. External interactor
 
 ```xml
 <a:KeyValueOfguidanyType xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model" xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/">
@@ -121,7 +128,7 @@ exactly. The Response Name is available for independently applicable response fi
 </a:KeyValueOfguidanyType>
 ```
 
-## Process
+## 2. Process
 
 ```xml
 <a:KeyValueOfguidanyType xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model" xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/">
@@ -268,7 +275,7 @@ exactly. The Response Name is available for independently applicable response fi
 </a:KeyValueOfguidanyType>
 ```
 
-## Request connector
+## 3. Request connector
 
 ```xml
 <a:KeyValueOfguidanyType xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model" xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/">
@@ -442,7 +449,7 @@ exactly. The Response Name is available for independently applicable response fi
 </a:KeyValueOfguidanyType>
 ```
 
-## Response connector
+## 4. Response connector
 
 ```xml
 <a:KeyValueOfguidanyType xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model" xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/">
@@ -616,7 +623,7 @@ exactly. The Response Name is available for independently applicable response fi
 </a:KeyValueOfguidanyType>
 ```
 
-## List property (from the request connector)
+## 5. List property (from the request connector)
 
 ```xml
 <a:anyType i:type="b:ListDisplayAttribute" xmlns:b="http://schemas.datacontract.org/2004/07/ThreatModeling.KnowledgeBase" xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model" xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/">
@@ -633,7 +640,7 @@ exactly. The Response Name is available for independently applicable response fi
 </a:anyType>
 ```
 
-## Core threat instance
+## 6. Core threat instance
 
 ```xml
 <a:KeyValueOfstringThreatpc_P0_PhOB xmlns="http://schemas.datacontract.org/2004/07/ThreatModeling.Model" xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/">

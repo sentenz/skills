@@ -1,9 +1,6 @@
 ---
 name: draw-io-diagram-generator
-description: Use when creating, editing, or generating draw.io diagram files (.drawio XML; export .drawio.svg or .drawio.png through draw.io). Covers mxGraph XML authoring, shape libraries, style strings, flowcharts, system architecture, sequence diagrams, ER diagrams, UML class diagrams, network topology, layout strategy, the hediet.vscode-drawio VS Code extension, and the full agent workflow from request to a ready-to-open file.
-license: MIT
-metadata:
-  source: https://github.com/github/awesome-copilot/tree/96543145e9cb97711020b57b9d88f968062c4fc7/skills/draw-io-diagram-generator
+description: Use when creating, editing, or generating draw.io diagram files (.drawio, .drawio.svg, .drawio.png). Covers mxGraph XML authoring, shape libraries, style strings, flowcharts, system architecture, sequence diagrams, ER diagrams, UML class diagrams, network topology, layout strategy, the hediet.vscode-drawio VS Code extension, and the full agent workflow from request to a ready-to-open file.
 ---
 
 # Draw.io Diagram Generator
@@ -27,22 +24,20 @@ correct mxGraph XML structure. All generated files open immediately in the
 
 **Supported diagram types**
 
-| Diagram Type | Template Available | Description |
-|---|---|---|
-| Flowchart | `assets/templates/flowchart.drawio` | Process flows with decisions and branches |
+| Diagram Type        | Template Available                     | Description                               |
+| ------------------- | -------------------------------------- | ----------------------------------------- |
+| Flowchart           | `assets/templates/flowchart.drawio`    | Process flows with decisions and branches |
 | System Architecture | `assets/templates/architecture.drawio` | Multi-tier / layered service architecture |
-| Sequence Diagram | `assets/templates/sequence.drawio` | Actor lifelines and timed message flows |
-| ER Diagram | `assets/templates/er-diagram.drawio` | Database tables with relationships |
-| UML Class Diagram | `assets/templates/uml-class.drawio` | Classes, interfaces, enums, relationships |
-| Network Topology | (use shape library) | Routers, servers, firewalls, subnets |
-| BPMN Workflow | (use shape library) | Business process events, tasks, gateways |
-| Mind Map | (manual) | Central topic with radiating branches |
+| Sequence Diagram    | `assets/templates/sequence.drawio`     | Actor lifelines and timed message flows   |
+| ER Diagram          | `assets/templates/er-diagram.drawio`   | Database tables with relationships        |
+| UML Class Diagram   | `assets/templates/uml-class.drawio`    | Classes, interfaces, enums, relationships |
+| Network Topology    | (use shape library)                    | Routers, servers, firewalls, subnets      |
+| BPMN Workflow       | (use shape library)                    | Business process events, tasks, gateways  |
+| Mind Map            | (manual)                               | Central topic with radiating branches     |
 
 ---
 
 ## 2. Prerequisites
-
-Resolve `<skill-directory>` to the directory containing this `SKILL.md`; this remains valid after installation into any agent skills directory.
 
 - If running with VS Code integration enabled, Install the drawio extension: **draw.io VS Code extension** — `hediet.vscode-drawio` (extension id). Install with:
   ```
@@ -134,14 +129,14 @@ Before generating XML, sketch the logical placement:
 
 Use the standard semantic color palette for consistency:
 
-| Purpose | fillColor | strokeColor |
-|---|---|---|
-| Primary / Info | `#dae8fc` | `#6c8ebf` |
-| Success / Start | `#d5e8d4` | `#82b366` |
-| Warning / Decision | `#fff2cc` | `#d6b656` |
-| Error / End | `#f8cecc` | `#b85450` |
-| Neutral | `#f5f5f5` | `#666666` |
-| External / Partner | `#e1d5e7` | `#9673a6` |
+| Purpose            | fillColor | strokeColor |
+| ------------------ | --------- | ----------- |
+| Primary / Info     | `#dae8fc` | `#6c8ebf`   |
+| Success / Start    | `#d5e8d4` | `#82b366`   |
+| Warning / Decision | `#fff2cc` | `#d6b656`   |
+| Error / End        | `#f8cecc` | `#b85450`   |
+| Neutral            | `#f5f5f5` | `#666666`   |
+| External / Partner | `#e1d5e7` | `#9673a6`   |
 
 Common style strings by diagram type:
 
@@ -326,14 +321,14 @@ Class boxes are swimlane containers. Attributes and methods are plain text cells
 
 Arrow styles by relationship type:
 
-| Relationship | Style String |
-|---|---|
-| Inheritance (extends) | `edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=0;` |
-| Realization (implements) | `edgeStyle=orthogonalEdgeStyle;dashed=1;html=1;endArrow=block;endFill=0;` |
-| Composition | `edgeStyle=orthogonalEdgeStyle;html=1;startArrow=diamond;startFill=1;endArrow=none;` |
-| Aggregation | `edgeStyle=orthogonalEdgeStyle;html=1;startArrow=diamond;startFill=0;endArrow=none;` |
-| Dependency | `edgeStyle=orthogonalEdgeStyle;dashed=1;html=1;endArrow=open;endFill=0;` |
-| Association | `edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;endFill=0;` |
+| Relationship             | Style String                                                                         |
+| ------------------------ | ------------------------------------------------------------------------------------ |
+| Inheritance (extends)    | `edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=0;`                     |
+| Realization (implements) | `edgeStyle=orthogonalEdgeStyle;dashed=1;html=1;endArrow=block;endFill=0;`            |
+| Composition              | `edgeStyle=orthogonalEdgeStyle;html=1;startArrow=diamond;startFill=1;endArrow=none;` |
+| Aggregation              | `edgeStyle=orthogonalEdgeStyle;html=1;startArrow=diamond;startFill=0;endArrow=none;` |
+| Dependency               | `edgeStyle=orthogonalEdgeStyle;dashed=1;html=1;endArrow=open;endFill=0;`             |
+| Association              | `edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;endFill=0;`                      |
 
 ---
 
@@ -399,15 +394,15 @@ python3 "<skill-directory>/scripts/add-shape.py" docs/arch.drawio "New Service" 
 
 ## 8. Troubleshooting
 
-| Problem | Likely Cause | Fix |
-|---|---|---|
-| File opens blank in VS Code | Missing id=0 or id=1 cell | Add both root cells before any other cells |
-| Shape at wrong position | Child inside container — coords are relative | Check `parent`; adjust x/y relative to container |
-| Edge not visible | source or target id does not match any vertex | Verify both ids exist exactly as written |
-| Diagram shows "Compressed" | mxGraphModel is base64-encoded | Open in draw.io web, File > Export > XML (uncompressed) |
-| Shape style not rendering | Typo in shape= name | Check `references/shape-libraries.md` for exact style string |
-| Label shows escaped HTML | html=0 on a cell with HTML label | Add `html=1;` to the cell style |
-| Container children overlap container edge | Container height too small | Increase container height in mxGeometry |
+| Problem                                   | Likely Cause                                  | Fix                                                          |
+| ----------------------------------------- | --------------------------------------------- | ------------------------------------------------------------ |
+| File opens blank in VS Code               | Missing id=0 or id=1 cell                     | Add both root cells before any other cells                   |
+| Shape at wrong position                   | Child inside container — coords are relative  | Check `parent`; adjust x/y relative to container             |
+| Edge not visible                          | source or target id does not match any vertex | Verify both ids exist exactly as written                     |
+| Diagram shows "Compressed"                | mxGraphModel is base64-encoded                | Open in draw.io web, File > Export > XML (uncompressed)      |
+| Shape style not rendering                 | Typo in shape= name                           | Check `references/shape-libraries.md` for exact style string |
+| Label shows escaped HTML                  | html=0 on a cell with HTML label              | Add `html=1;` to the cell style                              |
+| Container children overlap container edge | Container height too small                    | Increase container height in mxGeometry                      |
 
 ---
 
@@ -452,22 +447,16 @@ When delivering a diagram, always provide:
 
 Resolve `<skill-directory>` to the directory containing this `SKILL.md` before running commands. All companion paths below are relative to that directory:
 
-| File | Contents |
-|---|---|
-| `references/drawio-xml-schema.md` | Complete mxfile / mxGraphModel / mxCell attribute reference, coordinate system, reserved cells, validation rules |
-| `references/style-reference.md` | All style keys with allowed values, vertex and edge style keys, shape catalog, semantic color palette |
-| `references/shape-libraries.md` | All shape library categories (General, Flowchart, UML, ER, Network, BPMN, Mockup, K8s) with style strings |
-| `assets/templates/flowchart.drawio` | Ready-to-use flowchart template |
-| `assets/templates/architecture.drawio` | 4-tier system architecture template |
-| `assets/templates/sequence.drawio` | 3-actor sequence diagram template |
-| `assets/templates/er-diagram.drawio` | 3-table ER diagram with crow's foot relationships |
-| `assets/templates/uml-class.drawio` | Interface + 2 classes + enum with relationship arrows |
-| `scripts/validate-drawio.py` | Python script to validate XML structure of any .drawio file |
-| `scripts/add-shape.py` | Python CLI to add a new shape to an existing diagram |
-| `scripts/README.md` | How to use the scripts with examples |
-
-## 12. Upstream Source
-
-Adapted from [GitHub Awesome-Copilot](https://github.com/github/awesome-copilot/tree/96543145e9cb97711020b57b9d88f968062c4fc7/skills/draw-io-diagram-generator) at revision `96543145e9cb97711020b57b9d88f968062c4fc7`. Copyright GitHub, Inc.; distributed under the [MIT License](LICENSE).
-
-Local adaptations resolve installed skill paths, clarify per-page IDs and embedded export formats, remove upstream project-specific script documentation, reject unsupported compressed input during validation, and reject invalid page indexes during insertion.
+| File                                   | Contents                                                                                                         |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `references/drawio-xml-schema.md`      | Complete mxfile / mxGraphModel / mxCell attribute reference, coordinate system, reserved cells, validation rules |
+| `references/style-reference.md`        | All style keys with allowed values, vertex and edge style keys, shape catalog, semantic color palette            |
+| `references/shape-libraries.md`        | All shape library categories (General, Flowchart, UML, ER, Network, BPMN, Mockup, K8s) with style strings        |
+| `assets/templates/flowchart.drawio`    | Ready-to-use flowchart template                                                                                  |
+| `assets/templates/architecture.drawio` | 4-tier system architecture template                                                                              |
+| `assets/templates/sequence.drawio`     | 3-actor sequence diagram template                                                                                |
+| `assets/templates/er-diagram.drawio`   | 3-table ER diagram with crow's foot relationships                                                                |
+| `assets/templates/uml-class.drawio`    | Interface + 2 classes + enum with relationship arrows                                                            |
+| `scripts/validate-drawio.py`           | Python script to validate XML structure of any .drawio file                                                      |
+| `scripts/add-shape.py`                 | Python CLI to add a new shape to an existing diagram                                                             |
+| `scripts/README.md`                    | How to use the scripts with examples                                                                             |
