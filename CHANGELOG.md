@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.21.0](https://github.com/sentenz/skills/compare/v1.20.3...v1.21.0) (2026-11-07)
+
+### Features
+
+* **skills:** add Draw.io Diagram Generator ([#153](https://github.com/sentenz/skills/issues/153)) ([b3b23f2](https://github.com/sentenz/skills/commit/b3b23f240b0ebbb4725383a84b2b189a6b66fb07))
+
 ## [1.20.3](https://github.com/sentenz/skills/compare/v1.20.2...v1.20.3) (2026-11-07)
 
 ### Bug Fixes
