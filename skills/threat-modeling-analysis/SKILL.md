@@ -475,7 +475,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Script Usage:**
     - [scripts/validate_csv.py](scripts/validate_csv.py)
-      > Run `uv run ./scripts/validate_csv.py --source '<Device_Name>_Threat_Model.csv' --artifact '<Device_Name>_Threat_Model_Analysis.csv'` to validate the complete CSV, active ATT&CK techniques, mappable CWE weaknesses, enforcement-boundary terminology, cited EMB3D mitigations, and source traceability, then print an actual-versus-expected diff for every finding.
+      > Run `uv run ./scripts/validate_csv.py --source '<Device_Name>_Threat_Model.csv' --artifact '<Device_Name>_Threat_Model_Analysis.csv'` to validate the complete CSV, Risk Approval role labels and minimum approver levels, active ATT&CK techniques, mappable CWE weaknesses, enforcement-boundary terminology, cited EMB3D mitigations, and source traceability, then print an actual-versus-expected diff for every finding.
     - [scripts/validate_cvss.py](scripts/validate_cvss.py)
       > Run `uv run ./scripts/validate_cvss.py --csv '<Device_Name>_Threat_Model_Analysis.csv'` to validate all CVSS vectors in the `CVSS v4.0` columns and compare the calculated score with the stored score.
 
