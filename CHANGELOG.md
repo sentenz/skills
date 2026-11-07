@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.20.3](https://github.com/sentenz/skills/compare/v1.20.2...v1.20.3) (2026-11-07)
+
+### Bug Fixes
+
+* **skills:** validate threat modeling Risk Approval mappings ([#155](https://github.com/sentenz/skills/issues/155)) ([b404f7b](https://github.com/sentenz/skills/commit/b404f7b8fb89829918acb167dfe68bff8b9a8e31))
+
 ## [1.20.2](https://github.com/sentenz/skills/compare/v1.20.1...v1.20.2) (2026-11-04)
 
 ### Bug Fixes
