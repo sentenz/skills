@@ -7,7 +7,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.8.1"
+  version: "1.8.2"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -67,7 +67,7 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
 Classify each connection by path (`Direct` or `Indirect`), type (`Logical` or `Physical`), and target (`Device` or `Network`) based on EU CRA Regulation definitions.
 
 > [!NOTE]
-> Apply section [Connection-Path Scope Classification](references/mapping-rules.md#1-connection-path-scope-classification) to classify each connection to determine whether it is in-scope or out-of-scope for the modeled threat.
+> Apply section [Data Connection](references/mapping-rules.md#1-data-connection) to classify each connection to determine whether it is in-scope or out-of-scope for the modeled threat.
 
 ### 2.2. CIA Triad
 
