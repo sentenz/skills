@@ -7,7 +7,7 @@ description: >-
   embedded field devices, CWE weakness classification, CVSS v4.0 scoring, Likelihood of Exploit, Risk-based Prioritization via a Risk Matrix, minimum-capable Threat Actor
   assignment, inherent and residual risk traceability, Risk Treatment decisions, and OT impact categories ranging from Denial of View to Physical Damage to Property.
 metadata:
-  version: "1.8.2"
+  version: "1.8.3"
   python-package: "cvss==3.6"
 allowed-tools: Bash(python:*) Bash(uv:*)
 ---
@@ -64,10 +64,10 @@ Instructions for AI security agents reviewing Microsoft Threat Modeling Tool thr
 
 ### 2.1. Scope Classification
 
-Classify each connection by path (`Direct` or `Indirect`), type (`Logical` or `Physical`), and target (`Device` or `Network`) based on EU CRA Regulation definitions.
+For CRA-aligned assessments, load the authoritative [Data Connection and Scope Decisions](../tm7-threat-model/references/data-connection-scope.md) owned by `tm7-threat-model`. Apply its definitions, classification, evidence requirements, and handoff procedure. Use the same pinned repository revision as the model decision, or explicitly document and reconcile a rule-version change. For separate installations, obtain the canonical reference as specified in its access contract; missing rules leave affected decisions unresolved.
 
 > [!NOTE]
-> Apply section [Data Connection](references/mapping-rules.md#1-data-connection) to classify each connection to determine whether it is in-scope or out-of-scope for the modeled threat.
+> Connection classification, model inclusion, and threat applicability are separate decisions. Validate inherited scope reasons; do not translate an element exclusion directly into `Not Applicable` or zero residual risk. The local [Data Connection](references/mapping-rules.md#1-data-connection) section forwards to the shared rules.
 
 ### 2.2. CIA Triad
 
@@ -254,6 +254,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Identify whether the review is for EU CRA-aligned product risk assessment, general OT/ICS design review, supplier assurance, or another objective.
     - Record the assessed product or device boundary before classifying controls. State whether enclosures, companion software, gateways, workstations, installation components, and operator procedures are inside or outside that boundary.
     - Record product name, intended use, deployment context, operational environment, trust boundaries, assumptions, exclusions, external dependencies, maintenance paths, and engineering interfaces.
+    - Read the TM7 scope properties and accompanying decision records, including excluded items with no CSV rows. Record the shared-rule revision, decision IDs, and evidence in the summary. If unavailable and material to a scope decision, apply the scope/evidence blocking gate rather than assuming the export is complete.
 
 2. Input Contract
 
@@ -305,6 +306,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Use `Priority` and `State` only as initial TMT signals.
     - Classify each confirmed control by its enforcement point using [Control Classification and EMB3D Mitigations](references/mapping-rules.md#6-control-classification-and-emb3d-mitigations).
     - Record assumptions and missing evidence in `Justification`.
+    - Check the related scope decision against the concrete attack path. Reference its decision ID and evidence, and distinguish a limited assessment boundary from an absent or eliminated path. Follow the shared [handoff procedure](../tm7-threat-model/references/data-connection-scope.md#3-decision-record-and-handoff) for disagreements or missing inventory.
     - When the assessment objective is compliance-oriented, treat each row as a traceable product risk statement tied to a concrete interface, trust relationship, or maintenance path.
 
 2. MITRE ATT&CK for ICS
@@ -404,9 +406,11 @@ Save and integrate intermediate results after each step. When the objective is p
     | State                 | Use When                                                                                                   | Justification Requirement                                                                                                |
     | --------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
     | `Not Started`         | Row has not yet been reviewed.                                                                             | Leave enrichment and governance fields blank except preserved source values.                                             |
-    | `Not Applicable`      | Attack path is architecturally impossible, outside scope, or structurally eliminated.                      | Name the contradiction or eliminated element and explain why the minimum actor was considered before rejecting the path. |
+    | `Not Applicable`      | Attack path is architecturally impossible or structurally eliminated in the assessed design.                      | Name the contradiction or eliminated element and explain why the minimum actor was considered before rejecting the path. |
     | `Mitigated`           | Confirmed implemented controls, compensating controls, or design changes reduce risk to an accepted level. | Classify controls by enforcement boundary and identify residual risk, remaining exposure, owner, and approval mechanism. |
-    | `Needs Investigation` | Critical evidence is missing or a key assumption cannot be validated.                                      | Name the evidence gap and whether it affects actor assignment, scoring, treatment, or approval.                          |
+    | `Needs Investigation` | Evidence is missing, an assumption cannot be validated, or a boundary limitation leaves the scenario unassessed.                                      | Name the evidence gap and whether it affects actor assignment, scoring, treatment, or approval.                          |
+
+    Treat a boundary-only exclusion as an assessment limitation: retain the row as `Needs Investigation`, leave unsupported scoring, treatment, and approval blank, and record the required scope decision or further assessment. Do not infer zero impact or risk elimination from that limitation.
 
     Do not use `Not Applicable` to downgrade a real weakness that merely has compensating controls, environmental restrictions, or an accepted residual risk.
 
@@ -424,7 +428,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Action:** Populate residual risk in `Justification` after `State` and `Priority` are revised and before selecting governance treatment.
     - Use one of `None`, `Info`, `Low`, `Medium`, `High`, or `Critical`.
-    - For `Not Applicable`, record `None` when the attack path is structurally eliminated or outside scope.
+    - For `Not Applicable`, record `None` only when evidence establishes that the specific attack path is impossible or structurally eliminated. A boundary-only exclusion does not establish residual risk `None`.
     - For `Mitigated`, record the remaining risk after confirmed implemented controls, compensating controls, environmental constraints, or design changes are applied.
     - For `Needs Investigation` or unresolved rows, leave blank and record the evidence gap in `Justification`.
     - Do not use residual risk to lower `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, or `Risk Prioritization`.
@@ -540,7 +544,7 @@ Extend threat identification beyond the original TMT-generated threat inventory 
     - Distinguish **confirmed applicable threats** (evidence supports the threat for this specific product), **plausible emerging threats requiring investigation** (the threat is architecturally possible but evidence is incomplete), and **threats that are not applicable** (the threat does not apply to this architecture).
     - Do not introduce speculative threats as confirmed findings. Do not assume that general threat intelligence establishes product-specific exploitability.
     - Record each candidate in the summary with its disposition, the discovery source, the affected interface or trust boundary, and the evidence that supports or refutes applicability.
-    - The analysis CSV carries only the TMT row inventory. Emerging threats are not added as analysis CSV rows; they are tracked in the summary until and unless a new TMT export or a documented scope change brings them into the modeled inventory.
+    - The analysis CSV carries only the TMT row inventory. Emerging threats are not added as analysis CSV rows; they are tracked in the summary until a new TMT export supplies the native rows, following a documented scope change where required.
 
 ### 4.7. Threat Reconciliation and Incremental Updates
 
@@ -558,6 +562,7 @@ Implement deterministic reconciliation between existing analysis records and new
     - Preserve the native TMT `Id` when descriptions, risk scores, or classifications change.
     - Retain threats that are no longer applicable with an evidence-supported disposition (`State = Not Applicable` with rationale in `Justification`) rather than silently deleting them.
     - Do not fabricate native Microsoft TMT identifiers or metadata. The analysis CSV carries only the TMT row inventory.
+    - When a scope decision changes, reconcile its evidence and rule revision with the model's `Reason For Out Of Scope`. If relevant threats were omitted, request model revision and a new export; track the gap in the summary until native rows become available.
 
 3. Conflict Handling
 

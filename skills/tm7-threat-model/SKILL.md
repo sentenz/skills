@@ -31,7 +31,10 @@ When asked to produce a `.tm7` file:
 1. **Model the system.** Identify processes, data stores, external interactors, trust
    boundaries, and unidirectional data flows. Represent a bidirectional connection, such as
    Request and Response, with two opposite unidirectional flows. Select their types from the
-   embedded Core catalog.
+   embedded Core catalog. Before exclusions affect threat generation, record the assessment
+   objective and boundary. For CRA-aligned work, load [Data Connection and Scope Decisions](./references/data-connection-scope.md)
+   and classify connections using its procedure. Record exclusions and unresolved evidence
+   using its decision record; retain product-facing paths through external components.
 2. **Assign unique lowercase UUIDs** to every new drawing surface, stencil, and flow.
    Preserve existing UUIDs when editing a model. Use real UUIDs such as
    `148ade68-5c80-40f3-8e1f-4e2cabdb5991`, rather than component names.
@@ -241,6 +244,10 @@ Inherited `Properties` contains Arrays `anyType` items. Each item's `DisplayName
 | `b:ListDisplayAttribute`       | `Value i:type="a:ArrayOfstring"` containing Arrays `string` values, followed by zero-based `SelectedIndex` |
 | `b:StaticListDisplayAttribute` | Same list representation for a specialized static attribute, as in Human User's `type` property            |
 
+Apply [Data Connection and Scope Decisions](./references/data-connection-scope.md#3-decision-record-and-handoff)
+when setting scope properties. Require an evidence-supported reason for every exclusion,
+and carry the decision record into the analysis handoff. Missing evidence is not an exclusion.
+
 Copy the exported common properties (Name, Out Of Scope, Reason For Out Of Scope, and
 Dataflow Order where present, including the reference's border boundaries) and their internal names/IDs. For configurable attributes,
 use the chosen element's `Attributes` plus inherited parent attributes, respecting specialized
@@ -321,6 +328,10 @@ stencil, connector, list-property, and threat XML blocks with resolving identifi
 8. Run `python scripts/validate_tm7.py model.tm7`. All bundled models validate against the
    blank asset's Core `4.1.0.11` catalog. The checker excludes the knowledge base object's
    serializer ID from catalog-content comparison and validates its uniqueness separately.
+   Separately review every exclusion against [Data Connection and Scope Decisions](./references/data-connection-scope.md):
+   check its evidence, rule revision, directional coverage, and consistency with the reason.
+   Confirm that excluded items and unresolved decisions reach the analysis handoff even
+   when no threat row is exported. The script does not validate these semantic decisions.
    Static checks validate the bundled serialization contract and consistency;
    an application open/save check is additional evidence when the tool is available.
 
