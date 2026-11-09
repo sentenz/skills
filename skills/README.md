@@ -426,8 +426,9 @@ Creates, revises, and reviews convention-style technical articles using formal l
 
 #### 1.8.3. Draw.io Diagram Generator
 
-- [Draw.io Diagram Generator](draw-io-diagram-generator/SKILL.md)
-  > External MIT-licensed Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awesome-copilot/tree/main/skills/draw-io-diagram-generator) for creating, editing, and validating draw.io architecture, sequence, ER, UML, flowchart, and network-topology diagrams, with XML references, five templates, and Python utilities.
+[Draw.io Diagram Generator](draw-io-diagram-generator/SKILL.md)
+
+External MIT-licensed Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awesome-copilot/tree/main/skills/draw-io-diagram-generator) for creating, editing, and validating draw.io architecture, sequence, ER, UML, flowchart, and network-topology diagrams, with XML references, five templates, and Python utilities.
 
 1. Installation
 
@@ -439,6 +440,12 @@ Creates, revises, and reviews convention-style technical articles using formal l
 
     ```plaintext
     Use the draw-io-diagram-generator skill to create docs/architecture.drawio showing this application's components and dependencies.
+    ```
+
+3. Troubleshoot 
+
+    ```plaintext
+    TODO Redesign ...
     ```
 
 ### 1.9. Design Skills
@@ -520,6 +527,7 @@ Dependency isolation and interaction verification using unittest.mock, autospec,
 #### 1.10.4. Python Fuzz Testing
 
 [Python Fuzz Testing](python-fuzz-testing/SKILL.md)
+
 Property-based tests with Hypothesis and coverage-guided fuzz targets with Atheris, including bounded campaigns and reproducible regressions.
 
 1. Installation
