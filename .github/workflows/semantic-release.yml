@@ -28,7 +28,7 @@ jobs:
 
       - name: Run Semantic Release
         id: release
-        uses: sentenz/actions/semantic-release@7eb0decd5ee41c0ef933860135d8033a8bdf24b7 # 1.5.4
+        uses: sentenz/actions/semantic-release@4e9e78d246486ad62d8df160a4d07020ece9668a # 1.5.6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           semantic-version: "latest"
@@ -36,7 +36,7 @@ jobs:
 
       - name: Run SBOM Generation (CycloneDX)
         if: steps.release.outputs.new-release-published == 'true'
-        uses: sentenz/actions/trivy@7eb0decd5ee41c0ef933860135d8033a8bdf24b7 # 1.5.4
+        uses: sentenz/actions/trivy@4e9e78d246486ad62d8df160a4d07020ece9668a # 1.5.6
         with:
           scan-type: sbom-generate
           scan-target: "."
@@ -45,7 +45,7 @@ jobs:
 
       - name: Run SBOM Generation (SPDX)
         if: steps.release.outputs.new-release-published == 'true'
-        uses: sentenz/actions/trivy@7eb0decd5ee41c0ef933860135d8033a8bdf24b7 # 1.5.4
+        uses: sentenz/actions/trivy@4e9e78d246486ad62d8df160a4d07020ece9668a # 1.5.6
         with:
           scan-type: sbom-generate
           scan-target: "."
@@ -54,7 +54,7 @@ jobs:
 
       - name: Publish SBOM artifacts
         if: steps.release.outputs.new-release-published == 'true'
-        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         with:
           tag_name: v${{ steps.release.outputs.new-release-version }}
           files: |
