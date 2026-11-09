@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.21.2](https://github.com/sentenz/skills/compare/v1.21.1...v1.21.2) (2026-11-09)
+
+### Bug Fixes
+
+* **docs:** use skills README as Zensical landing page ([f0188a0](https://github.com/sentenz/skills/commit/f0188a089d55076c0ea9a791bc7951db3232515f))
+
 ## [1.21.1](https://github.com/sentenz/skills/compare/v1.21.0...v1.21.1) (2026-11-07)
 
 ### Bug Fixes
