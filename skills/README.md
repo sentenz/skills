@@ -1,6 +1,6 @@
-# `skills/`
+# Skills
 
-Agent skills are modular capabilities that AI agents can utilize to perform specific tasks within a project. Skills enhance the functionality of AI agents by providing them with specialized context knowledge and tools.
+Modular Agent Skills capabilities for AI agents to perform specific tasks within a project. Skills enhance the functionality of AI agents by providing specialized context knowledge and tools.
 
 - [1. Agent Skills](#1-agent-skills)
   - [1.1. C++ Skills](#11-c-skills)
@@ -598,3 +598,4 @@ External MIT-licensed Agent Skill from [Cloudflare](https://github.com/cloudflar
 
 - Agent [Instructions (AGENTS.md)](https://agents.md/) page.
 - Agent [Skills (SKILL.md)](https://agentskills.io/specification) specification.
+- GitHub [Awesome-Copilot](https://github.com/github/awesome-copilot) repository.
