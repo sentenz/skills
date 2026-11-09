@@ -365,13 +365,17 @@ External Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awe
 2. Invocation
 
     ```plaintext
-    Use the tm7-threat-model skill to create a STRIDE threat model for this application as a Microsoft TMT .tm7 file.
+    Create a STRIDE threat model for this application as a Microsoft TMT .tm7 file by using the tm7-threat-model skill.
     ```
 
-3. Troubleshoot 
+    ```plaintext
+    Modify the STRIDE threat model for this application as a Microsoft TMT .tm7 file by using the tm7-threat-model skill.
+    ```
+
+3. Troubleshoot
 
     ```plaintext
-    TODO Redesign ...
+    Redesign with a cleaner grid, straight connectors, and wider gaps so nothing overlaps. 
     ```
 
 #### 1.7.2. Threat Modeling Analysis
@@ -389,13 +393,17 @@ Evidence-driven threat modeling and analysis for OT/ICS systems using Microsoft 
 2. Invocation
 
     ```plaintext
-    Use the threat-modeling-analysis skill to create and review an OT/ICS threat model from the supplied architecture and asset inventory.
+    Create an OT/ICS threat model from the supplied architecture and asset inventory by using the threat-modeling-analysis skill.
     ```
 
-3. Troubleshoot 
+    ```plaintext
+    Reassess an existing OT/ICS threat model from the supplied architecture and asset inventory by using the threat-modeling-analysis skill.
+    ```
+
+3. Troubleshoot
 
     ```plaintext
-    TODO Redesign ...
+    Redesign with a cleaner grid, straight connectors, and wider gaps so nothing overlaps. 
     ```
 
 ### 1.8. Documentation Skills
@@ -451,13 +459,13 @@ External MIT-licensed Agent Skill from [GitHub Awesome-Copilot](https://github.c
 2. Invocation
 
     ```plaintext
-    Use the draw-io-diagram-generator skill to create docs/architecture.drawio showing this application's components and dependencies.
+    Create a draw.io architecture diagram for this system's architecture by using the draw-io-diagram-generator skill.
     ```
 
-3. Troubleshoot 
+3. Troubleshoot
 
     ```plaintext
-    TODO Redesign ...
+    Redesign with a cleaner grid, straight connectors, and wider gaps so nothing overlaps. 
     ```
 
 ### 1.9. Design Skills
