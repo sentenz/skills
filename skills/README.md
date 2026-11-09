@@ -368,6 +368,12 @@ External Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awe
     Use the tm7-threat-model skill to create a STRIDE threat model for this application as a Microsoft TMT .tm7 file.
     ```
 
+3. Troubleshoot 
+
+    ```plaintext
+    TODO Redesign ...
+    ```
+
 #### 1.7.2. Threat Modeling Analysis
 
 [Threat Modeling Analysis](threat-modeling-analysis/SKILL.md)
@@ -384,6 +390,12 @@ Evidence-driven threat modeling and analysis for OT/ICS systems using Microsoft 
 
     ```plaintext
     Use the threat-modeling-analysis skill to create and review an OT/ICS threat model from the supplied architecture and asset inventory.
+    ```
+
+3. Troubleshoot 
+
+    ```plaintext
+    TODO Redesign ...
     ```
 
 ### 1.8. Documentation Skills
