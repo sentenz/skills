@@ -26,7 +26,20 @@ class SkillSiteTests(unittest.TestCase):
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
         self.write("docs/README.md", "# Must not be published\n")
-        self.write("skills/README.md", "# Must not be published\n")
+        self.write("skills/README.md", """# Skill catalog
+
+Curated installation and invocation instructions.
+
+[Example](example/SKILL.md#example)
+[Guide](example/references/guide.md)
+[Details](#details)
+
+## Details
+
+```bash
+npx skills add sentenz/skills --skill example
+```
+""")
         self.write("skills/example/references/guide.md", "# Guide\n")
         self.write("skills/example/scripts/check.py", "print('not published')\n")
         self.write("skills/example/assets/data.json", "{}\n")
@@ -99,6 +112,11 @@ metadata:
         self.assertFalse((output / "skills/example/references").exists())
         self.assertFalse((output / "skills/example/scripts").exists())
         self.assertFalse((output / "skills/example/assets").exists())
+        home = (output / "index.html").read_text()
+        self.assertIn("Curated installation and invocation instructions.", home)
+        self.assertIn('href="skills/example/SKILL/#example"', home)
+        self.assertIn('href="#details"', home)
+        self.assertIn('https://github.com/sentenz/skills/blob/main/skills/example/references/guide.md', home)
         index = json.loads((output / "search.json").read_text())
         for document in index["items"]:
             self.assertIn(document["location"].split("#")[0], {
@@ -131,12 +149,14 @@ metadata:
         # Rebuild after source changes: discovery and navigation must refresh.
         (self.root / "skills/other/SKILL.md").unlink()
         self.write("skills/example/SKILL.md", "# Example\n")
+        self.write("skills/README.md", "# Updated catalog\n\n[New](new/SKILL.md)\n")
         self.write("skills/new/SKILL.md", "# New\n")
         self.build()
         self.assertFalse((output / "skills/other/SKILL/index.html").exists())
         self.assertTrue((output / "skills/new/SKILL/index.html").exists())
         home = (output / "index.html").read_text()
         self.assertIn('skills/new/SKILL/', home)
+        self.assertIn("Updated catalog", home)
         self.assertNotIn('skills/other/SKILL/', home)
 
     def test_missing_reference_fails_strict_build(self):
@@ -147,7 +167,7 @@ metadata:
     def test_cpp_mock_lists_are_nested_in_built_html(self):
         source = (ROOT / "skills/cpp-mock-testing/SKILL.md").read_text()
         section = source.split("## 7. Style Guide", 1)[1].split("## 8. Template", 1)[0]
-        self.write("skills/example/SKILL.md", "# Style Guide\n" + section)
+        self.write("skills/example/SKILL.md", "# Example\n" + section)
         self.build()
         page = (self.root / "public/skills/example/SKILL/index.html").read_text()
         self.assertRegex(page, r"Expectations</p>\s*<ul>\s*<li>Use <code>EXPECT_CALL")
@@ -190,6 +210,8 @@ metadata:
                     self.fail(f"Preview did not update {path}: {log.read()}")
 
                 wait_for("", "skills/other/SKILL/")
+                self.write("skills/README.md", "# Updated during preview\n")
+                wait_for("", "Updated during preview")
                 self.write("skills/new/SKILL.md", "# Added during preview\n")
                 wait_for("", "skills/new/SKILL/")
                 wait_for("skills/new/SKILL/", "Added during preview")

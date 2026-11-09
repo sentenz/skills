@@ -76,7 +76,7 @@ def makeExtension(**kwargs):
     return SkillExtension(**kwargs)
 
 
-def rewrite_links(content, source_uri, root, project):
+def rewrite_links(content, source_uri, root, project, *, destination_uri=None):
     """Rewrite destinations before Zensical's source-level link validation.
 
     Use the pinned Zensical scanner so code examples remain literal and link
@@ -97,6 +97,17 @@ def rewrite_links(content, source_uri, root, project):
             span = link.href
             url = source[span.start:span.end].decode("utf-8")
             resolved = resolver.resolve(url, context, image=getattr(link, "kind", None) == "image")
+            parsed = urlsplit(resolved)
+            if (destination_uri is not None and parsed.path
+                    and not parsed.scheme and not parsed.netloc
+                    and not parsed.path.startswith("/")):
+                target = posixpath.normpath(posixpath.join(
+                    posixpath.dirname(source_uri), unquote(parsed.path),
+                ))
+                relative = posixpath.relpath(
+                    target, posixpath.dirname(destination_uri) or ".",
+                )
+                resolved = urlunsplit(("", "", quote(relative), parsed.query, parsed.fragment))
             if resolved != url:
                 replacements[(span.start, span.end)] = resolved.encode("utf-8")
     for (start, end), replacement in sorted(replacements.items(), reverse=True):

@@ -11,7 +11,6 @@ import subprocess
 import sys
 import time
 import tomllib
-from urllib.parse import quote
 
 import tomli_w
 import yaml
@@ -43,7 +42,6 @@ def prepare(config_file: Path) -> Path:
     docs = staging / "docs"
     files = {}
     navigation = []
-    catalog = ["# Skills", "", project.get("site_description", ""), ""]
     for source in sources:
         uri = source.relative_to(root).as_posix()
         content = source.read_text(encoding="utf-8")
@@ -58,12 +56,12 @@ def prepare(config_file: Path) -> Path:
                 raise ValueError(f"{uri}: YAML front matter must be a mapping")
         name = str(metadata.get("name", source.parent.name))
         navigation.append({name: uri})
-        # Escape link labels without changing navigation labels.
-        label = name.replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]")
-        catalog.append(f"- [{label}]({quote(uri)})")
         files[uri] = rewrite_links(content, uri, root, project)
 
-    files["index.md"] = ("\n".join(catalog) + "\n").encode("utf-8")
+    files["index.md"] = rewrite_links(
+        (root / "skills/README.md").read_text(encoding="utf-8"),
+        "skills/README.md", root, project, destination_uri="index.md",
+    )
     assets = root / project.get("docs_dir", "docs") / "assets"
     for asset in sorted(assets.rglob("*")):
         if asset.is_file():
