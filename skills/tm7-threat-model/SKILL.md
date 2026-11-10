@@ -1,6 +1,6 @@
 ---
 name: tm7-threat-model
-description: 'Creates and modifies Microsoft Threat Modeling Tool (.tm7) files using SDL TM Knowledge Base (Core). Use when asked to generate or edit a .tm7 threat model, or perform STRIDE threat modeling with a .tm7 deliverable.'
+description: "Creates and modifies Microsoft Threat Modeling Tool (.tm7) files using SDL TM Knowledge Base (Core). Use when asked to generate or edit a .tm7 threat model, or perform STRIDE threat modeling with a .tm7 deliverable."
 ---
 
 # Microsoft Threat Modeling Tool (.tm7) Generator
@@ -13,6 +13,9 @@ structure, member order, namespaces, and embedded knowledge base from the Core a
 > Generates and modifies Microsoft Threat Modeling Tool (.tm7) files using the **SDL TM Knowledge Base (Core)**.
 
 - [1. Workflow](#1-workflow)
+  - [1.1. Constraints](#11-constraints)
+  - [1.2. Deliverables](#12-deliverables)
+  - [1.3. Acceptance Criteria](#13-acceptance-criteria)
 - [2. Core reference assets](#2-core-reference-assets)
 - [3. Serialization format](#3-serialization-format)
   - [3.1. Namespaces and qualified types](#31-namespaces-and-qualified-types)
@@ -36,10 +39,11 @@ When asked to produce a `.tm7` file:
    Preserve existing UUIDs when editing a model. Use real UUIDs such as
    `148ade68-5c80-40f3-8e1f-4e2cabdb5991`, rather than component names.
 3. **Lay out coordinates** using the [TMT Style Guide](./references/tmt-style-guide.md):
-   retain default stencil sizes, use facing connection points, and apply its flow naming convention.
-   Keep stencils readable, boundary membership correct, and connector endpoints on their shapes.
-   Preserve supplied export geometry and keep bundled examples within the style guide's
-   conservative coordinate envelope; verify larger layouts in TMT before delivery.
+   - Retain default stencil sizes, use facing connection points, and apply its flow naming convention.
+   - Keep stencils readable, boundary membership correct, and connector endpoints on their shapes.
+   - Use a clean grid, straight connectors, and wider gaps so nothing overlaps.
+   - Preserve supplied export geometry and keep bundled examples within the style guide's
+     conservative coordinate envelope; verify larger layouts in TMT before delivery.
 4. **Generate STRIDE threats** for applicable interactions, using Core threat types and
    their generation filters. Place them in `ThreatInstances`; include architecture-specific
    descriptions and proposed mitigations without claiming that proposed controls are implemented.
@@ -51,6 +55,20 @@ When asked to produce a `.tm7` file:
    relative to this skill). Correct failures before delivery.
 7. **Write without an XML declaration or added pretty-print indentation.** Preserve existing
    whitespace inside catalog descriptions and user text; the supplied asset contains such text.
+
+### 1.1. Constraints
+
+- Do not invent components, interfaces, data flows, protocols, or implemented security controls; explicitly identify missing information.
+
+### 1.2. Deliverables
+
+- The completed TM7 threat model file (`assessment/<device>_Threat_Model.tm7`).
+
+### 1.3. Acceptance Criteria
+
+- Every stencil element and data-flow connection has been evaluated.
+- Out-of-scope elements are clearly distinguishable.
+- The resulting model is architecturally accurate and internally consistent.
 
 ## 2. Core reference assets
 

@@ -64,7 +64,7 @@ TID_PATTERN = re.compile(r"\bTID-\d{3}\b", re.IGNORECASE)
 ATTACK_ID_PATTERN = re.compile(r"T\d{4}(?:\.\d{3})?")
 ATTACK_SOURCE_NAMES = frozenset({"mitre-attack", "mitre-ics-attack"})
 CWE_ID_PATTERN = re.compile(r"CWE-\d+")
-CWE_RATIONALE_PATTERN = re.compile(r"\bCWE mapping rationale\s*:", re.IGNORECASE)
+CWE_RATIONALE_PATTERN = re.compile(r"\bCWE needs more-specific `Allowed`\s*:", re.IGNORECASE)
 AMBIGUOUS_BASIC_CONTROL_PATTERN = re.compile(
     r"\bBasic\s+(?:mitigation|controls?)\b|\bBasic\s*:", re.IGNORECASE
 )
@@ -971,15 +971,23 @@ def validate_risk_approval(
     row_number: int,
     threat_id: str,
 ) -> list[Finding]:
-    """Check canonical approval labels and the minimum role, allowing escalation."""
+    """Check canonical approval labels and the exact minimum required role."""
     # Blank fields may represent an incomplete review. Never infer an approval
     # while either mapping input remains unresolved.
     if not approval and (not prioritization or not treatment):
         return []
 
+    # A row with no risk prioritization (N/A) carries no residual risk and
+    # therefore requires no approver.
+    no_prioritization = prioritization == "N/A"
+
     findings: list[Finding] = []
     for column, value, allowed in (
-        ("Risk Prioritization", prioritization, RISK_APPROVAL_BY_PRIORITIZATION),
+        (
+            "Risk Prioritization",
+            prioritization,
+            {"N/A"} if no_prioritization else RISK_APPROVAL_BY_PRIORITIZATION,
+        ),
         ("Risk Treatment", treatment, RISK_TREATMENTS),
     ):
         if value not in allowed:
@@ -1010,13 +1018,30 @@ def validate_risk_approval(
     if findings:
         return findings
 
+    if no_prioritization:
+        if approval != "Not Required":
+            findings.append(
+                Finding(
+                    origin="output",
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    column="Risk Approval",
+                    message=(
+                        "Risk Approval must be Not Required when "
+                        "Risk Prioritization is N/A"
+                    ),
+                    actual=approval,
+                    expected="Not Required",
+                )
+            )
+        return findings
+
     minimum = (
         "Not Required"
         if treatment == "Avoidance"
         else RISK_APPROVAL_BY_PRIORITIZATION[prioritization]
     )
-    minimum_rank = RISK_APPROVAL_ROLES.index(minimum)
-    if RISK_APPROVAL_ROLES.index(approval) < minimum_rank:
+    if approval != minimum:
         findings.append(
             Finding(
                 origin="output",
@@ -1024,11 +1049,11 @@ def validate_risk_approval(
                 threat_id=threat_id,
                 column="Risk Approval",
                 message=(
-                    "Risk Approval is below the minimum required for "
+                    "Risk Approval must be exactly the minimum required for "
                     f"{prioritization} / {treatment}"
                 ),
                 actual=approval,
-                expected=" or ".join(RISK_APPROVAL_ROLES[minimum_rank:]),
+                expected=minimum,
             )
         )
     return findings

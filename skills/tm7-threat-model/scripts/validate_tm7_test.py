@@ -1,4 +1,4 @@
-"""Regression checks: python -B scripts/test_validate_tm7.py (standard library only)."""
+"""Regression checks: python -B scripts/validate_tm7_test.py (standard library only)."""
 from pathlib import Path
 import os
 import re

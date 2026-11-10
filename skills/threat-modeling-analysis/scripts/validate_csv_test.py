@@ -54,7 +54,7 @@ def validate(*rows):
 
 
 class RiskApprovalTests(unittest.TestCase):
-    def test_all_matrix_cells_allow_minimum_and_escalation_reject_lower_roles(self):
+    def test_all_matrix_cells_require_exact_minimum_and_reject_other_roles(self):
         # Read the documented contract independently of the validator constants.
         reference = (SKILL / "references/mapping-rules.md").read_text()
         section = reference.split("## 12. Risk Approval Mapping\n", 1)[1]
@@ -77,13 +77,13 @@ class RiskApprovalTests(unittest.TestCase):
                             "Risk Treatment": treatment,
                             "Risk Approval": approval,
                         }))
-                        if roles.index(approval) >= roles.index(minimum):
+                        if approval == minimum:
                             self.assertEqual(findings, [])
                         else:
                             self.assertEqual(len(findings), 1)
                             finding = findings[0]
                             self.assertEqual(finding.column, "Risk Approval")
-                            self.assertIn(minimum, finding.expected)
+                            self.assertEqual(finding.expected, minimum)
                             self.assertEqual(finding.actual, approval)
                             self.assertEqual(finding.row_number, 2)
                             self.assertEqual(finding.threat_id, "42")
@@ -99,7 +99,7 @@ class RiskApprovalTests(unittest.TestCase):
 
     def test_populated_approval_requires_valid_mapping_inputs(self):
         for column, invalid_values in (
-            ("Risk Prioritization", ("", "N/A", "high", "Severe")),
+            ("Risk Prioritization", ("", "high", "Severe")),
             ("Risk Treatment", ("", "N/A", "mitigation", "Reduce")),
         ):
             for value in invalid_values:
@@ -110,6 +110,27 @@ class RiskApprovalTests(unittest.TestCase):
                         and finding.message.startswith("Risk Approval requires")
                         for finding in findings
                     ))
+
+    def test_na_prioritization_requires_not_required_approval(self):
+        for approval in VALIDATOR.RISK_APPROVAL_ROLES:
+            with self.subTest(approval=approval):
+                findings = validate(row(**{
+                    "State": "Not Applicable",
+                    "Risk Prioritization": "N/A",
+                    "Risk Treatment": "Avoidance",
+                    "Risk Approval": approval,
+                }))
+                if approval == "Not Required":
+                    self.assertEqual(findings, [])
+                else:
+                    self.assertEqual(len(findings), 1)
+                    finding = findings[0]
+                    self.assertEqual(finding.column, "Risk Approval")
+                    self.assertEqual(finding.actual, approval)
+                    self.assertEqual(finding.expected, "Not Required")
+                    self.assertEqual(finding.row_number, 2)
+                    self.assertEqual(finding.threat_id, "42")
+                    self.assertEqual(finding.severity, "error")
 
     def test_incomplete_mapping_inputs_can_retain_blank_approval(self):
         for priority, treatment in (("", ""), ("High", ""), ("", "Mitigation")):
@@ -160,10 +181,11 @@ class RiskApprovalTests(unittest.TestCase):
                 capture_output=True, text=True, check=False,
             )
             self.assertEqual(result.returncode, 1, result.stderr)
-            self.assertIn("Errors         : 2", result.stdout)
+            self.assertIn("Errors         : 3", result.stdout)
             self.assertIn("output:2 Id 1 [Risk Approval]", result.stdout)
+            self.assertIn("output:3 Id 2 [Risk Approval]", result.stdout)
             self.assertIn("output:4 Id 3 [Risk Approval]", result.stdout)
-            self.assertIn("- Product Security\n+ CPSO or Executive", result.stdout)
+            self.assertIn("- Product Security\n+ CPSO", result.stdout)
             self.assertEqual(path.read_bytes(), source.encode("utf-8"))
 
     def test_bundled_example_passes_with_source_traceability(self):

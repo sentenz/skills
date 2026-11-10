@@ -25,7 +25,7 @@ Do not treat omissions in an example row as permission to omit evidence required
 
 - State the decision rationale before supporting framework details.
 - Describe behavior and evidence rather than repeating `ATT&CK ID`, `EMB3D TID`, `CWE ID`, the full CVSS vector, or other dedicated-column values.
-- When retaining a CWE marked `Allowed-with-Review` or `Discouraged`, add `CWE mapping rationale: ...` with the supporting evidence and why no more-specific `Allowed` entry fits.
+- When retaining a CWE marked `Allowed-with-Review` or `Discouraged`, add the CWE if no more-specific `Allowed` entry fits.
 - Define the assessed product or device boundary before classifying controls. If a control spans the boundary, split the narrative into separately evidenced within-boundary and outside-boundary parts.
 - Use `Implemented controls:` only for verified controls enforced inside the assessed boundary. Use `Compensating controls:` for external physical, network, workstation, installation, monitoring, or procedural controls.
 - Include an MID only when row evidence supports the mitigation and the mitigation asset maps it to at least one TID in the row. Copy its exact source name and Foundational, Intermediate, or Leading level under an `EMB3D <level> mitigation:` clause. Omit MIDs when `EMB3D TID` is `N/A`. No dedicated MID column exists.
