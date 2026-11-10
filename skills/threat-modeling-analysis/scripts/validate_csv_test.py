@@ -1,4 +1,4 @@
-"""Regression tests for threat-model risk approval validation."""
+"""Regression tests for threat-model governance and justification validation."""
 
 import csv
 import importlib.util
@@ -199,6 +199,130 @@ class RiskApprovalTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("No findings.", result.stdout)
+
+
+class InvestigationJustificationTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.mitigations = VALIDATOR.load_emb3d_mitigations(
+            VALIDATOR.DEFAULT_EMB3D_MITIGATIONS
+        )
+
+    def check(self, justification, tids="TID-404, TID-405", **overrides):
+        fields = row(**{
+            "State": "Needs Investigation",
+            "Justification": justification,
+            "EMB3D TID": tids,
+            "Risk Treatment": "",
+            "Risk Approval": "",
+        })
+        fields.update(overrides)
+        return VALIDATOR.validate_rows(
+            VALIDATOR.parse_records(artifact(fields)),
+            mitigation_index=self.mitigations,
+        )
+
+    def test_documented_network_example_accepts_all_levels_and_verified_controls(self):
+        template = (SKILL / "references/justification-template.md").read_text()
+        section = template.split("## 5. Needs Investigation\n", 1)[1]
+        section = section.split("## 6. Not Started\n", 1)[0]
+        example = section.split("```plaintext\n")[2].split("\n```", 1)[0]
+        self.assertEqual(self.check(example), [])
+
+    def test_optional_control_categories_and_mitigations_can_be_omitted(self):
+        for control in (
+            "",
+            "Implemented controls: device test confirms watchdog recovery. ",
+            "Compensating controls: gateway test confirms external filtering. ",
+        ):
+            with self.subTest(control=control):
+                self.assertEqual(self.check(
+                    "The service remains Needs Investigation. " + control
+                    + "Evidence gaps: sustained-load effectiveness is unknown. "
+                    "Investigation actions: test sustained traffic and recovery.",
+                    tids="",
+                ), [])
+
+    def test_recommendations_do_not_require_implementation_evidence(self):
+        self.assertEqual(self.check(
+            "EMB3D Intermediate mitigation: Decidable Protocols and Parsers "
+            "(MID-008) is a source-backed recommendation. "
+            "Evidence gaps: implementation remains unverified. "
+            "Investigation actions: obtain parser design and test evidence."
+        ), [])
+
+    def test_investigation_sections_do_not_become_mid_implementation_claims(self):
+        for label in ("Evidence gaps", "Investigation actions"):
+            with self.subTest(label=label):
+                self.assertEqual(self.check(
+                    "EMB3D Foundational mitigation: System Service Availability "
+                    "Manager (MID-032) is a source-backed recommendation. "
+                    f"{label}: determine whether recovery is enabled."
+                ), [])
+
+    def test_implementation_claim_needs_evidence_in_its_own_mid_clause(self):
+        claim = (
+            "EMB3D Foundational mitigation: System Service Availability Manager "
+            "(MID-032) is implemented for service restart. "
+        )
+        for suffix in (
+            "",
+            "Investigation actions: obtain Device-specific evidence: restart tests.",
+            "EMB3D Intermediate mitigation: Decidable Protocols and Parsers "
+            "(MID-008) is implemented. Device-specific evidence: parser tests.",
+        ):
+            with self.subTest(suffix=suffix):
+                findings = self.check(claim + suffix)
+                self.assertEqual(len(findings), 1)
+                self.assertEqual(findings[0].message,
+                                 "MID implementation claim lacks device-specific evidence")
+
+    def test_invalid_mid_names_levels_and_associations_still_fail(self):
+        valid = (
+            "EMB3D Foundational mitigation: System Service Availability Manager "
+            "(MID-032) is a source-backed recommendation."
+        )
+        cases = (
+            (valid.replace("System Service Availability Manager", "Watchdog"),
+             "TID-404", "MID exact source name is missing from its clause"),
+            (valid.replace("Foundational", "Leading"), "TID-404",
+             "MID level differs from the EMB3D mitigation source"),
+            (valid, "TID-406", "MID is not mapped to any EMB3D TID in the row"),
+            (valid, "", "MID requires a populated EMB3D TID"),
+            (valid, "N/A", "MID requires a populated EMB3D TID"),
+            (valid + " " + valid, "TID-404", "MID is cited more than once in the row"),
+        )
+        for text, tids, message in cases:
+            with self.subTest(tids=tids, message=message):
+                findings = self.check(text, tids=tids)
+                self.assertEqual([finding.message for finding in findings], [message])
+
+    def test_supported_mid_does_not_permit_governance_on_unresolved_row(self):
+        findings = self.check(
+            "EMB3D Foundational mitigation: System Service Availability Manager "
+            "(MID-032) is a source-backed recommendation.",
+            **{"Risk Treatment": "Mitigation", "Risk Approval": "CPSO"},
+        )
+        self.assertEqual({finding.message for finding in findings}, {
+            "Needs Investigation requires blank Risk Treatment",
+            "Needs Investigation requires blank Risk Approval",
+        })
+
+    def test_justification_rejects_embedded_line_breaks_and_semicolons(self):
+        for separator in ("\n", "\r", "\r\n", ";"):
+            for state in ("Needs Investigation", "Mitigated"):
+                with self.subTest(separator=separator, state=state):
+                    fields = row(**{
+                        "State": state,
+                        "Justification": "Evidence remains incomplete." + separator,
+                    })
+                    if state == "Needs Investigation":
+                        fields.update({"Risk Treatment": "", "Risk Approval": ""})
+                    findings = validate(fields)
+                    self.assertEqual(len(findings), 1)
+                    self.assertEqual(findings[0].column, "Justification")
+                    self.assertIn("semicolons" if separator == ";" else "line breaks",
+                                  findings[0].message)
 
 
 if __name__ == "__main__":
