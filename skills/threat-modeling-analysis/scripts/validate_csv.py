@@ -70,7 +70,8 @@ AMBIGUOUS_BASIC_CONTROL_PATTERN = re.compile(
 )
 CONTROL_CLAUSE_PATTERN = re.compile(
     r"\b(?:(?P<boundary>Implemented|Compensating)\s+controls?"
-    r"|EMB3D\s+(?P<level>Foundational|Intermediate|Leading)\s+mitigation)\s*:",
+    r"|EMB3D\s+(?P<level>Foundational|Intermediate|Leading)\s+mitigation"
+    r"|Evidence gaps|Investigation actions)\s*:",
     re.IGNORECASE,
 )
 MID_IMPLEMENTATION_CLAIM_PATTERN = re.compile(
@@ -778,6 +779,8 @@ def load_emb3d_mitigations(path: Path) -> dict[str, Emb3dMitigation]:
 
 
 def _mitigation_clauses(text: str) -> list[tuple[str, int, int, str]]:
+    # Investigation prose must not become part of the preceding MID claim.
+    # Keep Device-specific evidence inside its MID clause for implementation checks.
     matches = list(CONTROL_CLAUSE_PATTERN.finditer(text))
     clauses: list[tuple[str, int, int, str]] = []
     for index, match in enumerate(matches):
@@ -1135,6 +1138,18 @@ def validate_rows(
             justification_cell.value.strip() if justification_cell is not None else ""
         )
         if justification_cell is not None:
+            if "\n" in justification_cell.value or "\r" in justification_cell.value:
+                findings.append(
+                    Finding(
+                        origin="output",
+                        row_number=row_number,
+                        threat_id=threat_id,
+                        column="Justification",
+                        message="Justification must not contain embedded line breaks",
+                        actual=justification_cell.value,
+                        expected="<one narrative paragraph without line breaks>",
+                    )
+                )
             if ";" in justification:
                 findings.append(
                     Finding(
