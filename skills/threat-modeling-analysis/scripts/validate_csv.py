@@ -70,6 +70,7 @@ AMBIGUOUS_BASIC_CONTROL_PATTERN = re.compile(
 )
 CONTROL_CLAUSE_PATTERN = re.compile(
     r"\b(?:(?P<boundary>Implemented|Compensating)\s+controls?"
+    r"|EMB3D mitigation (?P<disposition>excluded|unresolved)"
     r"|EMB3D\s+(?P<level>Foundational|Intermediate|Leading)\s+mitigation)\s*:",
     re.IGNORECASE,
 )
@@ -80,7 +81,16 @@ MID_IMPLEMENTATION_CLAIM_PATTERN = re.compile(
     re.IGNORECASE,
 )
 DEVICE_SPECIFIC_EVIDENCE_PATTERN = re.compile(
-    r"\bDevice-specific evidence\s*:", re.IGNORECASE
+    r"\bDevice-specific evidence\s*:\s*[^.\s][^.]*", re.IGNORECASE
+)
+EMB3D_ASSESSMENT_PATTERN = re.compile(
+    r"\bEMB3D mitigation assessment:\s*"
+    r"(No applicable TID|No source mapping|Unresolved) because ([^.\s].*?)"
+    r"(?:\.(?=\s|$)|$)"
+)
+EMB3D_DISPOSITION_PATTERN = re.compile(
+    r"EMB3D mitigation (excluded|unresolved): (MID-\d{3}) because "
+    r"[^.\s].*?(?:\.(?=\s|$)|$)"
 )
 EMB3D_LEVELS = frozenset({"foundational", "intermediate", "leading"})
 CWE_MAPPING_USAGES = frozenset(
@@ -120,6 +130,7 @@ DEFAULT_EMB3D_MITIGATIONS = (
     / "emb3d"
     / "mitigations_threat_mappings_2.0.1.json"
 )
+DEFAULT_EMB3D_THREATS = DEFAULT_EMB3D_MITIGATIONS.with_name("threats_2.0.1.json")
 MAX_DIFF_LENGTH = 500
 
 
@@ -777,16 +788,32 @@ def load_emb3d_mitigations(path: Path) -> dict[str, Emb3dMitigation]:
     return mitigation_index
 
 
+def load_emb3d_threat_ids(path: Path) -> set[str]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    threats = payload.get("threats") if isinstance(payload, dict) else None
+    if not isinstance(threats, list):
+        raise ValueError("EMB3D threat source must contain a threats list")
+    identifiers = set()
+    for threat in threats:
+        identifier = threat.get("id") if isinstance(threat, dict) else None
+        if not isinstance(identifier, str) or not TID_PATTERN.fullmatch(identifier):
+            raise ValueError("EMB3D threat source contains an invalid TID")
+        identifiers.add(identifier.upper())
+    return identifiers
+
+
 def _mitigation_clauses(text: str) -> list[tuple[str, int, int, str]]:
     matches = list(CONTROL_CLAUSE_PATTERN.finditer(text))
     clauses: list[tuple[str, int, int, str]] = []
     for index, match in enumerate(matches):
         level = match.group("level")
-        if level is None:
+        if level is None and match.group("disposition") is None:
             continue
         start = match.start()
         end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
-        clauses.append((level.casefold(), start, end, text[start:end].strip()))
+        clauses.append((
+            level.casefold() if level else "", start, end, text[start:end].strip(),
+        ))
     return clauses
 
 
@@ -797,14 +824,65 @@ def validate_mitigation_citations(
     row_number: int,
     threat_id: str,
     mitigation_index: dict[str, Emb3dMitigation],
+    known_tids: Optional[set[str]] = None,
 ) -> list[Finding]:
     findings: list[Finding] = []
     clauses = _mitigation_clauses(justification)
     mid_matches = list(MID_PATTERN.finditer(justification))
     row_tids = {match.group().upper() for match in TID_PATTERN.finditer(tid_value)}
 
+    candidates = {
+        identifier for identifier, mitigation in mitigation_index.items()
+        if not row_tids.isdisjoint(mitigation.threat_ids)
+    }
+
+    def assessment_finding(message: str, expected: str) -> None:
+        findings.append(Finding(
+            origin="output", row_number=row_number, threat_id=threat_id,
+            column="Justification", message=message,
+            actual=justification or "<blank>", expected=expected,
+        ))
+
+    tid_parts = [part.strip() for part in tid_value.split(",")]
+    if tid_value not in {"", "N/A"} and not all(
+        TID_PATTERN.fullmatch(part) for part in tid_parts
+    ):
+        assessment_finding(
+            "EMB3D TID contains an invalid identifier",
+            "Comma-separated TID-NNN identifiers, N/A, or blank if unresolved",
+        )
+
+    if known_tids is not None and (unknown_tids := row_tids - known_tids):
+        assessment_finding(
+            f"TID is absent from the EMB3D threat source: {', '.join(sorted(unknown_tids))}",
+            "Use a source-verified TID, N/A, or blank if unresolved",
+        )
+
+    assessment_labels = list(re.finditer(r"\bEMB3D mitigation assessment:", justification))
+    if not candidates:
+        status = (
+            "No source mapping" if row_tids else
+            "No applicable TID" if tid_value == "N/A" else "Unresolved"
+        )
+        assessment = EMB3D_ASSESSMENT_PATTERN.search(justification)
+        if len(assessment_labels) != 1 or assessment is None or assessment[1] != status:
+            assessment_finding(
+                "EMB3D mitigation assessment is missing or inconsistent with the row TIDs",
+                f"EMB3D mitigation assessment: {status} because <row-specific rationale>.",
+            )
+    elif assessment_labels:
+        assessment_finding(
+            "A row-level EMB3D outcome cannot replace mapped MID dispositions",
+            "Cite or individually account for each mapped MID",
+        )
+
     for level, _, _, clause_text in clauses:
-        if not MID_PATTERN.search(clause_text):
+        if not level and not EMB3D_DISPOSITION_PATTERN.match(clause_text):
+            assessment_finding(
+                "EMB3D MID disposition lacks an identifier or rationale",
+                "EMB3D mitigation excluded: MID-NNN because <row-specific evidence>.",
+            )
+        elif level and not MID_PATTERN.search(clause_text):
             label = level.title()
             findings.append(
                 Finding(
@@ -876,8 +954,16 @@ def validate_mitigation_citations(
                     ),
                 )
             )
+        elif not clause[0]:
+            disposition = EMB3D_DISPOSITION_PATTERN.match(clause[3])
+            if disposition is None or disposition[2] != identifier:
+                assessment_finding(
+                    "MID lacks an individual EMB3D disposition",
+                    f"EMB3D mitigation excluded: {identifier} because <row-specific evidence>.",
+                )
         else:
-            declared_level, _, _, clause_text = clause
+            declared_level, start, _, clause_text = clause
+            prefix = justification[start:mid_match.start()]
             if declared_level != mitigation.level:
                 findings.append(
                     Finding(
@@ -895,7 +981,9 @@ def validate_mitigation_citations(
                     )
                 )
 
-            if mitigation.name not in clause_text:
+            if not re.search(
+                rf"(?::|,|\band)\s+{re.escape(mitigation.name)} \($", prefix
+            ) or justification[mid_match.end():mid_match.end() + 1] != ")":
                 findings.append(
                     Finding(
                         origin="output",
@@ -913,7 +1001,13 @@ def validate_mitigation_citations(
 
             if (
                 MID_IMPLEMENTATION_CLAIM_PATTERN.search(clause_text)
-                and not DEVICE_SPECIFIC_EVIDENCE_PATTERN.search(clause_text)
+                and (
+                    not DEVICE_SPECIFIC_EVIDENCE_PATTERN.search(clause_text)
+                    or not any(
+                        match.group("boundary") and match.group("boundary").casefold() == "implemented"
+                        for match in CONTROL_CLAUSE_PATTERN.finditer(justification)
+                    )
+                )
             ):
                 findings.append(
                     Finding(
@@ -959,6 +1053,14 @@ def validate_mitigation_citations(
                     ),
                 )
             )
+
+    for identifier in sorted(candidates - seen_mids):
+        mitigation = mitigation_index[identifier]
+        assessment_finding(
+            f"Mapped EMB3D mitigation {identifier} has no disposition",
+            f"EMB3D {mitigation.level.title()} mitigation: {mitigation.name} ({identifier}). "
+            "If excluded or unresolved, record the MID with a row-specific rationale.",
+        )
 
     return findings
 
@@ -1039,6 +1141,7 @@ def validate_rows(
     technique_index: Optional[dict[str, AttackTechnique]] = None,
     weakness_index: Optional[dict[str, CweWeakness]] = None,
     mitigation_index: Optional[dict[str, Emb3dMitigation]] = None,
+    known_tids: Optional[set[str]] = None,
 ) -> list[Finding]:
     findings: list[Finding] = []
     if not records:
@@ -1153,18 +1256,19 @@ def validate_rows(
                         ),
                     )
                 )
-            if mitigation_index is not None:
-                tid_cell = _cell(record, "EMB3D TID")
-                tid_value = tid_cell.value.strip() if tid_cell is not None else ""
-                findings.extend(
-                    validate_mitigation_citations(
-                        justification,
-                        tid_value,
-                        row_number=row_number,
-                        threat_id=threat_id,
-                        mitigation_index=mitigation_index,
-                    )
+        if mitigation_index is not None:
+            tid_cell = _cell(record, "EMB3D TID")
+            tid_value = tid_cell.value.strip() if tid_cell is not None else ""
+            findings.extend(
+                validate_mitigation_citations(
+                    justification,
+                    tid_value,
+                    row_number=row_number,
+                    threat_id=threat_id,
+                    mitigation_index=mitigation_index,
+                    known_tids=known_tids,
                 )
+            )
 
         if technique_index is not None:
             attack_cell = _cell(record, "ATT&CK ID")
@@ -1257,6 +1361,8 @@ def validate_rows(
                     )
                 )
             for column in IDENTIFIER_COLUMNS:
+                if column == "EMB3D TID":
+                    continue
                 cell = _cell(record, column)
                 if cell is not None and cell.value.strip() != "N/A":
                     findings.append(
@@ -1542,8 +1648,14 @@ def main() -> int:
         default=DEFAULT_EMB3D_MITIGATIONS,
         help=(
             "EMB3D mitigation-to-threat JSON used to validate MID names, levels, "
-            "and row TID associations (defaults to the bundled asset)"
+            "row TID associations, and assessment coverage (defaults to the bundled asset)"
         ),
+    )
+    parser.add_argument(
+        "--emb3d-threats",
+        type=Path,
+        default=DEFAULT_EMB3D_THREATS,
+        help="EMB3D threat JSON from the same release (defaults to the bundled asset)",
     )
     args = parser.parse_args()
 
@@ -1576,6 +1688,7 @@ def main() -> int:
         technique_index = load_attack_techniques(attack_path)
         weakness_index = load_cwe_weaknesses(cwe_path)
         mitigation_index = load_emb3d_mitigations(mitigation_path)
+        known_tids = load_emb3d_threat_ids(args.emb3d_threats.expanduser())
         output_records = read_records(
             output_path,
             origin="output",
@@ -1588,6 +1701,7 @@ def main() -> int:
                 technique_index=technique_index,
                 weakness_index=weakness_index,
                 mitigation_index=mitigation_index,
+                known_tids=known_tids,
             )
         )
 

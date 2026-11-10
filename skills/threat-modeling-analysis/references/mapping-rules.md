@@ -156,12 +156,19 @@ EMB3D Foundational, Intermediate, and Leading levels are source taxonomy values 
 | Intermediate                 | `EMB3D Intermediate mitigation: <exact source name> (MID-NNN).` |
 | Leading                      | `EMB3D Leading mitigation: <exact source name> (MID-NNN).`      |
 
-- Cite an MID only when row evidence makes the mitigation applicable and the bounded EMB3D query maps it to at least one `EMB3D TID` recorded in the row.
-- Copy the mitigation's exact source name and group it under its exact source level with the `EMB3D` prefix in `Justification`.
-- Treat source validation and implementation evidence separately. A valid MID, name, level, and TID association proves only the source-backed mapping.
-- Claim an MID as implemented only when device-specific design, configuration, test, or verified behavior evidence demonstrates the mitigation's enforcement within the assessed product or device boundary. Introduce that evidence with `Device-specific evidence:` and describe the verified behavior under `Implemented controls:`.
-- An external compensating control may reduce residual system risk or operationalize part of an EMB3D recommendation, but it does not prove that the assessed product or device implements the MID.
-- Omit MIDs when `EMB3D TID` is `N/A`. Describe verified controls using the applicable enforcement-boundary category without adding an EMB3D label.
+- Assess every threat row during initial, periodic, and event-driven reviews, including rows carried forward from existing CSVs. State, classification, inherent priority, treatment, and implementation status do not gate the assessment.
+- For each evidence-supported `EMB3D TID`, query the full set of mapped MIDs and take the union across TIDs. Evaluate each MID against the modeled path, device boundary, and available evidence. Include every applicable MID once with its exact source name, identifier, and level. Include each tier with applicable MIDs.
+- For a mapped MID whose applicability is contradicted, use `EMB3D mitigation excluded: MID-NNN because <row-specific evidence>.` If applicability cannot yet be decided, use `EMB3D mitigation unresolved: MID-NNN because <specific evidence gap>.` Lack of implementation does not justify either disposition. Revisit unresolved candidates on subsequent reviews.
+- When there are no candidates, include exactly one assessment sentence with a concrete rationale.
+
+  | Row outcome | Sentence in `Justification` |
+  | --- | --- |
+  | `EMB3D TID` is `N/A` after checking the modeled scope and path | `EMB3D mitigation assessment: No applicable TID because <row-specific rationale>.` |
+  | Supported TID(s) are present but none has a source-mapped MID | `EMB3D mitigation assessment: No source mapping because <source and mapping result>.` |
+  | TID assessment is unresolved or the source is unavailable | `EMB3D mitigation assessment: Unresolved because <specific evidence or source gap>.` Leave unsupported TIDs blank. |
+
+- A tier citation is a recommendation unless the MID clause explicitly identifies verified device-specific implementation. To claim implementation, add `Device-specific evidence:` with the supporting design, configuration, test, or verified behavior and describe enforcement within the assessed boundary separately under `Implemented controls:`. External controls belong under `Compensating controls:`.
+- Validation checks source identity, level, name, TID association, and recorded dispositions. Analyst review verifies the applicability rationale and implementation evidence.
 - Do not derive, raise, or lower an EMB3D level from implementation maturity, adversary capability, control coverage, or an IEC 62443 Security Level.
 
 > [!NOTE]
@@ -336,7 +343,7 @@ Risk treatment records the governance disposition for the inherent risk and the 
   | Consistency        | `State`, CVSS severity, likelihood, inherent prioritization, residual risk, treatment, and approval describe a coherent risk posture.                                           |
   | Overprescription   | Example rows are generalized patterns. Replace actor, score, treatment, and approval when product evidence differs.                                                             |
   | Defense Risk       | Do not cite regulation, deployment restrictions, or trusted-environment assumptions as standalone mitigations. Tie each claim to controls, architecture, and approval evidence. |
-  | Identifier Hygiene | Do not populate ATT&CK, EMB3D, or CWE identifiers for `Not Applicable` rows unless the row explicitly documents a retained discrepancy.                                         |
+  | Identifier Hygiene | Use the same evidence rules for EMB3D TIDs in every state. Use `N/A` for ATT&CK and CWE on `Not Applicable` rows.                                         |
   | CVSS Defensibility | Keep CVSS Base scoring intrinsic. Document compensating controls and acceptance decisions outside the Base vector.                                                              |
 
 ### 11.2. Treatment Decision Guidance
@@ -355,9 +362,9 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 
 | TMT State             | Compatible Risk Treatment | Consistency Requirements                                                                                                                                                                                                                                                         |
 | --------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Not Started`         | Blank                     | Row has not yet been reviewed. Leave enrichment and governance fields blank except preserved source values.                                                                                                                                                                      |
+| `Not Started`         | Blank                     | Row has not yet been reviewed. Record the EMB3D assessment and preserve source values. Leave other unresolved enrichment and governance fields blank.                                                                                                                                                                      |
 | `Needs Investigation` | Blank                     | Evidence gap remains. Do not assign treatment or approval until resolved.                                                                                                                                                                                                        |
-| `Not Applicable`      | Avoidance                 | Attack path or risk source is impossible, structurally eliminated, or outside scope. Identifier columns should normally be `N/A`.                                                                                                                                                |
+| `Not Applicable`      | Avoidance                 | Attack path or risk source is impossible, structurally eliminated, or outside scope. Record the EMB3D assessment against the modeled scope and path.                                                                                                                                                |
 | `Mitigated`           | Mitigation                | Implemented controls, compensating controls, or both reduce risk to an accepted residual level. Classify each control by enforcement boundary and identify remaining exposure, owner, and approval mechanism. A compensating-only narrative is valid when supported by evidence. |
 | `Mitigated`           | Acceptance                | Use only when implemented controls, compensating controls, or both reduce exposure but residual risk is intentionally retained with documented approval.                                                                                                                         |
 | `Mitigated`           | Transfer                  | Use only when implemented controls, compensating controls, or both and a named third-party mechanism share or delegate residual consequence.                                                                                                                                     |

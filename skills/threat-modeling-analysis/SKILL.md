@@ -271,10 +271,10 @@ Save and integrate intermediate results after each step. When the objective is p
     - **CSV-B Score Decimal Format:** Use comma as decimal separator (`5,2`, `7,0`, `0,0`), not period (`5.2`).
     - Retain native TMT columns in source order.
     - Preserve native source fields verbatim: `Id`, `Title`, `Category`, `Diagram`, `Interaction`, `Changed By`, `Description`, `Last Modified`.
-    - Update native review fields only after analyst review: `State`, `Priority`, `Justification`.
+    - Update `State` and `Priority` only after analyst review. Update `Justification` with the EMB3D mitigation assessment even when the wider review has yet to start.
     - Append review columns in this exact order with these exact column names: `ATT&CK ID`, `EMB3D TID`, `CWE ID`, `CVSS v4.0 Vector`, `CVSS-B v4.0 Score`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Threat Actor`, `Risk Treatment`, `Risk Approval`.
     - Every output row must trace back to exactly one source row by native `Id`. The analysis CSV carries only the TMT row inventory; emerging threats identified beyond it are recorded in the summary, not added as rows.
-    - If enrichment columns already exist, carry their values forward unchanged for already-reviewed rows unless new evidence warrants modification. Do not overwrite manually reviewed findings or approved risk treatment decisions without documented justification in `Justification`.
+    - If enrichment columns already exist, carry forward supported values. Complete or correct the EMB3D mitigation assessment on every row, including legacy rows with missing dispositions. Do not overwrite manually reviewed findings or approved risk treatment decisions without documented justification in `Justification`.
     - **Justification Quality:** Each justification must follow the narrative pattern defined in section [4.3. Review, Step 14](#43-review). Do not produce generic, short, or identifier-only justifications. Enclose the justification in double quotes. Avoid semicolons inside the justification text since the CSV is semicolon-delimited.
 
 4. Output Baseline
@@ -328,6 +328,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Use `N/A` when no EMB3D threat mapping applies to a finalized row.
     - When `Interaction` names JTAG, UART, RS-232, RS-485, SPI, I²C, GPIO, USB, Modbus RTU, proprietary serial, or a firmware update path, cross-reference the EMB3D Properties Mapper before finalizing `EMB3D TID` and `CWE ID`.
     - Apply Field Resolution Semantics.
+    - On every row, assess the full union of source-mapped mitigations for all supported TIDs across Foundational, Intermediate, and Leading. Record the disposition of each mapped MID or the explicit no-candidate outcome using [EMB3D Mitigations](references/mapping-rules.md#62-emb3d-mitigations). State, classification, risk prioritization, and treatment never gate this step.
     - In `Justification`, describe the mapped device property or missing control without repeating TIDs.
 
     **Data Access:**
@@ -403,7 +404,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
     | State                 | Use When                                                                                                   | Justification Requirement                                                                                                |
     | --------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-    | `Not Started`         | Row has not yet been reviewed.                                                                             | Leave enrichment and governance fields blank except preserved source values.                                             |
+    | `Not Started`         | Row has not yet been reviewed.                                                                             | Preserve source values and record the EMB3D assessment. Leave other unresolved enrichment and governance fields blank.                                             |
     | `Not Applicable`      | Attack path is architecturally impossible, outside scope, or structurally eliminated.                      | Name the contradiction or eliminated element and explain why the minimum actor was considered before rejecting the path. |
     | `Mitigated`           | Confirmed implemented controls, compensating controls, or design changes reduce risk to an accepted level. | Classify controls by enforcement boundary and identify residual risk, remaining exposure, owner, and approval mechanism. |
     | `Needs Investigation` | Critical evidence is missing or a key assumption cannot be validated.                                      | Name the evidence gap and whether it affects actor assignment, scoring, treatment, or approval.                          |
@@ -452,8 +453,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Add protocol, trust relationship, validation behavior, access, actor, scoring, and mapping details only when they explain the decision.
     - For finalized risks, include the treatment evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
     - Use `Implemented controls:` only for verified controls enforced within the assessed product or device boundary. Use `Compensating controls:` only for controls enforced outside that boundary. A mitigated narrative may contain only compensating controls when that is what the evidence supports. Do not invent an `Implemented controls:` clause.
-    - Keep EMB3D mitigations separate from both enforcement-boundary categories. Cite an MID only when row evidence supports the mitigation, copy its exact name and Foundational, Intermediate, or Leading level from the mitigation-centric EMB3D asset, prefix the clause with `EMB3D`, and confirm that it maps to at least one TID in the row.
-    - A source-backed MID does not prove implementation. Claim an MID as implemented only when the narrative identifies device-specific design, configuration, test, or verified behavior evidence demonstrating enforcement within the assessed product or device boundary. Omit MIDs when `EMB3D TID` is `N/A`.
+    - Include the mandatory EMB3D mitigation assessment from step 3 in every justification. Keep recommendations, verified implemented controls, and external compensating controls separate.
     - Explain intentional `N/A` or blank fields once. Never invent missing evidence to complete a template.
     - Avoid unqualified legal safe-harbor language. Frame compliance-oriented statements as technical-documentation support or product-specific evidence pending stakeholder review.
     - Use no semicolons or embedded line breaks. Let the CSV writer enclose the complete `Justification` cell in double quotes.
@@ -466,7 +466,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Use semicolon-delimited CSV.
     - Enclose `Description` and `Justification` in double quotes.
     - Retain native TMT columns in source order and append review columns in the order defined in section [4.2. Preparation](#42-preparation).
-    - For initial analysis, verify each row against its source row. For periodic or event-driven reviews, load the existing analysis CSV, preserve unchanged rows, and apply only the changes warranted by new evidence.
+    - For initial analysis, verify each row against its source row. For periodic or event-driven reviews, load the existing analysis CSV, reassess EMB3D on every row, and retain other decisions unless evidence warrants a change.
     - Keep identifiers and score artifacts in dedicated columns and keep `Justification` as narrative rationale.
     - Reject rows where `Justification` is only an identifier token or parenthetical code reference.
     - Reject rows where `State`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Risk Treatment`, or `Risk Approval` contradict [Risk Treatment Mapping](references/mapping-rules.md#11-risk-treatment-mapping).
@@ -475,7 +475,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Script Usage:**
     - [scripts/validate_csv.py](scripts/validate_csv.py)
-      > Run `uv run ./scripts/validate_csv.py --source '<Device_Name>_Threat_Model.csv' --artifact '<Device_Name>_Threat_Model_Analysis.csv'` to validate the complete CSV, Risk Approval role labels and minimum approver levels, active ATT&CK techniques, mappable CWE weaknesses, enforcement-boundary terminology, cited EMB3D mitigations, and source traceability, then print an actual-versus-expected diff for every finding.
+      > Run `uv run ./scripts/validate_csv.py --source '<Device_Name>_Threat_Model.csv' --artifact '<Device_Name>_Threat_Model_Analysis.csv'` to validate the complete CSV, Risk Approval role labels and minimum approver levels, active ATT&CK techniques, mappable CWE weaknesses, enforcement-boundary terminology, EMB3D mitigation assessment coverage and citations, and source traceability, then print an actual-versus-expected diff for every finding.
     - [scripts/validate_cvss.py](scripts/validate_cvss.py)
       > Run `uv run ./scripts/validate_cvss.py --csv '<Device_Name>_Threat_Model_Analysis.csv'` to validate all CVSS vectors in the `CVSS v4.0` columns and compare the calculated score with the stored score.
 
@@ -508,8 +508,8 @@ The analysis CSV is a living artifact. After initial generation, it is updated i
     **Action:** Load the existing `<Device_Name>_Threat_Model_Analysis.csv` and reassess each row.
     - Evaluate architectural modifications, firmware/software updates, configuration changes, new vulnerabilities, changes in attack techniques, and modifications to implemented or compensating controls.
     - Revalidate framework mappings, threat applicability, exploitation likelihood, residual risk, risk treatment, and supporting evidence for each row.
-    - Retain unchanged findings when their validity is confirmed. Update only the fields that new evidence warrants changing.
-    - Reassess `Implemented controls:`, `Compensating controls:`, and EMB3D MID citations. Verify that previously documented controls remain implemented and effective. Identify obsolete, missing, partially implemented, or ineffective mitigations.
+    - Retain confirmed findings. Update fields when evidence changes or a legacy row lacks the required EMB3D assessment.
+    - Reassess EMB3D applicability and all MID dispositions on every row, including legacy rows that lack an assessment. Reassess `Implemented controls:` and `Compensating controls:`. Verify that previously documented controls remain implemented and effective. Identify obsolete, missing, partially implemented, or ineffective mitigations.
     - Do not interpret an EMB3D MID mapping as proof that the mitigation is implemented. Re-verify device-specific evidence for any MID claimed as implemented.
     - Preserve verified control information unless superseded by stronger evidence.
 
