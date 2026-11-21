@@ -2,7 +2,7 @@
 name: adr
 description: Creates and maintains Architecture Decision Records (ADRs) following a structured format with State, Context, Decision, Considered, Consequences, Implementation, and References sections. Supports single-option decisions, multi-option decisions within one decision scope, multiple complementary decisions, and deferred decisions. Use when creating, updating, or reviewing architectural decisions, or when the user mentions ADR, architecture decisions, technical decisions, or design records.
 metadata:
-  version: "1.0.5"
+  version: "1.0.6"
   activation:
     implicit: true
     priority: 1
@@ -194,31 +194,31 @@ The References section lists all external and internal resources cited in the AD
 
     Identify a significant architectural or technical decision that needs to be made or documented (e.g., choice of framework, library, pattern, toolchain, or process).
 
-2. Issue/Merge Request Creation
-
-    Create an issue or merge request in the relevant repository to propose the ADR. Use a descriptive title that follows the canonical ADR title schema (see Style Guide).
-
-3. Number and Name
+2. Number and Name
 
     Assign the next sequential three-digit number and create a descriptive kebab-case file name derived from the canonical ADR title context following the convention:
 
     ```plaintext
-    NNN-adr-<topic>[-<scope>].md
+    adr-NNN-<topic>[-<scope>].md
     ```
 
     Examples:
 
     - Title with scope
-      > An `ADR on Dependency Manager for C/C++` would have the file name `015-adr-dependency-manager-c-cpp.md`.
+      > `ADR-015: Dependency Manager for C/C++` has the file name `adr-015-dependency-manager-c-cpp.md`.
     - Title without scope
-      > An `ADR on Git Hooks Manager` would have the file name `016-adr-git-hooks-manager.md`.
+      > `ADR-016: Git Hooks Manager` has the file name `adr-016-git-hooks-manager.md`.
+
+3. Issue/Merge Request Creation
+
+    Create an issue or merge request in the relevant repository to propose the ADR. Use a descriptive title that follows the canonical ADR title schema (see Style Guide).
 
 4. Place
 
     Create the ADR file in the designated decisions directory:
 
     ```plaintext
-    docs/decisions/NNN-adr-<topic>[-<scope>].md
+    docs/decisions/adr-NNN-<topic>[-<scope>].md
     ```
 
 5. Draft
@@ -240,7 +240,7 @@ The References section lists all external and internal resources cited in the AD
 ## 5. Style Guide
 
 - Issue/Merge Request (MR) Title Refinement
-  > When drafting or reviewing an issue or merge request that introduces or updates an ADR, refine the issue/MR title to match the canonical ADR title schema `ADR on <Topic> [for <Scope>]`. Prefer consistency between issue title, merge request title, and ADR H1 title.
+  > When drafting or reviewing an issue or merge request that introduces or updates an ADR, refine the issue/MR title to match the canonical ADR title schema `ADR-NNN: <Topic> [for <Scope>]`. Prefer consistency between issue title, merge request title, and ADR H1 title.
 
   - `<Topic>`
     > Should be a concise, specific technical concern, tool, or practice.
@@ -248,7 +248,7 @@ The References section lists all external and internal resources cited in the AD
     > Optional. Include `for <Scope>` only when it meaningfully narrows the decision applicability.
 
 - File Naming
-  > Use the pattern `NNN-adr-<topic>[-<scope>].md` with lowercase kebab-case for the title segment. The prefix `NNN` is a zero-padded three-digit sequence number (e.g., `001`, `012`). The `-<scope>` segment is optional and must be omitted when scope is not present (do not leave a trailing dash). Derive the slug from the canonical ADR title.
+  > Use the pattern `adr-NNN-<topic>[-<scope>].md` with lowercase kebab-case for the title segment. Use the same zero-padded three-digit sequence number in the title and file name (e.g., `001`, `012`). The `-<scope>` segment is optional and must be omitted when scope is not present (do not leave a trailing dash). Derive the slug from the topic and optional scope.
 
 - Heading Levels
   > Use H1 (`#`) for the ADR title, H2 (`##`) for top-level sections (State, Context, Decision, Considered, etc.), and H3 (`###`) for subsections (individual options or decisions under Decision or options under Considered). Support multiple decisions by using multiple H3 subsections under Decision (e.g., 3.1, 3.2, 3.3) when applicable.
@@ -266,7 +266,7 @@ The References section lists all external and internal resources cited in the AD
   > When status is `Superseded`, append a link to the superseding ADR in the State section:
 
   ```markdown
-  - Superseded by: [NNN-adr-new-title](NNN-adr-new-title.md)
+  - Superseded by: [adr-NNN-new-title](adr-NNN-new-title.md)
   ```
 
 - Language
@@ -282,7 +282,7 @@ Use this template for new ADRs. Replace all `<placeholder>` values with actual c
 ### 6.1. ADR File Template
 
 ```markdown
-# NNN-ADR: <Topic> [for <Scope>]
+# ADR-NNN: <Topic> [for <Scope>]
 
 Architectural Decision Records (ADR) on <brief one-sentence description of the decision topic>.
 
