@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.21.3](https://github.com/sentenz/skills/compare/v1.21.2...v1.21.3) (2026-11-21)
+
+### Bug Fixes
+
+* place the ADR prefix before the decision number ([#167](https://github.com/sentenz/skills/issues/167)) ([4c481ff](https://github.com/sentenz/skills/commit/4c481ffae52f1427e489027761172c56dacfe214))
+
 ## [1.21.2](https://github.com/sentenz/skills/compare/v1.21.1...v1.21.2) (2026-11-09)
 
 ### Bug Fixes
