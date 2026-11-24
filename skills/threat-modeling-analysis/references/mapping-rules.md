@@ -145,6 +145,7 @@ Define the assessed product or device boundary before classifying controls. Clas
 - Treat firmware validation, device watchdog behavior, secure boot enforcement, and hardware access control as `Implemented controls` only when product-specific evidence verifies the behavior within the assessed boundary.
 - Treat cabinet access restrictions, cable routing or protection, external gateways and network controls, workstation logging, installation measures, and maintenance or operating procedures as `Compensating controls` when they are outside the assessed boundary.
 - A `Mitigated` narrative may rely only on confirmed `Compensating controls` when those controls reduce residual system risk to the accepted level. Omit `Implemented controls` when no verified within-boundary control applies.
+- A `Needs Investigation` narrative may retain either or both categories when their enforcement is verified. Identify supporting evidence and distinguish it from any unverified effectiveness or coverage against the row's threat. Record proposed or unverified controls as investigation items, not as verified controls. Follow [Needs Investigation](justification-template.md#5-needs-investigation) for evidence gaps and resolution actions.
 
 ### 6.2. EMB3D Mitigations
 
@@ -159,6 +160,7 @@ EMB3D Foundational, Intermediate, and Leading levels are source taxonomy values 
 - Cite an MID only when row evidence makes the mitigation applicable and the bounded EMB3D query maps it to at least one `EMB3D TID` recorded in the row.
 - Copy the mitigation's exact source name and group it under its exact source level with the `EMB3D` prefix in `Justification`.
 - Treat source validation and implementation evidence separately. A valid MID, name, level, and TID association proves only the source-backed mapping.
+- For `Needs Investigation`, label an applicable MID as a source-backed recommendation unless device-specific evidence verifies implementation. Neither a recommendation nor a verified individual mitigation resolves other evidence gaps or establishes a final state, accepted residual risk, treatment, or approval.
 - Claim an MID as implemented only when device-specific design, configuration, test, or verified behavior evidence demonstrates the mitigation's enforcement within the assessed product or device boundary. Introduce that evidence with `Device-specific evidence:` and describe the verified behavior under `Implemented controls:`.
 - An external compensating control may reduce residual system risk or operationalize part of an EMB3D recommendation, but it does not prove that the assessed product or device implements the MID.
 - Omit MIDs when `EMB3D TID` is `N/A`. Describe verified controls using the applicable enforcement-boundary category without adding an EMB3D label.
@@ -166,6 +168,8 @@ EMB3D Foundational, Intermediate, and Leading levels are source taxonomy values 
 
 > [!NOTE]
 > Use the bundled mitigation snapshot as the offline source of record through [`query_emb3d.py`](../scripts/query_emb3d.py) and [`validate_csv.py`](../scripts/validate_csv.py). Do not read or print the raw JSON.
+
+MITRE's [Getting Started guidance](https://emb3d.mitre.org/subtabs/getting-started.html) separates selecting relevant threats and mitigation recommendations from assessing whether a device sufficiently defends against those threats. Its [EMB3D paper](https://emb3d.mitre.org/assets/EMB3D_Paper_09-23-24.pdf), sections 3.3.1–3.3.2, distinguishes device-built mechanisms from deployment measures and defines the three source tiers.
 
 ## 7. Impact Mapping
 
@@ -187,6 +191,8 @@ Categorize impact using CVSS v4.0 Base Metrics. Keep CVSS Base scoring intrinsic
 | `AV:A` Adjacent | Shared industrial bus, field network segment, same VLAN.                    | Modbus RTU, PROFIBUS, CAN.             |
 | `AV:L` Local    | Workstation software, HMI application, locally executed configuration tool. | Engineering software, local database.  |
 | `AV:P` Physical | Direct cable connection, removable debug port, hardware tampering.          | RS-232, JTAG, SWD, USB, buttons.       |
+
+Select Attack Vector from the actual access path, not the interface name or consequence. Physical access does not rule out parser memory corruption, code execution, or execution-flow manipulation. Do not mark such threats `Not Applicable` solely because the interface lacks network reachability or another row covers a related weakness. Retain `Needs Investigation` when architectural or implementation evidence cannot establish applicability. See the [FIRST CVSS v4.0 Attack Vector definitions](https://www.first.org/cvss/v4.0/specification-document#Attack-Vector-AV).
 
 ### 7.2. Vulnerable System Impact Metrics
 
@@ -356,7 +362,7 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 | TMT State             | Compatible Risk Treatment | Consistency Requirements                                                                                                                                                                                                                                                         |
 | --------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Not Started`         | Blank                     | Row has not yet been reviewed. Leave enrichment and governance fields blank except preserved source values.                                                                                                                                                                      |
-| `Needs Investigation` | Blank                     | Evidence gap remains. Do not assign treatment or approval until resolved.                                                                                                                                                                                                        |
+| `Needs Investigation` | Blank                     | Evidence gap remains, even if some controls are verified or EMB3D recommendations apply. Document unresolved evidence, unverified effectiveness, and investigation actions. Do not assign a residual-risk rating, treatment, or approval until the decision is resolved. |
 | `Not Applicable`      | Avoidance                 | Attack path or risk source is impossible, structurally eliminated, or outside scope. Identifier columns should normally be `N/A`.                                                                                                                                                |
 | `Mitigated`           | Mitigation                | Implemented controls, compensating controls, or both reduce risk to an accepted residual level. Classify each control by enforcement boundary and identify remaining exposure, owner, and approval mechanism. A compensating-only narrative is valid when supported by evidence. |
 | `Mitigated`           | Acceptance                | Use only when implemented controls, compensating controls, or both reduce exposure but residual risk is intentionally retained with documented approval.                                                                                                                         |
@@ -376,7 +382,7 @@ Select the default treatment for the row's `Risk Prioritization`. Deviate to an 
 `Risk Approval` records the minimum required approver role label from the intersection of `Risk Prioritization` and `Risk Treatment`.
 
 > [!NOTE]
-> Escalate the approver when residual-risk evidence, product safety impact, or stakeholder policy requires stronger governance.
+> Keep the column at the exact matrix minimum. When residual-risk evidence, product safety impact, or stakeholder policy requires stronger governance, record the escalated approving stakeholder and approval evidence in `Justification`. A required role label is not evidence that approval has occurred. Leave the column blank while the row remains `Needs Investigation`.
 
 | Prioritization / Treatment | Avoidance    | Mitigation       | Acceptance       | Transfer         |
 | -------------------------- | ------------ | ---------------- | ---------------- | ---------------- |

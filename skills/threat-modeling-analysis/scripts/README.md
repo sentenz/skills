@@ -40,6 +40,8 @@
 - [validate_csv.py](validate_csv.py)
   > Validates the complete threat-analysis CSV output contract, Risk Approval mapping, enforcement-boundary terminology, active MITRE ATT&CK techniques, mappable MITRE CWE weaknesses, source-backed EMB3D mitigation citations, and optional raw-TMT source traceability, then reports all findings with actual-versus-expected diffs.
 
+  > `Needs Investigation` accepts independently supported controls and MID citations while requiring blank treatment and approval fields. MID clauses end at the next control, mitigation, `Evidence gaps:`, or `Investigation actions:` label. `Device-specific evidence:` belongs to the corresponding MID clause. Justifications must remain single paragraphs without embedded line breaks or semicolons. These checks validate syntax and source associations, not evidence truth, control effectiveness, or the sufficiency of a state decision. Review those manually.
+
     ```bash
     uv run ./scripts/validate_csv.py --source 'input.csv' --artifact 'analysis.csv'
     ```

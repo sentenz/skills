@@ -401,9 +401,11 @@ Save and integrate intermediate results after each step. When the objective is p
     | `Not Started`         | Row has not yet been reviewed.                                                                             | Leave enrichment and governance fields blank except preserved source values.                                             |
     | `Not Applicable`      | Attack path is architecturally impossible, outside scope, or structurally eliminated.                      | Name the contradiction or eliminated element and explain why the minimum actor was considered before rejecting the path. |
     | `Mitigated`           | Confirmed implemented controls, compensating controls, or design changes reduce risk to an accepted level. | Classify controls by enforcement boundary and identify residual risk, remaining exposure, owner, and approval mechanism. |
-    | `Needs Investigation` | Critical evidence is missing or a key assumption cannot be validated.                                      | Name the evidence gap and whether it affects actor assignment, scoring, treatment, or approval.                          |
+    | `Needs Investigation` | Critical evidence is missing, conflicting, or insufficient to validate a key assumption or control's effectiveness. | Name the unresolved evidence, affected decisions, and investigation actions. Retain verified controls without implying a finalized disposition. |
 
     Do not use `Not Applicable` to downgrade a real weakness that merely has compensating controls, environmental restrictions, or an accepted residual risk.
+
+    These are assessment-specific decision rules for TMT's status labels. Retain `Needs Investigation` until the evidence supports a defensible state decision, including required approval evidence. Verified individual controls or source-backed mitigation recommendations alone do not establish `Mitigated`.
 
 10. TMT Priority
 
@@ -437,7 +439,7 @@ Save and integrate intermediate results after each step. When the objective is p
 
     **Action:** Populate `Risk Approval` using [Risk Approval Mapping](references/mapping-rules.md#12-risk-approval-mapping).
     - Record exactly one standardized role label.
-    - Base approval on `Risk Prioritization` and `Risk Treatment`, then escalate when residual risk evidence requires a stronger approver.
+    - Record the exact minimum role from `Risk Prioritization` and `Risk Treatment` in the column. When residual-risk evidence requires stronger governance, identify the escalated approving stakeholder and approval evidence in `Justification`.
     - Apply Field Resolution Semantics.
 
 14. TMT Justification
@@ -446,9 +448,10 @@ Save and integrate intermediate results after each step. When the objective is p
     - State the evidence-based rationale for `State` and the concrete scenario, architectural contradiction, or evidence gap.
     - Add protocol, trust relationship, validation behavior, access, actor, scoring, and mapping details only when they explain the decision.
     - For finalized risks, include the treatment evidence required by [Treatment Evidence Requirements](references/mapping-rules.md#114-treatment-evidence-requirements).
-    - Use `Implemented controls:` only for verified controls enforced within the assessed product or device boundary. Use `Compensating controls:` only for controls enforced outside that boundary. A mitigated narrative may contain only compensating controls when that is what the evidence supports. Do not invent an `Implemented controls:` clause.
+    - Use `Implemented controls:` only for verified controls enforced within the assessed product or device boundary. Use `Compensating controls:` only for verified controls enforced outside that boundary. A mitigated narrative may contain only compensating controls when that is what the evidence supports. Do not invent an `Implemented controls:` clause.
     - Keep EMB3D mitigations separate from both enforcement-boundary categories. Cite an MID only when row evidence supports the mitigation, copy its exact name and Foundational, Intermediate, or Leading level from the mitigation-centric EMB3D asset, prefix the clause with `EMB3D`, and confirm that it maps to at least one TID in the row.
     - A source-backed MID does not prove implementation. Claim an MID as implemented only when the narrative identifies device-specific design, configuration, test, or verified behavior evidence demonstrating enforcement within the assessed product or device boundary. Omit MIDs when `EMB3D TID` is `N/A`.
+    - For `Needs Investigation`, retain independently verified controls and applicable EMB3D recommendations using the optional clauses in the template. Separate recommendations from implementation evidence and state unresolved evidence gaps, unverified effectiveness, and the actions needed to resolve them. Omit a residual-risk rating and leave `Risk Treatment` and `Risk Approval` blank, without implying acceptance or approval.
     - Explain intentional `N/A` or blank fields once. Never invent missing evidence to complete a template.
     - Avoid unqualified legal safe-harbor language. Frame compliance-oriented statements as technical-documentation support or product-specific evidence pending stakeholder review.
     - Use no semicolons or embedded line breaks. Let the CSV writer enclose the complete `Justification` cell in double quotes.
@@ -467,6 +470,7 @@ Save and integrate intermediate results after each step. When the objective is p
     - Reject rows where `State`, `CVSS v4.0 Severity`, `Likelihood of Exploit`, `Risk Prioritization`, `Risk Treatment`, or `Risk Approval` contradict [Risk Treatment Mapping](references/mapping-rules.md#11-risk-treatment-mapping).
     - Reject rows that use legal or regulatory shorthand as the sole rationale for acceptance, transfer, mitigation, or avoidance.
     - Verify that the output supports traceability from raw TMT threat statement to analyst decision, supporting evidence, assumptions, residual risk posture, and threat actor selection decision.
+    - Manually verify that `Needs Investigation` narratives distinguish verified enforcement from unresolved effectiveness and source recommendations from device implementation. Automated checks validate structure and source mappings, not the truth or sufficiency of evidence or whether investigation prose implies a finalized decision.
 
     **Script Usage:**
     - [scripts/validate_csv.py](scripts/validate_csv.py)
@@ -507,6 +511,7 @@ The analysis CSV is a living artifact. After initial generation, it is updated i
     - Reassess `Implemented controls:`, `Compensating controls:`, and EMB3D MID citations. Verify that previously documented controls remain implemented and effective. Identify obsolete, missing, partially implemented, or ineffective mitigations.
     - Do not interpret an EMB3D MID mapping as proof that the mitigation is implemented. Re-verify device-specific evidence for any MID claimed as implemented.
     - Preserve verified control information unless superseded by stronger evidence.
+    - If conflicting or missing evidence prevents confirmation of continued control effectiveness or the final disposition, retain still-verified control facts but set the row to `Needs Investigation` and document the required follow-up. Remove unsupported residual-risk ratings and clear treatment and approval fields while the decision remains unresolved.
 
 3. Event-Driven Review Procedure
 
