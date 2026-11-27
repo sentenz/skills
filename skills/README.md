@@ -25,6 +25,7 @@ Modular Agent Skills capabilities for AI agents to perform specific tasks within
     - [1.5.2. GitHub Actions Hardening](#152-github-actions-hardening)
   - [1.6. Container Skills](#16-container-skills)
     - [1.6.1. Multi-Stage Dockerfile](#161-multi-stage-dockerfile)
+    - [1.6.2. Helm Chart](#162-helm-chart)
   - [1.7. Threat Modeling Skills](#17-threat-modeling-skills)
     - [1.7.1. TM7 Threat Model](#171-tm7-threat-model)
     - [1.7.2. Threat Modeling Analysis](#172-threat-modeling-analysis)
@@ -346,6 +347,24 @@ External Agent Skill from [GitHub Awesome-Copilot](https://github.com/github/awe
 
     ```plaintext
     Use the multi-stage-dockerfile skill to create an optimized multi-stage Dockerfile for this application.
+    ```
+
+#### 1.6.2. Helm Chart
+
+[Helm Chart](helm-chart/SKILL.md)
+
+Create, validate, and review Kubernetes Helm charts, including values overrides, templates, dependencies, and upgrade compatibility.
+
+1. Installation
+
+    ```bash
+    npx skills add sentenz/skills --skill helm-chart
+    ```
+
+2. Invocation
+
+    ```plaintext
+    Use the helm-chart skill to review charts/api with staging values and check whether the Deployment selector changes on upgrade.
     ```
 
 ### 1.7. Threat Modeling Skills
