@@ -78,7 +78,7 @@ Available skills can be activated by agents based on defined triggers and contex
   > GitHub Actions workflow efficiency auditing and security hardening guidance.
 
 - [Container Skills](skills/README.md#16-container-skills)
-  > Multi-stage Dockerfile guidance for runtime images, efficient caching, reproducible builds, and security hardening.
+  > Multi-stage Dockerfiles for reproducible runtime images and Helm charts for operating Kubernetes workloads.
 
 - [Threat Modeling Skills](skills/README.md#17-threat-modeling-skills)
   > Threat modeling for OT/ICS systems and Microsoft Threat Modeling Tool (`.tm7`) file generation.

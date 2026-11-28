@@ -1,0 +1,38 @@
+{
+  "skill_name": "helm-chart",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a minimal Helm chart for release ledger, a stateless HTTP worker listening on 8080. Deliver Chart.yaml, values.yaml, values.schema.json, and templates. Accept an image digest, support optional CPU autoscaling, and expose a ClusterIP Service. Demonstrate a render on Kubernetes 1.36.0. A render is sufficient for this exercise.",
+      "expected_output": "A renderable chart and a short validation record.",
+      "files": [],
+      "expectations": [
+        "The delivered chart lints and renders for 1.36.0 with a digest and rejects a malformed digest.",
+        "Service selectors match the Pod and its target port resolves to 8080.",
+        "Autoscaling produces a CPU utilization HPA, a CPU request, and omits fixed replicas."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Review and refactor a Helm Deployment for an in-place upgrade. The live selector is {app: ledger}, release ledger in team-a, Deployment and Service both named ledger. The proposed templates put Chart.AppVersion in both selectors and turn on privileged: true to bind container port 80. The application supports port 8080. Return corrected template fragments and a verification plan that preserves traffic and release identity.",
+      "expected_output": "A review, corrected workload and Service fragments and a verification plan.",
+      "files": [],
+      "expectations": [
+        "The existing ledger Deployment and Service retain their names and exact app selector.",
+        "A nonprivileged process can listen on 8080 while clients retain the published Service port.",
+        "The plan verifies traffic while old and new Pods coexist and describes an upgrade-safe port transition."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "A GitOps sync reports success for a Helm upgrade in team-a. Requests through the gateway now return 503. Deployment ledger is Ready 2/2. The rendered Service selector is {app: ledger, track: blue}, and Ready Pods have only {app: ledger}. HTTPRoute Accepted=True and ResolvedRefs=True. Diagnose the first broken link, give a minimal source change, and specify commands and observations that would verify recovery.",
+      "expected_output": "A diagnosis, a narrowly scoped correction and evidence required to verify it.",
+      "files": [],
+      "expectations": [
+        "The diagnosis identifies Service-to-Pod selection and explains the healthy route and Deployment.",
+        "The correction edits the GitOps source and preserves the intended traffic boundary.",
+        "Verification checks EndpointSlice addresses/readiness and repeats the original gateway request."
+      ]
+    }
+  ]
+}

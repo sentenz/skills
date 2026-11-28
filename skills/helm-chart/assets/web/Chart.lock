@@ -1,0 +1,6 @@
+dependencies:
+- name: identity
+  repository: ""
+  version: 0.1.0
+digest: sha256:741889652bd1f3caa7225dc411f429368bf77dce744e8aba822798fbc77233e2
+generated: "2026-11-27T23:48:46.310744065+01:00"

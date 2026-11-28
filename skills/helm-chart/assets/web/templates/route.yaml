@@ -1,0 +1,38 @@
+{{- $name := include "identity.v1.name" . -}}
+{{- if eq .Values.route.mode "ingress" }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $name }}
+spec:
+  ingressClassName: {{ .Values.route.ingressClass | quote }}
+  tls:
+    - hosts: [{{ .Values.route.host | quote }}]
+      secretName: {{ .Values.route.tlsSecret | quote }}
+  rules:
+    - host: {{ .Values.route.host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $name }}
+                port: {name: http}
+{{- else if eq .Values.route.mode "gateway" }}
+{{- if not (.Capabilities.APIVersions.Has "gateway.networking.k8s.io/v1/HTTPRoute") }}
+{{- fail "gateway mode requires gateway.networking.k8s.io/v1/HTTPRoute" }}
+{{- end }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ $name }}
+spec:
+  parentRefs:
+    - name: {{ .Values.route.gateway | quote }}
+  hostnames: [{{ .Values.route.host | quote }}]
+  rules:
+    - backendRefs:
+        - name: {{ $name }}
+          port: 80
+{{- end }}

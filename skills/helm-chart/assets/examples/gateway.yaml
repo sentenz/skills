@@ -1,0 +1,7 @@
+route:
+  mode: gateway
+  host: app.example.com
+  gateway: public
+networkPolicy:
+  namespaceLabels:
+    kubernetes.io/metadata.name: gateway-system
