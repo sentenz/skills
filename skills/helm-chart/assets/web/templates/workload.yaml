@@ -1,0 +1,84 @@
+{{- $kind := .Values.workload -}}
+{{- $batch := eq $kind "Job" -}}
+apiVersion: {{ ternary "batch/v1" "apps/v1" $batch }}
+kind: {{ $kind }}
+metadata:
+  name: {{ include "identity.v1.name" . }}
+  labels: {{- include "web.v1.labels" . | nindent 4 }}
+spec:
+  {{- if $batch }}
+  backoffLimit: 1
+  activeDeadlineSeconds: 120
+  {{- else }}
+  selector:
+    matchLabels: {{- include "identity.v1.selector" . | nindent 6 }}
+  {{- if and (ne $kind "DaemonSet") (not .Values.autoscaling.enabled) }}
+  replicas: {{ .Values.replicas }}
+  {{- end }}
+  {{- end }}
+  {{- if eq $kind "StatefulSet" }}
+  serviceName: {{ include "identity.v1.name" . }}-peer
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{ .Values.storageSize | quote }}
+  {{- end }}
+  template:
+    metadata:
+      labels: {{- include "identity.v1.selector" . | nindent 8 }}
+      annotations:
+        checksum/page: {{ .Values.page | sha256sum | quote }}
+    spec:
+      serviceAccountName: {{ include "identity.v1.name" . }}
+      automountServiceAccountToken: {{ .Values.configReader }}
+      securityContext:
+        {{- include "web.v1.podSecurity" . | nindent 8 }}
+        {{- if eq $kind "StatefulSet" }}
+        fsGroup: 10001
+        {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.graceSeconds }}
+      {{- if $batch }}
+      restartPolicy: Never
+      {{- end }}
+      containers:
+        - name: web
+          image: {{ .Values.image | quote }}
+          securityContext: {{- include "web.v1.containerSecurity" . | nindent 12 }}
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          {{- if $batch }}
+          command: ["test", "-s", "/site/index.html"]
+          {{- else }}
+          command: ["httpd", "-f", "-p", "8080", "-h", "/site"]
+          ports:
+            - name: http
+              containerPort: 8080
+          startupProbe:
+            httpGet: {path: /index.html, port: http}
+            periodSeconds: 2
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: {path: /index.html, port: http}
+          livenessProbe:
+            tcpSocket: {port: http}
+          {{- end }}
+          volumeMounts:
+            - {name: page, mountPath: /site, readOnly: true}
+            {{- if eq $kind "StatefulSet" }}
+            - {name: data, mountPath: /data}
+            {{- end }}
+            {{- if .Values.existingSecret }}
+            - {name: credentials, mountPath: /run/credentials, readOnly: true}
+            {{- end }}
+      volumes:
+        - name: page
+          configMap:
+            name: {{ include "identity.v1.name" . }}
+        {{- if .Values.existingSecret }}
+        - name: credentials
+          secret:
+            secretName: {{ .Values.existingSecret | quote }}
+        {{- end }}

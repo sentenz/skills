@@ -1,0 +1,34 @@
+workload: Deployment
+replicas: 2
+image: "busybox@sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec"
+page: "ready"
+resources:
+  requests:
+    cpu: 25m
+    memory: 16Mi
+  limits:
+    cpu: 200m
+    memory: 32Mi
+graceSeconds: 30
+# Mount an existing same-namespace Secret read-only at /run/credentials.
+existingSecret: ""
+# For an application that calls the API to read its own named ConfigMap.
+configReader: false
+storageSize: 1Gi
+autoscaling:
+  enabled: false
+  min: 2
+  max: 5
+  cpuPercent: 70
+disruptionBudget: false
+networkPolicy:
+  enabled: true
+  # Additional allowed client namespaces identified by exact label matches.
+  namespaceLabels: {}
+route:
+  mode: none
+  host: ""
+  ingressClass: ""
+  tlsSecret: ""
+  gateway: ""
+smokeHook: false

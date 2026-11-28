@@ -1,0 +1,383 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "workload": {
+      "enum": [
+        "Deployment",
+        "StatefulSet",
+        "DaemonSet",
+        "Job"
+      ]
+    },
+    "replicas": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10000
+    },
+    "image": {
+      "type": "string",
+      "pattern": "^[^\\s@]+@sha256:[a-f0-9]{64}$"
+    },
+    "page": {
+      "type": "string",
+      "minLength": 1
+    },
+    "resources": {
+      "type": "object",
+      "properties": {
+        "requests": {
+          "type": "object",
+          "properties": {
+            "cpu": {
+              "type": "string",
+              "pattern": "^([0-9]+(\\.[0-9]+)?|\\.[0-9]+)([EPTGMK]i|[EPTGMkmun]|[eE][+-]?[0-9]+)?$"
+            },
+            "memory": {
+              "type": "string",
+              "pattern": "^([0-9]+(\\.[0-9]+)?|\\.[0-9]+)([EPTGMK]i|[EPTGMkmun]|[eE][+-]?[0-9]+)?$"
+            }
+          },
+          "required": [
+            "cpu",
+            "memory"
+          ],
+          "additionalProperties": false
+        },
+        "limits": {
+          "type": "object",
+          "properties": {
+            "cpu": {
+              "type": "string",
+              "pattern": "^([0-9]+(\\.[0-9]+)?|\\.[0-9]+)([EPTGMK]i|[EPTGMkmun]|[eE][+-]?[0-9]+)?$"
+            },
+            "memory": {
+              "type": "string",
+              "pattern": "^([0-9]+(\\.[0-9]+)?|\\.[0-9]+)([EPTGMK]i|[EPTGMkmun]|[eE][+-]?[0-9]+)?$"
+            }
+          },
+          "required": [
+            "cpu",
+            "memory"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "requests",
+        "limits"
+      ],
+      "additionalProperties": false
+    },
+    "graceSeconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3600
+    },
+    "existingSecret": {
+      "type": "string",
+      "pattern": "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)?$",
+      "maxLength": 253
+    },
+    "configReader": {
+      "type": "boolean"
+    },
+    "storageSize": {
+      "type": "string",
+      "pattern": "^([0-9]+(\\.[0-9]+)?|\\.[0-9]+)([EPTGMK]i|[EPTGMkmun]|[eE][+-]?[0-9]+)?$"
+    },
+    "autoscaling": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "min": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "cpuPercent": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        }
+      },
+      "required": [
+        "enabled",
+        "min",
+        "max",
+        "cpuPercent"
+      ],
+      "additionalProperties": false
+    },
+    "disruptionBudget": {
+      "type": "boolean"
+    },
+    "networkPolicy": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "namespaceLabels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "enabled",
+        "namespaceLabels"
+      ],
+      "additionalProperties": false
+    },
+    "route": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "enum": [
+            "none",
+            "ingress",
+            "gateway"
+          ]
+        },
+        "host": {
+          "type": "string",
+          "pattern": "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)?$",
+          "maxLength": 253
+        },
+        "ingressClass": {
+          "type": "string",
+          "pattern": "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)?$",
+          "maxLength": 253
+        },
+        "tlsSecret": {
+          "type": "string",
+          "pattern": "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)?$",
+          "maxLength": 253
+        },
+        "gateway": {
+          "type": "string",
+          "pattern": "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)?$",
+          "maxLength": 253
+        }
+      },
+      "required": [
+        "mode",
+        "host",
+        "ingressClass",
+        "tlsSecret",
+        "gateway"
+      ],
+      "additionalProperties": false
+    },
+    "smokeHook": {
+      "type": "boolean"
+    },
+    "identity": {
+      "type": "object"
+    },
+    "global": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "workload",
+    "replicas",
+    "image",
+    "page",
+    "resources",
+    "graceSeconds",
+    "existingSecret",
+    "configReader",
+    "storageSize",
+    "autoscaling",
+    "disruptionBudget",
+    "networkPolicy",
+    "route",
+    "smokeHook"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "workload": {
+            "enum": [
+              "DaemonSet",
+              "StatefulSet",
+              "Job"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "autoscaling": {
+            "properties": {
+              "enabled": {
+                "const": false
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "workload": {
+            "enum": [
+              "DaemonSet",
+              "Job"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "disruptionBudget": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "workload": {
+            "const": "Job"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "route": {
+            "properties": {
+              "mode": {
+                "const": "none"
+              }
+            }
+          },
+          "smokeHook": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "route": {
+            "properties": {
+              "mode": {
+                "const": "ingress"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "route": {
+            "properties": {
+              "host": {
+                "minLength": 1
+              },
+              "ingressClass": {
+                "minLength": 1
+              },
+              "tlsSecret": {
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "route": {
+            "properties": {
+              "mode": {
+                "const": "gateway"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "route": {
+            "properties": {
+              "host": {
+                "minLength": 1
+              },
+              "gateway": {
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "disruptionBudget": {
+            "const": true
+          },
+          "autoscaling": {
+            "properties": {
+              "enabled": {
+                "const": false
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "replicas": {
+            "minimum": 2
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "disruptionBudget": {
+            "const": true
+          },
+          "autoscaling": {
+            "properties": {
+              "enabled": {
+                "const": true
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "autoscaling": {
+            "properties": {
+              "min": {
+                "minimum": 2
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

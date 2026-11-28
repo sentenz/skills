@@ -1,0 +1,23 @@
+{{- if ne .Values.workload "Job" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "identity.v1.name" . }}
+  labels: {{- include "web.v1.labels" . | nindent 4 }}
+spec:
+  selector: {{- include "identity.v1.selector" . | nindent 4 }}
+  ports:
+    - {name: http, port: 80, targetPort: http}
+{{- if eq .Values.workload "StatefulSet" }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "identity.v1.name" . }}-peer
+spec:
+  clusterIP: None
+  selector: {{- include "identity.v1.selector" . | nindent 4 }}
+  ports:
+    - {name: http, port: 80, targetPort: http}
+{{- end }}
+{{- end }}

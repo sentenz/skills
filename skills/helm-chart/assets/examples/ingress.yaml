@@ -1,0 +1,8 @@
+route:
+  mode: ingress
+  host: app.example.com
+  ingressClass: nginx
+  tlsSecret: web-tls
+networkPolicy:
+  namespaceLabels:
+    kubernetes.io/metadata.name: ingress-system
