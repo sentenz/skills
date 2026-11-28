@@ -1,0 +1,64 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Helm chart skill
+
+on:
+  pull_request:
+    paths:
+      - skills/helm-chart/**
+      - .github/workflows/helm-chart.yml
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - helm: v3.22.1
+            checksum: 896cf63684a42a723d61c980369d6e588330927deb13676ca0d85006dd6da0ea
+          - helm: v4.3.2
+            checksum: d1c0278d46beab79582d7e50f5b3dc206944ba8e577cde618513fd07daa53983
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install pinned clients
+        working-directory: ${{ runner.temp }}
+        env:
+          HELM_VERSION: ${{ matrix.helm }}
+          HELM_SHA: ${{ matrix.checksum }}
+        run: |
+          curl -fsSLo helm.tgz "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz"
+          echo "$HELM_SHA  helm.tgz" | sha256sum -c -
+          tar -xzf helm.tgz linux-amd64/helm
+          curl -fsSLo linux-amd64/kind https://github.com/kubernetes-sigs/kind/releases/download/v0.33.0/kind-linux-amd64
+          echo 'aee6151561422756b764a4ae28e7f44cda5af5a9eead3cc9985112b1de8d8e0d  linux-amd64/kind' | sha256sum -c -
+          chmod +x linux-amd64/kind
+          echo "$PWD/linux-amd64" >> "$GITHUB_PATH"
+      - name: Validate starter contracts
+        working-directory: skills/helm-chart
+        run: |
+          python3 -m venv "$RUNNER_TEMP/helm-venv"
+          "$RUNNER_TEMP/helm-venv/bin/pip" install PyYAML==6.0.3
+          helm dependency build assets/web
+          "$RUNNER_TEMP/helm-venv/bin/python" scripts/check.py --kube-version 1.36.4
+          helm package assets/web --destination "$RUNNER_TEMP"
+      - name: Rehearse release with a node
+        run: |
+          kind create cluster --image kindest/node:v1.36.4@sha256:099e049362a1526b2db71494e1947aae99bd16290d7c895f2b7ea312e3cbfaed --wait 2m
+          kubectl create namespace rehearsal
+          kubectl label namespace rehearsal pod-security.kubernetes.io/enforce=restricted
+          chart="$RUNNER_TEMP/web-0.1.0.tgz"
+          helm install smoke "$chart" -n rehearsal --wait --timeout 3m
+          helm test smoke -n rehearsal --timeout 2m
+          helm upgrade smoke "$chart" -n rehearsal --set page=upgraded,smokeHook=true --wait --timeout 3m
+          helm test smoke -n rehearsal --timeout 2m
+          test "$(kubectl -n rehearsal get cm web-smoke -o jsonpath='{.data.index\.html}')" = upgraded
+          helm rollback smoke 1 -n rehearsal --wait --timeout 3m
+          helm test smoke -n rehearsal --timeout 2m
+          test "$(kubectl -n rehearsal get cm web-smoke -o jsonpath='{.data.index\.html}')" = ready
+          helm uninstall smoke -n rehearsal
